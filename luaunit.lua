@@ -5,7 +5,10 @@ Description: A unit testing framework
 Homepage: http://phil.freehackers.org/luaunit/
 Initial author: Ryu, Gwang (http://www.gpgstudy.com/gpgiki/LuaUnit)
 improvements by Philippe Fremy <phil@freehackers.org>
-Version: 1.2 
+Version: 1.2a
+
+Changes between 1.2a and 1.2:
+- test classes were not run in the right order
 
 Changes between 1.2 and 1.1:
 - tests are now run in alphabetical order
