@@ -44,6 +44,55 @@ TestLuaUnit = {} --class
         g()
     end
 
+--[[ Class to test that tests are run in the right order ]]
+
+TestToto1 = {} --class
+    function TestToto1:test1() end
+    function TestToto1:test2() end
+    function TestToto1:test3() end
+    function TestToto1:test4() end
+    function TestToto1:test5() end
+    function TestToto1:testa() end
+    function TestToto1:testb() end
+
+TestToto2 = {} --class
+    function TestToto2:test1() end
+    function TestToto2:test2() end
+    function TestToto2:test3() end
+    function TestToto2:test4() end
+    function TestToto2:test5() end
+    function TestToto2:testa() end
+    function TestToto2:testb() end
+
+
+TestToto3 = {} --class
+    function TestToto3:test1() end
+    function TestToto3:test2() end
+    function TestToto3:test3() end
+    function TestToto3:test4() end
+    function TestToto3:test5() end
+    function TestToto3:testa() end
+    function TestToto3:testb() end
+
+TestTotoa = {} --class
+    function TestTotoa:test1() end
+    function TestTotoa:test2() end
+    function TestTotoa:test3() end
+    function TestTotoa:test4() end
+    function TestTotoa:test5() end
+    function TestTotoa:testa() end
+    function TestTotoa:testb() end
+
+TestTotob = {} --class
+    function TestTotob:test1() end
+    function TestTotob:test2() end
+    function TestTotob:test3() end
+    function TestTotob:test4() end
+    function TestTotob:test5() end
+    function TestTotob:testa() end
+    function TestTotob:testb() end
+
+
 -- LuaUnit:run('TestLuaBinding:test_setline') -- will execute only one test
 -- LuaUnit:run('TestLuaBinding') -- will execute only one class of test
 -- LuaUnit.result.verbosity = 0

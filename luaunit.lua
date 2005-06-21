@@ -85,9 +85,9 @@ function __genOrderedIndex( t )
 end
 
 function orderedNext(t, state)
-    -- Equivalent of the next function, but returns the keys in the alphabetic
-    -- order. We use a temporary ordered key table that is stored in the
-    -- table being iterated.
+	-- Equivalent of the next() function of table iteration, but returns the
+	-- keys in the alphabetic order. We use a temporary ordered key table that
+	-- is stored in the table being iterated.
 
     --print("orderedNext: state = "..tostring(state) )
     if state == nil then
@@ -348,7 +348,8 @@ LuaUnit = {
 						table.insert( testClassList, key )
 					end
 				end
-				for i, val in orderedPairs(testClassList) do 
+				table.sort( testClassList )
+				for i, val in testClassList do 
 						LuaUnit:runTestClassByName(val)
 				end
 			end
