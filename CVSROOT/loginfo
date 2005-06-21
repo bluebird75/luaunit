@@ -10,22 +10,26 @@
 # If the name ALL appears as a regular expression it is always used
 # in addition to the first matching regex or DEFAULT.
 #
-# If any format strings are present in the filter, they will be replaced as follows:
-#    %p = path relative to repository
-#    %r = repository (path portion of $CVSROOT)
-#    %{sVv} = attribute list = file name, old version number (pre-checkin),
-#           new version number (post-checkin).  When either old or new revision is
-#           unknown, doesn't exist, or isn't applicable, the string "NONE" will be
-#           placed on the command line instead.
+# You may specify a format string as part of the
+# filter.  The string is composed of a `%' followed
+# by a single format character, or followed by a set of format
+# characters surrounded by `{' and `}' as separators.  The format
+# characters are:
 #
-# Note that %{sVv} is a list operator and not all elements are necessary.  Thus %{sv} is
-# a legal format string, but will only be replaced with file name and new revision.
-# it also generates multiple arguments for each file being operated upon.  i.e. if two
-# files, file1 & file2, are being commited from 1.1 to version 1.1.2.1 and from 1.1.2.2
-# to 1.1.2.3, respectively, %{sVv} will generate the following six arguments in this
-# order: file1, 1.1, 1.1.2.1, file2, 1.1.2.2, 1.1.2.3.
+#   s = file name
+#   V = old version number (pre-checkin)
+#   v = new version number (post-checkin)
 #
 # For example:
 #DEFAULT (echo ""; id; echo %s; date; cat) >> $CVSROOT/CVSROOT/commitlog
 # or
 #DEFAULT (echo ""; id; echo %{sVv}; date; cat) >> $CVSROOT/CVSROOT/commitlog
+
+#
+# 		syncmail
+#
+
+CVSROOT $CVSROOT/CVSROOT/syncmail -u -f luaforge.net %{sVv} phil@freehackers.org
+
+DEFAULT 			$CVSROOT/CVSROOT/syncmail -f luaforge.net -u %{sVv} luaunit-devel@lists.luaforge.net
+
