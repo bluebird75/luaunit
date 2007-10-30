@@ -4,11 +4,18 @@
 Description: A unit testing framework
 Homepage: http://phil.freehackers.org/luaunit/
 Initial author: Ryu, Gwang (http://www.gpgstudy.com/gpgiki/LuaUnit)
-improvements by Philippe Fremy <phil@freehackers.org>
-Version: 1.2a
+Lot of improvements by Philippe Fremy <phil@freehackers.org>
+Version: 1.3
+
+Changes between 1.3 and 1.2a:
+- port to lua 5.1
+- use orderedPairs() to iterate over a table in the right order
+- change the order of expected, actual in assertEquals() and the default value of
+  USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS. This can be adjusted with
+  USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS.
 
 Changes between 1.2a and 1.2:
-- test classes were not run in the right order
+- fix: test classes were not run in the right order
 
 Changes between 1.2 and 1.1:
 - tests are now run in alphabetical order
@@ -28,24 +35,28 @@ Changes between 1.1 and 1.0:
 
 argv = arg
 
-REVERSED_ASSERT_EQUALS = true
+--[[ Some people like assertEquals( actual, expected ) and some people prefer 
+assertEquals( expected, actual ).
+
+]]--
+USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS = true
 
 function assertError(f, ...)
 	-- assert that calling f with the arguments will raise an error
 	-- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
-	local has_error, error_msg = not pcall( f, unpack(arg) )
+	local has_error, error_msg = not pcall( f, ... )
 	if has_error then return end 
 	error( "No error generated", 2 )
 end
 
-function assertEquals(expected, actual)
+function assertEquals(actual, expected)
 	-- assert that two values are equal and calls error else
 	if  actual ~= expected  then
 		local function wrapValue( v )
 			if type(v) == 'string' then return "'"..v.."'" end
 			return tostring(v)
 		end
-		if REVERSED_ASSERT_EQUALS then
+		if not USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS then
 			expected, actual = actual, expected
 		end
 
@@ -74,13 +85,13 @@ function wrapFunctions(...)
 		testFunction = _G[testName]
 		testClass[testName] = testFunction
 	end
-	table.foreachi( arg, storeAsMethod )
+	table.foreachi( {...}, storeAsMethod )
 	return testClass
 end
 
 function __genOrderedIndex( t )
     local orderedIndex = {}
-    for key in t do
+    for key,_ in pairs(t) do
         table.insert( orderedIndex, key )
     end
     table.sort( orderedIndex )
@@ -185,6 +196,7 @@ UnitResult = { -- class
 		successCount = self.testCount - self.failureCount
 		print( string.format("Success : %d%% - %d / %d",
 			100-math.ceil(failurePercent), successCount, self.testCount) )
+		return self.failureCount
     end
 
 	function UnitResult:startClass(className)
@@ -336,28 +348,28 @@ LuaUnit = {
 		--
 		-- If arguments are passed, they must be strings of the class names 
 		-- that you want to run
-		if arg.n > 0 then
-			table.foreachi( arg, LuaUnit.runTestClassByName )
+                args={...};
+		if #args > 0 then
+			table.foreachi( args, LuaUnit.runTestClassByName )
 		else 
-			if argv and argv.n > 0 then
+			if argv and #argv > 0 then
 				table.foreachi(argv, LuaUnit.runTestClassByName )
 			else
 				-- create the list before. If you do not do it now, you
 				-- get undefined result because you modify _G while iterating
 				-- over it.
 				testClassList = {}
-				for key, val in _G do 
+				for key, val in pairs(_G) do 
 					if string.sub(key,1,4) == 'Test' then 
 						table.insert( testClassList, key )
 					end
 				end
-				table.sort( testClassList )
-				for i, val in testClassList do 
+				for i, val in orderedPairs(testClassList) do 
 						LuaUnit:runTestClassByName(val)
 				end
 			end
 		end
-		LuaUnit.result:displayFinalResult()
+		return LuaUnit.result:displayFinalResult()
 	end
 -- class LuaUnit
 

@@ -1,5 +1,16 @@
--- auto-test for luaunit. This is a bit tricky since the test uses the
--- features that it tests
+--[[ 
+		test_luaunit.lua
+
+Description: Tests for the luaunit testing framework
+
+
+Author: Philippe Fremy <phil@freehackers.org>
+Version: 1.1 
+License: LGPL
+
+]]--
+
+-- This is a bit tricky since the test uses the features that it tests.
 
 require('luaunit')
 
