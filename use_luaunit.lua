@@ -12,6 +12,7 @@ TestToto = {} --class
     function TestToto:test1_withFailure()
 		print( "some stuff test 1" )
         assertEquals( self.a , 1 )
+        -- will fail
         assertEquals( self.a , 2 )
         assertEquals( self.a , 2 )
     end
@@ -20,6 +21,7 @@ TestToto = {} --class
 		print( "some stuff test 2" )
         assertEquals( self.a , 1 )
         assertEquals( self.s , 'hop' )
+        -- will fail
         assertEquals( self.s , 'bof' )
         assertEquals( self.s , 'bof' )
     end
@@ -48,6 +50,7 @@ TestTiti = {} --class
     function TestTiti:test1_withFailure()
 		print( "some stuff test 1" )
         assertEquals( self.a , 1 )
+        -- will fail
         assertEquals( self.a , 2 )
         assertEquals( self.a , 2 )
     end
@@ -56,6 +59,7 @@ TestTiti = {} --class
 		print( "some stuff test 2" )
         assertEquals( self.a , 1 )
         assertEquals( self.s , 'hop' )
+        -- will fail
         assertEquals( self.s , 'bof' )
         assertEquals( self.s , 'bof' )
     end
@@ -71,11 +75,13 @@ TestTiti = {} --class
 -- in luaunit too
 function test1_withFailure()
     assert( 1 == 1)
+    -- will fail
     assert( 1 == 2)
 end
 
 function test2_withFailure()
     assert( 'a' == 'a')
+    -- will fail
     assert( 'a' == 'b')
 end
 
