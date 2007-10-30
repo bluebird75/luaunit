@@ -6,6 +6,7 @@ Homepage: http://phil.freehackers.org/luaunit/
 Initial author: Ryu, Gwang (http://www.gpgstudy.com/gpgiki/LuaUnit)
 Lot of improvements by Philippe Fremy <phil@freehackers.org>
 Version: 1.3
+License: X11 License, see LICENSE.txt
 
 Changes between 1.3 and 1.2a:
 - port to lua 5.1

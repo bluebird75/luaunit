@@ -9,14 +9,14 @@ TestToto = {} --class
 		self.s = 'hop' 
     end
 
-    function TestToto:test1()
+    function TestToto:test1_withFailure()
 		print( "some stuff test 1" )
         assertEquals( self.a , 1 )
         assertEquals( self.a , 2 )
         assertEquals( self.a , 2 )
     end
 
-    function TestToto:test2()
+    function TestToto:test2_withFailure()
 		print( "some stuff test 2" )
         assertEquals( self.a , 1 )
         assertEquals( self.s , 'hop' )
@@ -45,14 +45,14 @@ TestTiti = {} --class
         print( 'TestTiti:tearDown' )
 	end
 
-    function TestTiti:test1()
+    function TestTiti:test1_withFailure()
 		print( "some stuff test 1" )
         assertEquals( self.a , 1 )
         assertEquals( self.a , 2 )
         assertEquals( self.a , 2 )
     end
 
-    function TestTiti:test2()
+    function TestTiti:test2_withFailure()
 		print( "some stuff test 2" )
         assertEquals( self.a , 1 )
         assertEquals( self.s , 'hop' )
@@ -69,12 +69,12 @@ TestTiti = {} --class
 
 -- simple test functions that were written previously can be integrated
 -- in luaunit too
-function test1()
+function test1_withFailure()
     assert( 1 == 1)
     assert( 1 == 2)
 end
 
-function test2()
+function test2_withFailure()
     assert( 'a' == 'a')
     assert( 'a' == 'b')
 end
@@ -86,8 +86,8 @@ end
 
 TestFunctions = wrapFunctions( 'test1', 'test2', 'test3' )
 
--- LuaUnit:run( 'test2' )  -- run only one test function
--- LuaUnit:run( 'test1' )
+-- LuaUnit:run( 'test2_withFailure' )  -- run only one test function
+-- LuaUnit:run( 'test1_withFailure' )
 -- LuaUnit:run( 'TestToto' ) -- run only on test class
 -- LuaUnit:run( 'TestTiti:test3') -- run only one test method of a test class
 LuaUnit:run() -- run all tests

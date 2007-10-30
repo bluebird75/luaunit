@@ -6,7 +6,7 @@ Description: Tests for the luaunit testing framework
 
 Author: Philippe Fremy <phil@freehackers.org>
 Version: 1.1 
-License: LGPL
+License: X11 License, see LICENSE.txt
 
 ]]--
 
