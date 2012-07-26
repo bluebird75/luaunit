@@ -1,12 +1,6 @@
 --[[ 
-		test_luaunit.lua
-
-Description: Tests for the luaunit testing framework
-
-
 Author: Philippe Fremy <phil@freehackers.org>
-Version: 1.1 
-License: X11 License, see LICENSE.txt
+License: BSD License, see LICENSE.txt
 
 ]]--
 
@@ -56,7 +50,7 @@ TestLuaUnit = {} --class
     end
 
     function TestLuaUnit:test_prefixString()
-        assertEquals( TapResult:prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
+        assertEquals( prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
 
 --[[ Class to test that tests are run in the right order ]]

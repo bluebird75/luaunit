@@ -106,6 +106,36 @@ function orderedPairs(t)
     return orderedNext, t, nil
 end
 
+function strsplit(delimiter, text)
+-- Split text into a list consisting of the strings in text,
+-- separated by strings matching delimiter (which may be a pattern). 
+-- example: strsplit(",%s*", "Anna, Bob, Charlie,Dolores")
+	local list = {}
+	local pos = 1
+	if string.find("", delimiter, 1) then -- this would result in endless loops
+		error("delimiter matches empty string!")
+	end
+	while 1 do
+		local first, last = string.find(text, delimiter, pos)
+		if first then -- found?
+			table.insert(list, string.sub(text, pos, first-1))
+			pos = last+1
+		else
+			table.insert(list, string.sub(text, pos))
+			break
+		end
+	end
+	return list
+end
+
+
+function prefixString( prefix, s )
+	t = strsplit('\n', s)
+	s2 = prefix..table.concat(t, '\n'..prefix)
+	return s2
+end
+
+
 -------------------------------------------------------------------------------
 TapResult = { -- class
 	failureCount = 0,
@@ -113,12 +143,6 @@ TapResult = { -- class
 	currentTestName = "",
 	testHasFailure = false,
 }
-
-    function TapResult:prefixString( prefix, s )
-    	t = LuaUnit.strsplit('\n', s)
-    	s2 = prefix..table.concat(t, '\n'..prefix)
-    	return s2
-    end
 
 	function TapResult:startClass(className) end
 	function TapResult:displayClassSeparator() end
@@ -138,7 +162,7 @@ TapResult = { -- class
 	   self.failureCount = self.failureCount + 1
 	   self.testHasFailure = true
 	   print(string.format("not ok %d\t%s", self.testCount, self.currentTestName ))
-	   print( self:prefixString( '    ', errorMsg ) )
+	   print( prefixString( '    ', errorMsg ) )
 	end
 
 	function TapResult:endTest()
@@ -242,33 +266,15 @@ TextUnitResult = { -- class
 	function TextUnitResult:displayClassSeparator()
 	   print()
 	end
+
+
+
 -- class TextUnitResult end
 
 
 LuaUnit = {
 	result = TextUnitResult
 }
-	-- Split text into a list consisting of the strings in text,
-	-- separated by strings matching delimiter (which may be a pattern). 
-	-- example: strsplit(",%s*", "Anna, Bob, Charlie,Dolores")
-	function LuaUnit.strsplit(delimiter, text)
-		local list = {}
-		local pos = 1
-		if string.find("", delimiter, 1) then -- this would result in endless loops
-			error("delimiter matches empty string!")
-		end
-		while 1 do
-			local first, last = string.find(text, delimiter, pos)
-			if first then -- found?
-				table.insert(list, string.sub(text, pos, first-1))
-				pos = last+1
-			else
-				table.insert(list, string.sub(text, pos))
-				break
-			end
-		end
-		return list
-	end
 
 	function LuaUnit.isFunction(aObject) 
 		return 'function' == type(aObject)
