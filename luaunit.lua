@@ -2,43 +2,16 @@
 		luaunit.lua
 
 Description: A unit testing framework
-Homepage: http://phil.freehackers.org/luaunit/
+Homepage: https://github.com/bluebird75/luaunit
 Initial author: Ryu, Gwang (http://www.gpgstudy.com/gpgiki/LuaUnit)
 Lot of improvements by Philippe Fremy <phil@freehackers.org>
-Version: 1.3
-License: X11 License, see LICENSE.txt
-
-Changes between 1.3 and 1.2a:
-- port to lua 5.1
-- use orderedPairs() to iterate over a table in the right order
-- change the order of expected, actual in assertEquals() and the default value of
-  USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS. This can be adjusted with
-  USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS.
-
-Changes between 1.2a and 1.2:
-- fix: test classes were not run in the right order
-
-Changes between 1.2 and 1.1:
-- tests are now run in alphabetical order
-- fix a bug that would prevent all tests from being run
-
-Changes between 1.1 and 1.0:
-- internal variables are not global anymore
-- you can choose between assertEquals( actual, expected) or assertEquals(
-  expected, actual )
-- you can assert for an error: assertError( f, a, b ) will assert that calling
-  the function f(a,b) generates an error
-- display the calling stack when an error is spotted
-- a dedicated class collects and displays the result, to provide easy
-  customisation
-- two verbosity level, like in python unittest
+License: BSD License, see LICENSE.txt
 ]]--
 
 argv = arg
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
 assertEquals( expected, actual ).
-
 ]]--
 USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS = true
 
