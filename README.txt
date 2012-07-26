@@ -4,8 +4,11 @@ Luaunit is a unit-testing framework for Lua, in the spirit of many
 others unit-testing framework. Luaunit let's you write test functions,
 test classes with test methods and setup/teardown functionality.
 
-Luaunit is derived from the initial work of Ryu Gwang but has evolved a lot
-from the original code. It is released under the BSD license.
+Luaunit can output test failures using the TAP format, for easier integration
+into Continuous Integration platforms like Jenkins.
+
+Luaunit is derived from the initial work of Ryu Gwang. 
+It is released under the BSD license.
 
 Luaunit should work on all platforms supported by lua. It was tested on
 Windows XP and Gentoo Linux.
@@ -13,14 +16,15 @@ Windows XP and Gentoo Linux.
 Luaunit is now maintained on github:
 https://github.com/bluebird75/luaunit
 
-See file use_luaunit.lua to understand how to use it.
+See file example_with_luaunit.lua to understand how to use it.
 
 History:
 ========
 
-version 1.4:
+version 1.4: 26. Jul 2012
 ------------
 - switch from X11 to more popular BSD license
+- add TAP output format for integration into Jenkins
 - official repository now on github
 
 
@@ -34,6 +38,7 @@ version 1.3: 30. Oct 2007
 version 1.2: 13. Jun 2005  
 ------------
 - first public release
+
 
 version 1.1:
 ------------
