@@ -96,4 +96,6 @@ TestFunctions = wrapFunctions( 'test1', 'test2', 'test3' )
 -- LuaUnit:run( 'test1_withFailure' )
 -- LuaUnit:run( 'TestToto' ) -- run only on test class
 -- LuaUnit:run( 'TestTiti:test3') -- run only one test method of a test class
-LuaUnit:run() -- run all tests
+lu = LuaUnit
+lu:setOutputType( "TAP" )
+lu:run()

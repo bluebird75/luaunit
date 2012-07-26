@@ -55,6 +55,10 @@ TestLuaUnit = {} --class
         g()
     end
 
+    function TestLuaUnit:test_prefixString()
+        assertEquals( TapResult:prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
+    end
+
 --[[ Class to test that tests are run in the right order ]]
 
 TestToto1 = {} --class

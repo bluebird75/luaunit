@@ -41,7 +41,6 @@ function assertEquals(actual, expected)
 		else
 			errorMsg = "expected: "..wrapValue(expected)..", actual: "..wrapValue(actual)
 		end
-		print (errorMsg)
 		error( errorMsg, 2 )
 	end
 end
@@ -108,7 +107,49 @@ function orderedPairs(t)
 end
 
 -------------------------------------------------------------------------------
-UnitResult = { -- class
+TapResult = { -- class
+	failureCount = 0,
+	testCount = 0,
+	currentTestName = "",
+	testHasFailure = false,
+}
+
+    function TapResult:prefixString( prefix, s )
+    	t = LuaUnit.strsplit('\n', s)
+    	s2 = prefix..table.concat(t, '\n'..prefix)
+    	return s2
+    end
+
+	function TapResult:startClass(className) end
+	function TapResult:displayClassSeparator() end
+
+	function TapResult:displayFinalResult()
+	   print("1.."..self.testCount)
+	   return self.failureCount
+	end
+
+	function TapResult:startTest(testName)
+	   self.currentTestName = testName
+	   self.testCount = self.testCount + 1
+	   self.testHasFailure = false
+	end
+
+	function TapResult:addFailure( errorMsg )
+	   self.failureCount = self.failureCount + 1
+	   self.testHasFailure = true
+	   print(string.format("not ok %d\t%s", self.testCount, self.currentTestName ))
+	   print( self:prefixString( '    ', errorMsg ) )
+	end
+
+	function TapResult:endTest()
+	   if not self.testHasFailure then
+	      print(string.format("ok     %d\t%s", self.testCount, self.currentTestName ))
+	   end
+	end
+-- class TapResult end
+
+-------------------------------------------------------------------------------
+TextUnitResult = { -- class
 	failureCount = 0,
 	testCount = 0,
 	errorList = {},
@@ -117,17 +158,17 @@ UnitResult = { -- class
 	testHasFailure = false,
 	verbosity = 1
 }
-	function UnitResult:displayClassName()
+	function TextUnitResult:displayClassName()
 		print( '>>>>>>>>> '.. self.currentClassName )
 	end
 
-	function UnitResult:displayTestName()
+	function TextUnitResult:displayTestName()
 		if self.verbosity > 0 then
 			print( ">>> ".. self.currentTestName )
 		end
 	end
 
-	function UnitResult:displayFailure( errorMsg )
+	function TextUnitResult:displayFailure( errorMsg )
 		if self.verbosity == 0 then
 			io.stdout:write("F")
 		else
@@ -136,7 +177,7 @@ UnitResult = { -- class
 		end
 	end
 
-	function UnitResult:displaySuccess()
+	function TextUnitResult:displaySuccess()
 		if self.verbosity > 0 then
 			--print ("Ok" )
 		else 
@@ -144,13 +185,13 @@ UnitResult = { -- class
 		end
 	end
 
-	function UnitResult:displayOneFailedTest( failure )
+	function TextUnitResult:displayOneFailedTest( failure )
 		testName, errorMsg = unpack( failure )
 		print(">>> "..testName.." failed")
 		print( errorMsg )
 	end
 
-	function UnitResult:displayFailedTests()
+	function TextUnitResult:displayFailedTests()
 		if table.getn( self.errorList ) == 0 then return end
 		print("Failed tests:")
 		print("-------------")
@@ -158,7 +199,7 @@ UnitResult = { -- class
 		print()
 	end
 
-	function UnitResult:displayFinalResult()
+	function TextUnitResult:displayFinalResult()
 		print("=========================================================")
 		self:displayFailedTests()
 		local failurePercent, successCount
@@ -173,36 +214,39 @@ UnitResult = { -- class
 		return self.failureCount
     end
 
-	function UnitResult:startClass(className)
+	function TextUnitResult:startClass(className)
 		self.currentClassName = className
 		self:displayClassName()
 	end
 
-	function UnitResult:startTest(testName)
+	function TextUnitResult:startTest(testName)
 		self.currentTestName = testName
 		self:displayTestName()
         self.testCount = self.testCount + 1
 		self.testHasFailure = false
 	end
 
-	function UnitResult:addFailure( errorMsg )
+	function TextUnitResult:addFailure( errorMsg )
 		self.failureCount = self.failureCount + 1
 		self.testHasFailure = true
 		table.insert( self.errorList, { self.currentTestName, errorMsg } )
 		self:displayFailure( errorMsg )
 	end
 
-	function UnitResult:endTest()
+	function TextUnitResult:endTest()
 		if not self.testHasFailure then
 			self:displaySuccess()
 		end
 	end
 
--- class UnitResult end
+	function TextUnitResult:displayClassSeparator()
+	   print()
+	end
+-- class TextUnitResult end
 
 
 LuaUnit = {
-	result = UnitResult
+	result = TextUnitResult
 }
 	-- Split text into a list consisting of the strings in text,
 	-- separated by strings matching delimiter (which may be a pattern). 
@@ -311,7 +355,21 @@ LuaUnit = {
 				end
 			end
 		end
-		print()
+      LuaUnit.result:displayClassSeparator()
+   	end
+
+   	function LuaUnit:setOutputType(outputType)
+      	-- default to text
+      	-- tap produces results according to TAP format
+      	if outputType:upper() == "TAP" then
+        	LuaUnit.result = TapResult
+    	else 
+    		if outputType:upper() == "TEXT" then
+      			LuaUnit.result = TextUnitResult
+    		else 
+    			error( 'No such format: '..outputType)
+    		end 
+    	end
 	end
 
 	function LuaUnit:run(...)
