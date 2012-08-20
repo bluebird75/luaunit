@@ -63,6 +63,65 @@ TestLuaUnit = {} --class
         assertEquals( #executedTests, 0 )
         LuaUnit:runTestClassByName( 'MyTestToto1' )
         assertEquals( #executedTests, 5 )
+        assertEquals( executedTests[1], "MyTestToto1:test1" )
+        assertEquals( executedTests[2], "MyTestToto1:test2" )
+        assertEquals( executedTests[3], "MyTestToto1:test3" )
+        assertEquals( executedTests[4], "MyTestToto1:testa" )
+        assertEquals( executedTests[5], "MyTestToto1:testb" )
+    end
+
+    function TestLuaUnit:test_orderedNextReturnsOrderedKeyValues()
+        t1 = {}
+        t1['aaa'] = 'abc'
+        t1['ccc'] = 'def'
+        t1['bbb'] = 'cba'
+
+        k, v = orderedNext( t1, nil )
+        assertEquals( k, 'aaa' )
+        assertEquals( v, 'abc' )
+        k, v = orderedNext( t1, k )
+        assertEquals( k, 'bbb' )
+        assertEquals( v, 'cba' )
+        k, v = orderedNext( t1, k )
+        assertEquals( k, 'ccc' )
+        assertEquals( v, 'def' )
+        k, v = orderedNext( t1, k )
+        assertEquals( k, nil )
+        assertEquals( v, nil )
+    end
+
+    function TestLuaUnit:test_orderedNextWorksTwiceOnTable()
+        t1 = {}
+        t1['aaa'] = 'abc'
+        t1['ccc'] = 'def'
+        t1['bbb'] = 'cba'
+
+        k, v = orderedNext( t1, nil )
+        k, v = orderedNext( t1, k )
+        k, v = orderedNext( t1, nil )
+        assertEquals( k, 'aaa' )
+        assertEquals( v, 'abc' )
+    end
+
+    function TestLuaUnit:test_orderedNextWorksOnTwoTables()
+        t1 = { aaa = 'abc', ccc = 'def' }
+        t2 = { ['3'] = '33', ['1'] = '11' }
+
+        k, v = orderedNext( t1, nil )
+        assertEquals( k, 'aaa' )
+        assertEquals( v, 'abc' )
+
+        k, v = orderedNext( t2, nil )
+        assertEquals( k, '1' )
+        assertEquals( v, '11' )
+
+        k, v = orderedNext( t1, 'aaa' )
+        assertEquals( k, 'ccc' )
+        assertEquals( v, 'def' )
+
+        k, v = orderedNext( t2, '1' )
+        assertEquals( k, '3' )
+        assertEquals( v, '33' )
     end
 
 --[[ Class to test that tests are run in the right order ]]
@@ -70,11 +129,11 @@ TestLuaUnit = {} --class
 executedTests = {}
 
 MyTestToto1 = {} --class
-    function MyTestToto1:test1() table.insert( executedTests, "TestToto1:test1" ) end
-    function MyTestToto1:testb() table.insert( executedTests, "TestToto1:testb" ) end
-    function MyTestToto1:test3() table.insert( executedTests, "TestToto1:test3" ) end
-    function MyTestToto1:testa() table.insert( executedTests, "TestToto1:testa" ) end
-    function MyTestToto1:test2() table.insert( executedTests, "TestToto1:test2" ) end
+    function MyTestToto1:test1() table.insert( executedTests, "MyTestToto1:test1" ) end
+    function MyTestToto1:testb() table.insert( executedTests, "MyTestToto1:testb" ) end
+    function MyTestToto1:test3() table.insert( executedTests, "MyTestToto1:test3" ) end
+    function MyTestToto1:testa() table.insert( executedTests, "MyTestToto1:testa" ) end
+    function MyTestToto1:test2() table.insert( executedTests, "MyTestToto1:test2" ) end
 
 --[[
 TestToto2 = {} --class

@@ -79,6 +79,7 @@ function orderedNext(t, state)
     --print("orderedNext: state = "..tostring(state) )
     if state == nil then
         -- the first time, generate the index
+        t.__orderedIndex = nil
         t.__orderedIndex = __genOrderedIndex( t )
         key = t.__orderedIndex[1]
         return key, t[key]
@@ -281,7 +282,7 @@ LuaUnit = {
 	end
 
 	function LuaUnit.strip_luaunit_stack(stack_trace)
-		stack_list = LuaUnit.strsplit( "\n", stack_trace )
+		stack_list = strsplit( "\n", stack_trace )
 		strip_end = nil
 		for i = #stack_list,1,-1 do
 			-- a bit rude but it works !
