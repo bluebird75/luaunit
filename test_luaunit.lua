@@ -9,6 +9,12 @@ License: BSD License, see LICENSE.txt
 require('luaunit')
 
 TestLuaUnit = {} --class
+
+    function TestLuaUnit:tearDown()
+        executedTests = {}
+    end
+
+
     function TestLuaUnit:test_assertError()
         local function f() end
 
@@ -53,54 +59,61 @@ TestLuaUnit = {} --class
         assertEquals( prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
 
+    function TestLuaUnit:test_MethodsAreExecutedInRightOrder()
+        assertEquals( #executedTests, 0 )
+        LuaUnit:runTestClassByName( 'MyTestToto1' )
+        assertEquals( #executedTests, 5 )
+    end
+
 --[[ Class to test that tests are run in the right order ]]
 
-TestToto1 = {} --class
-    function TestToto1:test1() end
-    function TestToto1:test2() end
-    function TestToto1:test3() end
-    function TestToto1:test4() end
-    function TestToto1:test5() end
-    function TestToto1:testa() end
-    function TestToto1:testb() end
+executedTests = {}
 
+MyTestToto1 = {} --class
+    function MyTestToto1:test1() table.insert( executedTests, "TestToto1:test1" ) end
+    function MyTestToto1:testb() table.insert( executedTests, "TestToto1:testb" ) end
+    function MyTestToto1:test3() table.insert( executedTests, "TestToto1:test3" ) end
+    function MyTestToto1:testa() table.insert( executedTests, "TestToto1:testa" ) end
+    function MyTestToto1:test2() table.insert( executedTests, "TestToto1:test2" ) end
+
+--[[
 TestToto2 = {} --class
-    function TestToto2:test1() end
-    function TestToto2:test2() end
-    function TestToto2:test3() end
-    function TestToto2:test4() end
-    function TestToto2:test5() end
-    function TestToto2:testa() end
-    function TestToto2:testb() end
+    function TestToto2:test1() table.insert( executedTests, "TestToto2:test1" ) end
+    function TestToto2:test2() table.insert( executedTests, "TestToto2:test2" ) end
+    function TestToto2:test3() table.insert( executedTests, "TestToto2:test3" ) end
+    function TestToto2:test4() table.insert( executedTests, "TestToto2:test4" ) end
+    function TestToto2:test5() table.insert( executedTests, "TestToto2:test5" ) end
+    function TestToto2:testa() table.insert( executedTests, "TestToto2:testa" ) end
+    function TestToto2:testb() table.insert( executedTests, "TestToto2:testb" ) end
 
 
 TestToto3 = {} --class
-    function TestToto3:test1() end
-    function TestToto3:test2() end
-    function TestToto3:test3() end
-    function TestToto3:test4() end
-    function TestToto3:test5() end
-    function TestToto3:testa() end
-    function TestToto3:testb() end
+    function TestToto3:test1() table.insert( executedTests, "TestToto3:test1" ) end
+    function TestToto3:test2() table.insert( executedTests, "TestToto3:test2" ) end
+    function TestToto3:test3() table.insert( executedTests, "TestToto3:test3" ) end
+    function TestToto3:test4() table.insert( executedTests, "TestToto3:test4" ) end
+    function TestToto3:test5() table.insert( executedTests, "TestToto3:test5" ) end
+    function TestToto3:testa() table.insert( executedTests, "TestToto3:testa" ) end
+    function TestToto3:testb() table.insert( executedTests, "TestToto3:testb" ) end
 
 TestTotoa = {} --class
-    function TestTotoa:test1() end
-    function TestTotoa:test2() end
-    function TestTotoa:test3() end
-    function TestTotoa:test4() end
-    function TestTotoa:test5() end
-    function TestTotoa:testa() end
-    function TestTotoa:testb() end
+    function TestTotoa:test1() table.insert( executedTests, "TestTotoa:test1" ) end
+    function TestTotoa:test2() table.insert( executedTests, "TestTotoa:test2" ) end
+    function TestTotoa:test3() table.insert( executedTests, "TestTotoa:test3" ) end
+    function TestTotoa:test4() table.insert( executedTests, "TestTotoa:test4" ) end
+    function TestTotoa:test5() table.insert( executedTests, "TestTotoa:test5" ) end
+    function TestTotoa:testa() table.insert( executedTests, "TestTotoa:testa" ) end
+    function TestTotoa:testb() table.insert( executedTests, "TestTotoa:testb" ) end
 
 TestTotob = {} --class
-    function TestTotob:test1() end
-    function TestTotob:test2() end
-    function TestTotob:test3() end
-    function TestTotob:test4() end
-    function TestTotob:test5() end
-    function TestTotob:testa() end
-    function TestTotob:testb() end
-
+    function TestTotob:test1() table.insert( executedTests, "TestTotob:test1" ) end
+    function TestTotob:test2() table.insert( executedTests, "TestTotob:test2" ) end
+    function TestTotob:test3() table.insert( executedTests, "TestTotob:test3" ) end
+    function TestTotob:test4() table.insert( executedTests, "TestTotob:test4" ) end
+    function TestTotob:test5() table.insert( executedTests, "TestTotob:test5" ) end
+    function TestTotob:testa() table.insert( executedTests, "TestTotob:testa" ) end
+    function TestTotob:testb() table.insert( executedTests, "TestTotob:testb" ) end
+]]
 
 -- LuaUnit:run('TestLuaBinding:test_setline') -- will execute only one test
 -- LuaUnit:run('TestLuaBinding') -- will execute only one class of test
