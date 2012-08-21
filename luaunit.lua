@@ -51,7 +51,7 @@ assert_error = assertError
 function wrapFunctions(...)
 	-- Use me to wrap a set of functions into a Runnable test class:
 	-- TestToto = wrapFunctions( f1, f2, f3, f3, f5 )
-	-- Now, TestToto will be picked up by LuaUnit:run()
+	-- Now, TestToto will be picked up by self:run()
 	local testClass, testFunction
 	testClass = {}
 	local function storeAsMethod(idx, testName)
@@ -77,6 +77,7 @@ function orderedNext(t, state)
 	-- is stored in the table being iterated.
 
     --print("orderedNext: state = "..tostring(state) )
+    local key
     if state == nil then
         -- the first time, generate the index
         t.__orderedIndex = nil
@@ -274,9 +275,15 @@ TextUnitResult = { -- class
 -- class TextUnitResult end
 
 
+----------------------------------------------------------------
+--					   class LuaUnit
+----------------------------------------------------------------
+
 LuaUnit = {
 	result = TextUnitResult
 }
+
+	-----------------[[ Utility methods ]]---------------------
 
 	function LuaUnit.isFunction(aObject) 
 		return 'function' == type(aObject)
@@ -299,10 +306,38 @@ LuaUnit = {
 		return stack_trace
 	end
 
+
+	--------------[[ Output methods ]]
+
+	function LuaUnit:startSuite()
+	end
+
+	function LuaUnit:startClass( aClassName )
+		self.result:startClass( aClassName )
+	end
+
+	function LuaUnit:startTest( aTestName  )
+		self.result:startTest( aTestName )
+	end
+
+	function LuaUnit:addFailure( errorMsg )
+		self.result:addFailure( errorMsg )
+    end
+
+    function LuaUnit:endTest()
+		self.result:endTest()
+    end
+
+    function LuaUnit:endSuite()
+		self.result:displayFinalResult()
+	end
+
+	--------------[[ Runner ]]-----------------
+
     function LuaUnit:runTestMethod(aName, aClassInstance, aMethod)
 		local ok, errorMsg
 		-- example: runTestMethod( 'TestToto:test1', TestToto, TestToto.testToto(self) )
-		LuaUnit.result:startTest(aName)
+		self:startTest(aName)
 
 		-- run setUp first(if any)
 		if self.isFunction( aClassInstance.setUp) then
@@ -317,7 +352,7 @@ LuaUnit = {
         ok, errorMsg = xpcall( aMethod, err_handler )
 		if not ok then
 			errorMsg  = self.strip_luaunit_stack(errorMsg)
-			LuaUnit.result:addFailure( errorMsg )
+			self:addFailure( errorMsg )
         end
 
 		-- lastly, run tearDown(if any)
@@ -325,13 +360,13 @@ LuaUnit = {
 			 aClassInstance:tearDown()
 		end
 
-		self.result:endTest()
+		self:endTest()
     end
 
 	function LuaUnit:runTestMethodName( methodName, classInstance )
 		-- example: runTestMethodName( 'TestToto:testToto', TestToto )
 		local methodInstance = loadstring(methodName .. '()')
-		LuaUnit:runTestMethod(methodName, classInstance, methodInstance)
+		self:runTestMethod(methodName, classInstance, methodInstance)
 	end
 
     function LuaUnit:runTestClassByName( aClassName )
@@ -346,34 +381,34 @@ LuaUnit = {
 		if not classInstance then
 			error( "No such class: "..aClassName )
 		end
-		LuaUnit.result:startClass( aClassName )
+		self:startClass( aClassName )
 
 		if hasMethod then
 			if not classInstance[ methodName ] then
 				error( "No such method: "..methodName )
 			end
-			LuaUnit:runTestMethodName( aClassName..':'.. methodName, classInstance )
+			self:runTestMethodName( aClassName..':'.. methodName, classInstance )
 		else
 			-- run all test methods of the class
 			for methodName, method in orderedPairs(classInstance) do
 			--for methodName, method in classInstance do
 				if LuaUnit.isFunction(method) and string.sub(methodName, 1, 4) == "test" then
 					--print(methodName)
-					LuaUnit:runTestMethodName( aClassName..':'.. methodName, classInstance )
+					self:runTestMethodName( aClassName..':'.. methodName, classInstance )
 				end
 			end
 		end
-      LuaUnit.result:displayClassSeparator()
+    	LuaUnit.result:displayClassSeparator()
    	end
 
    	function LuaUnit:setOutputType(outputType)
       	-- default to text
       	-- tap produces results according to TAP format
       	if outputType:upper() == "TAP" then
-        	LuaUnit.result = TapResult
+        	self.result = TapResult
     	else 
     		if outputType:upper() == "TEXT" then
-      			LuaUnit.result = TextUnitResult
+      			self.result = TextUnitResult
     		else 
     			error( 'No such format: '..outputType)
     		end 
@@ -388,7 +423,8 @@ LuaUnit = {
 		--
 		-- If arguments are passed, they must be strings of the class names 
 		-- that you want to run
-                args={...};
+		self:startSuite()
+        args={...};
 		if #args > 0 then
 			table.foreachi( args, LuaUnit.runTestClassByName )
 		else 
@@ -405,11 +441,12 @@ LuaUnit = {
 					end
 				end
 				for i, val in orderedPairs(testClassList) do 
-						LuaUnit:runTestClassByName(val)
+						self:runTestClassByName(val)
 				end
 			end
 		end
-		return LuaUnit.result:displayFinalResult()
+		self:endSuite()
+		return LuaUnit.result.failureCount
 	end
 -- class LuaUnit
 
