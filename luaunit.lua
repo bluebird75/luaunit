@@ -51,7 +51,7 @@ assert_error = assertError
 function wrapFunctions(...)
 	-- Use me to wrap a set of functions into a Runnable test class:
 	-- TestToto = wrapFunctions( f1, f2, f3, f3, f5 )
-	-- Now, TestToto will be picked up by self:run()
+	-- Now, TestToto will be picked up by LuaUnit:run()
 	local testClass, testFunction
 	testClass = {}
 	local function storeAsMethod(idx, testName)
@@ -141,28 +141,23 @@ end
 
 -------------------------------------------------------------------------------
 TapResult = { -- class
-	failureCount = 0,
-	testCount = 0,
-	currentTestName = "",
+	runner = nil,
 	testHasFailure = false,
 }
 
 	function TapResult:startClass(className) end
-	function TapResult:displayClassSeparator() end
-
-	function TapResult:displayFinalResult()
-	   print("1.."..self.testCount)
-	   return self.failureCount
-	end
-
 	function TapResult:startTest(testName)
-	   self.currentTestName = testName
-	   self.testCount = self.testCount + 1
 	   self.testHasFailure = false
 	end
 
+	function TapResult:endClass() end
+
+	function TapResult:endSuite()
+	   print("1.."..self.runner.testCount)
+	   return self.runner.failureCount
+	end
+
 	function TapResult:addFailure( errorMsg )
-	   self.failureCount = self.failureCount + 1
 	   self.testHasFailure = true
 	   print(string.format("not ok %d\t%s", self.testCount, self.currentTestName ))
 	   print( prefixString( '    ', errorMsg ) )
@@ -177,21 +172,18 @@ TapResult = { -- class
 
 -------------------------------------------------------------------------------
 TextUnitResult = { -- class
-	failureCount = 0,
-	testCount = 0,
+	runner = nil,
 	errorList = {},
-	currentClassName = "",
-	currentTestName = "",
 	testHasFailure = false,
 	verbosity = 1
 }
 	function TextUnitResult:displayClassName()
-		print( '>>>>>>>>> '.. self.currentClassName )
+		print( '>>>>>>>>> '.. self.runner.currentClassName )
 	end
 
 	function TextUnitResult:displayTestName()
 		if self.verbosity > 0 then
-			print( ">>> ".. self.currentTestName )
+			print( ">>> ".. self.runner.currentTestName )
 		end
 	end
 
@@ -226,35 +218,30 @@ TextUnitResult = { -- class
 		print()
 	end
 
-	function TextUnitResult:displayFinalResult()
+	function TextUnitResult:endSuite()
 		print("=========================================================")
 		self:displayFailedTests()
 		local failurePercent, successCount
-		if self.testCount == 0 then
+		if self.runner.testCount == 0 then
 			failurePercent = 0
 		else
-			failurePercent = 100 * self.failureCount / self.testCount
+			failurePercent = 100 * self.runner.failureCount / self.runner.testCount
 		end
-		successCount = self.testCount - self.failureCount
+		successCount = self.runner.testCount - self.runner.failureCount
 		print( string.format("Success : %d%% - %d / %d",
-			100-math.ceil(failurePercent), successCount, self.testCount) )
-		return self.failureCount
+			100-math.ceil(failurePercent), successCount, self.runner.testCount) )
     end
 
 	function TextUnitResult:startClass(className)
-		self.currentClassName = className
 		self:displayClassName()
 	end
 
 	function TextUnitResult:startTest(testName)
-		self.currentTestName = testName
 		self:displayTestName()
-        self.testCount = self.testCount + 1
 		self.testHasFailure = false
 	end
 
 	function TextUnitResult:addFailure( errorMsg )
-		self.failureCount = self.failureCount + 1
 		self.testHasFailure = true
 		table.insert( self.errorList, { self.currentTestName, errorMsg } )
 		self:displayFailure( errorMsg )
@@ -266,7 +253,7 @@ TextUnitResult = { -- class
 		end
 	end
 
-	function TextUnitResult:displayClassSeparator()
+	function TextUnitResult:endClass()
 	   print()
 	end
 
@@ -307,29 +294,43 @@ LuaUnit = {
 	end
 
 
-	--------------[[ Output methods ]]
+	--------------[[ Output methods ]]-------------------------
 
 	function LuaUnit:startSuite()
+		self.failureCount = 0
+		self.testCount = 0
+		self.currentTestName = ""
+		self.currentClassName = ""
+		self.result.runner = self
 	end
 
 	function LuaUnit:startClass( aClassName )
+		self.currentClassName = aClassName
 		self.result:startClass( aClassName )
 	end
 
 	function LuaUnit:startTest( aTestName  )
+		self.currentTestName = aTestName
+  		self.testCount = self.testCount + 1
 		self.result:startTest( aTestName )
 	end
 
 	function LuaUnit:addFailure( errorMsg )
+		self.failureCount = self.failureCount + 1
 		self.result:addFailure( errorMsg )
     end
 
     function LuaUnit:endTest()
 		self.result:endTest()
+		self.currentTestName = ""
+    end
+
+    function LuaUnit:endClass()
+    	self.result:endClass()
     end
 
     function LuaUnit:endSuite()
-		self.result:displayFinalResult()
+		self.result:endSuite()
 	end
 
 	--------------[[ Runner ]]-----------------
@@ -340,7 +341,7 @@ LuaUnit = {
 		self:startTest(aName)
 
 		-- run setUp first(if any)
-		if self.isFunction( aClassInstance.setUp) then
+		if self.isFunction( aClassInstance.setUp ) then
 				aClassInstance:setUp()
 		end
 
@@ -370,7 +371,7 @@ LuaUnit = {
 	end
 
     function LuaUnit:runTestClassByName( aClassName )
-		-- example: runTestMethodName( 'TestToto' )
+		-- example: runTestClassByName( 'TestToto' )
 		local hasMethod, methodName, classInstance
 		hasMethod = string.find(aClassName, ':' )
 		if hasMethod then
@@ -398,7 +399,8 @@ LuaUnit = {
 				end
 			end
 		end
-    	LuaUnit.result:displayClassSeparator()
+
+		self:endClass()
    	end
 
    	function LuaUnit:setOutputType(outputType)
