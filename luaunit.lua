@@ -131,6 +131,7 @@ end
 
 
 function prefixString( prefix, s )
+	local t, s2
 	t = strsplit('\n', s)
 	s2 = prefix..table.concat(t, '\n'..prefix)
 	return s2
