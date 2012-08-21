@@ -140,54 +140,54 @@ end
 
 
 -------------------------------------------------------------------------------
-TapResult = { -- class
+TapOutput = { -- class
 	runner = nil,
 	testHasFailure = false,
 }
 
-	function TapResult:startClass(className) end
-	function TapResult:startTest(testName)
+	function TapOutput:startClass(className) end
+	function TapOutput:startTest(testName)
 	   self.testHasFailure = false
 	end
 
-	function TapResult:endClass() end
+	function TapOutput:endClass() end
 
-	function TapResult:endSuite()
+	function TapOutput:endSuite()
 	   print("1.."..self.runner.testCount)
 	   return self.runner.failureCount
 	end
 
-	function TapResult:addFailure( errorMsg )
+	function TapOutput:addFailure( errorMsg )
 	   self.testHasFailure = true
 	   print(string.format("not ok %d\t%s", self.testCount, self.currentTestName ))
 	   print( prefixString( '    ', errorMsg ) )
 	end
 
-	function TapResult:endTest()
+	function TapOutput:endTest()
 	   if not self.testHasFailure then
 	      print(string.format("ok     %d\t%s", self.testCount, self.currentTestName ))
 	   end
 	end
--- class TapResult end
+-- class TapOutput end
 
 -------------------------------------------------------------------------------
-TextUnitResult = { -- class
+TextOutput = { -- class
 	runner = nil,
 	errorList = {},
 	testHasFailure = false,
 	verbosity = 1
 }
-	function TextUnitResult:displayClassName()
+	function TextOutput:displayClassName()
 		print( '>>>>>>>>> '.. self.runner.currentClassName )
 	end
 
-	function TextUnitResult:displayTestName()
+	function TextOutput:displayTestName()
 		if self.verbosity > 0 then
 			print( ">>> ".. self.runner.currentTestName )
 		end
 	end
 
-	function TextUnitResult:displayFailure( errorMsg )
+	function TextOutput:displayFailure( errorMsg )
 		if self.verbosity == 0 then
 			io.stdout:write("F")
 		else
@@ -196,7 +196,7 @@ TextUnitResult = { -- class
 		end
 	end
 
-	function TextUnitResult:displaySuccess()
+	function TextOutput:displaySuccess()
 		if self.verbosity > 0 then
 			--print ("Ok" )
 		else 
@@ -204,13 +204,13 @@ TextUnitResult = { -- class
 		end
 	end
 
-	function TextUnitResult:displayOneFailedTest( failure )
+	function TextOutput:displayOneFailedTest( failure )
 		testName, errorMsg = unpack( failure )
 		print(">>> "..testName.." failed")
 		print( errorMsg )
 	end
 
-	function TextUnitResult:displayFailedTests()
+	function TextOutput:displayFailedTests()
 		if #self.errorList == 0 then return end
 		print("Failed tests:")
 		print("-------------")
@@ -218,7 +218,7 @@ TextUnitResult = { -- class
 		print()
 	end
 
-	function TextUnitResult:endSuite()
+	function TextOutput:endSuite()
 		print("=========================================================")
 		self:displayFailedTests()
 		local failurePercent, successCount
@@ -232,34 +232,34 @@ TextUnitResult = { -- class
 			100-math.ceil(failurePercent), successCount, self.runner.testCount) )
     end
 
-	function TextUnitResult:startClass(className)
+	function TextOutput:startClass(className)
 		self:displayClassName()
 	end
 
-	function TextUnitResult:startTest(testName)
+	function TextOutput:startTest(testName)
 		self:displayTestName()
 		self.testHasFailure = false
 	end
 
-	function TextUnitResult:addFailure( errorMsg )
+	function TextOutput:addFailure( errorMsg )
 		self.testHasFailure = true
 		table.insert( self.errorList, { self.currentTestName, errorMsg } )
 		self:displayFailure( errorMsg )
 	end
 
-	function TextUnitResult:endTest()
+	function TextOutput:endTest()
 		if not self.testHasFailure then
 			self:displaySuccess()
 		end
 	end
 
-	function TextUnitResult:endClass()
+	function TextOutput:endClass()
 	   print()
 	end
 
 
 
--- class TextUnitResult end
+-- class TextOutput end
 
 
 ----------------------------------------------------------------
@@ -267,7 +267,7 @@ TextUnitResult = { -- class
 ----------------------------------------------------------------
 
 LuaUnit = {
-	result = TextUnitResult
+	output = TextOutput
 }
 
 	-----------------[[ Utility methods ]]---------------------
@@ -301,36 +301,50 @@ LuaUnit = {
 		self.testCount = 0
 		self.currentTestName = ""
 		self.currentClassName = ""
-		self.result.runner = self
+		self.output.runner = self
 	end
 
 	function LuaUnit:startClass( aClassName )
 		self.currentClassName = aClassName
-		self.result:startClass( aClassName )
+		self.output:startClass( aClassName )
 	end
 
 	function LuaUnit:startTest( aTestName  )
 		self.currentTestName = aTestName
   		self.testCount = self.testCount + 1
-		self.result:startTest( aTestName )
+		self.output:startTest( aTestName )
 	end
 
 	function LuaUnit:addFailure( errorMsg )
 		self.failureCount = self.failureCount + 1
-		self.result:addFailure( errorMsg )
+		self.output:addFailure( errorMsg )
     end
 
     function LuaUnit:endTest()
-		self.result:endTest()
+		self.output:endTest()
 		self.currentTestName = ""
     end
 
     function LuaUnit:endClass()
-    	self.result:endClass()
+    	self.output:endClass()
     end
 
     function LuaUnit:endSuite()
-		self.result:endSuite()
+		self.output:endSuite()
+	end
+
+   	function LuaUnit:setOutputType(outputType)
+      	-- default to text
+      	-- tap produces results according to TAP format
+      	if outputType:upper() == "TAP" then
+        	self.output = TapOutput
+    	else 
+    		if outputType:upper() == "TEXT" then
+      			self.output = TextOutput
+    		else 
+    			error( 'No such format: '..outputType)
+    		end 
+    	end
 	end
 
 	--------------[[ Runner ]]-----------------
@@ -403,20 +417,6 @@ LuaUnit = {
 		self:endClass()
    	end
 
-   	function LuaUnit:setOutputType(outputType)
-      	-- default to text
-      	-- tap produces results according to TAP format
-      	if outputType:upper() == "TAP" then
-        	self.result = TapResult
-    	else 
-    		if outputType:upper() == "TEXT" then
-      			self.result = TextUnitResult
-    		else 
-    			error( 'No such format: '..outputType)
-    		end 
-    	end
-	end
-
 	function LuaUnit:run(...)
 		-- Run some specific test classes.
 		-- If no arguments are passed, run the class names specified on the
@@ -448,7 +448,7 @@ LuaUnit = {
 			end
 		end
 		self:endSuite()
-		return LuaUnit.result.failureCount
+		return self.failureCount
 	end
 -- class LuaUnit
 
