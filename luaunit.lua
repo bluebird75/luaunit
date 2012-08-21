@@ -139,22 +139,19 @@ function prefixString( prefix, s )
 end
 
 
--------------------------------------------------------------------------------
+----------------------------------------------------------------
+--					   class TapOutput
+----------------------------------------------------------------
+
 TapOutput = { -- class
 	runner = nil,
 	testHasFailure = false,
 }
 
+	function TapOutput:startSuite() end
 	function TapOutput:startClass(className) end
 	function TapOutput:startTest(testName)
 	   self.testHasFailure = false
-	end
-
-	function TapOutput:endClass() end
-
-	function TapOutput:endSuite()
-	   print("1.."..self.runner.testCount)
-	   return self.runner.failureCount
 	end
 
 	function TapOutput:addFailure( errorMsg )
@@ -168,26 +165,43 @@ TapOutput = { -- class
 	      print(string.format("ok     %d\t%s", self.testCount, self.currentTestName ))
 	   end
 	end
+
+	function TapOutput:endClass() end
+
+	function TapOutput:endSuite()
+	   print("1.."..self.runner.testCount)
+	   return self.runner.failureCount
+	end
+
+
 -- class TapOutput end
 
--------------------------------------------------------------------------------
+
+----------------------------------------------------------------
+--					   class TextOutput
+----------------------------------------------------------------
+
 TextOutput = { -- class
 	runner = nil,
 	errorList = {},
 	testHasFailure = false,
 	verbosity = 1
 }
-	function TextOutput:displayClassName()
+
+	function TextOutput:startClass(className)
 		print( '>>>>>>>>> '.. self.runner.currentClassName )
 	end
 
-	function TextOutput:displayTestName()
+	function TextOutput:startTest(testName)
 		if self.verbosity > 0 then
 			print( ">>> ".. self.runner.currentTestName )
 		end
+		self.testHasFailure = false
 	end
 
-	function TextOutput:displayFailure( errorMsg )
+	function TextOutput:addFailure( errorMsg )
+		self.testHasFailure = true
+		table.insert( self.errorList, { self.currentTestName, errorMsg } )
 		if self.verbosity == 0 then
 			io.stdout:write("F")
 		else
@@ -196,12 +210,18 @@ TextOutput = { -- class
 		end
 	end
 
-	function TextOutput:displaySuccess()
-		if self.verbosity > 0 then
-			--print ("Ok" )
-		else 
-			io.stdout:write(".")
+	function TextOutput:endTest()
+		if not self.testHasFailure then
+			if self.verbosity > 0 then
+				--print ("Ok" )
+			else 
+				io.stdout:write(".")
+			end
 		end
+	end
+
+	function TextOutput:endClass()
+	   print()
 	end
 
 	function TextOutput:displayOneFailedTest( failure )
@@ -231,32 +251,6 @@ TextOutput = { -- class
 		print( string.format("Success : %d%% - %d / %d",
 			100-math.ceil(failurePercent), successCount, self.runner.testCount) )
     end
-
-	function TextOutput:startClass(className)
-		self:displayClassName()
-	end
-
-	function TextOutput:startTest(testName)
-		self:displayTestName()
-		self.testHasFailure = false
-	end
-
-	function TextOutput:addFailure( errorMsg )
-		self.testHasFailure = true
-		table.insert( self.errorList, { self.currentTestName, errorMsg } )
-		self:displayFailure( errorMsg )
-	end
-
-	function TextOutput:endTest()
-		if not self.testHasFailure then
-			self:displaySuccess()
-		end
-	end
-
-	function TextOutput:endClass()
-	   print()
-	end
-
 
 
 -- class TextOutput end
