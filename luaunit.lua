@@ -145,23 +145,19 @@ end
 
 TapOutput = { -- class
 	runner = nil,
-	testHasFailure = false,
 }
 
 	function TapOutput:startSuite() end
 	function TapOutput:startClass(className) end
-	function TapOutput:startTest(testName)
-	   self.testHasFailure = false
-	end
+	function TapOutput:startTest(testName) end
 
 	function TapOutput:addFailure( errorMsg )
-	   self.testHasFailure = true
 	   print(string.format("not ok %d\t%s", self.testCount, self.currentTestName ))
 	   print( prefixString( '    ', errorMsg ) )
 	end
 
-	function TapOutput:endTest()
-	   if not self.testHasFailure then
+	function TapOutput:endTest(testHasFailure)
+	   if not testHasFailure then
 	      print(string.format("ok     %d\t%s", self.testCount, self.currentTestName ))
 	   end
 	end
@@ -184,7 +180,6 @@ TapOutput = { -- class
 TextOutput = { -- class
 	runner = nil,
 	errorList = {},
-	testHasFailure = false,
 	verbosity = 1
 }
 
@@ -196,7 +191,6 @@ TextOutput = { -- class
 		if self.verbosity > 0 then
 			print( ">>> ".. self.runner.currentTestName )
 		end
-		self.testHasFailure = false
 	end
 
 	function TextOutput:addFailure( errorMsg )
@@ -210,8 +204,8 @@ TextOutput = { -- class
 		end
 	end
 
-	function TextOutput:endTest()
-		if not self.testHasFailure then
+	function TextOutput:endTest(testHasFailure)
+		if not testHasFailure then
 			if self.verbosity > 0 then
 				--print ("Ok" )
 			else 
@@ -295,6 +289,7 @@ LuaUnit = {
 		self.testCount = 0
 		self.currentTestName = ""
 		self.currentClassName = ""
+		self.currentTestHasFailure = false
 		self.output.runner = self
 	end
 
@@ -306,17 +301,20 @@ LuaUnit = {
 	function LuaUnit:startTest( aTestName  )
 		self.currentTestName = aTestName
   		self.testCount = self.testCount + 1
+  		self.currentTestHasFailure = false
 		self.output:startTest( aTestName )
 	end
 
 	function LuaUnit:addFailure( errorMsg )
 		self.failureCount = self.failureCount + 1
+		self.currentTestHasFailure = true
 		self.output:addFailure( errorMsg )
     end
 
     function LuaUnit:endTest()
 		self.output:endTest()
 		self.currentTestName = ""
+		self.currentTestHasFailure = false
     end
 
     function LuaUnit:endClass()
