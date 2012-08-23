@@ -198,6 +198,9 @@ TextOutput_MT = { -- class
 		return t
 	end
 
+	function TextOutput:startSuite()
+	end
+
 	function TextOutput:startClass(className)
 		print( '>>>>>>>>> '.. self.result.currentClassName )
 	end
@@ -272,10 +275,15 @@ TextOutput_MT = { -- class
 ----------------------------------------------------------------
 
 LuaUnit = {
-	output = nil,
-	result = nil,
 	outputType = TextOutput
 }
+LuaUnit_MT = { __index = LuaUnit }
+
+	function LuaUnit:new()
+		local t = {}
+		setmetatable( t, LuaUnit_MT )
+		return t
+	end
 
 	-----------------[[ Utility methods ]]---------------------
 
@@ -314,6 +322,7 @@ LuaUnit = {
 		self.output = self.outputType:new()
 		self.output.runner = self
 		self.output.result = self.result
+		self.output:startSuite()
 	end
 
 	function LuaUnit:startClass( aClassName )
@@ -440,28 +449,34 @@ LuaUnit = {
 		--
 		-- If arguments are passed, they must be strings of the class names 
 		-- that you want to run
+		local runner = self:new()
+		return runner:runSuite(...)
+	end
+
+	function LuaUnit:runSuite(...)
 		self:startSuite()
+
         args={...};
-		if #args > 0 then
-			table.foreachi( args, LuaUnit.runTestClassByName )
-		else 
-			if argv and #argv > 0 then
-				table.foreachi(argv, LuaUnit.runTestClassByName )
-			else
-				-- create the list before. If you do not do it now, you
-				-- get undefined result because you modify _G while iterating
-				-- over it.
-				testClassList = {}
-				for key, val in pairs(_G) do 
-					if string.sub(key,1,4) == 'Test' then 
-						table.insert( testClassList, key )
-					end
-				end
-				for i, val in orderedPairs(testClassList) do 
-						self:runTestClassByName(val)
+		if #args == 0 then
+			args = argv
+		end
+
+		if #args == 0 then
+			-- create the list if classes to run now ! If not, you can
+			-- not iterate over _G while modifying it.
+			args = {}
+			for key, val in pairs(_G) do 
+				if string.sub(key,1,4) == 'Test' then 
+					table.insert( args, key )
 				end
 			end
+			table.sort( args )
 		end
+
+		for i,fname in ipairs( args ) do
+			self:runTestClassByName( fname )
+		end
+
 		self:endSuite()
 		return self.result.failureCount
 	end

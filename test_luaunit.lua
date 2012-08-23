@@ -78,10 +78,24 @@ TestLuaUnit = {} --class
         function MyTestToto1:testa() table.insert( executedTests, "MyTestToto1:testa" ) end
         function MyTestToto1:test2() table.insert( executedTests, "MyTestToto1:test2" ) end
 
-    function TestLuaUnit:Xtest_MethodsAreExecutedInRightOrder()
-        assertEquals( #executedTests, 0 )
-        -- local runner = { output = nil }
-        -- LuaUnit.runTestClassByName( runner, 'MyTestToto1' )
+    function TestLuaUnit:test_MethodsAreExecutedInRightOrder()
+        function nopCallable() 
+            --print(42) 
+            return nopCallable
+        end
+        NullOutput = {}
+        NullOuptut_MT = {
+            __index = nopCallable,
+        }
+        function NullOutput:new() 
+            local t = {}
+            setmetatable( t, NullOuptut_MT )
+            return t 
+        end
+
+        local runner = LuaUnit:new()
+        runner.outputType = NullOutput
+        runner:runSuite( 'MyTestToto1' )
         assertEquals( #executedTests, 5 )
         assertEquals( executedTests[1], "MyTestToto1:test1" )
         assertEquals( executedTests[2], "MyTestToto1:test2" )
