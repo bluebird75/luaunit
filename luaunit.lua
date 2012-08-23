@@ -312,7 +312,7 @@ LuaUnit = {
     end
 
     function LuaUnit:endTest()
-		self.output:endTest()
+		self.output:endTest( self.currentTestHasFailure )
 		self.currentTestName = ""
 		self.currentTestHasFailure = false
     end
