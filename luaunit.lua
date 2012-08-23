@@ -150,6 +150,7 @@ TapOutput_MT = { __index = TapOutput }
 
 	function TapOutput:new()
 		local t = {}
+		t.verbosity = 0
 		setmetatable( t, TapOutput_MT )
 		return t
 	end
@@ -159,11 +160,13 @@ TapOutput_MT = { __index = TapOutput }
 
 	function TapOutput:addFailure( errorMsg )
 	   print(string.format("not ok %d\t%s", self.result.testCount, self.result.currentTestName ))
-	   print( prefixString( '    ', errorMsg ) )
+	   if self.verbosity > 0 then
+		   print( prefixString( '    ', errorMsg ) )
+		end
 	end
 
 	function TapOutput:endTest(testHasFailure)
-	   if not self.result.testHasFailure then
+	   if not self.result.currentTestHasFailure then
 	      print(string.format("ok     %d\t%s", self.result.testCount, self.result.currentTestName ))
 	   end
 	end
@@ -212,7 +215,6 @@ TextOutput_MT = { -- class
 	end
 
 	function TextOutput:addFailure( errorMsg )
-		self.testHasFailure = true
 		table.insert( self.errorList, { self.currentTestName, errorMsg } )
 		if self.verbosity == 0 then
 			io.stdout:write("F")
