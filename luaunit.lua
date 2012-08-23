@@ -20,7 +20,7 @@ function assertError(f, ...)
 	-- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
 	local has_error, error_msg = not pcall( f, ... )
 	if has_error then return end 
-	error( "No error generated", 2 )
+	error( "Expected an error but no error generated", 2 )
 end
 
 function assertEquals(actual, expected)
@@ -54,11 +54,10 @@ function wrapFunctions(...)
 	-- Now, TestToto will be picked up by LuaUnit:run()
 	local testClass, testFunction
 	testClass = {}
-	local function storeAsMethod(idx, testName)
+	for i,testName in ipairs({...}) do
 		testFunction = _G[testName]
 		testClass[testName] = testFunction
 	end
-	table.foreachi( {...}, storeAsMethod )
 	return testClass
 end
 
@@ -145,28 +144,35 @@ end
 
 TapOutput = { -- class
 	runner = nil,
+	result = nil,
 }
+TapOutput_MT = { __index = TapOutput }
 
+	function TapOutput:new()
+		local t = {}
+		setmetatable( t, TapOutput_MT )
+		return t
+	end
 	function TapOutput:startSuite() end
 	function TapOutput:startClass(className) end
 	function TapOutput:startTest(testName) end
 
 	function TapOutput:addFailure( errorMsg )
-	   print(string.format("not ok %d\t%s", self.testCount, self.currentTestName ))
+	   print(string.format("not ok %d\t%s", self.result.testCount, self.result.currentTestName ))
 	   print( prefixString( '    ', errorMsg ) )
 	end
 
 	function TapOutput:endTest(testHasFailure)
-	   if not testHasFailure then
-	      print(string.format("ok     %d\t%s", self.testCount, self.currentTestName ))
+	   if not self.result.testHasFailure then
+	      print(string.format("ok     %d\t%s", self.result.testCount, self.result.currentTestName ))
 	   end
 	end
 
 	function TapOutput:endClass() end
 
 	function TapOutput:endSuite()
-	   print("1.."..self.runner.testCount)
-	   return self.runner.failureCount
+	   print("1.."..self.result.testCount)
+	   return self.result.failureCount
 	end
 
 
@@ -177,19 +183,28 @@ TapOutput = { -- class
 --					   class TextOutput
 ----------------------------------------------------------------
 
-TextOutput = { -- class
-	runner = nil,
-	errorList = {},
-	verbosity = 1
+TextOutput = {}
+TextOutput_MT = { -- class
+	__index = TextOutput
 }
 
+	function TextOutput:new()
+		local t = {}
+		t.runner = nil
+		t.result = nil
+		t.errorList ={}
+		t.verbosity = 1
+		setmetatable( t, TextOutput_MT )
+		return t
+	end
+
 	function TextOutput:startClass(className)
-		print( '>>>>>>>>> '.. self.runner.currentClassName )
+		print( '>>>>>>>>> '.. self.result.currentClassName )
 	end
 
 	function TextOutput:startTest(testName)
 		if self.verbosity > 0 then
-			print( ">>> ".. self.runner.currentTestName )
+			print( ">>> ".. self.result.currentTestName )
 		end
 	end
 
@@ -228,7 +243,9 @@ TextOutput = { -- class
 		if #self.errorList == 0 then return end
 		print("Failed tests:")
 		print("-------------")
-		table.foreachi( self.errorList, self.displayOneFailedTest )
+		for i,v in ipairs(self.errorList) do
+			self:displayOneFailedTest( v )
+		end
 		print()
 	end
 
@@ -236,14 +253,14 @@ TextOutput = { -- class
 		print("=========================================================")
 		self:displayFailedTests()
 		local failurePercent, successCount
-		if self.runner.testCount == 0 then
+		if self.result.testCount == 0 then
 			failurePercent = 0
 		else
-			failurePercent = 100 * self.runner.failureCount / self.runner.testCount
+			failurePercent = 100 * self.result.failureCount / self.result.testCount
 		end
-		successCount = self.runner.testCount - self.runner.failureCount
+		successCount = self.result.testCount - self.result.failureCount
 		print( string.format("Success : %d%% - %d / %d",
-			100-math.ceil(failurePercent), successCount, self.runner.testCount) )
+			100-math.ceil(failurePercent), successCount, self.result.testCount) )
     end
 
 
@@ -255,7 +272,9 @@ TextOutput = { -- class
 ----------------------------------------------------------------
 
 LuaUnit = {
-	output = TextOutput
+	output = nil,
+	result = nil,
+	outputType = TextOutput
 }
 
 	-----------------[[ Utility methods ]]---------------------
@@ -285,36 +304,40 @@ LuaUnit = {
 	--------------[[ Output methods ]]-------------------------
 
 	function LuaUnit:startSuite()
-		self.failureCount = 0
-		self.testCount = 0
-		self.currentTestName = ""
-		self.currentClassName = ""
-		self.currentTestHasFailure = false
+		self.result = {}
+		self.result.failureCount = 0
+		self.result.testCount = 0
+		self.result.currentTestName = ""
+		self.result.currentClassName = ""
+		self.result.currentTestHasFailure = false
+		self.outputType = self.outputType or TextOutput
+		self.output = self.outputType:new()
 		self.output.runner = self
+		self.output.result = self.result
 	end
 
 	function LuaUnit:startClass( aClassName )
-		self.currentClassName = aClassName
+		self.result.currentClassName = aClassName
 		self.output:startClass( aClassName )
 	end
 
 	function LuaUnit:startTest( aTestName  )
-		self.currentTestName = aTestName
-  		self.testCount = self.testCount + 1
-  		self.currentTestHasFailure = false
+		self.result.currentTestName = aTestName
+  		self.result.testCount = self.result.testCount + 1
+  		self.result.currentTestHasFailure = false
 		self.output:startTest( aTestName )
 	end
 
 	function LuaUnit:addFailure( errorMsg )
-		self.failureCount = self.failureCount + 1
-		self.currentTestHasFailure = true
+		self.result.failureCount = self.result.failureCount + 1
+		self.result.currentTestHasFailure = true
 		self.output:addFailure( errorMsg )
     end
 
     function LuaUnit:endTest()
 		self.output:endTest( self.currentTestHasFailure )
-		self.currentTestName = ""
-		self.currentTestHasFailure = false
+		self.result.currentTestName = ""
+		self.result.currentTestHasFailure = false
     end
 
     function LuaUnit:endClass()
@@ -329,10 +352,10 @@ LuaUnit = {
       	-- default to text
       	-- tap produces results according to TAP format
       	if outputType:upper() == "TAP" then
-        	self.output = TapOutput
+        	self.outputType = TapOutput
     	else 
     		if outputType:upper() == "TEXT" then
-      			self.output = TextOutput
+      			self.outputType = TextOutput
     		else 
     			error( 'No such format: '..outputType)
     		end 
@@ -440,7 +463,7 @@ LuaUnit = {
 			end
 		end
 		self:endSuite()
-		return self.failureCount
+		return self.result.failureCount
 	end
 -- class LuaUnit
 
