@@ -21,6 +21,15 @@ See file example_with_luaunit.lua to understand how to use it.
 History:
 ========
 
+version 1.5: (in progress)
+------------
+- compatibility with Lua 5.1 and 5.2
+- better object model internally
+- a lot more of internal tests
+- several internal bug fixes
+- make it easy to customize the test output
+
+
 version 1.4: 26. Jul 2012
 ------------
 - switch from X11 to more popular BSD license
