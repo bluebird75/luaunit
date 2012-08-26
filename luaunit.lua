@@ -327,16 +327,16 @@ LuaUnit_MT = { __index = LuaUnit }
 		self.output:startSuite()
 	end
 
-	function LuaUnit:startClass( aClassName )
-		self.result.currentClassName = aClassName
-		self.output:startClass( aClassName )
+	function LuaUnit:startClass( className )
+		self.result.currentClassName = className
+		self.output:startClass( className )
 	end
 
-	function LuaUnit:startTest( aTestName  )
-		self.result.currentTestName = aTestName
+	function LuaUnit:startTest( testName  )
+		self.result.currentTestName = testName
   		self.result.testCount = self.result.testCount + 1
   		self.result.currentTestHasFailure = false
-		self.output:startTest( aTestName )
+		self.output:startTest( testName )
 	end
 
 	function LuaUnit:addFailure( errorMsg )
@@ -375,14 +375,23 @@ LuaUnit_MT = { __index = LuaUnit }
 
 	--------------[[ Runner ]]-----------------
 
-    function LuaUnit:runTestMethod(aName, aClassInstance, aMethod)
-		local ok, errorMsg
+    function LuaUnit:runTestMethod(className, methodName, classInstance, methodInstance)
+		-- check if className has changed. If so, start new class
+
+		if self.lastClassName ~= className then
+			if self.lastClassName ~= nil then
+				self:endClass()
+			end
+			self:startClass( className )
+			self.lastClassName = className
+		end
+
 		-- example: runTestMethod( 'TestToto:test1', TestToto, TestToto.testToto(self) )
-		self:startTest(aName)
+		self:startTest(className..':'..methodName)
 
 		-- run setUp first(if any)
-		if self.isFunction( aClassInstance.setUp ) then
-				aClassInstance:setUp()
+		if self.isFunction( classInstance.setUp ) then
+				classInstance:setUp()
 		end
 
 		local function err_handler(e)
@@ -390,57 +399,83 @@ LuaUnit_MT = { __index = LuaUnit }
 		end
 
 		-- run testMethod()
-        ok, errorMsg = xpcall( aMethod, err_handler )
+		local ok, errorMsg
+        ok, errorMsg = xpcall( methodInstance, err_handler )
 		if not ok then
 			errorMsg  = self.strip_luaunit_stack(errorMsg)
 			self:addFailure( errorMsg )
         end
 
 		-- lastly, run tearDown(if any)
-		if self.isFunction(aClassInstance.tearDown) then
-			 aClassInstance:tearDown()
+		if self.isFunction(classInstance.tearDown) then
+			 classInstance:tearDown()
 		end
 
 		self:endTest()
     end
 
-	function LuaUnit:runTestMethodName( methodName, classInstance )
+	function LuaUnit:runTestMethodName( className, methodName, classInstance, methodInstance )
 		-- example: runTestMethodName( 'TestToto:testToto', TestToto )
-		local methodInstance = loadstring(methodName .. '()')
-		self:runTestMethod(methodName, classInstance, methodInstance)
+		-- if both className and classInstance are empty, error
+		-- check if className is missing. If so, find name by checking
+		-- check if classInstance is missing. If so, find the instance
+		if className == nil and classInstance == nil then
+			error( 'Need to specify either a class name or a class instance')
+		end
+
+		if classInstance == nil then
+	        classInstance = _G[className]
+			if not classInstance then
+				error( "No such class: "..className )
+			end
+		end
+
+		-- handle className == nil
+
+		if methodInstance == nil and methodName == nil then
+			error( 'Need to specify either a method name or a method instance')
+		end
+
+		if methodInstance == nil then
+			methodInstance = loadstring(className..':'..methodName .. '()')
+		end
+
+		-- handle methodName == nil
+
+		if not classInstance[ methodName ] then
+			error( "No such method: "..methodName )
+		end
+
+		self:runTestMethod(className, methodName, classInstance, methodInstance)
 	end
 
-    function LuaUnit:runTestClassByName( aClassName )
+    function LuaUnit:runTestClassByName( testName )
 		-- example: runTestClassByName( 'TestToto' )
-		local hasMethod, methodName, classInstance
-		hasMethod = string.find(aClassName, ':' )
-		if hasMethod then
-			methodName = string.sub(aClassName, hasMethod+1)
-			aClassName = string.sub(aClassName,1,hasMethod-1)
-		end
-        classInstance = _G[aClassName]
-		if not classInstance then
-			error( "No such class: "..aClassName )
-		end
-		self:startClass( aClassName )
+		-- example: runTestClassByName( 'TestToto:testTiti' )
 
+		local hasMethod, methodName, methodInstance, className, classInstance
+		hasMethod = string.find(testName, ':' )
 		if hasMethod then
-			if not classInstance[ methodName ] then
-				error( "No such method: "..methodName )
-			end
-			self:runTestMethodName( aClassName..':'.. methodName, classInstance )
+			methodName = string.sub(className, hasMethod+1)
+			className = string.sub(className,1,hasMethod-1)
+			self:runTestMethodName( className, methodName, classInstance, nil )
 		else
 			-- run all test methods of the class
-			for methodName, method in orderedPairs(classInstance) do
+			className = testName
+	        classInstance = _G[className]
+			if not classInstance then
+				error( "No such class: "..className )
+			end
+
+			for methodName, methodInstance in orderedPairs(classInstance) do
 			--for methodName, method in classInstance do
-				if LuaUnit.isFunction(method) and string.sub(methodName, 1, 4) == "test" then
+				if LuaUnit.isFunction(methodInstance) and string.sub(methodName, 1, 4) == "test" then
 					--print(methodName)
-					self:runTestMethodName( aClassName..':'.. methodName, classInstance )
+					self:runTestMethodName( className, methodName, classInstance, methodInstance )
 				end
 			end
 		end
 
-		self:endClass()
    	end
 
 	function LuaUnit:run(...)
@@ -479,6 +514,9 @@ LuaUnit_MT = { __index = LuaUnit }
 			self:runTestClassByName( fname )
 		end
 
+		if self.lastClassName ~= nil then
+			self:endClass()
+		end
 		self:endSuite()
 		return self.result.failureCount
 	end
