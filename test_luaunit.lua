@@ -79,22 +79,8 @@ TestLuaUnit = {} --class
         function MyTestToto1:test2() table.insert( executedTests, "MyTestToto1:test2" ) end
 
     function TestLuaUnit:test_MethodsAreExecutedInRightOrder()
-        function nopCallable() 
-            --print(42) 
-            return nopCallable
-        end
-        NullOutput = {}
-        NullOuptut_MT = {
-            __index = nopCallable,
-        }
-        function NullOutput:new() 
-            local t = {}
-            setmetatable( t, NullOuptut_MT )
-            return t 
-        end
-
         local runner = LuaUnit:new()
-        runner.outputType = NullOutput
+        runner:setOutputType( "NIL" )
         runner:runSuite( 'MyTestToto1' )
         assertEquals( #executedTests, 5 )
         assertEquals( executedTests[1], "MyTestToto1:test1" )
@@ -102,6 +88,42 @@ TestLuaUnit = {} --class
         assertEquals( executedTests[3], "MyTestToto1:test3" )
         assertEquals( executedTests[4], "MyTestToto1:testa" )
         assertEquals( executedTests[5], "MyTestToto1:testb" )
+    end
+
+    function TestLuaUnit:testRunTestClassByName( )
+        assertEquals( #executedTests, 0 )
+        local runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        runner:runTestClass( 'MyTestToto1' )
+        assertEquals( #executedTests, 5 )
+    end
+
+    function TestLuaUnit:testRunTestClassByGlobalInstance( )
+        assertEquals( #executedTests, 0 )
+        local runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        runner:runTestClass( 'Toto', MyTestToto1 )
+        assertEquals( #executedTests, 5 )
+    end
+
+    function TestLuaUnit:testRunTestClassByGlobalInstanceWithoutName( )
+        assertEquals( #executedTests, 0 )
+        local runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        runner:runTestClass( nil, MyTestToto1 )
+        assertEquals( #executedTests, 5 )
+    end
+
+    function TestLuaUnit:testRunTestClassByLocalInstance( )
+        MyLocalTestToto1 = {} --class
+        function MyLocalTestToto1:test1() table.insert( executedTests, "MyLocalTestToto1:test1" ) end
+ 
+        assertEquals( #executedTests, 0 )
+        local runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        runner:runTestClass( 'MyLocalTestToto1', MyLocalTestToto1 )
+        assertEquals( #executedTests, 1 )
+        assertEquals( executedTests[1], 'MyLocalTestToto1:test1')
     end
 
     function TestLuaUnit:test_orderedNextReturnsOrderedKeyValues()
@@ -203,18 +225,57 @@ TestTotob = {} --class
 -- LuaUnit:run('TestLuaBinding') -- will execute only one class of test
 -- LuaUnit.result.verbosity = 0
 
+function dispParams(isReturn)
+    local params = ''
+    local level = 3
+    local firstParam=true
+    local sep=''
+    local idx=1
+    if isReturn then
+        level = 4
+    end
+    local var, val = debug.getlocal(level,idx)
+    while var ~= nil do
+        if var ~= '(*temporary)' then
+            params = params..sep..var..'='..tostring(val)
+            if firstParam then
+                sep = ', '
+                firstParam = false
+            end
+        end
+        idx = idx + 1
+        var,val = debug.getlocal(level,idx)
+    end
+    if string.len(params) then
+        if isReturn then
+            return '()\n'..params
+        end
+        return '('..params..' )'
+    end
+    return nil
+end
+
 function debug_print( event )
+    local extra = ''
     local info = debug.getinfo(2, 'n')
     level = level or 0
     if event == 'call' then
         level = level + 1
     end
     indentPrefix = string.rep( '  ', level )
-    local name = info.namewhat
-    if info.namewhat ~= info.name then
-        name = name..info.name
+    if info.namewhat == 'global' or info.namewhat == 'method' then
+        local name = info.namewhat
+        if info.name and name ~= info.name then
+            name = name..' '..info.name
+        end
+        if event == 'call' or event == 'return' then
+            local extra = dispParams(event == 'return')
+            if extra then
+                name = name..extra
+            end
+        end
+        print( "DEBUG: "..indentPrefix..event..' '..name )
     end
-    print( "DEBUG: "..indentPrefix..event..' '..name )
     if event == 'return' then
         level = level - 1
     end
@@ -235,6 +296,5 @@ LuaUnit:run() -- will execute all tests
 -- more user documentation
 -- compatibilty tests with several version of lua
 -- allow for errors in teardown and setup
--- fix the absence of foreachi
 -- real test for wrapFunctions
--- allow to pass real instance and real names of class and functions
+-- find more intelligent way than loadstring( fname.."()") to call test methods

@@ -23,23 +23,33 @@ function assertError(f, ...)
 	error( "Expected an error but no error generated", 2 )
 end
 
+function mytostring( v )
+	if type(v) == 'string' then
+		return '"'..v..'"'
+	end
+	if type(v) == 'table' then
+		if v.__class__ then
+			return string.gsub( tostring(v), 'table', v.__class__ )
+		end
+		return tostring(v)
+	end
+	return tostring(v)
+end
+
 function assertEquals(actual, expected)
 	-- assert that two values are equal and calls error else
 	if  actual ~= expected  then
-		local function wrapValue( v )
-			if type(v) == 'string' then return "'"..v.."'" end
-			return tostring(v)
-		end
+
 		if not USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS then
 			expected, actual = actual, expected
 		end
 
 		local errorMsg
 		if type(expected) == 'string' then
-			errorMsg = "\nexpected: "..wrapValue(expected).."\n"..
-                             "actual  : "..wrapValue(actual).."\n"
+			errorMsg = "\nexpected: "..mytostring(expected).."\n"..
+                             "actual  : "..mytostring(actual).."\n"
 		else
-			errorMsg = "expected: "..wrapValue(expected)..", actual: "..wrapValue(actual)
+			errorMsg = "expected: "..mytostring(expected)..", actual: "..mytostring(actual)
 		end
 		error( errorMsg, 2 )
 	end
@@ -137,12 +147,12 @@ function prefixString( prefix, s )
 	return s2
 end
 
-
 ----------------------------------------------------------------
 --					   class TapOutput
 ----------------------------------------------------------------
 
 TapOutput = { -- class
+	__class__ = 'TapOutput',
 	runner = nil,
 	result = nil,
 }
@@ -186,7 +196,7 @@ TapOutput_MT = { __index = TapOutput }
 --					   class TextOutput
 ----------------------------------------------------------------
 
-TextOutput = {}
+TextOutput = { __class__ = 'TextOutput' }
 TextOutput_MT = { -- class
 	__index = TextOutput
 }
@@ -273,11 +283,34 @@ TextOutput_MT = { -- class
 
 
 ----------------------------------------------------------------
+--					   class NilOutput
+----------------------------------------------------------------
+
+function nopCallable() 
+    --print(42) 
+    return nopCallable
+end
+
+NilOutput = {
+	__class__ = 'NilOuptut',	
+}
+NilOutput_MT = {
+    __index = nopCallable,
+}
+function NilOutput:new()
+    local t = {}
+    t.__class__ = 'NilOutput'
+    setmetatable( t, NilOutput_MT )
+    return t 
+end
+
+----------------------------------------------------------------
 --					   class LuaUnit
 ----------------------------------------------------------------
 
 LuaUnit = {
-	outputType = TextOutput
+	outputType = TextOutput,
+	__class__ = 'LuaUnit'
 }
 LuaUnit_MT = { __index = LuaUnit }
 
@@ -313,6 +346,13 @@ LuaUnit_MT = { __index = LuaUnit }
 
 	--------------[[ Output methods ]]-------------------------
 
+	function LuaUnit:ensureSuiteStarted( )
+		if self.result and self.result.suiteStarted then
+			return
+		end
+		self:startSuite()
+	end
+
 	function LuaUnit:startSuite()
 		self.result = {}
 		self.result.failureCount = 0
@@ -320,6 +360,7 @@ LuaUnit_MT = { __index = LuaUnit }
 		self.result.currentTestName = ""
 		self.result.currentClassName = ""
 		self.result.currentTestHasFailure = false
+		self.result.suiteStarted = true
 		self.outputType = self.outputType or TextOutput
 		self.output = self.outputType:new()
 		self.output.runner = self
@@ -356,26 +397,31 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
     function LuaUnit:endSuite()
+    	self.result.suiteStarted = false
 		self.output:endSuite()
 	end
 
    	function LuaUnit:setOutputType(outputType)
       	-- default to text
       	-- tap produces results according to TAP format
+      	if outputType:upper() == "NIL" then
+      		self.outputType = NilOutput
+      		return
+      	end
       	if outputType:upper() == "TAP" then
         	self.outputType = TapOutput
-    	else 
-    		if outputType:upper() == "TEXT" then
-      			self.outputType = TextOutput
-    		else 
-    			error( 'No such format: '..outputType)
-    		end 
-    	end
+        	return
+    	end 
+		if outputType:upper() == "TEXT" then
+  			self.outputType = TextOutput
+  			return
+  		end
+		error( 'No such format: '..outputType)
 	end
 
 	--------------[[ Runner ]]-----------------
 
-    function LuaUnit:runTestMethod(className, methodName, classInstance, methodInstance)
+    function LuaUnit:_runTestMethod(className, methodName, classInstance, methodInstance)
 		-- check if className has changed. If so, start new class
 
 		if self.lastClassName ~= className then
@@ -414,11 +460,13 @@ LuaUnit_MT = { __index = LuaUnit }
 		self:endTest()
     end
 
-	function LuaUnit:runTestMethodName( className, methodName, classInstance, methodInstance )
-		-- example: runTestMethodName( 'TestToto:testToto', TestToto )
+	function LuaUnit:runTestMethod( className, methodName, classInstance, methodInstance )
+		-- example: runTestMethod( 'TestToto:testToto', TestToto )
 		-- if both className and classInstance are empty, error
 		-- check if className is missing. If so, find name by checking
 		-- check if classInstance is missing. If so, find the instance
+
+		self:ensureSuiteStarted()
 		if className == nil and classInstance == nil then
 			error( 'Need to specify either a class name or a class instance')
 		end
@@ -446,32 +494,49 @@ LuaUnit_MT = { __index = LuaUnit }
 			error( "No such method: "..methodName )
 		end
 
-		self:runTestMethod(className, methodName, classInstance, methodInstance)
+		self:_runTestMethod(className, methodName, classInstance, methodInstance)
 	end
 
-    function LuaUnit:runTestClassByName( testName )
-		-- example: runTestClassByName( 'TestToto' )
-		-- example: runTestClassByName( 'TestToto:testTiti' )
+    function LuaUnit:runTestClass( testName, classInstance )
+		-- example: runTestClass( 'TestToto' )
+		-- example: runTestClass( 'TestToto:testTiti' )
+		-- example: runTestClass( 'TestToto:testTiti', TestToto )
+		-- example: runTestClass( 'TestToto', TestToto )
 
-		local hasMethod, methodName, methodInstance, className, classInstance
+		self:ensureSuiteStarted()
+
+		local hasMethod, methodName, methodInstance, className
+		if testName == nil and classInstance == nil then
+			error( 'Need to specify testName or classInstance' )
+		end
+
+		if testName == nil then
+			for name, instance in pairs(_G) do
+				if instance == classInstance then
+					-- we found it in the global namespace !
+					testName = name
+					break
+				end
+			end
+		end
+
 		hasMethod = string.find(testName, ':' )
 		if hasMethod then
 			methodName = string.sub(className, hasMethod+1)
 			className = string.sub(className,1,hasMethod-1)
-			self:runTestMethodName( className, methodName, classInstance, nil )
+			self:runTestMethod( className, methodName, classInstance, nil )
 		else
 			-- run all test methods of the class
 			className = testName
-	        classInstance = _G[className]
+	        classInstance = classInstance or _G[className]
 			if not classInstance then
 				error( "No such class: "..className )
 			end
 
 			for methodName, methodInstance in orderedPairs(classInstance) do
-			--for methodName, method in classInstance do
 				if LuaUnit.isFunction(methodInstance) and string.sub(methodName, 1, 4) == "test" then
 					--print(methodName)
-					self:runTestMethodName( className, methodName, classInstance, methodInstance )
+					self:runTestMethod( className, methodName, classInstance, methodInstance )
 				end
 			end
 		end
@@ -510,8 +575,8 @@ LuaUnit_MT = { __index = LuaUnit }
 			table.sort( args )
 		end
 
-		for i,fname in ipairs( args ) do
-			self:runTestClassByName( fname )
+		for i,testName in ipairs( args ) do
+			self:runTestClass( testName )
 		end
 
 		if self.lastClassName ~= nil then
