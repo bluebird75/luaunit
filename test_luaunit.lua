@@ -8,7 +8,116 @@ License: BSD License, see LICENSE.txt
 
 require('luaunit')
 
+
+Mock = {
+    __class__ = 'Mock',
+    calls = {}    
+}
+
+function Mock:new()
+    local t = {}
+    t.__class__ = 'Mock'
+    t.calls = {}
+
+    function t.callRecorder( callInfo )
+        -- Return a function that stores its arguments in callInfo
+        function f( ... )
+            args ={...}
+            for i,v in pairs(args) do
+                table.insert( callInfo, v )
+            end
+        end
+        return f
+    end
+
+    local t_MT = {}
+    function t_MT.__index( t, key ) 
+        local callInfo = { key }
+        table.insert( t.calls, callInfo )
+        return t.callRecorder( callInfo )
+    end
+
+    setmetatable( t, t_MT )
+    return t 
+end
+
+
+TestMock = {}
+    function TestMock:testMock()
+        m = Mock:new()
+        m.titi( 42 )
+        m.toto( 33, "abc", { 21} )
+        assertEquals(  m.calls[1][1], 'titi' )
+        assertEquals(  m.calls[1][2], 42 )
+        assertEquals( #m.calls[1], 2 )
+
+        assertEquals(  m.calls[2][1], 'toto' )
+        assertEquals(  m.calls[2][2], 33 )
+        assertEquals(  m.calls[2][3], 'abc' )
+        assertEquals(  m.calls[2][4][1], 21 )
+        assertEquals( #m.calls[2], 4 )
+
+        assertEquals( #m.calls, 2 )
+    end
+
+
+
 TestLuaUnit = {} --class
+
+
+    function TestLuaUnit:test_orderedNextReturnsOrderedKeyValues()
+        t1 = {}
+        t1['aaa'] = 'abc'
+        t1['ccc'] = 'def'
+        t1['bbb'] = 'cba'
+
+        k, v = orderedNext( t1, nil )
+        assertEquals( k, 'aaa' )
+        assertEquals( v, 'abc' )
+        k, v = orderedNext( t1, k )
+        assertEquals( k, 'bbb' )
+        assertEquals( v, 'cba' )
+        k, v = orderedNext( t1, k )
+        assertEquals( k, 'ccc' )
+        assertEquals( v, 'def' )
+        k, v = orderedNext( t1, k )
+        assertEquals( k, nil )
+        assertEquals( v, nil )
+    end
+
+    function TestLuaUnit:test_orderedNextWorksTwiceOnTable()
+        t1 = {}
+        t1['aaa'] = 'abc'
+        t1['ccc'] = 'def'
+        t1['bbb'] = 'cba'
+
+        k, v = orderedNext( t1, nil )
+        k, v = orderedNext( t1, k )
+        k, v = orderedNext( t1, nil )
+        assertEquals( k, 'aaa' )
+        assertEquals( v, 'abc' )
+    end
+
+    function TestLuaUnit:test_orderedNextWorksOnTwoTables()
+        t1 = { aaa = 'abc', ccc = 'def' }
+        t2 = { ['3'] = '33', ['1'] = '11' }
+
+        k, v = orderedNext( t1, nil )
+        assertEquals( k, 'aaa' )
+        assertEquals( v, 'abc' )
+
+        k, v = orderedNext( t2, nil )
+        assertEquals( k, '1' )
+        assertEquals( v, '11' )
+
+        k, v = orderedNext( t1, 'aaa' )
+        assertEquals( k, 'ccc' )
+        assertEquals( v, 'def' )
+
+        k, v = orderedNext( t2, '1' )
+        assertEquals( k, '3' )
+        assertEquals( v, '33' )
+    end
 
     function TestLuaUnit:tearDown()
         executedTests = {}
@@ -126,58 +235,110 @@ TestLuaUnit = {} --class
         assertEquals( executedTests[1], 'MyLocalTestToto1:test1')
     end
 
-    function TestLuaUnit:test_orderedNextReturnsOrderedKeyValues()
-        t1 = {}
-        t1['aaa'] = 'abc'
-        t1['ccc'] = 'def'
-        t1['bbb'] = 'cba'
+    MyTestWithFailures = {}
+        function MyTestWithFailures:testWithFailure1() assertEquals(1, 2) end
+        function MyTestWithFailures:testWithFailure2() assertError( function() end ) end
+        function MyTestWithFailures:testOk() end
 
-        k, v = orderedNext( t1, nil )
-        assertEquals( k, 'aaa' )
-        assertEquals( v, 'abc' )
-        k, v = orderedNext( t1, k )
-        assertEquals( k, 'bbb' )
-        assertEquals( v, 'cba' )
-        k, v = orderedNext( t1, k )
-        assertEquals( k, 'ccc' )
-        assertEquals( v, 'def' )
-        k, v = orderedNext( t1, k )
-        assertEquals( k, nil )
-        assertEquals( v, nil )
+    MyTestOk = {}
+        function MyTestOk:testOk1() end
+        function MyTestOk:testOk2() end
+
+    function TestLuaUnit:testRunReturnsNumberOfFailures()
+        local runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        ret = runner:runSuite( 'MyTestWithFailures' )
+        assertEquals(ret, 2)
+
+        ret = runner:runSuite( 'MyTestToto1' )
+        assertEquals(ret, 0)
     end
 
-    function TestLuaUnit:test_orderedNextWorksTwiceOnTable()
-        t1 = {}
-        t1['aaa'] = 'abc'
-        t1['ccc'] = 'def'
-        t1['bbb'] = 'cba'
+    function TestLuaUnit:testTestCountAndFailCount()
+        local runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        ret = runner:runSuite( 'MyTestWithFailures' )
+        assertEquals( runner.result.testCount, 3)
+        assertEquals( runner.result.failureCount, 2)
 
-        k, v = orderedNext( t1, nil )
-        k, v = orderedNext( t1, k )
-        k, v = orderedNext( t1, nil )
-        assertEquals( k, 'aaa' )
-        assertEquals( v, 'abc' )
+        ret = runner:runSuite( 'MyTestToto1' )
+        assertEquals( runner.result.testCount, 5)
+        assertEquals( runner.result.failureCount, 0)
     end
 
-    function TestLuaUnit:test_orderedNextWorksOnTwoTables()
-        t1 = { aaa = 'abc', ccc = 'def' }
-        t2 = { ['3'] = '33', ['1'] = '11' }
+    function TestLuaUnit:testOutputInterface()
+        local runner = LuaUnit:new()
+        runner.outputType = Mock
+        runner:runSuite( 'MyTestWithFailures', 'MyTestOk' )
+        m = runner.output
 
-        k, v = orderedNext( t1, nil )
-        assertEquals( k, 'aaa' )
-        assertEquals( v, 'abc' )
+        assertEquals( m.calls[1][1], 'startSuite' )
+        assertEquals(#m.calls[1], 2 )
 
-        k, v = orderedNext( t2, nil )
-        assertEquals( k, '1' )
-        assertEquals( v, '11' )
+        assertEquals( m.calls[2][1], 'startClass' )
+        assertEquals( m.calls[2][3], 'MyTestWithFailures' )
+        assertEquals(#m.calls[2], 3 )
 
-        k, v = orderedNext( t1, 'aaa' )
-        assertEquals( k, 'ccc' )
-        assertEquals( v, 'def' )
+        assertEquals( m.calls[3][1], 'startTest' )
+        assertEquals( m.calls[3][3], 'MyTestWithFailures:testOk' )
+        assertEquals(#m.calls[3], 3 )
 
-        k, v = orderedNext( t2, '1' )
-        assertEquals( k, '3' )
-        assertEquals( v, '33' )
+        assertEquals( m.calls[4][1], 'endTest' )
+        assertEquals( m.calls[4][3], false )
+        assertEquals(#m.calls[4], 3 )
+
+        assertEquals( m.calls[5][1], 'startTest' )
+        assertEquals( m.calls[5][3], 'MyTestWithFailures:testWithFailure1' )
+        assertEquals(#m.calls[5], 3 )
+
+        assertEquals( m.calls[6][1], 'addFailure' )
+        assertEquals(#m.calls[6], 3 )
+
+        assertEquals( m.calls[7][1], 'endTest' )
+        assertEquals( m.calls[7][3], true )
+        assertEquals(#m.calls[7], 3 )
+
+        assertEquals( m.calls[8][1], 'startTest' )
+        assertEquals( m.calls[8][3], 'MyTestWithFailures:testWithFailure2' )
+        assertEquals(#m.calls[8], 3 )
+
+        assertEquals( m.calls[9][1], 'addFailure' )
+        assertEquals(#m.calls[9], 3 )
+
+        assertEquals( m.calls[10][1], 'endTest' )
+        assertEquals( m.calls[10][3], true )
+        assertEquals(#m.calls[10], 3 )
+
+        assertEquals( m.calls[11][1], 'endClass' )
+        assertEquals(#m.calls[11], 2 )
+
+        assertEquals( m.calls[12][1], 'startClass' )
+        assertEquals( m.calls[12][3], 'MyTestOk' )
+        assertEquals(#m.calls[12], 3 )
+
+        assertEquals( m.calls[13][1], 'startTest' )
+        assertEquals( m.calls[13][3], 'MyTestOk:testOk1' )
+        assertEquals(#m.calls[13], 3 )
+
+        assertEquals( m.calls[14][1], 'endTest' )
+        assertEquals( m.calls[14][3], false )
+        assertEquals(#m.calls[14], 3 )
+
+        assertEquals( m.calls[15][1], 'startTest' )
+        assertEquals( m.calls[15][3], 'MyTestOk:testOk2' )
+        assertEquals(#m.calls[15], 3 )
+
+        assertEquals( m.calls[16][1], 'endTest' )
+        assertEquals( m.calls[16][3], false )
+        assertEquals(#m.calls[16], 3 )
+
+        assertEquals( m.calls[17][1], 'endClass' )
+        assertEquals(#m.calls[17], 2 )
+
+        assertEquals( m.calls[18][1], 'endSuite' )
+        assertEquals(#m.calls[18], 2 )
+
+        assertEquals( m.calls[19], nil )
     end
 
 --[[ Class to test that tests are run in the right order ]]

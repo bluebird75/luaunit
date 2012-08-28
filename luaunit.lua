@@ -387,7 +387,7 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
     function LuaUnit:endTest()
-		self.output:endTest( self.currentTestHasFailure )
+		self.output:endTest( self.result.currentTestHasFailure )
 		self.result.currentTestName = ""
 		self.result.currentTestHasFailure = false
     end
