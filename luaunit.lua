@@ -422,7 +422,7 @@ LuaUnit_MT = { __index = LuaUnit }
 	--------------[[ Runner ]]-----------------
 
     function LuaUnit:_runTestMethod(className, methodName, classInstance, methodInstance)
-		-- check if className has changed. If so, start new class
+    	-- called with valid values for className, methodName, classInstance and methodInstance
 
 		if self.lastClassName ~= className then
 			if self.lastClassName ~= nil then
@@ -446,7 +446,7 @@ LuaUnit_MT = { __index = LuaUnit }
 
 		-- run testMethod()
 		local ok, errorMsg
-        ok, errorMsg = xpcall( methodInstance, err_handler )
+        ok, errorMsg = xpcall( methodInstance, err_handler, classInstance )
 		if not ok then
 			errorMsg  = self.strip_luaunit_stack(errorMsg)
 			self:addFailure( errorMsg )
@@ -484,15 +484,18 @@ LuaUnit_MT = { __index = LuaUnit }
 			error( 'Need to specify either a method name or a method instance')
 		end
 
-		if methodInstance == nil then
-			methodInstance = loadstring(className..':'..methodName .. '()')
-		end
-
-		-- handle methodName == nil
-
 		if not classInstance[ methodName ] then
 			error( "No such method: "..methodName )
 		end
+
+		if methodInstance == nil then
+			methodInstance = classInstance[methodName]
+			if methodInstance == nil then
+				error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
+			end
+		end
+
+		-- handle methodName == nil
 
 		self:_runTestMethod(className, methodName, classInstance, methodInstance)
 	end

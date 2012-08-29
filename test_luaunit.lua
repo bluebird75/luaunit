@@ -168,12 +168,6 @@ TestLuaUnit = {} --class
         assertError( assertEquals, 1, 2)
     end
 
-    function TestLuaUnit:Xtest_xpcall()
-        local function f() error("[this is a normal error]") end
-        local function g() f() end
-        g()
-    end
-
     function TestLuaUnit:test_prefixString()
         assertEquals( prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
@@ -186,6 +180,20 @@ TestLuaUnit = {} --class
         function MyTestToto1:test3() table.insert( executedTests, "MyTestToto1:test3" ) end
         function MyTestToto1:testa() table.insert( executedTests, "MyTestToto1:testa" ) end
         function MyTestToto1:test2() table.insert( executedTests, "MyTestToto1:test2" ) end
+
+    MyTestWithFailures = {}
+        function MyTestWithFailures:testWithFailure1() assertEquals(1, 2) end
+        function MyTestWithFailures:testWithFailure2() assertError( function() end ) end
+        function MyTestWithFailures:testOk() end
+
+    MyTestOk = {}
+        function MyTestOk:testOk1() end
+        function MyTestOk:testOk2() end
+
+    MyTestWithSetupTeardown = {}
+        function MyTestWithSetupTeardown:setUp() self.v = 0 end
+        function MyTestWithSetupTeardown:test1() self.v = self.v + 1 end
+        function MyTestWithSetupTeardown:tearDown() self.v = self.v + 10 end
 
     function TestLuaUnit:test_MethodsAreExecutedInRightOrder()
         local runner = LuaUnit:new()
@@ -235,14 +243,6 @@ TestLuaUnit = {} --class
         assertEquals( executedTests[1], 'MyLocalTestToto1:test1')
     end
 
-    MyTestWithFailures = {}
-        function MyTestWithFailures:testWithFailure1() assertEquals(1, 2) end
-        function MyTestWithFailures:testWithFailure2() assertError( function() end ) end
-        function MyTestWithFailures:testOk() end
-
-    MyTestOk = {}
-        function MyTestOk:testOk1() end
-        function MyTestOk:testOk2() end
 
     function TestLuaUnit:testRunReturnsNumberOfFailures()
         local runner = LuaUnit:new()
@@ -257,13 +257,21 @@ TestLuaUnit = {} --class
     function TestLuaUnit:testTestCountAndFailCount()
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        ret = runner:runSuite( 'MyTestWithFailures' )
+        runner:runSuite( 'MyTestWithFailures' )
         assertEquals( runner.result.testCount, 3)
         assertEquals( runner.result.failureCount, 2)
 
-        ret = runner:runSuite( 'MyTestToto1' )
+        runner:runSuite( 'MyTestToto1' )
         assertEquals( runner.result.testCount, 5)
         assertEquals( runner.result.failureCount, 0)
+    end
+
+    function TestLuaUnit:testRunTestMethod()
+        local runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        runner:runTestMethod( 'MyTestWithSetupTeardown', 'test1', nil, nil )
+        assertEquals( runner.result.failureCount, 0 )
+        assertEquals( MyTestWithSetupTeardown.v, 11 )   
     end
 
     function TestLuaUnit:testOutputInterface()
@@ -341,51 +349,6 @@ TestLuaUnit = {} --class
         assertEquals( m.calls[19], nil )
     end
 
---[[ Class to test that tests are run in the right order ]]
-
---[[
-TestToto2 = {} --class
-    function TestToto2:test1() table.insert( executedTests, "TestToto2:test1" ) end
-    function TestToto2:test2() table.insert( executedTests, "TestToto2:test2" ) end
-    function TestToto2:test3() table.insert( executedTests, "TestToto2:test3" ) end
-    function TestToto2:test4() table.insert( executedTests, "TestToto2:test4" ) end
-    function TestToto2:test5() table.insert( executedTests, "TestToto2:test5" ) end
-    function TestToto2:testa() table.insert( executedTests, "TestToto2:testa" ) end
-    function TestToto2:testb() table.insert( executedTests, "TestToto2:testb" ) end
-
-
-TestToto3 = {} --class
-    function TestToto3:test1() table.insert( executedTests, "TestToto3:test1" ) end
-    function TestToto3:test2() table.insert( executedTests, "TestToto3:test2" ) end
-    function TestToto3:test3() table.insert( executedTests, "TestToto3:test3" ) end
-    function TestToto3:test4() table.insert( executedTests, "TestToto3:test4" ) end
-    function TestToto3:test5() table.insert( executedTests, "TestToto3:test5" ) end
-    function TestToto3:testa() table.insert( executedTests, "TestToto3:testa" ) end
-    function TestToto3:testb() table.insert( executedTests, "TestToto3:testb" ) end
-
-TestTotoa = {} --class
-    function TestTotoa:test1() table.insert( executedTests, "TestTotoa:test1" ) end
-    function TestTotoa:test2() table.insert( executedTests, "TestTotoa:test2" ) end
-    function TestTotoa:test3() table.insert( executedTests, "TestTotoa:test3" ) end
-    function TestTotoa:test4() table.insert( executedTests, "TestTotoa:test4" ) end
-    function TestTotoa:test5() table.insert( executedTests, "TestTotoa:test5" ) end
-    function TestTotoa:testa() table.insert( executedTests, "TestTotoa:testa" ) end
-    function TestTotoa:testb() table.insert( executedTests, "TestTotoa:testb" ) end
-
-TestTotob = {} --class
-    function TestTotob:test1() table.insert( executedTests, "TestTotob:test1" ) end
-    function TestTotob:test2() table.insert( executedTests, "TestTotob:test2" ) end
-    function TestTotob:test3() table.insert( executedTests, "TestTotob:test3" ) end
-    function TestTotob:test4() table.insert( executedTests, "TestTotob:test4" ) end
-    function TestTotob:test5() table.insert( executedTests, "TestTotob:test5" ) end
-    function TestTotob:testa() table.insert( executedTests, "TestTotob:testa" ) end
-    function TestTotob:testb() table.insert( executedTests, "TestTotob:testb" ) end
-]]
-
--- LuaUnit:run('TestLuaBinding:test_setline') -- will execute only one test
--- LuaUnit:run('TestLuaBinding') -- will execute only one class of test
--- LuaUnit.result.verbosity = 0
-
 function dispParams(isReturn)
     local params = ''
     local level = 3
@@ -446,10 +409,6 @@ end
 LuaUnit:run() -- will execute all tests
 
 --[[ More tests ]]
--- check return value of Run()
--- check failure count and test count
--- check that output are called with correct values
--- check that assertions produce real errors
 -- strip luaunit stack more intelligently
 -- table assertions
 -- better verbosity support
@@ -458,4 +417,3 @@ LuaUnit:run() -- will execute all tests
 -- compatibilty tests with several version of lua
 -- allow for errors in teardown and setup
 -- real test for wrapFunctions
--- find more intelligent way than loadstring( fname.."()") to call test methods
