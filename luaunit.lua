@@ -381,8 +381,10 @@ LuaUnit_MT = { __index = LuaUnit }
 	end
 
 	function LuaUnit:addFailure( errorMsg )
-		self.result.failureCount = self.result.failureCount + 1
-		self.result.currentTestHasFailure = true
+		if not self.result.currentTestHasFailure then
+			self.result.failureCount = self.result.failureCount + 1
+			self.result.currentTestHasFailure = true
+		end
 		self.output:addFailure( errorMsg )
     end
 
@@ -435,26 +437,36 @@ LuaUnit_MT = { __index = LuaUnit }
 		-- example: runTestMethod( 'TestToto:test1', TestToto, TestToto.testToto(self) )
 		self:startTest(className..':'..methodName)
 
-		-- run setUp first(if any)
-		if self.isFunction( classInstance.setUp ) then
-				classInstance:setUp()
-		end
-
+		local ok=true, errorMsg
 		local function err_handler(e)
 			return e..'\n'..debug.traceback()
 		end
 
+		-- run setUp first(if any)
+		if self.isFunction( classInstance.setUp ) then
+	        ok, errorMsg = xpcall( classInstance.setUp, err_handler, classInstance )
+			if not ok then
+				errorMsg  = self.strip_luaunit_stack(errorMsg)
+				self:addFailure( errorMsg )
+	        end
+		end
+
 		-- run testMethod()
-		local ok, errorMsg
-        ok, errorMsg = xpcall( methodInstance, err_handler, classInstance )
-		if not ok then
-			errorMsg  = self.strip_luaunit_stack(errorMsg)
-			self:addFailure( errorMsg )
-        end
+		if not self.result.currentTestHasFailure then
+	        ok, errorMsg = xpcall( methodInstance, err_handler, classInstance )
+			if not ok then
+				errorMsg  = self.strip_luaunit_stack(errorMsg)
+				self:addFailure( errorMsg )
+	        end
+	    end
 
 		-- lastly, run tearDown(if any)
 		if self.isFunction(classInstance.tearDown) then
-			 classInstance:tearDown()
+	        ok, errorMsg = xpcall( classInstance.tearDown, err_handler, classInstance )
+			if not ok then
+				errorMsg  = self.strip_luaunit_stack(errorMsg)
+				self:addFailure( errorMsg )
+	        end
 		end
 
 		self:endTest()

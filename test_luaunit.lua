@@ -190,11 +190,6 @@ TestLuaUnit = {} --class
         function MyTestOk:testOk1() end
         function MyTestOk:testOk2() end
 
-    MyTestWithSetupTeardown = {}
-        function MyTestWithSetupTeardown:setUp() self.v = 0 end
-        function MyTestWithSetupTeardown:test1() self.v = self.v + 1 end
-        function MyTestWithSetupTeardown:tearDown() self.v = self.v + 10 end
-
     function TestLuaUnit:test_MethodsAreExecutedInRightOrder()
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
@@ -267,11 +262,108 @@ TestLuaUnit = {} --class
     end
 
     function TestLuaUnit:testRunTestMethod()
+        local MyTestWithSetupTeardown = {}
+            function MyTestWithSetupTeardown:setUp() self.v = 0 end
+            function MyTestWithSetupTeardown:test1() self.v = self.v + 1 end
+            function MyTestWithSetupTeardown:tearDown() self.v = self.v + 10 end
+
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runTestMethod( 'MyTestWithSetupTeardown', 'test1', nil, nil )
+        runner:runTestMethod( 'MyTestWithSetupTeardown', 'test1', MyTestWithSetupTeardown, nil )
         assertEquals( runner.result.failureCount, 0 )
         assertEquals( MyTestWithSetupTeardown.v, 11 )   
+    end
+
+    function TestLuaUnit:testWithSetupTeardownErrors1()
+        local myExecutedTests = {}
+
+        local MyTestWithSetupError = {}
+            function MyTestWithSetupError:setUp()    table.insert( myExecutedTests, 'setUp' ); assertEquals( 'b', 'c') end
+            function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) end
+            function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' )  end
+
+        local runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        runner:runTestClass( 'MyTestWithSetupError', MyTestWithSetupError )
+        assertEquals( runner.result.failureCount, 1 )
+        assertEquals( runner.result.testCount, 1 )
+        assertEquals( myExecutedTests[1], 'setUp' )   
+        assertEquals( myExecutedTests[2], 'tearDown')
+        assertEquals( #myExecutedTests, 2)
+    end
+
+    function TestLuaUnit:testWithSetupTeardownErrors2()
+        local myExecutedTests = {}
+
+        local MyTestWithSetupError = {}
+            function MyTestWithSetupError:setUp()    table.insert( myExecutedTests, 'setUp' ) end
+            function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) end
+            function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ); assertEquals( 'b', 'c')   end
+
+        runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        runner:runTestClass( 'MyTestWithSetupError', MyTestWithSetupError )
+        assertEquals( runner.result.failureCount, 1 )
+        assertEquals( runner.result.testCount, 1 )
+        assertEquals( myExecutedTests[1], 'setUp' )   
+        assertEquals( myExecutedTests[2], 'test1' )   
+        assertEquals( myExecutedTests[3], 'tearDown')
+        assertEquals( #myExecutedTests, 3)
+    end
+
+    function TestLuaUnit:testWithSetupTeardownErrors3()
+        local myExecutedTests = {}
+
+        local MyTestWithSetupError = {}
+            function MyTestWithSetupError:setUp()    table.insert( myExecutedTests, 'setUp' ); assertEquals( 'b', 'c') end
+            function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) end
+            function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ); assertEquals( 'b', 'c')   end
+
+        runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        runner:runTestClass( 'MyTestWithSetupError', MyTestWithSetupError )
+        assertEquals( runner.result.failureCount, 1 )
+        assertEquals( runner.result.testCount, 1 )
+        assertEquals( myExecutedTests[1], 'setUp' )   
+        assertEquals( myExecutedTests[2], 'tearDown')
+        assertEquals( #myExecutedTests, 2)
+    end
+
+    function TestLuaUnit:testWithSetupTeardownErrors4()
+        local myExecutedTests = {}
+
+        local MyTestWithSetupError = {}
+            function MyTestWithSetupError:setUp()    table.insert( myExecutedTests, 'setUp' ); assertEquals( 'b', 'c') end
+            function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ); assertEquals( 'b', 'c')  end
+            function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ); assertEquals( 'b', 'c')   end
+
+        runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        runner:runTestClass( 'MyTestWithSetupError', MyTestWithSetupError )
+        assertEquals( runner.result.failureCount, 1 )
+        assertEquals( runner.result.testCount, 1 )
+        assertEquals( myExecutedTests[1], 'setUp' )   
+        assertEquals( myExecutedTests[2], 'tearDown')
+        assertEquals( #myExecutedTests, 2)
+    end
+
+    function TestLuaUnit:testWithSetupTeardownErrors5()
+        local myExecutedTests = {}
+
+        local MyTestWithSetupError = {}
+            function MyTestWithSetupError:setUp()    table.insert( myExecutedTests, 'setUp' ) end
+            function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ); assertEquals( 'b', 'c')  end
+            function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ); assertEquals( 'b', 'c')   end
+
+        runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        runner:runTestClass( 'MyTestWithSetupError', MyTestWithSetupError )
+        assertEquals( runner.result.failureCount, 1 )
+        assertEquals( runner.result.testCount, 1 )
+        assertEquals( myExecutedTests[1], 'setUp' )   
+        assertEquals( myExecutedTests[2], 'test1' )   
+        assertEquals( myExecutedTests[3], 'tearDown')
+        assertEquals( #myExecutedTests, 3)
     end
 
     function TestLuaUnit:testOutputInterface()
@@ -417,3 +509,4 @@ LuaUnit:run() -- will execute all tests
 -- compatibilty tests with several version of lua
 -- allow for errors in teardown and setup
 -- real test for wrapFunctions
+-- sequence asserts
