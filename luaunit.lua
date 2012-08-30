@@ -15,6 +15,8 @@ assertEquals( expected, actual ).
 ]]--
 USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS = true
 
+DEFAULT_VERBOSITY = 1
+
 function assertError(f, ...)
 	-- assert that calling f with the arguments will raise an error
 	-- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
@@ -168,10 +170,13 @@ TapOutput_MT = { __index = TapOutput }
 	function TapOutput:startClass(className) end
 	function TapOutput:startTest(testName) end
 
-	function TapOutput:addFailure( errorMsg )
+	function TapOutput:addFailure( errorMsg, stackTrace )
 	   print(string.format("not ok %d\t%s", self.result.testCount, self.result.currentTestName ))
 	   if self.verbosity > 0 then
 		   print( prefixString( '    ', errorMsg ) )
+		end
+	   if self.verbosity > 1 then
+		   print( prefixString( '    ', stackTrace ) )
 		end
 	end
 
@@ -224,11 +229,12 @@ TextOutput_MT = { -- class
 		end
 	end
 
-	function TextOutput:addFailure( errorMsg )
-		table.insert( self.errorList, { self.currentTestName, errorMsg } )
+	function TextOutput:addFailure( errorMsg, stackTrace )
+		table.insert( self.errorList, { self.result.currentTestName, errorMsg, stackTrace } )
 		if self.verbosity == 0 then
 			io.stdout:write("F")
-		else
+		end
+		if self.verbosity > 0 then
 			print( errorMsg )
 			print( 'Failed' )
 		end
@@ -245,13 +251,18 @@ TextOutput_MT = { -- class
 	end
 
 	function TextOutput:endClass()
-	   print()
+		if self.verbosity > 0 then
+		   print()
+		end
 	end
 
 	function TextOutput:displayOneFailedTest( failure )
-		testName, errorMsg = unpack( failure )
+		testName, errorMsg, stackTrace = unpack( failure )
 		print(">>> "..testName.." failed")
 		print( errorMsg )
+		if self.verbosity > 1 then
+			print( stackTrace )
+		end
 	end
 
 	function TextOutput:displayFailedTests()
@@ -267,15 +278,15 @@ TextOutput_MT = { -- class
 	function TextOutput:endSuite()
 		print("=========================================================")
 		self:displayFailedTests()
-		local failurePercent, successCount
-		if self.result.testCount == 0 then
-			failurePercent = 0
-		else
-			failurePercent = 100 * self.result.failureCount / self.result.testCount
-		end
+		local successPercent, successCount
 		successCount = self.result.testCount - self.result.failureCount
+		if self.result.testCount == 0 then
+			successPercent = 100
+		else
+			successPercent = math.ceil( 100 * successCount / self.result.testCount )
+		end
 		print( string.format("Success : %d%% - %d / %d",
-			100-math.ceil(failurePercent), successCount, self.result.testCount) )
+			successPercent, successCount, self.result.testCount) )
     end
 
 
@@ -310,6 +321,7 @@ end
 
 LuaUnit = {
 	outputType = TextOutput,
+	verbosity = DEFAULT_VERBOSITY,
 	__class__ = 'LuaUnit'
 }
 LuaUnit_MT = { __index = LuaUnit }
@@ -325,24 +337,6 @@ LuaUnit_MT = { __index = LuaUnit }
 	function LuaUnit.isFunction(aObject) 
 		return 'function' == type(aObject)
 	end
-
-	function LuaUnit.strip_luaunit_stack(stack_trace)
-		stack_list = strsplit( "\n", stack_trace )
-		strip_end = nil
-		for i = #stack_list,1,-1 do
-			-- a bit rude but it works !
-			if string.find(stack_list[i],"[C]: in function `xpcall'",0,true)
-				then
-				strip_end = i - 2
-			end
-		end
-		if strip_end then
-			table.setn( stack_list, strip_end )
-		end
-		stack_trace = table.concat( stack_list, "\n" )
-		return stack_trace
-	end
-
 
 	--------------[[ Output methods ]]-------------------------
 
@@ -365,6 +359,7 @@ LuaUnit_MT = { __index = LuaUnit }
 		self.output = self.outputType:new()
 		self.output.runner = self
 		self.output.result = self.result
+		self.output.verbosity = self.verbosity
 		self.output:startSuite()
 	end
 
@@ -380,12 +375,12 @@ LuaUnit_MT = { __index = LuaUnit }
 		self.output:startTest( testName )
 	end
 
-	function LuaUnit:addFailure( errorMsg )
+	function LuaUnit:addFailure( errorMsg, stackTrace )
 		if not self.result.currentTestHasFailure then
 			self.result.failureCount = self.result.failureCount + 1
 			self.result.currentTestHasFailure = true
 		end
-		self.output:addFailure( errorMsg )
+		self.output:addFailure( errorMsg, stackTrace )
     end
 
     function LuaUnit:endTest()
@@ -423,6 +418,24 @@ LuaUnit_MT = { __index = LuaUnit }
 
 	--------------[[ Runner ]]-----------------
 
+	SPLITTER = '\n>----------<\n'
+
+	function LuaUnit:protectedCall( classInstance , methodInstance)
+		local function err_handler(e)
+			return e..SPLITTER..debug.traceback(nil, 3)
+		end
+
+		local ok=true, errorMsg, stackTrace
+        ok, errorMsg = xpcall( methodInstance, err_handler, classInstance )
+		if not ok then
+			t = strsplit( SPLITTER, errorMsg )
+			self:addFailure( t[1], t[2] )
+        end
+
+		return ok
+	end
+
+
     function LuaUnit:_runTestMethod(className, methodName, classInstance, methodInstance)
     	-- called with valid values for className, methodName, classInstance and methodInstance
 
@@ -437,36 +450,19 @@ LuaUnit_MT = { __index = LuaUnit }
 		-- example: runTestMethod( 'TestToto:test1', TestToto, TestToto.testToto(self) )
 		self:startTest(className..':'..methodName)
 
-		local ok=true, errorMsg
-		local function err_handler(e)
-			return e..'\n'..debug.traceback()
-		end
-
 		-- run setUp first(if any)
 		if self.isFunction( classInstance.setUp ) then
-	        ok, errorMsg = xpcall( classInstance.setUp, err_handler, classInstance )
-			if not ok then
-				errorMsg  = self.strip_luaunit_stack(errorMsg)
-				self:addFailure( errorMsg )
-	        end
+			self:protectedCall( classInstance, classInstance.setUp)
 		end
 
 		-- run testMethod()
 		if not self.result.currentTestHasFailure then
-	        ok, errorMsg = xpcall( methodInstance, err_handler, classInstance )
-			if not ok then
-				errorMsg  = self.strip_luaunit_stack(errorMsg)
-				self:addFailure( errorMsg )
-	        end
+			self:protectedCall( classInstance, methodInstance)
 	    end
 
 		-- lastly, run tearDown(if any)
 		if self.isFunction(classInstance.tearDown) then
-	        ok, errorMsg = xpcall( classInstance.tearDown, err_handler, classInstance )
-			if not ok then
-				errorMsg  = self.strip_luaunit_stack(errorMsg)
-				self:addFailure( errorMsg )
-	        end
+			self:protectedCall( classInstance, classInstance.tearDown)
 		end
 
 		self:endTest()

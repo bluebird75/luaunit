@@ -119,6 +119,46 @@ TestLuaUnit = {} --class
         assertEquals( v, '33' )
     end
 
+    function TestLuaUnit:test_strSplitOneCharDelim()
+        t = strsplit( '\n', '1\n22\n333\n' )
+        assertEquals( t[1], '1')
+        assertEquals( t[2], '22')
+        assertEquals( t[3], '333')
+        assertEquals( t[4], '')
+        assertEquals( #t, 4 )
+    end
+
+    function TestLuaUnit:test_strSplit3CharDelim()
+        t = strsplit( '2\n3', '1\n22\n332\n3' )
+        assertEquals( t[1], '1\n2')
+        assertEquals( t[2], '3')
+        assertEquals( t[3], '')
+        assertEquals( #t, 3 )
+    end
+
+    function TestLuaUnit:test_strSplitOnFailure()
+        s1 = 'd:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:467: expected: 1, actual: 2\n'
+        s2 = [[stack traceback:
+    .\luaunit.lua:443: in function <.\luaunit.lua:442>
+    [C]: in function 'error'
+    .\luaunit.lua:56: in function 'assertEquals'
+    d:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:467: in function <d:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:466>
+    [C]: in function 'xpcall'
+    .\luaunit.lua:447: in function 'protectedCall'
+    .\luaunit.lua:479: in function '_runTestMethod'
+    .\luaunit.lua:527: in function 'runTestMethod'
+    .\luaunit.lua:569: in function 'runTestClass'
+    .\luaunit.lua:609: in function <.\luaunit.lua:588>
+    (...tail calls...)
+    d:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:528: in main chunk
+    [C]: in ?
+]]
+        t = strsplit( SPLITTER, s1..SPLITTER..s2)
+        assertEquals( t[1], s1)
+        assertEquals( t[2], s2)
+        assertEquals( #t, 2 )
+    end
+
     function TestLuaUnit:tearDown()
         executedTests = {}
     end
@@ -392,7 +432,7 @@ TestLuaUnit = {} --class
         assertEquals(#m.calls[5], 3 )
 
         assertEquals( m.calls[6][1], 'addFailure' )
-        assertEquals(#m.calls[6], 3 )
+        assertEquals(#m.calls[6], 4 )
 
         assertEquals( m.calls[7][1], 'endTest' )
         assertEquals( m.calls[7][3], true )
@@ -403,7 +443,7 @@ TestLuaUnit = {} --class
         assertEquals(#m.calls[8], 3 )
 
         assertEquals( m.calls[9][1], 'addFailure' )
-        assertEquals(#m.calls[9], 3 )
+        assertEquals(#m.calls[9], 4 )
 
         assertEquals( m.calls[10][1], 'endTest' )
         assertEquals( m.calls[10][3], true )
@@ -439,6 +479,15 @@ TestLuaUnit = {} --class
         assertEquals(#m.calls[18], 2 )
 
         assertEquals( m.calls[19], nil )
+
+    end
+
+    function TestLuaUnit:testErr1()
+        error( "Some error msg" )
+    end
+
+    function TestLuaUnit:testErr2()
+        assertEquals( 2, 1)
     end
 
 function dispParams(isReturn)
@@ -498,6 +547,7 @@ function debug_print( event )
 end
 
 -- debug.sethook( debug_print, 'cr' )
+LuaUnit.verbosity = 2
 LuaUnit:run() -- will execute all tests
 
 --[[ More tests ]]
@@ -507,6 +557,5 @@ LuaUnit:run() -- will execute all tests
 -- assert contains
 -- more user documentation
 -- compatibilty tests with several version of lua
--- allow for errors in teardown and setup
 -- real test for wrapFunctions
 -- sequence asserts
