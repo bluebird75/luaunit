@@ -482,14 +482,6 @@ TestLuaUnit = {} --class
 
     end
 
-    function TestLuaUnit:testErr1()
-        error( "Some error msg" )
-    end
-
-    function TestLuaUnit:testErr2()
-        assertEquals( 2, 1)
-    end
-
 function dispParams(isReturn)
     local params = ''
     local level = 3
@@ -547,7 +539,7 @@ function debug_print( event )
 end
 
 -- debug.sethook( debug_print, 'cr' )
-LuaUnit.verbosity = 2
+LuaUnit.verbosity = 0
 LuaUnit:run() -- will execute all tests
 
 --[[ More tests ]]

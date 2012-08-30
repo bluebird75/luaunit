@@ -220,7 +220,9 @@ TextOutput_MT = { -- class
 	end
 
 	function TextOutput:startClass(className)
-		print( '>>>>>>>>> '.. self.result.currentClassName )
+		if self.verbosity > 0 then
+			print( '>>>>>>>>> '.. self.result.currentClassName )
+		end
 	end
 
 	function TextOutput:startTest(testName)
@@ -276,7 +278,11 @@ TextOutput_MT = { -- class
 	end
 
 	function TextOutput:endSuite()
-		print("=========================================================")
+		if self.verbosity == 0 then
+			print()
+		else
+			print("=========================================================")
+		end
 		self:displayFailedTests()
 		local successPercent, successCount
 		successCount = self.result.testCount - self.result.failureCount
