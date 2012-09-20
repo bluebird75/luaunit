@@ -428,14 +428,16 @@ LuaUnit_MT = { __index = LuaUnit }
 
 	function LuaUnit:protectedCall( classInstance , methodInstance)
 		local function err_handler(e)
-			return e..SPLITTER..debug.traceback(nil, 3)
+			return debug.traceback(e..SPLITTER, 3)
 		end
 
 		local ok=true, errorMsg, stackTrace
-        ok, errorMsg = xpcall( methodInstance, err_handler, classInstance )
+		-- stupid Lua < 5.2 does not allow xpcall with arguments so let's live with that
+        ok, errorMsg = xpcall( function () methodInstance(classInstance) end, err_handler )
 		if not ok then
 			t = strsplit( SPLITTER, errorMsg )
-			self:addFailure( t[1], t[2] )
+			stackTrace = string.sub(t[2],2)
+			self:addFailure( t[1], stackTrace )
         end
 
 		return ok
