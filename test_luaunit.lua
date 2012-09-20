@@ -438,6 +438,7 @@ TestLuaUnit = {} --class
         assertEquals( m.calls[7][3], true )
         assertEquals(#m.calls[7], 3 )
 
+
         assertEquals( m.calls[8][1], 'startTest' )
         assertEquals( m.calls[8][3], 'MyTestWithFailures:testWithFailure2' )
         assertEquals(#m.calls[8], 3 )
@@ -538,8 +539,10 @@ function debug_print( event )
     end
 end
 
+
+
 -- debug.sethook( debug_print, 'cr' )
-LuaUnit.verbosity = 0
+LuaUnit.verbosity = 2
 LuaUnit:run() -- will execute all tests
 
 --[[ More tests ]]
@@ -551,3 +554,8 @@ LuaUnit:run() -- will execute all tests
 -- compatibilty tests with several version of lua
 -- real test for wrapFunctions
 -- sequence asserts
+-- display time to run all tests
+-- make sure test suite ends when running tests with RunByTestClass or RunByTestMethod
+-- add assertNotEquals
+-- add assertAlmonstEquals for floats
+-- add assertContains for strings
