@@ -60,10 +60,29 @@ TestMock = {}
         assertEquals( #m.calls, 2 )
     end
 
+function printSeq( seq )
+    if type(seq) ~= 'table' then
+        print( mytostring(seq) )
+        return
+    end
+
+    for i,v in ipairs(seq) do
+        print( '['..i..']: '..mytostring(v) )
+    end
+end
 
 
 TestLuaUnit = {} --class
 
+    TestLuaUnit.__class__ = 'TestLuaUnit'
+
+    function TestLuaUnit:tearDown()
+        executedTests = {}
+    end
+
+    function TestLuaUnit:setUp()
+        executedTests = {}
+    end
 
     function TestLuaUnit:test_orderedNextReturnsOrderedKeyValues()
         t1 = {}
@@ -157,10 +176,6 @@ TestLuaUnit = {} --class
         assertEquals( t[1], s1)
         assertEquals( t[2], s2)
         assertEquals( #t, 2 )
-    end
-
-    function TestLuaUnit:tearDown()
-        executedTests = {}
     end
 
     function TestLuaUnit:test_assertError()
@@ -258,14 +273,6 @@ TestLuaUnit = {} --class
         assertEquals( #executedTests, 5 )
     end
 
-    function TestLuaUnit:testRunTestClassByGlobalInstanceWithoutName( )
-        assertEquals( #executedTests, 0 )
-        local runner = LuaUnit:new()
-        runner:setOutputType( "NIL" )
-        runner:runTestClass( nil, MyTestToto1 )
-        assertEquals( #executedTests, 5 )
-    end
-
     function TestLuaUnit:testRunTestClassByLocalInstance( )
         MyLocalTestToto1 = {} --class
         function MyLocalTestToto1:test1() table.insert( executedTests, "MyLocalTestToto1:test1" ) end
@@ -276,6 +283,19 @@ TestLuaUnit = {} --class
         runner:runTestClass( 'MyLocalTestToto1', MyLocalTestToto1 )
         assertEquals( #executedTests, 1 )
         assertEquals( executedTests[1], 'MyLocalTestToto1:test1')
+    end
+
+    function TestLuaUnit:testRunTestByTestFunction()
+        local function mytest()
+            table.insert( executedTests, "mytest" )
+        end
+
+        local runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        runner:runTestClass( 'mytest', mytest )
+        assertEquals( #executedTests, 1 )
+        assertEquals( executedTests[1], 'mytest')
+
     end
 
 
@@ -302,16 +322,20 @@ TestLuaUnit = {} --class
     end
 
     function TestLuaUnit:testRunTestMethod()
+        local myExecutedTests = {}
         local MyTestWithSetupTeardown = {}
-            function MyTestWithSetupTeardown:setUp() self.v = 0 end
-            function MyTestWithSetupTeardown:test1() self.v = self.v + 1 end
-            function MyTestWithSetupTeardown:tearDown() self.v = self.v + 10 end
+            function MyTestWithSetupTeardown:setUp()    table.insert( myExecutedTests, 'setUp' ) end
+            function MyTestWithSetupTeardown:test1()    table.insert( myExecutedTests, 'test1' ) end
+            function MyTestWithSetupTeardown:tearDown() table.insert( myExecutedTests, 'tearDown' )  end
 
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runTestMethod( 'MyTestWithSetupTeardown', 'test1', MyTestWithSetupTeardown, nil )
+        runner:runTestClass( 'MyTestWithSetupTeardown:test1', MyTestWithSetupTeardown )
         assertEquals( runner.result.failureCount, 0 )
-        assertEquals( MyTestWithSetupTeardown.v, 11 )   
+        assertEquals( myExecutedTests[1], 'setUp' )   
+        assertEquals( myExecutedTests[2], 'test1')
+        assertEquals( myExecutedTests[3], 'tearDown')
+        assertEquals( #myExecutedTests, 3)
     end
 
     function TestLuaUnit:testWithSetupTeardownErrors1()
@@ -544,6 +568,7 @@ end
 -- debug.sethook( debug_print, 'cr' )
 LuaUnit.verbosity = 2
 LuaUnit:run() -- will execute all tests
+--LuaUnit:run('TestLuaUnit:testRunTestClassByName')
 
 --[[ More tests ]]
 -- strip luaunit stack more intelligently
