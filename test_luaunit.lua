@@ -567,8 +567,8 @@ end
 
 -- debug.sethook( debug_print, 'cr' )
 LuaUnit.verbosity = 2
-LuaUnit:run() -- will execute all tests
---LuaUnit:run('TestLuaUnit:testRunTestClassByName')
+-- LuaUnit:run( 'TestMock', 'TestLuaUnit:testRunSomeTestByName')
+LuaUnit:run()
 
 --[[ More tests ]]
 -- strip luaunit stack more intelligently

@@ -60,19 +60,6 @@ end
 assert_equals = assertEquals
 assert_error = assertError
 
-function wrapFunctions(...)
-    -- Use me to wrap a set of functions into a Runnable test class:
-    -- TestToto = wrapFunctions( f1, f2, f3, f3, f5 )
-    -- Now, TestToto will be picked up by LuaUnit:run()
-    local testClass, testFunction
-    testClass = {}
-    for i,testName in ipairs({...}) do
-        testFunction = _G[testName]
-        testClass[testName] = testFunction
-    end
-    return testClass
-end
-
 function __genOrderedIndex( t )
     local orderedIndex = {}
     for key,_ in pairs(t) do

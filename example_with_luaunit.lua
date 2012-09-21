@@ -5,12 +5,12 @@ TestToto = {} --class
 
     function TestToto:setUp()
         -- set up tests
-		self.a = 1
-		self.s = 'hop' 
+        self.a = 1
+        self.s = 'hop' 
     end
 
     function TestToto:test1_withFailure()
-		print( "some stuff test 1" )
+        print( "some stuff test 1" )
         assertEquals( self.a , 1 )
         -- will fail
         assertEquals( self.a , 2 )
@@ -18,7 +18,7 @@ TestToto = {} --class
     end
 
     function TestToto:test2_withFailure()
-		print( "some stuff test 2" )
+        print( "some stuff test 2" )
         assertEquals( self.a , 1 )
         assertEquals( self.s , 'hop' )
         -- will fail
@@ -27,7 +27,7 @@ TestToto = {} --class
     end
 
     function TestToto:test3()
-		print( "some stuff test 3" )
+        print( "some stuff test 3" )
         assertEquals( self.a , 1 )
         assertEquals( self.s , 'hop' )
         assertEquals( type(self.a), 'number' )
@@ -37,18 +37,18 @@ TestToto = {} --class
 TestTiti = {} --class
     function TestTiti:setUp()
         -- set up tests
-		self.a = 1
-		self.s = 'hop' 
+        self.a = 1
+        self.s = 'hop' 
         print( 'TestTiti:setUp' )
     end
 
-	function TestTiti:tearDown()
-		-- some tearDown() code if necessary
+    function TestTiti:tearDown()
+        -- some tearDown() code if necessary
         print( 'TestTiti:tearDown' )
-	end
+    end
 
     function TestTiti:test1_withFailure()
-		print( "some stuff test 1" )
+        print( "some stuff test 1" )
         assertEquals( self.a , 1 )
         -- will fail
         assertEquals( self.a , 2 )
@@ -56,7 +56,7 @@ TestTiti = {} --class
     end
 
     function TestTiti:test2_withFailure()
-		print( "some stuff test 2" )
+        print( "some stuff test 2" )
         assertEquals( self.a , 1 )
         assertEquals( self.s , 'hop' )
         -- will fail
@@ -65,7 +65,7 @@ TestTiti = {} --class
     end
 
     function TestTiti:test3()
-		print( "some stuff test 3" )
+        print( "some stuff test 3" )
         assertEquals( self.a , 1 )
         assertEquals( self.s , 'hop' )
     end
@@ -90,12 +90,10 @@ function test3()
     assert( 'a' == 'a')
 end
 
-TestFunctions = wrapFunctions( 'test1', 'test2', 'test3' )
-
 -- LuaUnit:run( 'test2_withFailure' )  -- run only one test function
--- LuaUnit:run( 'test1_withFailure' )
+-- LuaUnit:run( 'TestFunctions:test1_withFailure' )
 -- LuaUnit:run( 'TestToto' ) -- run only on test class
 -- LuaUnit:run( 'TestTiti:test3') -- run only one test method of a test class
-lu = LuaUnit
-lu:setOutputType( "TAP" )
-lu:run()
+-- lu = LuaUnit
+-- lu:setOutputType( "TAP" )
+-- lu:run()
