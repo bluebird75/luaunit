@@ -489,17 +489,17 @@ LuaUnit_MT = { __index = LuaUnit }
         self:endTest()
     end
 
-    function LuaUnit:runTestClass( someName, someInstance )
+    function LuaUnit:runSomeTest( someName, someInstance )
         -- name is mandatory
         -- if instance is not given, it's looked up in the global namespace
         -- name can be a test class, a test function, or a test class + test method
         -- instance can be a test class or a test function
-        -- example: runTestClass( 'TestToto' )
-        -- example: runTestClass( 'TestToto', TestToto )
-        -- example: runTestClass( 'TestToto:testTiti' )
-        -- example: runTestClass( 'TestToto:testTiti', TestToto )
-        -- example: runTestClass( 'testFunction' )
-        -- example: runTestClass( 'testFunction' , testFunction )
+        -- example: runSomeTest( 'TestToto' )
+        -- example: runSomeTest( 'TestToto', TestToto )
+        -- example: runSomeTest( 'TestToto:testTiti' )
+        -- example: runSomeTest( 'TestToto:testTiti', TestToto )
+        -- example: runSomeTest( 'testFunction' )
+        -- example: runSomeTest( 'testFunction' , testFunction )
 
         self:ensureSuiteStarted()
 
@@ -601,7 +601,7 @@ LuaUnit_MT = { __index = LuaUnit }
         end
 
         for i,testName in ipairs( args ) do
-            self:runTestClass( testName )
+            self:runSomeTest( testName )
         end
 
         if self.lastClassName ~= nil then
