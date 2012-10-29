@@ -409,6 +409,10 @@ LuaUnit_MT = { __index = LuaUnit }
         error( 'No such format: '..outputType)
     end
 
+    function LuaUnit:setVerbosity( verbosity )
+        self.verbosity = verbosity
+    end
+
     --------------[[ Runner ]]-----------------
 
     SPLITTER = '\n>----------<\n'
@@ -580,7 +584,7 @@ LuaUnit_MT = { __index = LuaUnit }
             -- not iterate over _G while modifying it.
             args = {}
             for key, val in pairs(_G) do 
-                if string.sub(key,1,4) == 'Test' then 
+                if string.sub(key,1,4):lower() == 'test' then 
                     table.insert( args, key )
                 end
             end

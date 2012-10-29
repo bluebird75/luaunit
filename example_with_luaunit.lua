@@ -94,6 +94,11 @@ end
 -- LuaUnit:run( 'TestFunctions:test1_withFailure' )
 -- LuaUnit:run( 'TestToto' ) -- run only on test class
 -- LuaUnit:run( 'TestTiti:test3') -- run only one test method of a test class
--- lu = LuaUnit
+-- LuaUnit:run() -- run everything
+
+---- Control test output:
+lu = LuaUnit
+-- lu:setOutputType( "NIL" )
 -- lu:setOutputType( "TAP" )
--- lu:run()
+lu:setVerbosity( 0 )
+lu:run()
