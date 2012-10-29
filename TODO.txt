@@ -1,0 +1,18 @@
+--[[ More tests ]]
+-- strip luaunit stack more intelligently
+-- table assertions
+-- better verbosity support
+-- assert contains
+-- more user documentation
+-- compatibilty tests with several version of lua
+-- real test for wrapFunctions
+-- sequence asserts
+-- display time to run all tests
+-- make sure test suite ends when running tests with RunByTestClass or RunByTestMethod
+-- add assertNotEquals
+-- add assertAlmonstEquals for floats
+-- add assertContains for strings
+
+Done:
+
+
