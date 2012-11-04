@@ -2,7 +2,7 @@ import subprocess, sys, os, shutil, os.path
 
 VERSION='1.5'
 RELEASE_NAME='luaunit-%s' % VERSION
-RELEASE_DIR='release/' + RELEASE_NAME
+RELEASE_DIR='release/' + RELEASE_NAME + '/'
 TARGET_ZIP=RELEASE_NAME + '.zip'
 TARGET_TGZ=RELEASE_NAME + '.tgz'
 REPO_PATH='d:/work/luaunit/luaunit-git/luaunit/'
@@ -47,7 +47,7 @@ def packageit():
         os.mkdir('release')
     except OSError:
         pass
-    subprocess.check_call(['c:/Program Files/Git/bin/git.exe', 'clone', REPO_PATH, RELEASE_DIR])
+    subprocess.check_call(['c:/Program Files/Git/bin/git.exe', 'clone', '--no-hardlinks', REPO_PATH, RELEASE_DIR])
     os.chdir( RELEASE_DIR )
     shutil.rmtree('.git')
     os.unlink('.gitignore')
