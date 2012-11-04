@@ -507,8 +507,5 @@ TestLuaUnit = {} --class
 
     end
 
--- debug.sethook( debug_print, 'cr' )
 LuaUnit.verbosity = 2
--- LuaUnit:run( 'TestMock', 'TestLuaUnit:testRunSomeTestByName')
 os.exit( LuaUnit:run() )
-
