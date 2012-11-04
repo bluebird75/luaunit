@@ -8,7 +8,6 @@ License: BSD License, see LICENSE.txt
 
 require('luaunit')
 
-
 Mock = {
     __class__ = 'Mock',
     calls = {}    
@@ -22,6 +21,7 @@ function Mock:new()
     function t.callRecorder( callInfo )
         -- Return a function that stores its arguments in callInfo
         function f( ... )
+            -- Not lua 5.0 compliant:
             args ={...}
             for i,v in pairs(args) do
                 table.insert( callInfo, v )
@@ -510,5 +510,5 @@ TestLuaUnit = {} --class
 -- debug.sethook( debug_print, 'cr' )
 LuaUnit.verbosity = 2
 -- LuaUnit:run( 'TestMock', 'TestLuaUnit:testRunSomeTestByName')
-LuaUnit:run()
+os.exit( LuaUnit:run() )
 

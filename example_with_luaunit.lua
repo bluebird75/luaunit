@@ -101,4 +101,4 @@ lu = LuaUnit
 -- lu:setOutputType( "NIL" )
 -- lu:setOutputType( "TAP" )
 lu:setVerbosity( 0 )
-lu:run()
+os.exit( lu:run() )
