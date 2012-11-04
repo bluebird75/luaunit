@@ -21,9 +21,9 @@ See file example_with_luaunit.lua to understand how to use it.
 History:
 ========
 
-version 1.5: (in progress)
+version 1.5:
 ------------
-- compatibility with Lua 5.0, 5.1 and 5.2
+- compatibility with Lua 5.1 and 5.2
 - better object model internally
 - a lot more of internal tests
 - several internal bug fixes

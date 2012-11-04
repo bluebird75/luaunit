@@ -1,4 +1,4 @@
-import subprocess, sys, os, shutil
+import subprocess, sys, os, shutil, os.path
 
 VERSION='1.5'
 RELEASE_NAME='luaunit-%s' % VERSION
@@ -49,12 +49,14 @@ def packageit():
         pass
     subprocess.check_call(['c:/Program Files/Git/bin/git.exe', 'clone', REPO_PATH, RELEASE_DIR])
     os.chdir( RELEASE_DIR )
+    shutil.rmtree('.git')
+    os.unlink('.gitignore')
     run_tests()
     run_example()
     os.chdir('..')
     report('Start packaging')
-    subprocess.check_call(['zip', '-r', '-9', '-b', RELEASE_NAME, TARGET_ZIP])
-    subprocess.check_call(['tar', 'zcvf', TARGET_TGZ, RELEASE_NAME ] )
+    shutil.make_archive(RELEASE_NAME, 'zip', root_dir='.', base_dir=RELEASE_NAME )
+    shutil.make_archive(RELEASE_NAME, 'gztar', root_dir='.', base_dir=RELEASE_NAME )
     report('Zip and tgz ready!')
 
 if __name__ == '__main__':
