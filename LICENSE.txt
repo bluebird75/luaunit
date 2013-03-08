@@ -1,3 +1,5 @@
+This software is distributed under the BSD License.
+
 Copyright (c) 2005,2007,2012, Philippe Fremy <phil at freehackers dot org>
 All rights reserved.
 
