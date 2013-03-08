@@ -21,7 +21,7 @@ See file example_with_luaunit.lua to understand how to use it.
 History:
 ========
 
-version 1.5:
+version 1.5: 8. Nov 2012
 ------------
 - compatibility with Lua 5.1 and 5.2
 - better object model internally
