@@ -38,22 +38,69 @@ function mytostring( v )
     return tostring(v)
 end
 
+function errormsg(actual, expected)
+    local errorMsg
+    if not USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS then
+        expected, actual = actual, expected
+    end
+    if type(expected) == 'string' then
+        errorMsg = "\nexpected: "..mytostring(expected).."\n"..
+                         "actual  : "..mytostring(actual).."\n"
+    else
+        errorMsg = "expected: "..mytostring(expected)..", actual: "..mytostring(actual)
+    end
+    return errorMsg
+end
+
 function assertEquals(actual, expected)
     -- assert that two values are equal and calls error else
     if  actual ~= expected  then
+        error( errormsg(actual, expected), 2 )
+    end
+end
 
-        if not USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS then
-            expected, actual = actual, expected
-        end
+function assertTrue(value)
+    if not value then
+        error("expected: true\n actual: " ..mytostring(value), 2)
+    end
+end
 
-        local errorMsg
-        if type(expected) == 'string' then
-            errorMsg = "\nexpected: "..mytostring(expected).."\n"..
-                             "actual  : "..mytostring(actual).."\n"
-        else
-            errorMsg = "expected: "..mytostring(expected)..", actual: "..mytostring(actual)
+function assertFalse(value)
+    if value then
+        error("expected: false\n actual: " ..mytostring(value), 2)
+    end
+end
+
+function assertNotEquals(actual, expected)
+    -- assert that two values are equal and calls error else
+    if  actual == expected  then
+        error( errormsg(actual, expected), 2 )
+    end
+end
+
+function assertItemsEquals(actual, expected)
+    local flag_error = false
+
+    if not actual and not expected then
+        -- nil == nil
+        return
+    elseif not actual or not expected then
+        flag_error = true
+    elseif #actual ~= #expected then
+        flag_error = true
+    else
+        table.sort(actual)
+        table.sort(expected)
+        for k,v in pairs(actual) do
+            if not expected[k] or expected[k] ~= v then
+                flag_error = true
+                break
+            end
         end
-        error( errorMsg, 2 )
+    end
+
+    if flag_error then
+        error( errormsg(actual, expected), 2 )
     end
 end
 
