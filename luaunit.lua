@@ -57,6 +57,37 @@ function assertEquals(actual, expected)
     end
 end
 
+function assertTrue(value)
+    if not value then
+        error("expected: true\n actual: " ..mytostring(value), 2)
+    end
+end
+
+function assertFalse(value)
+    if value then
+        error("expected: false\n actual: " ..mytostring(value), 2)
+    end
+end
+
+function assertNotEquals(actual, expected)
+    -- assert that two values are equal and calls error else
+    if  actual == expected  then
+
+        if not USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS then
+            expected, actual = actual, expected
+        end
+
+        local errorMsg
+        if type(expected) == 'string' then
+            errorMsg = "\nexpected: "..mytostring(expected).."\n"..
+                             "actual  : "..mytostring(actual).."\n"
+        else
+            errorMsg = "expected: "..mytostring(expected)..", actual: "..mytostring(actual)
+        end
+        error( errorMsg, 2 )
+    end
+end
+
 assert_equals = assertEquals
 assert_error = assertError
 

@@ -223,6 +223,21 @@ TestLuaUnit = {} --class
         assertError( assertEquals, 1, 2)
     end
 
+    function TestLuaUnit:test_assertEquals()
+        assertNotEquals( 1, 2 )
+        assertError( assertNotEquals, 1, 1)
+    end
+
+    function TestLuaUnit:test_assertTrue()
+        assertTrue(true)
+        assertError( assertTrue, false)
+    end
+
+    function TestLuaUnit:test_assertFalse()
+        assertFalse(false)
+        assertError( assertFalse, true)
+    end
+
     function TestLuaUnit:test_prefixString()
         assertEquals( prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
