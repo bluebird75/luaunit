@@ -223,7 +223,7 @@ TestLuaUnit = {} --class
         assertError( assertEquals, 1, 2)
     end
 
-    function TestLuaUnit:test_assertEquals()
+    function TestLuaUnit:test_assertNotEquals()
         assertNotEquals( 1, 2 )
         assertError( assertNotEquals, 1, 1)
     end
