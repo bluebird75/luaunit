@@ -32,6 +32,24 @@ TestToto = {} --class
         assertEquals( self.s , 'hop' )
         assertEquals( type(self.a), 'number' )
     end
+
+    function TestToto:test4()
+        print( "some stuff test 4" )
+        assertNotEquals( self.a , 1 )
+    end
+
+    function TestToto:test5()
+        print( "some stuff test 5" )
+        assertTrue( self.a )
+        assertFalse( self.a )
+    end
+
+    function TestToto:test6()
+        print( "some stuff test 6" )
+        assertTrue( false )
+    end
+
+
 -- class TestToto
 
 TestTiti = {} --class
@@ -100,5 +118,5 @@ end
 lu = LuaUnit
 -- lu:setOutputType( "NIL" )
 -- lu:setOutputType( "TAP" )
-lu:setVerbosity( 0 )
+lu:setVerbosity( 1 )
 os.exit( lu:run() )
