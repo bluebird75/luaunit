@@ -223,6 +223,33 @@ TestLuaUnit = {} --class
         assertError( assertEquals, 1, 2)
     end
 
+    function TestLuaUnit:test_assertNotEquals()
+        assertNotEquals( 1, 2 )
+        assertError( assertNotEquals, 1, 1)
+    end
+
+    function TestLuaUnit:test_assertTrue()
+        assertTrue(true)
+        assertError( assertTrue, false)
+    end
+
+    function TestLuaUnit:test_assertFalse()
+        assertFalse(false)
+        assertError( assertFalse, true)
+    end
+
+    function TestLuaUnit:test_assertItemsEquals()
+        assertItemsEquals(nil, nil)
+        assertError(assertItemsEquals, {1}, {})
+        assertError(assertItemsEquals, nil, {1,2,3})
+        assertError(assertItemsEquals, {1,2,3}, nil)
+        assertItemsEquals({1,2,3}, {3,1,2})
+        assertItemsEquals({one=1,two=2,three=3}, {two=2,one=1,three=3})
+        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three=2})
+        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,four=4})
+        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three})
+    end
+
     function TestLuaUnit:test_prefixString()
         assertEquals( prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
