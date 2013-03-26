@@ -105,7 +105,10 @@ function assertItemsEquals(actual, expected)
 end
 
 assert_equals = assertEquals
+assert_not_equals = assertNotEquals
 assert_error = assertError
+assert_true = assertTrue
+assert_false = assertFalse
 
 function __genOrderedIndex( t )
     local orderedIndex = {}
