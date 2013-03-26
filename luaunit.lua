@@ -61,13 +61,13 @@ end
 
 function assertTrue(value)
     if not value then
-        error("expected: true\n actual: " ..mytostring(value), 2)
+        error("expected: true, actual: " ..mytostring(value), 2)
     end
 end
 
 function assertFalse(value)
     if value then
-        error("expected: false\n actual: " ..mytostring(value), 2)
+        error("expected: false, actual: " ..mytostring(value), 2)
     end
 end
 
