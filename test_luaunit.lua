@@ -84,6 +84,10 @@ TestLuaUnit = {} --class
         executedTests = {}
     end
 
+    ------------------------------------------------------------------
+    ---------[[                Utility Tests              ]]----------
+    ------------------------------------------------------------------
+
     function TestLuaUnit:test_orderedNextReturnsOrderedKeyValues()
         t1 = {}
         t1['aaa'] = 'abc'
@@ -178,6 +182,15 @@ TestLuaUnit = {} --class
         assertEquals( #t, 2 )
     end
 
+    function TestLuaUnit:test_prefixString()
+        assertEquals( prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
+    end
+
+
+    ------------------------------------------------------------------
+    ---------[[              Assertion Tests              ]]----------
+    ------------------------------------------------------------------
+
     function TestLuaUnit:test_assertError()
         local function f( v ) 
             v = v + 1
@@ -250,9 +263,9 @@ TestLuaUnit = {} --class
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three})
     end
 
-    function TestLuaUnit:test_prefixString()
-        assertEquals( prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
-    end
+    ------------------------------------------------------------------
+    ---------[[              Execution Tests              ]]----------
+    ------------------------------------------------------------------
 
     executedTests = {}
 
