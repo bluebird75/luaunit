@@ -232,23 +232,69 @@ TestLuaUnit = {} --class
     end
 
     function TestLuaUnit:test_assertEquals()
+        f = function() return true end
+        g = function() return true end
+        
         assertEquals( 1, 1 )
+        assertEquals( "abc", "abc" )
+        assertEquals( nil, nil )
+        assertEquals( true, true )
+        assertEquals( f, f)
+
         assertError( assertEquals, 1, 2)
+        assertError( assertEquals, 1, "abc" )
+        assertError( assertEquals, 0, nil )
+        assertError( assertEquals, false, nil )
+        assertError( assertEquals, true, 1 )
+        assertError( assertEquals, f, 1 )
+        assertError( assertEquals, f, g )
     end
 
     function TestLuaUnit:test_assertNotEquals()
+        f = function() return true end
+        g = function() return true end
+
         assertNotEquals( 1, 2 )
+        assertNotEquals( "abc", 2 )
+        assertNotEquals( "abc", "def" )
+        assertNotEquals( 1, 2)
+        assertNotEquals( 1, "abc" )
+        assertNotEquals( 0, nil )
+        assertNotEquals( false, nil )
+        assertNotEquals( true, 1 )
+        assertNotEquals( f, 1 )
+        assertNotEquals( f, g )
+        
         assertError( assertNotEquals, 1, 1)
+        assertError( assertNotEquals, "abc", "abc" )
+        assertError( assertNotEquals, nil, nil )
+        assertError( assertNotEquals, true, true )
+        assertError( assertNotEquals, f, f)
+
+    end
+
+    function TestLuaUnit:test_assertNotEqualsDifferentTypes2()
+        assertNotEquals( 2, "abc" )
     end
 
     function TestLuaUnit:test_assertTrue()
         assertTrue(true)
         assertError( assertTrue, false)
+        assertTrue(0)
+        assertTrue("abc")
+        assertError( assertTrue, nil )
+        assertTrue( function() return true end )
+        assertTrue( {} )
     end
 
     function TestLuaUnit:test_assertFalse()
         assertFalse(false)
         assertError( assertFalse, true)
+        assertFalse( nil )
+        assertError( assertFalse, 0 )
+        assertError( assertFalse, "abc" )
+        assertError( assertFalse, function() return true end )
+        assertError( assertFalse, {} )
     end
 
     function TestLuaUnit:test_assertItemsEquals()
