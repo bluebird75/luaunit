@@ -137,8 +137,11 @@ function assertFalse(value)
 end
 
 function assertNotEquals(actual, expected)
-    -- assert that two values are equal and calls error else
-    if  actual == expected  then
+    if type(actual) == 'table' and type(expected) == 'table' then
+        if _is_table_equals(actual, expected) then
+            error( errormsg(actual, expected), 2 )
+        end
+    elseif type(actual) == type(expected) and actual == expected  then
         error( errormsg(actual, expected), 2 )
     end
 end

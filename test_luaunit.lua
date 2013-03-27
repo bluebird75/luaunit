@@ -282,12 +282,15 @@ TestLuaUnit = {} --class
         assertNotEquals( true, 1 )
         assertNotEquals( f, 1 )
         assertNotEquals( f, g )
-        
+        assertNotEquals( {one=1,two=2,three=3}, true )
+        assertNotEquals( {one=1,two={1,2},three=3}, {two={2,1},three=3,one=1} )
+
         assertError( assertNotEquals, 1, 1)
         assertError( assertNotEquals, "abc", "abc" )
         assertError( assertNotEquals, nil, nil )
         assertError( assertNotEquals, true, true )
         assertError( assertNotEquals, f, f)
+        assertError( assertNotEquals, {one=1,two={1,{2,nil}},three=3}, {two={1,{2,nil}},three=3,one=1})
 
     end
 
