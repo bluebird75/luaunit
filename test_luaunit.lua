@@ -240,6 +240,12 @@ TestLuaUnit = {} --class
         assertEquals( nil, nil )
         assertEquals( true, true )
         assertEquals( f, f)
+        assertEquals( {1,2,3}, {1,2,3})
+        assertEquals( {one=1,two=2,three=3}, {one=1,two=2,three=3})
+        assertEquals( {one=1,two=2,three=3}, {two=2,three=3,one=1})
+        assertEquals( {one=1,two={1,2},three=3}, {two={1,2},three=3,one=1})
+        assertEquals( {one=1,two={1,{2,nil}},three=3}, {two={1,{2,nil}},three=3,one=1})
+        assertEquals( {nil}, {nil} )
 
         assertError( assertEquals, 1, 2)
         assertError( assertEquals, 1, "abc" )
@@ -248,6 +254,18 @@ TestLuaUnit = {} --class
         assertError( assertEquals, true, 1 )
         assertError( assertEquals, f, 1 )
         assertError( assertEquals, f, g )
+        assertError( assertEquals, {1,2,3}, {2,1,3} )
+        assertError( assertEquals, {1,2,3}, nil )
+        assertError( assertEquals, {1,2,3}, 1 )
+        assertError( assertEquals, {1,2,3}, true )
+        assertError( assertEquals, {1,2,3}, {one=1,two=2,three=3} )
+        assertError( assertEquals, {1,2,3}, {one=1,two=2,three=3,four=4} )
+        assertError( assertEquals, {one=1,two=2,three=3}, {2,1,3} )
+        assertError( assertEquals, {one=1,two=2,three=3}, nil )
+        assertError( assertEquals, {one=1,two=2,three=3}, 1 )
+        assertError( assertEquals, {one=1,two=2,three=3}, true )
+        assertError( assertEquals, {one=1,two=2,three=3}, {1,2,3} )
+        assertError( assertEquals, {one=1,two={1,2},three=3}, {two={2,1},three=3,one=1})
     end
 
     function TestLuaUnit:test_assertNotEquals()
@@ -303,10 +321,16 @@ TestLuaUnit = {} --class
         assertError(assertItemsEquals, nil, {1,2,3})
         assertError(assertItemsEquals, {1,2,3}, nil)
         assertItemsEquals({1,2,3}, {3,1,2})
+        assertItemsEquals({nil},{nil})
+        assertItemsEquals({1,{2,1},3}, {3,1,{1,2}})
         assertItemsEquals({one=1,two=2,three=3}, {two=2,one=1,three=3})
+        assertItemsEquals({one=1,two={1,2},three=3}, {two={2,1},one=1,three=3})
+        assertItemsEquals({one=1,two={1,{3,2,one=1}},three=3}, {two={{3,one=1,2},1},one=1,three=3})
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three=2})
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,four=4})
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three})
+        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,nil})
+        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1})
     end
 
     function TestLuaUnit:test_assertIsNumber()
@@ -366,6 +390,8 @@ TestLuaUnit = {} --class
     end
 
     function TestLuaUnit:test_assertIsFunction()
+        f = function() return true end
+
         assertError(assertIsFunction, 1)
         assertError(assertIsFunction, 1.4)
         assertError(assertIsFunction, "hi there!")
@@ -374,7 +400,7 @@ TestLuaUnit = {} --class
         assertError(assertIsFunction, {1,2,3})
         assertError(assertIsFunction, {1})
         assertError(assertIsFunction, false)
-        assertIsFunction(TestLuaUnit.test_assertIsNil)
+        assertIsFunction(f)
     end
     ------------------------------------------------------------------
     ---------[[              Execution Tests              ]]----------
