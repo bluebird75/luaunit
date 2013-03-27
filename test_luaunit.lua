@@ -309,6 +309,73 @@ TestLuaUnit = {} --class
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three})
     end
 
+    function TestLuaUnit:test_assertIsNumber()
+        assertIsNumber(1)
+        assertIsNumber(1.4)
+        assertError(assertIsNumber, "hi there!")
+        assertError(assertIsNumber, nil)
+        assertError(assertIsNumber, {})
+        assertError(assertIsNumber, {1,2,3})
+        assertError(assertIsNumber, {1})
+        assertError(assertIsTable, true)
+    end
+
+    function TestLuaUnit:test_assertIsString()
+        assertError(assertIsString, 1)
+        assertError(assertIsString, 1.4)
+        assertIsString("hi there!")
+        assertError(assertIsString, nil)
+        assertError(assertIsString, {})
+        assertError(assertIsString, {1,2,3})
+        assertError(assertIsString, {1})
+        assertError(assertIsTable, true)
+    end
+
+    function TestLuaUnit:test_assertIsTable()
+        assertError(assertIsTable, 1)
+        assertError(assertIsTable, 1.4)
+        assertError(assertIsTable, "hi there!")
+        assertError(assertIsTable, nil)
+        assertIsTable({})
+        assertIsTable({1,2,3})
+        assertIsTable({1})
+        assertError(assertIsTable, true)
+    end
+
+    function TestLuaUnit:test_assertIsBoolean()
+        assertError(assertIsBoolean, 1)
+        assertError(assertIsBoolean, 1.4)
+        assertError(assertIsBoolean, "hi there!")
+        assertError(assertIsBoolean, nil)
+        assertError(assertIsBoolean, {})
+        assertError(assertIsBoolean, {1,2,3})
+        assertError(assertIsBoolean, {1})
+        assertIsBoolean(true)
+        assertIsBoolean(false)
+    end
+
+    function TestLuaUnit:test_assertIsNil()
+        assertError(assertIsNil, 1)
+        assertError(assertIsNil, 1.4)
+        assertError(assertIsNil, "hi there!")
+        assertIsNil(nil)
+        assertError(assertIsNil, {})
+        assertError(assertIsNil, {1,2,3})
+        assertError(assertIsNil, {1})
+        assertError(assertIsNil, false)
+    end
+
+    function TestLuaUnit:test_assertIsFunction()
+        assertError(assertIsFunction, 1)
+        assertError(assertIsFunction, 1.4)
+        assertError(assertIsFunction, "hi there!")
+        assertError(assertIsFunction, nil)
+        assertError(assertIsFunction, {})
+        assertError(assertIsFunction, {1,2,3})
+        assertError(assertIsFunction, {1})
+        assertError(assertIsFunction, false)
+        assertIsFunction(TestLuaUnit.test_assertIsNil)
+    end
     ------------------------------------------------------------------
     ---------[[              Execution Tests              ]]----------
     ------------------------------------------------------------------

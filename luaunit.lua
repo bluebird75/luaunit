@@ -104,11 +104,53 @@ function assertItemsEquals(actual, expected)
     end
 end
 
+function assertIsNumber(value)
+    if type(value) ~= "number" then
+        error("expected: a number value, actual:" .. type(value))
+    end
+end
+
+function assertIsString(value)
+    if type(value) ~= "string" then
+        error("expected: a string value, actual:" .. type(value))
+    end
+end
+
+function assertIsTable(value)
+    if type(value) ~= "table" then
+        error("expected: a table value, actual:" .. type(value))
+    end
+end
+
+function assertIsBoolean(value)
+    if type(value) ~= "boolean" then
+        error("expected: a boolean value, actual:" .. type(value))
+    end
+end
+
+function assertIsNil(value)
+    if type(value) ~= "nil" then
+        error("expected: a nil value, actual:" .. type(value))
+    end
+end
+
+function assertIsFunction(value)
+    if type(value) ~= "function" then
+        error("expected: a function value, actual:" .. type(value))
+    end
+end
+
 assert_equals = assertEquals
 assert_not_equals = assertNotEquals
 assert_error = assertError
 assert_true = assertTrue
 assert_false = assertFalse
+assert_is_number = assertIsNumber
+assert_is_string = assertIsString
+assert_is_table = assertIsTable
+assert_is_boolean = assertIsBoolean
+assert_is_nil = assertIsNil
+assert_is_function = assertIsFunction
 
 function __genOrderedIndex( t )
     local orderedIndex = {}
