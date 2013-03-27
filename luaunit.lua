@@ -188,6 +188,18 @@ function assertIsFunction(value)
     end
 end
 
+function assertIs(actual, expected)
+    if actual ~= expected then
+        error( errormsg(actual, expected), 2 )
+    end
+end
+
+function assertNotIs(actual, expected)
+    if actual == expected then
+        error( errormsg(actual, expected), 2 )
+    end
+end
+
 assert_equals = assertEquals
 assert_not_equals = assertNotEquals
 assert_error = assertError
@@ -199,6 +211,8 @@ assert_is_table = assertIsTable
 assert_is_boolean = assertIsBoolean
 assert_is_nil = assertIsNil
 assert_is_function = assertIsFunction
+assert_is = assertIs
+assert_not_is = assertNotIs
 
 function __genOrderedIndex( t )
     local orderedIndex = {}

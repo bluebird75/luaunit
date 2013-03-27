@@ -405,6 +405,46 @@ TestLuaUnit = {} --class
         assertError(assertIsFunction, false)
         assertIsFunction(f)
     end
+
+    function TestLuaUnit:test_assertIs()
+        local f = function() return true end
+        local g = function() return true end
+        local temp = {}
+
+        assertIs(1,1)
+        assertIs(f,f)
+        assertIs(temp,temp)
+        temp = {a=1,{1,2},day="today"}
+        assertIs(temp,temp)
+
+        assertError(assertIs, 1, 2)
+        assertError(assertIs, 1.4, 1)
+        assertError(assertIs, "hi there!", "hola")
+        assertError(assertIs, nil, 1)
+        assertError(assertIs, {}, {})
+        assertError(assertIs, {1,2,3}, f)
+        assertError(assertIs, f, g)
+    end
+
+    function TestLuaUnit:test_assertNotIs()
+        local f = function() return true end
+        local g = function() return true end
+        local temp = {}
+
+        assertError( assertNotIs, 1,1 )
+        assertError( assertNotIs, f,f )
+        assertError( assertNotIs, temp,temp )
+        temp = {a=1,{1,2},day="today"}
+        assertError( assertNotIs, temp,temp)
+
+        assertNotIs(1, 2)
+        assertNotIs(1.4, 1)
+        assertNotIs("hi there!", "hola")
+        assertNotIs(nil, 1)
+        assertNotIs({}, {})
+        assertNotIs({1,2,3}, f)
+        assertNotIs(f, g)
+    end
     ------------------------------------------------------------------
     ---------[[              Execution Tests              ]]----------
     ------------------------------------------------------------------
