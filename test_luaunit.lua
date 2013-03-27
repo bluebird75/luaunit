@@ -240,6 +240,12 @@ TestLuaUnit = {} --class
         assertEquals( nil, nil )
         assertEquals( true, true )
         assertEquals( f, f)
+        assertEquals( {1,2,3}, {1,2,3})
+        assertEquals( {one=1,two=2,three=3}, {one=1,two=2,three=3})
+        assertEquals( {one=1,two=2,three=3}, {two=2,three=3,one=1})
+        assertEquals( {one=1,two={1,2},three=3}, {two={1,2},three=3,one=1})
+        assertEquals( {one=1,two={1,{2,nil}},three=3}, {two={1,{2,nil}},three=3,one=1})
+        assertEquals( {nil}, {nil} )
 
         assertError( assertEquals, 1, 2)
         assertError( assertEquals, 1, "abc" )
@@ -248,6 +254,18 @@ TestLuaUnit = {} --class
         assertError( assertEquals, true, 1 )
         assertError( assertEquals, f, 1 )
         assertError( assertEquals, f, g )
+        assertError( assertEquals, {1,2,3}, {2,1,3} )
+        assertError( assertEquals, {1,2,3}, nil )
+        assertError( assertEquals, {1,2,3}, 1 )
+        assertError( assertEquals, {1,2,3}, true )
+        assertError( assertEquals, {1,2,3}, {one=1,two=2,three=3} )
+        assertError( assertEquals, {1,2,3}, {one=1,two=2,three=3,four=4} )
+        assertError( assertEquals, {one=1,two=2,three=3}, {2,1,3} )
+        assertError( assertEquals, {one=1,two=2,three=3}, nil )
+        assertError( assertEquals, {one=1,two=2,three=3}, 1 )
+        assertError( assertEquals, {one=1,two=2,three=3}, true )
+        assertError( assertEquals, {one=1,two=2,three=3}, {1,2,3} )
+        assertError( assertEquals, {one=1,two={1,2},three=3}, {two={2,1},three=3,one=1})
     end
 
     function TestLuaUnit:test_assertNotEquals()
@@ -264,12 +282,15 @@ TestLuaUnit = {} --class
         assertNotEquals( true, 1 )
         assertNotEquals( f, 1 )
         assertNotEquals( f, g )
-        
+        assertNotEquals( {one=1,two=2,three=3}, true )
+        assertNotEquals( {one=1,two={1,2},three=3}, {two={2,1},three=3,one=1} )
+
         assertError( assertNotEquals, 1, 1)
         assertError( assertNotEquals, "abc", "abc" )
         assertError( assertNotEquals, nil, nil )
         assertError( assertNotEquals, true, true )
         assertError( assertNotEquals, f, f)
+        assertError( assertNotEquals, {one=1,two={1,{2,nil}},three=3}, {two={1,{2,nil}},three=3,one=1})
 
     end
 
@@ -303,12 +324,127 @@ TestLuaUnit = {} --class
         assertError(assertItemsEquals, nil, {1,2,3})
         assertError(assertItemsEquals, {1,2,3}, nil)
         assertItemsEquals({1,2,3}, {3,1,2})
+        assertItemsEquals({nil},{nil})
+        assertItemsEquals({1,{2,1},3}, {3,1,{1,2}})
         assertItemsEquals({one=1,two=2,three=3}, {two=2,one=1,three=3})
+        assertItemsEquals({one=1,two={1,2},three=3}, {two={2,1},one=1,three=3})
+        assertItemsEquals({one=1,two={1,{3,2,one=1}},three=3}, {two={{3,one=1,2},1},one=1,three=3})
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three=2})
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,four=4})
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three})
+        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,nil})
+        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1})
     end
 
+    function TestLuaUnit:test_assertIsNumber()
+        assertIsNumber(1)
+        assertIsNumber(1.4)
+        assertError(assertIsNumber, "hi there!")
+        assertError(assertIsNumber, nil)
+        assertError(assertIsNumber, {})
+        assertError(assertIsNumber, {1,2,3})
+        assertError(assertIsNumber, {1})
+        assertError(assertIsTable, true)
+    end
+
+    function TestLuaUnit:test_assertIsString()
+        assertError(assertIsString, 1)
+        assertError(assertIsString, 1.4)
+        assertIsString("hi there!")
+        assertError(assertIsString, nil)
+        assertError(assertIsString, {})
+        assertError(assertIsString, {1,2,3})
+        assertError(assertIsString, {1})
+        assertError(assertIsTable, true)
+    end
+
+    function TestLuaUnit:test_assertIsTable()
+        assertError(assertIsTable, 1)
+        assertError(assertIsTable, 1.4)
+        assertError(assertIsTable, "hi there!")
+        assertError(assertIsTable, nil)
+        assertIsTable({})
+        assertIsTable({1,2,3})
+        assertIsTable({1})
+        assertError(assertIsTable, true)
+    end
+
+    function TestLuaUnit:test_assertIsBoolean()
+        assertError(assertIsBoolean, 1)
+        assertError(assertIsBoolean, 1.4)
+        assertError(assertIsBoolean, "hi there!")
+        assertError(assertIsBoolean, nil)
+        assertError(assertIsBoolean, {})
+        assertError(assertIsBoolean, {1,2,3})
+        assertError(assertIsBoolean, {1})
+        assertIsBoolean(true)
+        assertIsBoolean(false)
+    end
+
+    function TestLuaUnit:test_assertIsNil()
+        assertError(assertIsNil, 1)
+        assertError(assertIsNil, 1.4)
+        assertError(assertIsNil, "hi there!")
+        assertIsNil(nil)
+        assertError(assertIsNil, {})
+        assertError(assertIsNil, {1,2,3})
+        assertError(assertIsNil, {1})
+        assertError(assertIsNil, false)
+    end
+
+    function TestLuaUnit:test_assertIsFunction()
+        f = function() return true end
+
+        assertError(assertIsFunction, 1)
+        assertError(assertIsFunction, 1.4)
+        assertError(assertIsFunction, "hi there!")
+        assertError(assertIsFunction, nil)
+        assertError(assertIsFunction, {})
+        assertError(assertIsFunction, {1,2,3})
+        assertError(assertIsFunction, {1})
+        assertError(assertIsFunction, false)
+        assertIsFunction(f)
+    end
+
+    function TestLuaUnit:test_assertIs()
+        local f = function() return true end
+        local g = function() return true end
+        local temp = {}
+
+        assertIs(1,1)
+        assertIs(f,f)
+        assertIs(temp,temp)
+        temp = {a=1,{1,2},day="today"}
+        assertIs(temp,temp)
+
+        assertError(assertIs, 1, 2)
+        assertError(assertIs, 1.4, 1)
+        assertError(assertIs, "hi there!", "hola")
+        assertError(assertIs, nil, 1)
+        assertError(assertIs, {}, {})
+        assertError(assertIs, {1,2,3}, f)
+        assertError(assertIs, f, g)
+    end
+
+    function TestLuaUnit:test_assertNotIs()
+        local f = function() return true end
+        local g = function() return true end
+        local temp = {}
+
+        assertError( assertNotIs, 1,1 )
+        assertError( assertNotIs, f,f )
+        assertError( assertNotIs, temp,temp )
+        temp = {a=1,{1,2},day="today"}
+        assertError( assertNotIs, temp,temp)
+
+        assertNotIs(1, 2)
+        assertNotIs(1.4, 1)
+        assertNotIs("hi there!", "hola")
+        assertNotIs(nil, 1)
+        assertNotIs({}, {})
+        assertNotIs({1,2,3}, f)
+        assertNotIs(f, g)
+    end
     ------------------------------------------------------------------
     ---------[[              Execution Tests              ]]----------
     ------------------------------------------------------------------

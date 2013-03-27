@@ -52,9 +52,74 @@ function errormsg(actual, expected)
     return errorMsg
 end
 
+function _table_contains(t, element)
+    local _, value, v
+
+    if t then
+        for _, value in pairs(t) do
+            if type(value) == type(element) then
+                if type(element) == 'table' then
+                    if _is_table_items_equals(v, expected) then
+                        return true
+                    end
+                else
+                    if value == element then
+                        return true
+                    end
+                end
+            end
+        end
+    end
+    return false
+end
+
+function _is_table_items_equals(actual, expected, parent_key, items)
+    if (type(actual) == 'table') and (type(expected) == 'table') then
+        local k,v
+        for k,v in pairs(actual) do
+            if not _table_contains(expected, v) then
+                return false
+            end
+        end
+        return true
+    elseif type(actual) ~= type(expected) then
+        return false
+    elseif actual == expected then
+        return true
+    end
+    return false
+end
+
+function _is_table_equals(actual, expected)
+    if (type(actual) == 'table') and (type(expected) == 'table') then
+        local k,v
+        for k,v in ipairs(actual) do
+            if not _is_table_equals(v, expected[k]) then
+                return false
+            end
+        end
+        for k,v in pairs(actual) do
+            if (type(k) ~= 'number') and (not _is_table_equals(v, expected[k])) then
+                return false
+            end
+        end
+        return true
+    elseif type(actual) ~= type(expected) then
+        return false
+    elseif actual == expected then
+        return true
+    end
+    return false
+end
+
 function assertEquals(actual, expected)
-    -- assert that two values are equal and calls error else
-    if  actual ~= expected  then
+    if type(actual) == 'table' and type(expected) == 'table' then
+        if not _is_table_equals(actual, expected) then
+            error( errormsg(actual, expected), 2 )
+        end
+    elseif type(actual) ~= type(expected) then
+        error( errormsg(actual, expected), 2 )
+    elseif actual ~= expected then
         error( errormsg(actual, expected), 2 )
     end
 end
@@ -72,34 +137,65 @@ function assertFalse(value)
 end
 
 function assertNotEquals(actual, expected)
-    -- assert that two values are equal and calls error else
-    if  actual == expected  then
+    if type(actual) == 'table' and type(expected) == 'table' then
+        if _is_table_equals(actual, expected) then
+            error( errormsg(actual, expected), 2 )
+        end
+    elseif type(actual) == type(expected) and actual == expected  then
         error( errormsg(actual, expected), 2 )
     end
 end
 
 function assertItemsEquals(actual, expected)
-    local flag_error = false
-
-    if not actual and not expected then
-        -- nil == nil
-        return
-    elseif not actual or not expected then
-        flag_error = true
-    elseif #actual ~= #expected then
-        flag_error = true
-    else
-        table.sort(actual)
-        table.sort(expected)
-        for k,v in pairs(actual) do
-            if not expected[k] or expected[k] ~= v then
-                flag_error = true
-                break
-            end
-        end
+    if not _is_table_items_equals(actual, expected, true) then
+        error( errormsg(actual, expected), 2 )
     end
+end
 
-    if flag_error then
+function assertIsNumber(value)
+    if type(value) ~= 'number' then
+        error("expected: a number value, actual:" .. type(value))
+    end
+end
+
+function assertIsString(value)
+    if type(value) ~= "string" then
+        error("expected: a string value, actual:" .. type(value))
+    end
+end
+
+function assertIsTable(value)
+    if type(value) ~= 'table' then
+        error("expected: a table value, actual:" .. type(value))
+    end
+end
+
+function assertIsBoolean(value)
+    if type(value) ~= 'boolean' then
+        error("expected: a boolean value, actual:" .. type(value))
+    end
+end
+
+function assertIsNil(value)
+    if type(value) ~= "nil" then
+        error("expected: a nil value, actual:" .. type(value))
+    end
+end
+
+function assertIsFunction(value)
+    if type(value) ~= 'function' then
+        error("expected: a function value, actual:" .. type(value))
+    end
+end
+
+function assertIs(actual, expected)
+    if actual ~= expected then
+        error( errormsg(actual, expected), 2 )
+    end
+end
+
+function assertNotIs(actual, expected)
+    if actual == expected then
         error( errormsg(actual, expected), 2 )
     end
 end
@@ -109,6 +205,14 @@ assert_not_equals = assertNotEquals
 assert_error = assertError
 assert_true = assertTrue
 assert_false = assertFalse
+assert_is_number = assertIsNumber
+assert_is_string = assertIsString
+assert_is_table = assertIsTable
+assert_is_boolean = assertIsBoolean
+assert_is_nil = assertIsNil
+assert_is_function = assertIsFunction
+assert_is = assertIs
+assert_not_is = assertNotIs
 
 function __genOrderedIndex( t )
     local orderedIndex = {}
