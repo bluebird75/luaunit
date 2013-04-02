@@ -670,6 +670,8 @@ LuaUnit_MT = { __index = LuaUnit }
         -- If arguments are passed, they must be strings of the class names 
         -- that you want to run
         local runner = self:new()
+        local outputType = os.getenv("outputType")
+        if outputType then LuaUnit:setOutputType(outputType) end
         return runner:runSuite(...)
     end
 
