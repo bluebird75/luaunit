@@ -337,6 +337,54 @@ TapOutput_MT = { __index = TapOutput }
 
 -- class TapOutput end
 
+----------------------------------------------------------------
+--                     class JUnitOutput
+----------------------------------------------------------------
+
+JUnitOutput = { -- class
+    __class__ = 'JUnitOutput',
+    runner = nil,
+    result = nil,
+    xmlFile = nil,
+}
+JUnitOutput_MT = { __index = JUnitOutput }
+
+    function JUnitOutput:new()
+        local t = {}
+        t.verbosity = 0
+        setmetatable( t, JUnitOutput_MT )
+        return t
+    end
+    function JUnitOutput:startSuite() end
+    function JUnitOutput:startClass(className) 
+       xmlFile = io.open(string.lower(className) .. ".xml", "w")
+       xmlFile:write('<testsuite name="' .. className .. '">\n')
+    end
+    function JUnitOutput:startTest(testName)
+       if xmlFile then xmlFile:write('<testcase classname="' .. self.result.currentClassName .. '" name="'.. testName .. '">') end
+    end
+
+    function JUnitOutput:addFailure( errorMsg, stackTrace )
+       if xmlFile then 
+          xmlFile:write('<failure type="lua runtime error">' ..errorMsg .. '</failure>\n') 
+          xmlFile:write('<system-err><![CDATA[' ..stackTrace .. ']]></system-err>\n')
+       end
+    end
+
+    function JUnitOutput:endTest(testHasFailure)
+       if xmlFile then xmlFile:write('</testcase>\n') end
+    end
+
+    function JUnitOutput:endClass() end
+
+    function JUnitOutput:endSuite()
+       if xmlFile then xmlFile:write('</testsuite>\n') end
+       if xmlFile then xmlFile:close() end
+       return self.result.failureCount
+    end
+
+
+-- class TapOutput end
 
 ----------------------------------------------------------------
 --                     class TextOutput
@@ -556,6 +604,10 @@ LuaUnit_MT = { __index = LuaUnit }
             self.outputType = TapOutput
             return
         end 
+        if outputType:upper() == "JUNIT" then
+            self.outputType = JUnitOutput
+            return
+        end 
         if outputType:upper() == "TEXT" then
             self.outputType = TextOutput
             return
@@ -722,6 +774,8 @@ LuaUnit_MT = { __index = LuaUnit }
         -- If arguments are passed, they must be strings of the class names 
         -- that you want to run
         local runner = self:new()
+        local outputType = os.getenv("outputType")
+        if outputType then LuaUnit:setOutputType(outputType) end
         return runner:runSuite(...)
     end
 
