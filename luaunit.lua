@@ -92,14 +92,27 @@ end
 
 function _is_table_equals(actual, expected)
     if (type(actual) == 'table') and (type(expected) == 'table') then
+        if (#actual ~= #expected) then
+            return false
+        end
         local k,v
         for k,v in ipairs(actual) do
             if not _is_table_equals(v, expected[k]) then
                 return false
             end
         end
+        for k,v in ipairs(expected) do
+            if not _is_table_equals(v, actual[k]) then
+                return false
+            end
+        end
         for k,v in pairs(actual) do
-            if (type(k) ~= 'number') and (not _is_table_equals(v, expected[k])) then
+            if not _is_table_equals(v, expected[k]) then
+                return false
+            end
+        end
+        for k,v in pairs(expected) do
+            if not _is_table_equals(v, actual[k]) then
                 return false
             end
         end
@@ -139,10 +152,10 @@ end
 function assertNotEquals(actual, expected)
     if type(actual) == 'table' and type(expected) == 'table' then
         if _is_table_equals(actual, expected) then
-            error( errormsg(actual, expected), 2 )
+            error( 'NOT ' .. errormsg(actual, expected), 2 )
         end
     elseif type(actual) == type(expected) and actual == expected  then
-        error( errormsg(actual, expected), 2 )
+        error( 'NOT ' .. errormsg(actual, expected), 2 )
     end
 end
 
@@ -448,7 +461,7 @@ TextOutput_MT = { -- class
     end
 
     function TextOutput:displayOneFailedTest( failure )
-        testName, errorMsg, stackTrace = unpack( failure )
+        testName, errorMsg, stackTrace = table.unpack( failure )
         print(">>> "..testName.." failed")
         print( errorMsg )
         if self.verbosity > 1 then
@@ -810,4 +823,3 @@ LuaUnit_MT = { __index = LuaUnit }
         return self.result.failureCount
     end
 -- class LuaUnit
-
