@@ -445,6 +445,81 @@ TestLuaUnit = {} --class
         assertNotIs({1,2,3}, f)
         assertNotIs(f, g)
     end
+
+    function TestLuaUnit:test_assertTableNum()
+        assertEquals( 3, 3 )
+        assertNotEquals( 3, 4 )
+        assertEquals( {3}, {3} )
+        assertNotEquals( {3}, 3 )
+        assertNotEquals( {3}, {4} )
+        assertEquals( {x=1}, {x=1} )
+        assertNotEquals( {x=1}, {x=2} )
+        assertNotEquals( {x=1}, {y=1} )
+    end
+    function TestLuaUnit:test_assertTableStr()
+        assertEquals( '3', '3' )
+        assertNotEquals( '3', '4' )
+        assertEquals( {'3'}, {'3'} )
+        assertNotEquals( {'3'}, '3' )
+        assertNotEquals( {'3'}, {'4'} )
+        assertEquals( {x='1'}, {x='1'} )
+        assertNotEquals( {x='1'}, {x='2'} )
+        assertNotEquals( {x='1'}, {y='1'} )
+    end
+    function TestLuaUnit:test_assertTableLev2()
+        assertEquals( {x={'a'}}, {x={'a'}} )
+        assertNotEquals( {x={'a'}}, {x={'b'}} )
+        assertNotEquals( {x={'a'}}, {z={'a'}} )
+        assertEquals( {{x=1}}, {{x=1}} )
+        assertNotEquals( {{x=1}}, {{y=1}} )
+        assertEquals( {{x='a'}}, {{x='a'}} )
+        assertNotEquals( {{x='a'}}, {{x='b'}} )
+    end
+    function TestLuaUnit:test_assertTableList()
+        assertEquals( {3,4,5}, {3,4,5} )
+        assertNotEquals( {3,4,5}, {3,4,6} )
+        assertNotEquals( {3,4,5}, {3,5,4} )
+        assertEquals( {3,4,x=5}, {3,4,x=5} )
+        assertNotEquals( {3,4,x=5}, {3,4,x=6} )
+        assertNotEquals( {3,4,x=5}, {3,x=4,5} )
+        assertNotEquals( {3,4,5}, {2,3,4,5} )
+        assertNotEquals( {3,4,5}, {3,2,4,5} )
+        assertNotEquals( {3,4,5}, {3,4,5,6} )
+    end
+
+    function TestLuaUnit:test_assertTableNil()
+        assertEquals( {3,4,5}, {3,4,5} )
+        assertNotEquals( {3,4,5}, {nil,3,4,5} )
+        assertNotEquals( {3,4,5}, {nil,4,5} )
+        assertEquals( {3,4,5}, {3,4,5,nil} ) -- lua quirk
+        assertNotEquals( {3,4,5}, {3,4,nil} )
+        assertNotEquals( {3,4,5}, {3,nil,5} )
+        assertNotEquals( {3,4,5}, {3,4,nil,5} )
+    end
+    
+    function TestLuaUnit:test_assertTableNilFront()
+        assertEquals( {nil,4,5}, {nil,4,5} )
+        assertNotEquals( {nil,4,5}, {nil,44,55} )
+        assertEquals( {nil,'4','5'}, {nil,'4','5'} )
+        assertNotEquals( {nil,'4','5'}, {nil,'44','55'} )
+        assertEquals( {nil,{4,5}}, {nil,{4,5}} )
+        assertNotEquals( {nil,{4,5}}, {nil,{44,55}} )
+        assertNotEquals( {nil,{4}}, {nil,{44}} )
+        assertEquals( {nil,{x=4,5}}, {nil,{x=4,5}} )
+        assertEquals( {nil,{x=4,5}}, {nil,{5,x=4}} ) -- lua quirk
+        assertEquals( {nil,{x=4,y=5}}, {nil,{y=5,x=4}} ) -- lua quirk
+        assertNotEquals( {nil,{x=4,5}}, {nil,{y=4,5}} )
+    end
+
+    function TestLuaUnit:test_assertTableAdditions()
+        assertEquals( {1,2,3}, {1,2,3} )
+        assertNotEquals( {1,2,3}, {1,2,3,4} )
+        assertNotEquals( {1,2,3,4}, {1,2,3} )
+        assertEquals( {1,x=2,3}, {1,x=2,3} )
+        assertNotEquals( {1,x=2,3}, {1,x=2,3,y=4} )
+        assertNotEquals( {1,x=2,3,y=4}, {1,x=2,3} )
+    end
+
     ------------------------------------------------------------------
     ---------[[              Execution Tests              ]]----------
     ------------------------------------------------------------------
