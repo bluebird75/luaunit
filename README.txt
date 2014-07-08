@@ -21,6 +21,12 @@ See file example_with_luaunit.lua to understand how to use it.
 History:
 ========
 
+
+version 1.6: (in progress)
+------------
+- more assertions
+
+
 version 1.5: 8. Nov 2012
 ------------
 - compatibility with Lua 5.1 and 5.2

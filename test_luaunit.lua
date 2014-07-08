@@ -60,18 +60,6 @@ TestMock = {}
         assertEquals( #m.calls, 2 )
     end
 
-function printSeq( seq )
-    if type(seq) ~= 'table' then
-        print( mytostring(seq) )
-        return
-    end
-
-    for i,v in ipairs(seq) do
-        print( '['..i..']: '..mytostring(v) )
-    end
-end
-
-
 TestLuaUnit = {} --class
 
     TestLuaUnit.__class__ = 'TestLuaUnit'
@@ -185,6 +173,8 @@ TestLuaUnit = {} --class
     function TestLuaUnit:test_prefixString()
         assertEquals( prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
+
+
 
 
     ------------------------------------------------------------------
@@ -527,7 +517,9 @@ TestLuaUnit = {} --class
     end
 
     ------------------------------------------------------------------
+    ---------[[                                           ]]----------
     ---------[[              Execution Tests              ]]----------
+    ---------[[                                           ]]----------
     ------------------------------------------------------------------
 
     executedTests = {}

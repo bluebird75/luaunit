@@ -1,3 +1,13 @@
+Notes:
+- why isItemsEquals ?
+- why _table_contains ?
+- is_table_equals new implementation risks of printing inverted error message
+- itemsEquals sorts tables before comparing them ? Side-effect ?
+- assertIs should print the actual value and not just the type
+- assertIs and assertNotIs are used for what ?
+- add internal unit tests for string conversion
+
+
 -[[ More tests ]]
 - strip luaunit stack more intelligently
 - table assertions
@@ -11,6 +21,7 @@
 - add assertIsNumber, assertIsXXX
 - allow to skip tests
 - add other types of output
+- validate test output (TAP, ...)
 
 Done:
 x compatibilty tests with several version of lua
