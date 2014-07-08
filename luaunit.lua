@@ -25,49 +25,44 @@ function assertError(f, ...)
     error( "Expected an error but no error generated", 2 )
 end
 
-function table.val_to_str ( v )
-    if "string" == type( v ) then
-        v = string.gsub( v, "\n", "\\n" )
-        if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
-            return "'" .. v .. "'"
-        end
-        return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
-    else
-        return "table" == type( v ) and table.tostring( v ) or
-            tostring( v )
-    end
-end
-
-function table.key_to_str ( k )
-    if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
-        return k
-    else
-        return "[" .. table.val_to_str( k ) .. "]"
-    end
-end
-
 function table.tostring( tbl )
     local result, done = {}, {}
     for k, v in ipairs( tbl ) do
-        table.insert( result, table.val_to_str( v ) )
+        table.insert( result, mytostring( v ) )
         done[ k ] = true
     end
 
-    -- tried to use ordredPairs for a nicer display of table content
+    -- tried to use orderedPairs for a nicer display of table content
     -- but this fails when the key type is not consistent as lua can
     -- not sort a mixed type table
     for k, v in pairs( tbl ) do
         if not done[ k ] then
             table.insert( result,
-                table.key_to_str( k ) .. "=" .. table.val_to_str( v ) )
+                mytostring( k ) .. "=" .. mytostring( v ) )
         end
     end
     return "{" .. table.concat( result, "," ) .. "}"
 end
 
-function mytostring( v )
-    if type(v) == 'string' then
-        return '"'..v..'"'
+function mytostring( v, keeponeline )
+    --[[ Better string conversion, to display nice variable content:
+    For strings, if keeponeline is set to true, string is displayed on one line, with visible \n
+    * string are enclosed with " by default, or with ' if string contains a "
+    * if table is a class, display class name
+    * tables are expanded
+    ]]--
+    if "string" == type( v ) then
+        if keeponeline then
+            v = string.gsub( v, "\n", "\\n" )
+        end
+
+        -- use clever delimiters according to content:
+        -- if string contains ", enclose with '
+        -- if string contains ', enclose with "
+        if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
+            return "'" .. v .. "'"
+        end
+        return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
     end
     if type(v) == 'table' then
         if v.__class__ then
@@ -309,7 +304,7 @@ end
 
 function orderedPairs(t)
     -- Equivalent of the pairs() function on tables. Allows to iterate
-    -- in order
+    -- in sorted order. This works only if the key types are all the same
     return orderedNext, t, nil
 end
 

@@ -179,6 +179,9 @@ TestLuaUnit = {} --class
         assertEquals( mytostring( 1.1 ), "1.1" )
         assertEquals( mytostring( 'abc' ), '"abc"' )
         assertEquals( mytostring( 'ab\ncd' ), '"ab\ncd"' )
+        assertEquals( mytostring( 'ab\ncd', true ), '"ab\\ncd"' )
+        assertEquals( mytostring( 'ab"cd' ), "'ab\"cd'" )
+        assertEquals( mytostring( "ab'cd" ), '"ab\'cd"' )
         assertEquals( mytostring( {1,2,3} ), "{1,2,3}" )
     end
 
