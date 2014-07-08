@@ -36,3 +36,4 @@ _ReSharper*/
 *.sublime-project
 *.lsln
 *.sublime-workspace
+junitxml
