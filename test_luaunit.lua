@@ -76,56 +76,56 @@ TestLuaUnit = {} --class
     ---------[[                Utility Tests              ]]----------
     ------------------------------------------------------------------
 
-    function TestLuaUnit:test_orderedNextReturnsOrderedKeyValues()
+    function TestLuaUnit:test_sortedNextReturnsSortedKeyValues()
         t1 = {}
         t1['aaa'] = 'abc'
         t1['ccc'] = 'def'
         t1['bbb'] = 'cba'
 
-        k, v = orderedNext( t1, nil )
+        k, v = sortedNext( t1, nil )
         assertEquals( k, 'aaa' )
         assertEquals( v, 'abc' )
-        k, v = orderedNext( t1, k )
+        k, v = sortedNext( t1, k )
         assertEquals( k, 'bbb' )
         assertEquals( v, 'cba' )
-        k, v = orderedNext( t1, k )
+        k, v = sortedNext( t1, k )
         assertEquals( k, 'ccc' )
         assertEquals( v, 'def' )
-        k, v = orderedNext( t1, k )
+        k, v = sortedNext( t1, k )
         assertEquals( k, nil )
         assertEquals( v, nil )
     end
 
-    function TestLuaUnit:test_orderedNextWorksTwiceOnTable()
+    function TestLuaUnit:test_sortedNextWorksTwiceOnTable()
         t1 = {}
         t1['aaa'] = 'abc'
         t1['ccc'] = 'def'
         t1['bbb'] = 'cba'
 
-        k, v = orderedNext( t1, nil )
-        k, v = orderedNext( t1, k )
-        k, v = orderedNext( t1, nil )
+        k, v = sortedNext( t1, nil )
+        k, v = sortedNext( t1, k )
+        k, v = sortedNext( t1, nil )
         assertEquals( k, 'aaa' )
         assertEquals( v, 'abc' )
     end
 
-    function TestLuaUnit:test_orderedNextWorksOnTwoTables()
+    function TestLuaUnit:test_sortedNextWorksOnTwoTables()
         t1 = { aaa = 'abc', ccc = 'def' }
         t2 = { ['3'] = '33', ['1'] = '11' }
 
-        k, v = orderedNext( t1, nil )
+        k, v = sortedNext( t1, nil )
         assertEquals( k, 'aaa' )
         assertEquals( v, 'abc' )
 
-        k, v = orderedNext( t2, nil )
+        k, v = sortedNext( t2, nil )
         assertEquals( k, '1' )
         assertEquals( v, '11' )
 
-        k, v = orderedNext( t1, 'aaa' )
+        k, v = sortedNext( t1, 'aaa' )
         assertEquals( k, 'ccc' )
         assertEquals( v, 'def' )
 
-        k, v = orderedNext( t2, '1' )
+        k, v = sortedNext( t2, '1' )
         assertEquals( k, '3' )
         assertEquals( v, '33' )
     end

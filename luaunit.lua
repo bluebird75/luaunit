@@ -32,7 +32,7 @@ function table.tostring( tbl )
         done[ k ] = true
     end
 
-    -- tried to use orderedPairs for a nicer display of table content
+    -- tried to use sortedPairs for a nicer display of table content
     -- but this fails when the key type is not consistent as lua can
     -- not sort a mixed type table
     for k, v in pairs( tbl ) do
@@ -262,34 +262,37 @@ assert_is_function = assertIsFunction
 assert_is = assertIs
 assert_not_is = assertNotIs
 
-function __genOrderedIndex( t )
-    local orderedIndex = {}
+function __genSortedIndex( t )
+    local sortedIndex = {}
     for key,_ in pairs(t) do
-        table.insert( orderedIndex, key )
+        table.insert( sortedIndex, key )
     end
-    table.sort( orderedIndex )
-    return orderedIndex
+    table.sort( sortedIndex )
+    return sortedIndex
 end
 
-function orderedNext(t, state)
+function sortedNext(t, state)
     -- Equivalent of the next() function of table iteration, but returns the
-    -- keys in the alphabetic order. We use a temporary ordered key table that
+    -- keys in the alphabetic order. We use a temporary sorted key table that
     -- is stored in the table being iterated.
 
-    --print("orderedNext: state = "..tostring(state) )
+    -- the algorithm cost is suboptimal. We iterate everytime through
+    -- the sorted index to fetch the next key
+
+    --print("sortedNext: state = "..tostring(state) )
     local key
     if state == nil then
         -- the first time, generate the index
-        t.__orderedIndex = nil
-        t.__orderedIndex = __genOrderedIndex( t )
-        key = t.__orderedIndex[1]
+        t.__sortedIndex = nil
+        t.__sortedIndex = __genSortedIndex( t )
+        key = t.__sortedIndex[1]
         return key, t[key]
     end
     -- fetch the next value
     key = nil
-    for i = 1,#t.__orderedIndex do
-        if t.__orderedIndex[i] == state then
-            key = t.__orderedIndex[i+1]
+    for i = 1,#t.__sortedIndex do
+        if t.__sortedIndex[i] == state then
+            key = t.__sortedIndex[i+1]
         end
     end
 
@@ -298,14 +301,14 @@ function orderedNext(t, state)
     end
 
     -- no more value to return, cleanup
-    t.__orderedIndex = nil
+    t.__sortedIndex = nil
     return
 end
 
-function orderedPairs(t)
+function sortedPairs(t)
     -- Equivalent of the pairs() function on tables. Allows to iterate
     -- in sorted order. This works only if the key types are all the same
-    return orderedNext, t, nil
+    return sortedNext, t, nil
 end
 
 function strsplit(delimiter, text)
@@ -796,7 +799,7 @@ LuaUnit_MT = { __index = LuaUnit }
             className = someName
             classInstance = someInstance
 
-            for methodName, methodInstance in orderedPairs(classInstance) do
+            for methodName, methodInstance in sortedPairs(classInstance) do
                 if LuaUnit.isFunction(methodInstance) and string.sub(methodName, 1, 4) == "test" then
                     self:_runTestMethod( className, methodName, classInstance, methodInstance )
                 end
