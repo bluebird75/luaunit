@@ -7,6 +7,9 @@ TestToto = {} --class
         -- set up tests
         self.a = 1
         self.s = 'hop' 
+        self.t1 = {1,2,3}
+        self.t2 = {one=1,two=2,three=3}
+        self.t3 = {1,2,three=3}
     end
 
     function TestToto:test1_withFailure()
@@ -47,6 +50,12 @@ TestToto = {} --class
     function TestToto:test6()
         print( "some stuff test 6" )
         assertTrue( false )
+    end
+
+    function TestToto:test7()
+        -- assertEquals( {1,2}, self.t1 )
+        -- assertEquals( {1,2}, self.t2 )
+        assertEquals( {1,2}, self.t3 )
     end
 
 
