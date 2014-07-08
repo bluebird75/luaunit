@@ -302,10 +302,13 @@ TestLuaUnit = {} --class
         assertTrue(true)
         assertError( assertTrue, false)
         assertTrue(0)
+        assertTrue(1)
+        assertTrue("")
         assertTrue("abc")
         assertError( assertTrue, nil )
         assertTrue( function() return true end )
         assertTrue( {} )
+        assertTrue( { 1 } )
     end
 
     function TestLuaUnit:test_assertFalse()
@@ -313,9 +316,12 @@ TestLuaUnit = {} --class
         assertError( assertFalse, true)
         assertFalse( nil )
         assertError( assertFalse, 0 )
+        assertError( assertFalse, 1 )
+        assertError( assertFalse, "" )
         assertError( assertFalse, "abc" )
         assertError( assertFalse, function() return true end )
         assertError( assertFalse, {} )
+        assertError( assertFalse, { 1 } )
     end
 
     function TestLuaUnit:test_assertItemsEquals()
