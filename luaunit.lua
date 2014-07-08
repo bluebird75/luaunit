@@ -52,6 +52,10 @@ function table.tostring( tbl )
         table.insert( result, table.val_to_str( v ) )
         done[ k ] = true
     end
+
+    -- tried to use ordredPairs for a nicer display of table content
+    -- but this fails when the key type is not consistent as lua can
+    -- not sort a mixed type table
     for k, v in pairs( tbl ) do
         if not done[ k ] then
             table.insert( result,

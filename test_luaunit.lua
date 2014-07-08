@@ -174,6 +174,13 @@ TestLuaUnit = {} --class
         assertEquals( prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
 
+    function TestLuaUnit:test_mytostring()
+        assertEquals( mytostring( 1 ), "1" )
+        assertEquals( mytostring( 1.1 ), "1.1" )
+        assertEquals( mytostring( 'abc' ), '"abc"' )
+        assertEquals( mytostring( 'ab\ncd' ), '"ab\ncd"' )
+        assertEquals( mytostring( {1,2,3} ), "{1,2,3}" )
+    end
 
 
 
