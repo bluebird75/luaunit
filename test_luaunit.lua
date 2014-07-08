@@ -180,6 +180,13 @@ TestLuaUnit = {} --class
         assertEquals( prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
 
+
+    function TestLuaUnit:test_table_keytostring()
+        assertEquals( table.keytostring( 'a' ), 'a' )
+        assertEquals( table.keytostring( 'a0' ), 'a0' )
+        assertEquals( table.keytostring( 'a0!' ), '"a0!"' )
+    end
+
     function TestLuaUnit:test_mytostring()
         assertEquals( mytostring( 1 ), "1" )
         assertEquals( mytostring( 1.1 ), "1.1" )
@@ -189,7 +196,7 @@ TestLuaUnit = {} --class
         assertEquals( mytostring( 'ab"cd' ), "'ab\"cd'" )
         assertEquals( mytostring( "ab'cd" ), '"ab\'cd"' )
         assertEquals( mytostring( {1,2,3} ), "{1,2,3}" )
-        assertEquals( mytostring( {a=1,bb=2,ab=3} ), '{"a"=1,"ab"=3,"bb"=2}' )
+        assertEquals( mytostring( {a=1,bb=2,ab=3} ), '{a=1,ab=3,bb=2}' )
     end
 
 

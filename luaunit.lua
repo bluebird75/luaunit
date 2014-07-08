@@ -25,6 +25,16 @@ function assertError(f, ...)
     error( "Expected an error but no error generated", 2 )
 end
 
+function table.keytostring(k)
+    -- like mytostring but do not enclose with "" if the string is just alphanumerical
+    -- this is better for displaying table keys who are often simple strings
+    if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
+        return k
+    else
+        return mytostring(k)
+    end
+end
+
 function table.tostring( tbl )
     local result, done = {}, {}
     for k, v in ipairs( tbl ) do
@@ -35,7 +45,7 @@ function table.tostring( tbl )
     for k, v in sortedPairs( tbl ) do
         if not done[ k ] then
             table.insert( result,
-                mytostring( k ) .. "=" .. mytostring( v ) )
+                table.keytostring( k ) .. "=" .. mytostring( v, true ) )
         end
     end
     return "{" .. table.concat( result, "," ) .. "}"
