@@ -76,6 +76,12 @@ TestLuaUnit = {} --class
     ---------[[                Utility Tests              ]]----------
     ------------------------------------------------------------------
 
+    function TestLuaUnit:test_genSortedIndex()
+        assertEquals( __genSortedIndex( { 2, 5, 7} ), {1,2,3} )
+        assertEquals( __genSortedIndex( { a='1', h='2', c='3' } ), {'a', 'c', 'h'} )
+        assertEquals( __genSortedIndex( { 1, 'z', a='1', h='2', c='3' } ), { 1, 2, 'a', 'c', 'h' } )
+    end
+
     function TestLuaUnit:test_sortedNextReturnsSortedKeyValues()
         t1 = {}
         t1['aaa'] = 'abc'
@@ -183,6 +189,7 @@ TestLuaUnit = {} --class
         assertEquals( mytostring( 'ab"cd' ), "'ab\"cd'" )
         assertEquals( mytostring( "ab'cd" ), '"ab\'cd"' )
         assertEquals( mytostring( {1,2,3} ), "{1,2,3}" )
+        assertEquals( mytostring( {a=1,bb=2,ab=3} ), '{"a"=1,"ab"=3,"bb"=2}' )
     end
 
 

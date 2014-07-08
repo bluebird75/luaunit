@@ -32,10 +32,7 @@ function table.tostring( tbl )
         done[ k ] = true
     end
 
-    -- tried to use sortedPairs for a nicer display of table content
-    -- but this fails when the key type is not consistent as lua can
-    -- not sort a mixed type table
-    for k, v in pairs( tbl ) do
+    for k, v in sortedPairs( tbl ) do
         if not done[ k ] then
             table.insert( result,
                 mytostring( k ) .. "=" .. mytostring( v ) )
@@ -263,11 +260,24 @@ assert_is = assertIs
 assert_not_is = assertNotIs
 
 function __genSortedIndex( t )
+    local sortedIndexStr = {}
+    local sortedIndexInt = {}
     local sortedIndex = {}
     for key,_ in pairs(t) do
-        table.insert( sortedIndex, key )
+        if type(key) == 'string' then
+            table.insert( sortedIndexStr, key )
+        else
+            table.insert( sortedIndexInt, key )
+        end
     end
-    table.sort( sortedIndex )
+    table.sort( sortedIndexInt )
+    table.sort( sortedIndexStr )
+    for _,value in ipairs(sortedIndexInt) do
+        table.insert( sortedIndex, value )
+    end
+    for _,value in ipairs(sortedIndexStr) do
+        table.insert( sortedIndex, value )
+    end
     return sortedIndex
 end
 
