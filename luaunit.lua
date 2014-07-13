@@ -80,6 +80,10 @@ function mytostring( v, keeponeline )
     return tostring(v)
 end
 
+----------------------------------------------------------------
+--                     assertions
+----------------------------------------------------------------
+
 function errormsg(actual, expected)
     local errorMsg
     if not USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS then
@@ -201,6 +205,32 @@ function assertNotEquals(actual, expected)
     end
 end
 
+function assertStrContains( str, sub )
+    -- this relies on lua string.find function
+    -- a string always contains the empty string
+    if string.find(str, sub, 1, true) == nil then
+        error( 'Error, substring "'..sub..'" was not found in string "'..str..'"')
+    end
+end
+
+function assertStrIContains( str, sub )
+    -- this relies on lua string.find function
+    -- a string always contains the empty string
+    lstr = string.lower(str)
+    lsub = string.lower(sub)
+    if string.find(lstr, lsub, 1, true) == nil then
+        error( 'Error, substring "'..sub..'" was not found (case insensitively) in string "'..str..'"')
+    end
+end
+
+function assertNotStrContains( str, sub )
+    -- this relies on lua string.find function
+    -- a string always contains the empty string
+    if string.find(str, sub, 1, true) ~= nil then
+        error( 'Error, substring "'..sub..'" was found in string "'..str..'"')
+    end
+end
+
 function assertItemsEquals(actual, expected)
     if not _is_table_items_equals(actual, expected, true) then
         error( errormsg(actual, expected), 2 )
@@ -269,6 +299,9 @@ assert_is_function = assertIsFunction
 assert_is = assertIs
 assert_not_is = assertNotIs
 
+----------------------------------------------------------------
+--                     helpers
+----------------------------------------------------------------
 function __genSortedIndex( t )
     local sortedIndexStr = {}
     local sortedIndexInt = {}
@@ -519,7 +552,7 @@ TextOutput_MT = { -- class
     end
 
     function TextOutput:displayOneFailedTest( failure )
-        testName, errorMsg, stackTrace = table.unpack( failure )
+        testName, errorMsg, stackTrace = unpack( failure )
         print(">>> "..testName.." failed")
         print( errorMsg )
         if self.verbosity > 1 then

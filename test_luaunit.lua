@@ -202,7 +202,9 @@ TestLuaUnit = {} --class
 
 
     ------------------------------------------------------------------
+
     ---------[[              Assertion Tests              ]]----------
+
     ------------------------------------------------------------------
 
     function TestLuaUnit:test_assertError()
@@ -337,6 +339,45 @@ TestLuaUnit = {} --class
         assertError( assertFalse, {} )
         assertError( assertFalse, { 1 } )
     end
+
+    function TestLuaUnit:test_assertStrContains()
+        assertStrContains( 'abcdef', 'abc' )
+        assertStrContains( 'abcdef', 'bcd' )
+        assertStrContains( 'abcdef', 'abcdef' )
+        assertStrContains( 'abc0', 0 )
+        assertError( assertStrContains, 'ABCDEF', 'abc' )
+        assertError( assertStrContains, '', 'abc' )
+        assertStrContains( 'abcdef', '' )
+        assertError( assertStrContains, 'abcdef', 'abcx' )
+        assertError( assertStrContains, 'abcdef', 'abcdefg' )
+        assertError( assertStrContains, 'abcdef', 0 ) 
+        assertError( assertStrContains, 'abcdef', {} ) 
+        assertError( assertStrContains, 'abcdef', nil ) 
+    end
+
+    function TestLuaUnit:test_assertStrIContains()
+        assertStrIContains( 'ABcdEF', 'aBc' )
+        assertStrIContains( 'abCDef', 'bcd' )
+        assertStrIContains( 'abcdef', 'abcDef' )
+        assertError( assertStrIContains, '', 'aBc' )
+        assertStrIContains( 'abcDef', '' )
+        assertError( assertStrIContains, 'abcdef', 'abcx' )
+        assertError( assertStrIContains, 'abcdef', 'abcdefg' )
+    end
+
+    function TestLuaUnit:test_assertNotStrContains()
+        assertError( assertNotStrContains, 'abcdef', 'abc' )
+        assertError( assertNotStrContains, 'abcdef', 'bcd' )
+        assertError( assertNotStrContains, 'abcdef', 'abcdef' )
+        assertNotStrContains( '', 'abc' )
+        assertError( assertNotStrContains, 'abcdef', '' )
+        assertError( assertNotStrContains, 'abc0', 0 )
+        assertNotStrContains( 'abcdef', 'abcx' )
+        assertNotStrContains( 'abcdef', 'abcdefg' )
+        assertError( assertNotStrContains, 'abcdef', {} ) 
+        assertError( assertNotStrContains, 'abcdef', nil ) 
+    end
+
 
     function TestLuaUnit:test_assertItemsEquals()
         assertItemsEquals(nil, nil)
