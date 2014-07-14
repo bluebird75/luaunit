@@ -60,31 +60,24 @@ TestMock = {}
         assertEquals( #m.calls, 2 )
     end
 
-TestLuaUnit = {} --class
-
-    TestLuaUnit.__class__ = 'TestLuaUnit'
-
-    function TestLuaUnit:tearDown()
-        executedTests = {}
-    end
-
-    function TestLuaUnit:setUp()
-        executedTests = {}
-    end
-
 ------------------------------------------------------------------
 --
 --                      Utility Tests              
 --
 ------------------------------------------------------------------
 
-    function TestLuaUnit:test_genSortedIndex()
+TestLuaUnitUtilities = {} --class
+
+    TestLuaUnitUtilities.__class__ = 'TestLuaUnitUtilities'
+
+
+    function TestLuaUnitUtilities:test_genSortedIndex()
         assertEquals( __genSortedIndex( { 2, 5, 7} ), {1,2,3} )
         assertEquals( __genSortedIndex( { a='1', h='2', c='3' } ), {'a', 'c', 'h'} )
         assertEquals( __genSortedIndex( { 1, 'z', a='1', h='2', c='3' } ), { 1, 2, 'a', 'c', 'h' } )
     end
 
-    function TestLuaUnit:test_sortedNextReturnsSortedKeyValues()
+    function TestLuaUnitUtilities:test_sortedNextReturnsSortedKeyValues()
         t1 = {}
         t1['aaa'] = 'abc'
         t1['ccc'] = 'def'
@@ -104,7 +97,7 @@ TestLuaUnit = {} --class
         assertEquals( v, nil )
     end
 
-    function TestLuaUnit:test_sortedNextWorksTwiceOnTable()
+    function TestLuaUnitUtilities:test_sortedNextWorksTwiceOnTable()
         t1 = {}
         t1['aaa'] = 'abc'
         t1['ccc'] = 'def'
@@ -117,7 +110,7 @@ TestLuaUnit = {} --class
         assertEquals( v, 'abc' )
     end
 
-    function TestLuaUnit:test_sortedNextWorksOnTwoTables()
+    function TestLuaUnitUtilities:test_sortedNextWorksOnTwoTables()
         t1 = { aaa = 'abc', ccc = 'def' }
         t2 = { ['3'] = '33', ['1'] = '11' }
 
@@ -138,7 +131,7 @@ TestLuaUnit = {} --class
         assertEquals( v, '33' )
     end
 
-    function TestLuaUnit:test_strSplitOneCharDelim()
+    function TestLuaUnitUtilities:test_strSplitOneCharDelim()
         t = strsplit( '\n', '1\n22\n333\n' )
         assertEquals( t[1], '1')
         assertEquals( t[2], '22')
@@ -147,7 +140,7 @@ TestLuaUnit = {} --class
         assertEquals( #t, 4 )
     end
 
-    function TestLuaUnit:test_strSplit3CharDelim()
+    function TestLuaUnitUtilities:test_strSplit3CharDelim()
         t = strsplit( '2\n3', '1\n22\n332\n3' )
         assertEquals( t[1], '1\n2')
         assertEquals( t[2], '3')
@@ -155,7 +148,7 @@ TestLuaUnit = {} --class
         assertEquals( #t, 3 )
     end
 
-    function TestLuaUnit:test_strSplitOnFailure()
+    function TestLuaUnitUtilities:test_strSplitOnFailure()
         s1 = 'd:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:467: expected: 1, actual: 2\n'
         s2 = [[stack traceback:
     .\luaunit.lua:443: in function <.\luaunit.lua:442>
@@ -178,18 +171,18 @@ TestLuaUnit = {} --class
         assertEquals( #t, 2 )
     end
 
-    function TestLuaUnit:test_prefixString()
+    function TestLuaUnitUtilities:test_prefixString()
         assertEquals( prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
 
 
-    function TestLuaUnit:test_table_keytostring()
+    function TestLuaUnitUtilities:test_table_keytostring()
         assertEquals( table.keytostring( 'a' ), 'a' )
         assertEquals( table.keytostring( 'a0' ), 'a0' )
         assertEquals( table.keytostring( 'a0!' ), '"a0!"' )
     end
 
-    function TestLuaUnit:test_mytostring()
+    function TestLuaUnitUtilities:test_mytostring()
         assertEquals( mytostring( 1 ), "1" )
         assertEquals( mytostring( 1.1 ), "1.1" )
         assertEquals( mytostring( 'abc' ), '"abc"' )
@@ -209,7 +202,11 @@ TestLuaUnit = {} --class
 --
 ------------------------------------------------------------------
 
-    function TestLuaUnit:test_assertError()
+TestLuaUnitAssertions = {} --class
+
+    TestLuaUnitAssertions.__class__ = 'TestLuaUnitAssertions'
+
+    function TestLuaUnitAssertions:test_assertError()
         local function f( v ) 
             v = v + 1
         end
@@ -249,7 +246,7 @@ TestLuaUnit = {} --class
         assertEquals( has_error, true )
     end
 
-    function TestLuaUnit:test_assertEquals()
+    function TestLuaUnitAssertions:test_assertEquals()
         f = function() return true end
         g = function() return true end
         
@@ -286,7 +283,7 @@ TestLuaUnit = {} --class
         assertError( assertEquals, {one=1,two={1,2},three=3}, {two={2,1},three=3,one=1})
     end
 
-    function TestLuaUnit:test_assertNotEquals()
+    function TestLuaUnitAssertions:test_assertNotEquals()
         f = function() return true end
         g = function() return true end
 
@@ -312,11 +309,11 @@ TestLuaUnit = {} --class
 
     end
 
-    function TestLuaUnit:test_assertNotEqualsDifferentTypes2()
+    function TestLuaUnitAssertions:test_assertNotEqualsDifferentTypes2()
         assertNotEquals( 2, "abc" )
     end
 
-    function TestLuaUnit:test_assertTrue()
+    function TestLuaUnitAssertions:test_assertTrue()
         assertTrue(true)
         assertError( assertTrue, false)
         assertTrue(0)
@@ -329,7 +326,7 @@ TestLuaUnit = {} --class
         assertTrue( { 1 } )
     end
 
-    function TestLuaUnit:test_assertFalse()
+    function TestLuaUnitAssertions:test_assertFalse()
         assertFalse(false)
         assertError( assertFalse, true)
         assertFalse( nil )
@@ -342,7 +339,7 @@ TestLuaUnit = {} --class
         assertError( assertFalse, { 1 } )
     end
 
-    function TestLuaUnit:test_assertStrContains()
+    function TestLuaUnitAssertions:test_assertStrContains()
         assertStrContains( 'abcdef', 'abc' )
         assertStrContains( 'abcdef', 'bcd' )
         assertStrContains( 'abcdef', 'abcdef' )
@@ -357,7 +354,7 @@ TestLuaUnit = {} --class
         assertError( assertStrContains, 'abcdef', nil ) 
     end
 
-    function TestLuaUnit:test_assertStrIContains()
+    function TestLuaUnitAssertions:test_assertStrIContains()
         assertStrIContains( 'ABcdEF', 'aBc' )
         assertStrIContains( 'abCDef', 'bcd' )
         assertStrIContains( 'abcdef', 'abcDef' )
@@ -367,7 +364,7 @@ TestLuaUnit = {} --class
         assertError( assertStrIContains, 'abcdef', 'abcdefg' )
     end
 
-    function TestLuaUnit:test_assertNotStrContains()
+    function TestLuaUnitAssertions:test_assertNotStrContains()
         assertError( assertNotStrContains, 'abcdef', 'abc' )
         assertError( assertNotStrContains, 'abcdef', 'bcd' )
         assertError( assertNotStrContains, 'abcdef', 'abcdef' )
@@ -381,7 +378,7 @@ TestLuaUnit = {} --class
     end
 
 
-    function TestLuaUnit:test_assertItemsEquals()
+    function TestLuaUnitAssertions:test_assertItemsEquals()
         assertItemsEquals(nil, nil)
         assertError(assertItemsEquals, {1}, {})
         assertError(assertItemsEquals, nil, {1,2,3})
@@ -399,7 +396,7 @@ TestLuaUnit = {} --class
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1})
     end
 
-    function TestLuaUnit:test_assertIsNumber()
+    function TestLuaUnitAssertions:test_assertIsNumber()
         assertIsNumber(1)
         assertIsNumber(1.4)
         assertError(assertIsNumber, "hi there!")
@@ -410,7 +407,7 @@ TestLuaUnit = {} --class
         assertError(assertIsTable, true)
     end
 
-    function TestLuaUnit:test_assertIsString()
+    function TestLuaUnitAssertions:test_assertIsString()
         assertError(assertIsString, 1)
         assertError(assertIsString, 1.4)
         assertIsString("hi there!")
@@ -421,7 +418,7 @@ TestLuaUnit = {} --class
         assertError(assertIsTable, true)
     end
 
-    function TestLuaUnit:test_assertIsTable()
+    function TestLuaUnitAssertions:test_assertIsTable()
         assertError(assertIsTable, 1)
         assertError(assertIsTable, 1.4)
         assertError(assertIsTable, "hi there!")
@@ -432,7 +429,7 @@ TestLuaUnit = {} --class
         assertError(assertIsTable, true)
     end
 
-    function TestLuaUnit:test_assertIsBoolean()
+    function TestLuaUnitAssertions:test_assertIsBoolean()
         assertError(assertIsBoolean, 1)
         assertError(assertIsBoolean, 1.4)
         assertError(assertIsBoolean, "hi there!")
@@ -444,7 +441,7 @@ TestLuaUnit = {} --class
         assertIsBoolean(false)
     end
 
-    function TestLuaUnit:test_assertIsNil()
+    function TestLuaUnitAssertions:test_assertIsNil()
         assertError(assertIsNil, 1)
         assertError(assertIsNil, 1.4)
         assertError(assertIsNil, "hi there!")
@@ -455,7 +452,7 @@ TestLuaUnit = {} --class
         assertError(assertIsNil, false)
     end
 
-    function TestLuaUnit:test_assertIsFunction()
+    function TestLuaUnitAssertions:test_assertIsFunction()
         f = function() return true end
 
         assertError(assertIsFunction, 1)
@@ -469,7 +466,7 @@ TestLuaUnit = {} --class
         assertIsFunction(f)
     end
 
-    function TestLuaUnit:test_assertIs()
+    function TestLuaUnitAssertions:test_assertIs()
         local f = function() return true end
         local g = function() return true end
         local temp = {}
@@ -489,7 +486,7 @@ TestLuaUnit = {} --class
         assertError(assertIs, f, g)
     end
 
-    function TestLuaUnit:test_assertNotIs()
+    function TestLuaUnitAssertions:test_assertNotIs()
         local f = function() return true end
         local g = function() return true end
         local temp = {}
@@ -509,7 +506,7 @@ TestLuaUnit = {} --class
         assertNotIs(f, g)
     end
 
-    function TestLuaUnit:test_assertTableNum()
+    function TestLuaUnitAssertions:test_assertTableNum()
         assertEquals( 3, 3 )
         assertNotEquals( 3, 4 )
         assertEquals( {3}, {3} )
@@ -519,7 +516,7 @@ TestLuaUnit = {} --class
         assertNotEquals( {x=1}, {x=2} )
         assertNotEquals( {x=1}, {y=1} )
     end
-    function TestLuaUnit:test_assertTableStr()
+    function TestLuaUnitAssertions:test_assertTableStr()
         assertEquals( '3', '3' )
         assertNotEquals( '3', '4' )
         assertEquals( {'3'}, {'3'} )
@@ -529,7 +526,7 @@ TestLuaUnit = {} --class
         assertNotEquals( {x='1'}, {x='2'} )
         assertNotEquals( {x='1'}, {y='1'} )
     end
-    function TestLuaUnit:test_assertTableLev2()
+    function TestLuaUnitAssertions:test_assertTableLev2()
         assertEquals( {x={'a'}}, {x={'a'}} )
         assertNotEquals( {x={'a'}}, {x={'b'}} )
         assertNotEquals( {x={'a'}}, {z={'a'}} )
@@ -538,7 +535,7 @@ TestLuaUnit = {} --class
         assertEquals( {{x='a'}}, {{x='a'}} )
         assertNotEquals( {{x='a'}}, {{x='b'}} )
     end
-    function TestLuaUnit:test_assertTableList()
+    function TestLuaUnitAssertions:test_assertTableList()
         assertEquals( {3,4,5}, {3,4,5} )
         assertNotEquals( {3,4,5}, {3,4,6} )
         assertNotEquals( {3,4,5}, {3,5,4} )
@@ -550,7 +547,7 @@ TestLuaUnit = {} --class
         assertNotEquals( {3,4,5}, {3,4,5,6} )
     end
 
-    function TestLuaUnit:test_assertTableNil()
+    function TestLuaUnitAssertions:test_assertTableNil()
         assertEquals( {3,4,5}, {3,4,5} )
         assertNotEquals( {3,4,5}, {nil,3,4,5} )
         assertNotEquals( {3,4,5}, {nil,4,5} )
@@ -560,7 +557,7 @@ TestLuaUnit = {} --class
         assertNotEquals( {3,4,5}, {3,4,nil,5} )
     end
     
-    function TestLuaUnit:test_assertTableNilFront()
+    function TestLuaUnitAssertions:test_assertTableNilFront()
         assertEquals( {nil,4,5}, {nil,4,5} )
         assertNotEquals( {nil,4,5}, {nil,44,55} )
         assertEquals( {nil,'4','5'}, {nil,'4','5'} )
@@ -574,7 +571,7 @@ TestLuaUnit = {} --class
         assertNotEquals( {nil,{x=4,5}}, {nil,{y=4,5}} )
     end
 
-    function TestLuaUnit:test_assertTableAdditions()
+    function TestLuaUnitAssertions:test_assertTableAdditions()
         assertEquals( {1,2,3}, {1,2,3} )
         assertNotEquals( {1,2,3}, {1,2,3,4} )
         assertNotEquals( {1,2,3,4}, {1,2,3} )
@@ -585,11 +582,30 @@ TestLuaUnit = {} --class
 
 ------------------------------------------------------------------
 --
+--                       Error message tests
+--
+------------------------------------------------------------------
+
+
+
+
+------------------------------------------------------------------
+--
 --                       Execution Tests 
 --
 ------------------------------------------------------------------
 
-    executedTests = {}
+TestLuaUnitExecution = {} --class
+
+    TestLuaUnitExecution.__class__ = 'TestLuaUnitExecution'
+
+    function TestLuaUnitExecution:tearDown()
+        executedTests = {}
+    end
+
+    function TestLuaUnitExecution:setUp()
+        executedTests = {}
+    end
 
     MyTestToto1 = {} --class
         function MyTestToto1:test1() table.insert( executedTests, "MyTestToto1:test1" ) end
@@ -598,16 +614,16 @@ TestLuaUnit = {} --class
         function MyTestToto1:testa() table.insert( executedTests, "MyTestToto1:testa" ) end
         function MyTestToto1:test2() table.insert( executedTests, "MyTestToto1:test2" ) end
 
-    MyTestWithFailures = {}
+    MyTestWithFailures = {} --class
         function MyTestWithFailures:testWithFailure1() assertEquals(1, 2) end
         function MyTestWithFailures:testWithFailure2() assertError( function() end ) end
         function MyTestWithFailures:testOk() end
 
-    MyTestOk = {}
+    MyTestOk = {} --class
         function MyTestOk:testOk1() end
         function MyTestOk:testOk2() end
 
-    function TestLuaUnit:test_MethodsAreExecutedInRightOrder()
+    function TestLuaUnitExecution:test_MethodsAreExecutedInRightOrder()
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuite( 'MyTestToto1' )
@@ -619,7 +635,7 @@ TestLuaUnit = {} --class
         assertEquals( executedTests[5], "MyTestToto1:testb" )
     end
 
-    function TestLuaUnit:testRunSomeTestByName( )
+    function TestLuaUnitExecution:testRunSomeTestByName( )
         assertEquals( #executedTests, 0 )
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
@@ -627,7 +643,7 @@ TestLuaUnit = {} --class
         assertEquals( #executedTests, 5 )
     end
 
-    function TestLuaUnit:testRunSomeTestByGlobalInstance( )
+    function TestLuaUnitExecution:testRunSomeTestByGlobalInstance( )
         assertEquals( #executedTests, 0 )
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
@@ -635,7 +651,7 @@ TestLuaUnit = {} --class
         assertEquals( #executedTests, 5 )
     end
 
-    function TestLuaUnit:testRunSomeTestByLocalInstance( )
+    function TestLuaUnitExecution:testRunSomeTestByLocalInstance( )
         MyLocalTestToto1 = {} --class
         function MyLocalTestToto1:test1() table.insert( executedTests, "MyLocalTestToto1:test1" ) end
  
@@ -647,7 +663,7 @@ TestLuaUnit = {} --class
         assertEquals( executedTests[1], 'MyLocalTestToto1:test1')
     end
 
-    function TestLuaUnit:testRunTestByTestFunction()
+    function TestLuaUnitExecution:testRunTestByTestFunction()
         local function mytest()
             table.insert( executedTests, "mytest" )
         end
@@ -661,7 +677,7 @@ TestLuaUnit = {} --class
     end
 
 
-    function TestLuaUnit:testRunReturnsNumberOfFailures()
+    function TestLuaUnitExecution:testRunReturnsNumberOfFailures()
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
         ret = runner:runSuite( 'MyTestWithFailures' )
@@ -671,7 +687,7 @@ TestLuaUnit = {} --class
         assertEquals(ret, 0)
     end
 
-    function TestLuaUnit:testTestCountAndFailCount()
+    function TestLuaUnitExecution:testTestCountAndFailCount()
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuite( 'MyTestWithFailures' )
@@ -683,7 +699,7 @@ TestLuaUnit = {} --class
         assertEquals( runner.result.failureCount, 0)
     end
 
-    function TestLuaUnit:testRunTestMethod()
+    function TestLuaUnitExecution:testRunTestMethod()
         local myExecutedTests = {}
         local MyTestWithSetupTeardown = {}
             function MyTestWithSetupTeardown:setUp()    table.insert( myExecutedTests, 'setUp' ) end
@@ -700,7 +716,7 @@ TestLuaUnit = {} --class
         assertEquals( #myExecutedTests, 3)
     end
 
-    function TestLuaUnit:testWithSetupTeardownErrors1()
+    function TestLuaUnitExecution:testWithSetupTeardownErrors1()
         local myExecutedTests = {}
 
         local MyTestWithSetupError = {}
@@ -718,7 +734,7 @@ TestLuaUnit = {} --class
         assertEquals( #myExecutedTests, 2)
     end
 
-    function TestLuaUnit:testWithSetupTeardownErrors2()
+    function TestLuaUnitExecution:testWithSetupTeardownErrors2()
         local myExecutedTests = {}
 
         local MyTestWithSetupError = {}
@@ -737,7 +753,7 @@ TestLuaUnit = {} --class
         assertEquals( #myExecutedTests, 3)
     end
 
-    function TestLuaUnit:testWithSetupTeardownErrors3()
+    function TestLuaUnitExecution:testWithSetupTeardownErrors3()
         local myExecutedTests = {}
 
         local MyTestWithSetupError = {}
@@ -755,7 +771,7 @@ TestLuaUnit = {} --class
         assertEquals( #myExecutedTests, 2)
     end
 
-    function TestLuaUnit:testWithSetupTeardownErrors4()
+    function TestLuaUnitExecution:testWithSetupTeardownErrors4()
         local myExecutedTests = {}
 
         local MyTestWithSetupError = {}
@@ -773,7 +789,7 @@ TestLuaUnit = {} --class
         assertEquals( #myExecutedTests, 2)
     end
 
-    function TestLuaUnit:testWithSetupTeardownErrors5()
+    function TestLuaUnitExecution:testWithSetupTeardownErrors5()
         local myExecutedTests = {}
 
         local MyTestWithSetupError = {}
@@ -792,7 +808,7 @@ TestLuaUnit = {} --class
         assertEquals( #myExecutedTests, 3)
     end
 
-    function TestLuaUnit:testOutputInterface()
+    function TestLuaUnitExecution:testOutputInterface()
         local runner = LuaUnit:new()
         runner.outputType = Mock
         runner:runSuite( 'MyTestWithFailures', 'MyTestOk' )
