@@ -5,25 +5,36 @@ Notes:
 - itemsEquals sorts tables before comparing them ? Side-effect ?
 - assertIs should print the actual value and not just the type
 - assertIs and assertNotIs are used for what ?
-- add internal unit tests for string conversion
 
 
--[[ More tests ]]
+TODO:
+- distinguish errors and failures
+- better error display of assertIsXXX functions
+- test failures path of output
+- move all assertions together
+- make all assertions use the errormsg function
 - strip luaunit stack more intelligently
-- table assertions
-- sequence asserts
 - control verbosity and output type with command line
+- choose which tests to run with include/exclude rules
 - more user documentation
 - display time to run all tests
 - make sure test suite ends when running tests with RunByTestClass or RunByTestMethod
 - add assertAlmostEquals for floats
-- add assertContains for strings
-- add assertIsNumber, assertIsXXX
+- add assertMatch for strings
 - allow to skip tests
 - add other types of output
 - validate test output (TAP, ...)
+- better error messages for table assertions:
+	+ expected length of X, got Y
+	+ keys differing in table 1 and 2
+
+Nice to have: stack unwrapping like in py.test
 
 Done:
+x add assertContains for strings
+x add assertIsNumber, assertIsXXX
+x table assertions
+x sequence asserts
 x compatibilty tests with several version of lua
 x add assertNotEquals
 
