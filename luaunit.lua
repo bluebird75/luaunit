@@ -13,7 +13,7 @@ argv = arg
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
 assertEquals( expected, actual ).
 ]]--
-ORDER_EXPECTED_ACTUAL = true
+ORDER_ACTUAL_EXPECTED = true
 
 DEFAULT_VERBOSITY = 1
 
@@ -252,12 +252,12 @@ end
 
 function errormsg(actual, expected)
     local errorMsg
-    if not ORDER_EXPECTED_ACTUAL then
+    if not ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
     if type(expected) == 'string' then
-        errorMsg = "\nexpected: "..mytostring(expected).."\n"..
-                         "actual  : "..mytostring(actual).."\n"
+        errorMsg = "expected: "..mytostring(expected).."\n"..
+                         "actual: "..mytostring(actual).."\n"
     else
         errorMsg = "expected: "..mytostring(expected)..", actual: "..mytostring(actual)
     end
