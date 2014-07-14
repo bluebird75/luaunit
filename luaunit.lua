@@ -17,291 +17,12 @@ USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS = true
 
 DEFAULT_VERBOSITY = 1
 
-function assertError(f, ...)
-    -- assert that calling f with the arguments will raise an error
-    -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
-    local has_error, error_msg = not pcall( f, ... )
-    if has_error then return end 
-    error( "Expected an error but no error generated", 2 )
-end
-
-function table.keytostring(k)
-    -- like mytostring but do not enclose with "" if the string is just alphanumerical
-    -- this is better for displaying table keys who are often simple strings
-    if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
-        return k
-    else
-        return mytostring(k)
-    end
-end
-
-function table.tostring( tbl )
-    local result, done = {}, {}
-    for k, v in ipairs( tbl ) do
-        table.insert( result, mytostring( v ) )
-        done[ k ] = true
-    end
-
-    for k, v in sortedPairs( tbl ) do
-        if not done[ k ] then
-            table.insert( result,
-                table.keytostring( k ) .. "=" .. mytostring( v, true ) )
-        end
-    end
-    return "{" .. table.concat( result, "," ) .. "}"
-end
-
-function mytostring( v, keeponeline )
-    --[[ Better string conversion, to display nice variable content:
-    For strings, if keeponeline is set to true, string is displayed on one line, with visible \n
-    * string are enclosed with " by default, or with ' if string contains a "
-    * if table is a class, display class name
-    * tables are expanded
-    ]]--
-    if "string" == type( v ) then
-        if keeponeline then
-            v = string.gsub( v, "\n", "\\n" )
-        end
-
-        -- use clever delimiters according to content:
-        -- if string contains ", enclose with '
-        -- if string contains ', enclose with "
-        if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
-            return "'" .. v .. "'"
-        end
-        return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
-    end
-    if type(v) == 'table' then
-        if v.__class__ then
-            return string.gsub( tostring(v), 'table', v.__class__ )
-        end
-        return table.tostring(v)
-    end
-    return tostring(v)
-end
-
 ----------------------------------------------------------------
---                     assertions
+--
+--                 general utility functions
+--
 ----------------------------------------------------------------
 
-function errormsg(actual, expected)
-    local errorMsg
-    if not USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS then
-        expected, actual = actual, expected
-    end
-    if type(expected) == 'string' then
-        errorMsg = "\nexpected: "..mytostring(expected).."\n"..
-                         "actual  : "..mytostring(actual).."\n"
-    else
-        errorMsg = "expected: "..mytostring(expected)..", actual: "..mytostring(actual)
-    end
-    return errorMsg
-end
-
-function _table_contains(t, element)
-    local _, value, v
-
-    if t then
-        for _, value in pairs(t) do
-            if type(value) == type(element) then
-                if type(element) == 'table' then
-                    if _is_table_items_equals(v, expected) then
-                        return true
-                    end
-                else
-                    if value == element then
-                        return true
-                    end
-                end
-            end
-        end
-    end
-    return false
-end
-
-function _is_table_items_equals(actual, expected, parent_key, items)
-    if (type(actual) == 'table') and (type(expected) == 'table') then
-        local k,v
-        for k,v in pairs(actual) do
-            if not _table_contains(expected, v) then
-                return false
-            end
-        end
-        return true
-    elseif type(actual) ~= type(expected) then
-        return false
-    elseif actual == expected then
-        return true
-    end
-    return false
-end
-
-function _is_table_equals(actual, expected)
-    if (type(actual) == 'table') and (type(expected) == 'table') then
-        if (#actual ~= #expected) then
-            return false
-        end
-        local k,v
-        for k,v in ipairs(actual) do
-            if not _is_table_equals(v, expected[k]) then
-                return false
-            end
-        end
-        for k,v in ipairs(expected) do
-            if not _is_table_equals(v, actual[k]) then
-                return false
-            end
-        end
-        for k,v in pairs(actual) do
-            if not _is_table_equals(v, expected[k]) then
-                return false
-            end
-        end
-        for k,v in pairs(expected) do
-            if not _is_table_equals(v, actual[k]) then
-                return false
-            end
-        end
-        return true
-    elseif type(actual) ~= type(expected) then
-        return false
-    elseif actual == expected then
-        return true
-    end
-    return false
-end
-
-function assertEquals(actual, expected)
-    if type(actual) == 'table' and type(expected) == 'table' then
-        if not _is_table_equals(actual, expected) then
-            error( errormsg(actual, expected), 2 )
-        end
-    elseif type(actual) ~= type(expected) then
-        error( errormsg(actual, expected), 2 )
-    elseif actual ~= expected then
-        error( errormsg(actual, expected), 2 )
-    end
-end
-
-function assertTrue(value)
-    if not value then
-        error("expected: true, actual: " ..mytostring(value), 2)
-    end
-end
-
-function assertFalse(value)
-    if value then
-        error("expected: false, actual: " ..mytostring(value), 2)
-    end
-end
-
-function assertNotEquals(actual, expected)
-    if type(actual) == 'table' and type(expected) == 'table' then
-        if _is_table_equals(actual, expected) then
-            error( 'NOT ' .. errormsg(actual, expected), 2 )
-        end
-    elseif type(actual) == type(expected) and actual == expected  then
-        error( 'NOT ' .. errormsg(actual, expected), 2 )
-    end
-end
-
-function assertStrContains( str, sub )
-    -- this relies on lua string.find function
-    -- a string always contains the empty string
-    if string.find(str, sub, 1, true) == nil then
-        error( 'Error, substring "'..sub..'" was not found in string "'..str..'"')
-    end
-end
-
-function assertStrIContains( str, sub )
-    -- this relies on lua string.find function
-    -- a string always contains the empty string
-    lstr = string.lower(str)
-    lsub = string.lower(sub)
-    if string.find(lstr, lsub, 1, true) == nil then
-        error( 'Error, substring "'..sub..'" was not found (case insensitively) in string "'..str..'"')
-    end
-end
-
-function assertNotStrContains( str, sub )
-    -- this relies on lua string.find function
-    -- a string always contains the empty string
-    if string.find(str, sub, 1, true) ~= nil then
-        error( 'Error, substring "'..sub..'" was found in string "'..str..'"')
-    end
-end
-
-function assertItemsEquals(actual, expected)
-    if not _is_table_items_equals(actual, expected, true) then
-        error( errormsg(actual, expected), 2 )
-    end
-end
-
-function assertIsNumber(value)
-    if type(value) ~= 'number' then
-        error("expected: a number value, actual:" .. type(value))
-    end
-end
-
-function assertIsString(value)
-    if type(value) ~= "string" then
-        error("expected: a string value, actual:" .. type(value))
-    end
-end
-
-function assertIsTable(value)
-    if type(value) ~= 'table' then
-        error("expected: a table value, actual:" .. type(value))
-    end
-end
-
-function assertIsBoolean(value)
-    if type(value) ~= 'boolean' then
-        error("expected: a boolean value, actual:" .. type(value))
-    end
-end
-
-function assertIsNil(value)
-    if type(value) ~= "nil" then
-        error("expected: a nil value, actual:" .. type(value))
-    end
-end
-
-function assertIsFunction(value)
-    if type(value) ~= 'function' then
-        error("expected: a function value, actual:" .. type(value))
-    end
-end
-
-function assertIs(actual, expected)
-    if actual ~= expected then
-        error( errormsg(actual, expected), 2 )
-    end
-end
-
-function assertNotIs(actual, expected)
-    if actual == expected then
-        error( errormsg(actual, expected), 2 )
-    end
-end
-
-assert_equals = assertEquals
-assert_not_equals = assertNotEquals
-assert_error = assertError
-assert_true = assertTrue
-assert_false = assertFalse
-assert_is_number = assertIsNumber
-assert_is_string = assertIsString
-assert_is_table = assertIsTable
-assert_is_boolean = assertIsBoolean
-assert_is_nil = assertIsNil
-assert_is_function = assertIsFunction
-assert_is = assertIs
-assert_not_is = assertNotIs
-
-----------------------------------------------------------------
---                     helpers
-----------------------------------------------------------------
 function __genSortedIndex( t )
     local sortedIndexStr = {}
     local sortedIndexInt = {}
@@ -388,11 +109,304 @@ end
 
 
 function prefixString( prefix, s )
+    -- Prefix all the lines of s with prefix
     local t, s2
     t = strsplit('\n', s)
     s2 = prefix..table.concat(t, '\n'..prefix)
     return s2
 end
+
+function table.keytostring(k)
+    -- like mytostring but do not enclose with "" if the string is just alphanumerical
+    -- this is better for displaying table keys who are often simple strings
+    if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
+        return k
+    else
+        return mytostring(k)
+    end
+end
+
+function table.tostring( tbl )
+    local result, done = {}, {}
+    for k, v in ipairs( tbl ) do
+        table.insert( result, mytostring( v ) )
+        done[ k ] = true
+    end
+
+    for k, v in sortedPairs( tbl ) do
+        if not done[ k ] then
+            table.insert( result,
+                table.keytostring( k ) .. "=" .. mytostring( v, true ) )
+        end
+    end
+    return "{" .. table.concat( result, "," ) .. "}"
+end
+
+function mytostring( v, keeponeline )
+    --[[ Better string conversion, to display nice variable content:
+    For strings, if keeponeline is set to true, string is displayed on one line, with visible \n
+    * string are enclosed with " by default, or with ' if string contains a "
+    * if table is a class, display class name
+    * tables are expanded
+    ]]--
+    if "string" == type( v ) then
+        if keeponeline then
+            v = string.gsub( v, "\n", "\\n" )
+        end
+
+        -- use clever delimiters according to content:
+        -- if string contains ", enclose with '
+        -- if string contains ', enclose with "
+        if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
+            return "'" .. v .. "'"
+        end
+        return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
+    end
+    if type(v) == 'table' then
+        if v.__class__ then
+            return string.gsub( tostring(v), 'table', v.__class__ )
+        end
+        return table.tostring(v)
+    end
+    return tostring(v)
+end
+
+function _table_contains(t, element)
+    local _, value, v
+
+    if t then
+        for _, value in pairs(t) do
+            if type(value) == type(element) then
+                if type(element) == 'table' then
+                    if _is_table_items_equals(v, expected) then
+                        return true
+                    end
+                else
+                    if value == element then
+                        return true
+                    end
+                end
+            end
+        end
+    end
+    return false
+end
+
+function _is_table_items_equals(actual, expected, parent_key, items)
+    if (type(actual) == 'table') and (type(expected) == 'table') then
+        local k,v
+        for k,v in pairs(actual) do
+            if not _table_contains(expected, v) then
+                return false
+            end
+        end
+        return true
+    elseif type(actual) ~= type(expected) then
+        return false
+    elseif actual == expected then
+        return true
+    end
+    return false
+end
+
+function _is_table_equals(actual, expected)
+    if (type(actual) == 'table') and (type(expected) == 'table') then
+        if (#actual ~= #expected) then
+            return false
+        end
+        local k,v
+        for k,v in ipairs(actual) do
+            if not _is_table_equals(v, expected[k]) then
+                return false
+            end
+        end
+        for k,v in ipairs(expected) do
+            if not _is_table_equals(v, actual[k]) then
+                return false
+            end
+        end
+        for k,v in pairs(actual) do
+            if not _is_table_equals(v, expected[k]) then
+                return false
+            end
+        end
+        for k,v in pairs(expected) do
+            if not _is_table_equals(v, actual[k]) then
+                return false
+            end
+        end
+        return true
+    elseif type(actual) ~= type(expected) then
+        return false
+    elseif actual == expected then
+        return true
+    end
+    return false
+end
+
+----------------------------------------------------------------
+--
+--                     assertions
+--
+----------------------------------------------------------------
+
+function errormsg(actual, expected)
+    local errorMsg
+    if not USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS then
+        expected, actual = actual, expected
+    end
+    if type(expected) == 'string' then
+        errorMsg = "\nexpected: "..mytostring(expected).."\n"..
+                         "actual  : "..mytostring(actual).."\n"
+    else
+        errorMsg = "expected: "..mytostring(expected)..", actual: "..mytostring(actual)
+    end
+    return errorMsg
+end
+
+function assertError(f, ...)
+    -- assert that calling f with the arguments will raise an error
+    -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
+    local has_error, error_msg = not pcall( f, ... )
+    if has_error then return end 
+    error( "Expected an error but no error generated", 2 )
+end
+
+function assertTrue(value)
+    if not value then
+        error("expected: true, actual: " ..mytostring(value), 2)
+    end
+end
+
+function assertFalse(value)
+    if value then
+        error("expected: false, actual: " ..mytostring(value), 2)
+    end
+end
+
+function assertEquals(actual, expected)
+    if type(actual) == 'table' and type(expected) == 'table' then
+        if not _is_table_equals(actual, expected) then
+            error( errormsg(actual, expected), 2 )
+        end
+    elseif type(actual) ~= type(expected) then
+        error( errormsg(actual, expected), 2 )
+    elseif actual ~= expected then
+        error( errormsg(actual, expected), 2 )
+    end
+end
+
+function assertNotEquals(actual, expected)
+    if type(actual) == 'table' and type(expected) == 'table' then
+        if _is_table_equals(actual, expected) then
+            error( 'NOT ' .. errormsg(actual, expected), 2 )
+        end
+    elseif type(actual) == type(expected) and actual == expected  then
+        error( 'NOT ' .. errormsg(actual, expected), 2 )
+    end
+end
+
+function assertStrContains( str, sub )
+    -- this relies on lua string.find function
+    -- a string always contains the empty string
+    if string.find(str, sub, 1, true) == nil then
+        error( 'Error, substring "'..sub..'" was not found in string "'..str..'"')
+    end
+end
+
+function assertStrIContains( str, sub )
+    -- this relies on lua string.find function
+    -- a string always contains the empty string
+    lstr = string.lower(str)
+    lsub = string.lower(sub)
+    if string.find(lstr, lsub, 1, true) == nil then
+        error( 'Error, substring "'..sub..'" was not found (case insensitively) in string "'..str..'"')
+    end
+end
+
+function assertNotStrContains( str, sub )
+    -- this relies on lua string.find function
+    -- a string always contains the empty string
+    if string.find(str, sub, 1, true) ~= nil then
+        error( 'Error, substring "'..sub..'" was found in string "'..str..'"')
+    end
+end
+
+function assertItemsEquals(actual, expected)
+    -- checks that the items of table expected
+    -- are contained in table actual
+    if not _is_table_items_equals(actual, expected, true) then
+        error( errormsg(actual, expected), 2 )
+    end
+end
+
+function assertIsNumber(value)
+    if type(value) ~= 'number' then
+        error("expected: a number value, actual:" .. type(value))
+    end
+end
+
+function assertIsString(value)
+    if type(value) ~= "string" then
+        error("expected: a string value, actual:" .. type(value))
+    end
+end
+
+function assertIsTable(value)
+    if type(value) ~= 'table' then
+        error("expected: a table value, actual:" .. type(value))
+    end
+end
+
+function assertIsBoolean(value)
+    if type(value) ~= 'boolean' then
+        error("expected: a boolean value, actual:" .. type(value))
+    end
+end
+
+function assertIsNil(value)
+    if type(value) ~= "nil" then
+        error("expected: a nil value, actual:" .. type(value))
+    end
+end
+
+function assertIsFunction(value)
+    if type(value) ~= 'function' then
+        error("expected: a function value, actual:" .. type(value))
+    end
+end
+
+function assertIs(actual, expected)
+    if actual ~= expected then
+        error( errormsg(actual, expected), 2 )
+    end
+end
+
+function assertNotIs(actual, expected)
+    if actual == expected then
+        error( errormsg(actual, expected), 2 )
+    end
+end
+
+assert_equals = assertEquals
+assert_not_equals = assertNotEquals
+assert_error = assertError
+assert_true = assertTrue
+assert_false = assertFalse
+assert_is_number = assertIsNumber
+assert_is_string = assertIsString
+assert_is_table = assertIsTable
+assert_is_boolean = assertIsBoolean
+assert_is_nil = assertIsNil
+assert_is_function = assertIsFunction
+assert_is = assertIs
+assert_not_is = assertNotIs
+
+----------------------------------------------------------------
+--
+--                     Ouptutters
+--
+----------------------------------------------------------------
 
 ----------------------------------------------------------------
 --                     class TapOutput
@@ -615,7 +629,9 @@ function NilOutput:new()
 end
 
 ----------------------------------------------------------------
+--
 --                     class LuaUnit
+--
 ----------------------------------------------------------------
 
 LuaUnit = {
