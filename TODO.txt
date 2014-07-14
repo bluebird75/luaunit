@@ -8,6 +8,7 @@ Notes:
 
 
 TODO:
+- replace methodInstance with real test name in reports
 - distinguish errors and failures
 - better error display of assertIsXXX functions
 - test failures path of output

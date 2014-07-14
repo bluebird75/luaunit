@@ -586,6 +586,29 @@ TestLuaUnitAssertions = {} --class
 --
 ------------------------------------------------------------------
 
+function assertErrorMsg( expectedMsg, func, ... )
+    -- assert that calling f with the arguments will raise an error
+    -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
+    local no_error, error_msg = pcall( func, ... )
+    if no_error then
+        error( 'No error generated but expected error: "'..expectedMsg..'"', 2 )
+    end
+    if error_msg ~= expectedMsg then
+        error( 'Error message expected: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n')
+    end
+end
+
+TestLuaUnitErrorMsg = {} --class
+    TestLuaUnitErrorMsg.__class__ = 'TestLuaUnitErrorMsg'
+
+    function TestLuaUnitErrorMsg:test_assertErrorMsgFailsWhenNoError()
+        assertError( assertErrorMsg, 'toto', assertEquals, 1, 1  )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertErrorMsgFailsWhenNoError2()
+        assertErrorMsg( 'expected: 2, actual: 1', assertEquals, 1, 2  )
+        assertErrorMsg( 'expected: "exp"\nactual: "act"\n', assertEquals, 'act', 'exp' )
+    end 
 
 
 
