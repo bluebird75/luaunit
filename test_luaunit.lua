@@ -377,6 +377,19 @@ TestLuaUnitAssertions = {} --class
         assertError( assertNotStrContains, 'abcdef', nil ) 
     end
 
+    function TestLuaUnitAssertions:test_assertNotStrIContains()
+        assertError( assertNotStrIContains, 'aBcdef', 'abc' )
+        assertError( assertNotStrIContains, 'abcdef', 'aBc' )
+        assertError( assertNotStrIContains, 'abcdef', 'bcd' )
+        assertError( assertNotStrIContains, 'abcdef', 'abcdef' )
+        assertNotStrIContains( '', 'abc' )
+        assertError( assertNotStrIContains, 'abcdef', '' )
+        assertError( assertNotStrIContains, 'abc0', 0 )
+        assertNotStrIContains( 'abcdef', 'abcx' )
+        assertNotStrIContains( 'abcdef', 'abcdefg' )
+        assertError( assertNotStrIContains, 'abcdef', {} ) 
+        assertError( assertNotStrIContains, 'abcdef', nil ) 
+    end
 
     function TestLuaUnitAssertions:test_assertItemsEquals()
         assertItemsEquals(nil, nil)
@@ -593,8 +606,20 @@ function assertErrorMsg( expectedMsg, func, ... )
     if no_error then
         error( 'No error generated but expected error: "'..expectedMsg..'"', 2 )
     end
-    if error_msg ~= expectedMsg then
+    if not (error_msg == expectedMsg) then
         error( 'Error message expected: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n')
+    end
+end
+
+function assertErrorMsgMatch( expectedMsg, func, ... )
+    -- assert that calling f with the arguments will raise an error
+    -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
+    local no_error, error_msg = pcall( func, ... )
+    if no_error then
+        error( 'No error generated but expected error match: "'..expectedMsg..'"', 2 )
+    end
+    if not string.match( error_msg, expectedMsg, 1 ) then
+        error( 'Error message expected to match: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n')
     end
 end
 
@@ -607,6 +632,10 @@ TestLuaUnitErrorMsg = {} --class
 
     function TestLuaUnitErrorMsg:test_assertErrorMsgFunctionFailsWhenNoError()
         assertError( assertErrorMsg, 'toto', assertEquals, 1, 1  )
+    end
+
+    function TestLuaUnitAssertions:test_assertErrorMsgFunctionSupportRegexp()
+        assertErrorMsgMatch( 'expected', assertEquals, 1, 2  )
     end 
 
     function TestLuaUnitErrorMsg:test_assertEqualsMsg()
@@ -631,7 +660,35 @@ TestLuaUnitErrorMsg = {} --class
         assertErrorMsg( 'Received the not expected value: nil', assertNotEquals, nil, nil )
     end 
 
+    function TestLuaUnitErrorMsg:test_assertTrueFalse()
+        assertErrorMsg( 'expected: true, actual: false', assertTrue, false )
+        assertErrorMsg( 'expected: true, actual: nil', assertTrue, nil )
+        assertErrorMsg( 'expected: false, actual: true', assertFalse, true )
+        assertErrorMsg( 'expected: false, actual: 0', assertFalse, 0)
+        assertErrorMsg( 'expected: false, actual: {}', assertFalse, {})
+        assertErrorMsg( 'expected: false, actual: "abc"', assertFalse, 'abc')
+        assertErrorMsgMatch( 'expected: false, actual: function', assertFalse, function () end )
+    end 
 
+    function TestLuaUnitErrorMsg:test_assertStrContains()
+        assertErrorMsg( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )
+        assertErrorMsg( 'Error, substring "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc' )
+        assertErrorMsg( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx' )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertStrIContains()
+        assertErrorMsg( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )
+        assertErrorMsg( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx' )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertNotStrContains()
+        assertErrorMsg( 'Error, substring "abc" was found in string "abcdef"', assertNotStrContains, 'abcdef', 'abc' )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertNotStrIContains()
+        assertErrorMsg( 'Error, substring "aBc" was found (case insensitively) in string "abcdef"', assertNotStrIContains, 'abcdef', 'aBc' )
+        assertErrorMsg( 'Error, substring "abc" was found (case insensitively) in string "abcdef"', assertNotStrIContains, 'abcdef', 'abc' )
+    end 
 
 ------------------------------------------------------------------
 --

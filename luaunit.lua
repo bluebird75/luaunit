@@ -319,17 +319,18 @@ function assertStrContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     if string.find(str, sub, 1, true) == nil then
-        error( 'Error, substring "'..sub..'" was not found in string "'..str..'"')
+        error( 'Error, substring '..mytostring(sub)..' was not found in string '..mytostring(str), 2)
     end
 end
 
 function assertStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
+    local lstr, lsub
     lstr = string.lower(str)
     lsub = string.lower(sub)
     if string.find(lstr, lsub, 1, true) == nil then
-        error( 'Error, substring "'..sub..'" was not found (case insensitively) in string "'..str..'"')
+        error( 'Error, substring '..mytostring(sub)..' was not found (case insensitively) in string '..mytostring(str),2)
     end
 end
 
@@ -337,7 +338,18 @@ function assertNotStrContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     if string.find(str, sub, 1, true) ~= nil then
-        error( 'Error, substring "'..sub..'" was found in string "'..str..'"')
+        error( 'Error, substring '..mytostring(sub)..' was found in string '..mytostring(str),2)
+    end
+end
+
+function assertNotStrIContains( str, sub )
+    -- this relies on lua string.find function
+    -- a string always contains the empty string
+    local lstr, lsub
+    lstr = string.lower(str)
+    lsub = string.lower(sub)
+    if string.find(lstr, lsub, 1, true) ~= nil then
+        error( 'Error, substring '..mytostring(sub)..' was found (case insensitively) in string '..mytostring(str),2)
     end
 end
 
@@ -917,7 +929,7 @@ LuaUnit_MT = { __index = LuaUnit }
         end
 
         if #args == 0 then
-            -- create the list if classes to run now ! If not, you can
+            -- create the list of classes to run now ! If not, you can
             -- not iterate over _G while modifying it.
             args = {}
             for key, val in pairs(_G) do 
