@@ -333,7 +333,7 @@ function assertStrIContains( str, sub )
         error( 'Error, substring '..mytostring(sub)..' was not found (case insensitively) in string '..mytostring(str),2)
     end
 end
-
+    
 function assertNotStrContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
@@ -353,47 +353,43 @@ function assertNotStrIContains( str, sub )
     end
 end
 
-function assertItemsEquals(actual, expected)
-    -- checks that the items of table expected
-    -- are contained in table actual
-    if not _is_table_items_equals(actual, expected, true) then
-        error( errormsg(actual, expected), 2 )
-    end
+function errorMsgIsMismatch( expectedType, actual )
+    return "Expected: a "..expectedType..' value, actual: type '..type(actual)..', value '..mytostring(actual)
 end
 
 function assertIsNumber(value)
     if type(value) ~= 'number' then
-        error("expected: a number value, actual:" .. type(value))
+        error( errorMsgIsMismatch( 'number', value ), 2 )
     end
 end
 
 function assertIsString(value)
     if type(value) ~= "string" then
-        error("expected: a string value, actual:" .. type(value))
+        error( errorMsgIsMismatch( 'string', value ), 2 )
     end
 end
 
 function assertIsTable(value)
     if type(value) ~= 'table' then
-        error("expected: a table value, actual:" .. type(value))
+        error( errorMsgIsMismatch( 'table', value ), 2 )
     end
 end
 
 function assertIsBoolean(value)
     if type(value) ~= 'boolean' then
-        error("expected: a boolean value, actual:" .. type(value))
+        error( errorMsgIsMismatch( 'boolean', value ), 2 )
     end
 end
 
 function assertIsNil(value)
     if type(value) ~= "nil" then
-        error("expected: a nil value, actual:" .. type(value))
+        error( errorMsgIsMismatch( 'nil', value ), 2 )
     end
 end
 
 function assertIsFunction(value)
     if type(value) ~= 'function' then
-        error("expected: a function value, actual:" .. type(value))
+        error( errorMsgIsMismatch( 'function', value ), 2 )
     end
 end
 
@@ -405,6 +401,14 @@ end
 
 function assertNotIs(actual, expected)
     if actual == expected then
+        error( errormsg(actual, expected), 2 )
+    end
+end
+
+function assertItemsEquals(actual, expected)
+    -- checks that the items of table expected
+    -- are contained in table actual
+    if not _is_table_items_equals(actual, expected, true) then
         error( errormsg(actual, expected), 2 )
     end
 end

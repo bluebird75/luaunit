@@ -482,13 +482,19 @@ TestLuaUnitAssertions = {} --class
     function TestLuaUnitAssertions:test_assertIs()
         local f = function() return true end
         local g = function() return true end
-        local temp = {}
+        local t1= {}
+        local t2={1,2}
+        local t3={1,2}
+        local t4= {a=1,{1,2},day="today"}
+        local s1='toto'
+        local s2='toto'
 
         assertIs(1,1)
         assertIs(f,f)
-        assertIs(temp,temp)
-        temp = {a=1,{1,2},day="today"}
-        assertIs(temp,temp)
+        assertIs('toto', 'toto')
+        assertIs(s1, s2)
+        assertIs(t1,t1)
+        assertIs(t4,t4)
 
         assertError(assertIs, 1, 2)
         assertError(assertIs, 1.4, 1)
@@ -497,18 +503,25 @@ TestLuaUnitAssertions = {} --class
         assertError(assertIs, {}, {})
         assertError(assertIs, {1,2,3}, f)
         assertError(assertIs, f, g)
+        assertError(assertIs, t2,t3 )
     end
 
     function TestLuaUnitAssertions:test_assertNotIs()
         local f = function() return true end
         local g = function() return true end
-        local temp = {}
+        local t1= {}
+        local t2={1,2}
+        local t3={1,2}
+        local t4= {a=1,{1,2},day="today"}
+        local s1='toto'
+        local s2='toto'
 
         assertError( assertNotIs, 1,1 )
         assertError( assertNotIs, f,f )
-        assertError( assertNotIs, temp,temp )
-        temp = {a=1,{1,2},day="today"}
-        assertError( assertNotIs, temp,temp)
+        assertError( assertNotIs, t1,t1 )
+        assertError( assertNotIs, t4,t4)
+        assertError( assertNotIs, s1,s2 )
+        assertError( assertNotIs, 'toto', 'toto' )
 
         assertNotIs(1, 2)
         assertNotIs(1.4, 1)
@@ -517,6 +530,7 @@ TestLuaUnitAssertions = {} --class
         assertNotIs({}, {})
         assertNotIs({1,2,3}, f)
         assertNotIs(f, g)
+        assertNotIs(t2,t3)
     end
 
     function TestLuaUnitAssertions:test_assertTableNum()
@@ -607,7 +621,7 @@ function assertErrorMsg( expectedMsg, func, ... )
         error( 'No error generated but expected error: "'..expectedMsg..'"', 2 )
     end
     if not (error_msg == expectedMsg) then
-        error( 'Error message expected: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n')
+        error( 'Error message expected: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
     end
 end
 
@@ -619,7 +633,7 @@ function assertErrorMsgMatch( expectedMsg, func, ... )
         error( 'No error generated but expected error match: "'..expectedMsg..'"', 2 )
     end
     if not string.match( error_msg, expectedMsg, 1 ) then
-        error( 'Error message expected to match: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n')
+        error( 'Error message expected to match: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
     end
 end
 
@@ -690,6 +704,30 @@ TestLuaUnitErrorMsg = {} --class
         assertErrorMsg( 'Error, substring "abc" was found (case insensitively) in string "abcdef"', assertNotStrIContains, 'abcdef', 'abc' )
     end 
 
+    function TestLuaUnitErrorMsg:test_assertIsNumber()
+        assertErrorMsg( 'Expected: a number value, actual: type string, value "abc"', assertIsNumber, 'abc' )
+        assertErrorMsg( 'Expected: a number value, actual: type nil, value nil', assertIsNumber, nil )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertIsString()
+        assertErrorMsg( 'Expected: a string value, actual: type number, value 1.2', assertIsString, 1.2 )
+        assertErrorMsg( 'Expected: a string value, actual: type nil, value nil', assertIsString, nil )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertIsTable()
+        assertErrorMsg( 'Expected: a table value, actual: type number, value 1.2', assertIsTable, 1.2 )
+        assertErrorMsg( 'Expected: a table value, actual: type nil, value nil', assertIsTable, nil )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertIsBoolean()
+        assertErrorMsg( 'Expected: a boolean value, actual: type number, value 1.2', assertIsBoolean, 1.2 )
+        assertErrorMsg( 'Expected: a boolean value, actual: type nil, value nil', assertIsBoolean, nil )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertIsFunction()
+        assertErrorMsg( 'Expected: a function value, actual: type number, value 1.2', assertIsFunction, 1.2 )
+        assertErrorMsg( 'Expected: a function value, actual: type nil, value nil', assertIsFunction, nil )
+    end 
 ------------------------------------------------------------------
 --
 --                       Execution Tests 
