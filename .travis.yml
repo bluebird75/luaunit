@@ -1,0 +1,17 @@
+language: erlang
+
+env:
+  matrix:
+    - LUA=lua5.1
+#    - LUA=lua5.2
+
+before_install:
+  - sudo apt-get install $LUA
+
+script:
+  - $LUA test_luaunit.lua
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
