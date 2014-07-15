@@ -601,13 +601,34 @@ end
 TestLuaUnitErrorMsg = {} --class
     TestLuaUnitErrorMsg.__class__ = 'TestLuaUnitErrorMsg'
 
-    function TestLuaUnitErrorMsg:test_assertErrorMsgFailsWhenNoError()
+    function TestLuaUnitErrorMsg:tearDown()
+        ORDER_ACTUAL_EXPECTED = true
+    end
+
+    function TestLuaUnitErrorMsg:test_assertErrorMsgFunctionFailsWhenNoError()
         assertError( assertErrorMsg, 'toto', assertEquals, 1, 1  )
     end 
 
-    function TestLuaUnitErrorMsg:test_assertErrorMsgFailsWhenNoError2()
+    function TestLuaUnitErrorMsg:test_assertEqualsMsg()
         assertErrorMsg( 'expected: 2, actual: 1', assertEquals, 1, 2  )
         assertErrorMsg( 'expected: "exp"\nactual: "act"\n', assertEquals, 'act', 'exp' )
+        assertErrorMsg( 'expected: true, actual: false', assertEquals, false, true )
+        assertErrorMsg( 'expected: 1.2, actual: 1', assertEquals, 1.0, 1.2)
+        assertErrorMsg( 'expected: {1,2,3}, actual: {3,2,1}', assertEquals, {3,2,1}, {1,2,3} )
+        assertErrorMsg( 'expected: {one=1,two=2}, actual: {3,2,1}', assertEquals, {3,2,1}, {one=1,two=2} )
+        assertErrorMsg( 'expected: 2, actual: nil', assertEquals, nil, 2 )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertEqualsOrderReversedMsg()
+        ORDER_ACTUAL_EXPECTED = false
+        assertErrorMsg( 'expected: 1, actual: 2', assertEquals, 1, 2  )
+        assertErrorMsg( 'expected: "act"\nactual: "exp"\n', assertEquals, 'act', 'exp' )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertNotEqualsMsg()
+        assertErrorMsg( 'Received the not expected value: 1', assertNotEquals, 1, 1  )
+        assertErrorMsg( 'Received the not expected value: {1,2}', assertNotEquals, {1,2}, {1,2} )
+        assertErrorMsg( 'Received the not expected value: nil', assertNotEquals, nil, nil )
     end 
 
 

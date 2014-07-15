@@ -297,12 +297,21 @@ function assertEquals(actual, expected)
 end
 
 function assertNotEquals(actual, expected)
+    if type(actual) ~= type(expected) then
+        return
+    end
+
+    local genError = false
     if type(actual) == 'table' and type(expected) == 'table' then
-        if _is_table_equals(actual, expected) then
-            error( 'NOT ' .. errormsg(actual, expected), 2 )
+        if not _is_table_equals(actual, expected) then
+            return
         end
-    elseif type(actual) == type(expected) and actual == expected  then
-        error( 'NOT ' .. errormsg(actual, expected), 2 )
+        genError = true
+    elseif actual == expected then
+        genError = true
+    end
+    if genError then
+        error( 'Received the not expected value: ' .. mytostring(actual), 2 )
     end
 end
 
