@@ -730,7 +730,9 @@ TestLuaUnitErrorMsg = {} --class
     end 
 
     function TestLuaUnitErrorMsg:test_assertIs()
-        assertErrorMsg( 'Expected object and actual object are not the same\nExpected: {1,2}, actual: {1,2}', assertIs, {1,2}, {1,2} )
+        assertErrorMsg( 'Expected object and actual object are not the same\nExpected: 1, actual: 2', assertIs, 2, 1 )
+        ORDER_ACTUAL_EXPECTED = false
+        assertErrorMsg( 'Expected object and actual object are not the same\nExpected: 2, actual: 1', assertIs, 2, 1 )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIs()
