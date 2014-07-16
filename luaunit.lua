@@ -394,14 +394,20 @@ function assertIsFunction(value)
 end
 
 function assertIs(actual, expected)
+    if not ORDER_ACTUAL_EXPECTED then
+        actual, expected = expected, actual
+    end
     if actual ~= expected then
-        error( errormsg(actual, expected), 2 )
+        error( 'Expected object and actual object are not the same\nExpected: '..mytostring(expected)..', actual: '..mytostring(actual), 2)
     end
 end
 
 function assertNotIs(actual, expected)
+    if not ORDER_ACTUAL_EXPECTED then
+        actual, expected = expected, actual
+    end
     if actual == expected then
-        error( errormsg(actual, expected), 2 )
+        error( 'Expected object and actual object are the same object: '..mytostring(expected), 2 )
     end
 end
 

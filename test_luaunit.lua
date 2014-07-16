@@ -728,6 +728,15 @@ TestLuaUnitErrorMsg = {} --class
         assertErrorMsg( 'Expected: a function value, actual: type number, value 1.2', assertIsFunction, 1.2 )
         assertErrorMsg( 'Expected: a function value, actual: type nil, value nil', assertIsFunction, nil )
     end 
+
+    function TestLuaUnitErrorMsg:test_assertIs()
+        assertErrorMsg( 'Expected object and actual object are not the same\nExpected: {1,2}, actual: {1,2}', assertIs, {1,2}, {1,2} )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertNotIs()
+        local v = {1,2}
+        assertErrorMsg( 'Expected object and actual object are the same object: {1,2}', assertNotIs, v, v )
+    end 
 ------------------------------------------------------------------
 --
 --                       Execution Tests 
