@@ -192,11 +192,16 @@ function _table_contains(t, element)
     return false
 end
 
-function _is_table_items_equals(actual, expected, parent_key, items)
+function _is_table_items_equals(actual, expected )
     if (type(actual) == 'table') and (type(expected) == 'table') then
         local k,v
         for k,v in pairs(actual) do
             if not _table_contains(expected, v) then
+                return false
+            end
+        end
+        for k,v in pairs(expected) do
+            if not _table_contains(actual, v) then
                 return false
             end
         end
@@ -413,8 +418,9 @@ end
 
 function assertItemsEquals(actual, expected)
     -- checks that the items of table expected
-    -- are contained in table actual
-    if not _is_table_items_equals(actual, expected, true) then
+    -- are contained in table actual. Warning, this function
+    -- is at least O(n^2)
+    if not _is_table_items_equals(actual, expected ) then
         error( errormsg(actual, expected), 2 )
     end
 end
