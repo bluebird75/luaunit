@@ -421,7 +421,7 @@ function assertItemsEquals(actual, expected)
     -- are contained in table actual. Warning, this function
     -- is at least O(n^2)
     if not _is_table_items_equals(actual, expected ) then
-        error( errormsg(actual, expected), 2 )
+        error( 'Contents of the tables are not identical:\nExpected: '..mytostring(expected)..'\nActual: '..mytostring(actual), 2 )
     end
 end
 

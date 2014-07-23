@@ -750,6 +750,10 @@ TestLuaUnitErrorMsg = {} --class
         local v = {1,2}
         assertErrorMsg( 'Expected object and actual object are the same object: {1,2}', assertNotIs, v, v )
     end 
+
+    function TestLuaUnitErrorMsg:test_assertItemsEquals()
+        assertErrorMsg('Contents of the tables are not identical:\nExpected: {one=2,two=3}\nActual: {1,2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
+    end 
 ------------------------------------------------------------------
 --
 --                       Execution Tests 
