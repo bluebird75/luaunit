@@ -320,11 +320,17 @@ function assertNotEquals(actual, expected)
     end
 end
 
-function assertStrContains( str, sub )
+function assertStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    if string.find(str, sub, 1, true) == nil then
-        error( 'Error, substring '..mytostring(sub)..' was not found in string '..mytostring(str), 2)
+    noUseRe = not useRe
+    if string.find(str, sub, 1, noUseRe) == nil then
+        if noUseRe then
+            s = 'substring'
+        else
+            s = 'regexp'
+        end
+        error( 'Error, '..s..' '..mytostring(sub)..' was not found in string '..mytostring(str), 2)
     end
 end
 
@@ -339,11 +345,17 @@ function assertStrIContains( str, sub )
     end
 end
     
-function assertNotStrContains( str, sub )
+function assertNotStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    if string.find(str, sub, 1, true) ~= nil then
-        error( 'Error, substring '..mytostring(sub)..' was found in string '..mytostring(str),2)
+    noUseRe = not useRe
+    if string.find(str, sub, 1, noUseRe) ~= nil then
+        if noUseRe then
+            s = 'substring'
+        else
+            s = 'regexp'
+        end
+        error( 'Error, '..s..' '..mytostring(sub)..' was found in string '..mytostring(str),2)
     end
 end
 

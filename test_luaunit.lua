@@ -352,6 +352,12 @@ TestLuaUnitAssertions = {} --class
         assertError( assertStrContains, 'abcdef', 0 ) 
         assertError( assertStrContains, 'abcdef', {} ) 
         assertError( assertStrContains, 'abcdef', nil ) 
+
+        assertStrContains( 'abcdef', 'abc', false )
+        assertStrContains( 'abcdef', 'abc', true )
+        assertStrContains( 'abcdef', 'a.c', true )
+
+        assertError( assertStrContains, 'abcdef', '.abc', true )
     end
 
     function TestLuaUnitAssertions:test_assertStrIContains()
@@ -375,6 +381,10 @@ TestLuaUnitAssertions = {} --class
         assertNotStrContains( 'abcdef', 'abcdefg' )
         assertError( assertNotStrContains, 'abcdef', {} ) 
         assertError( assertNotStrContains, 'abcdef', nil ) 
+
+        assertError( assertNotStrContains, 'abcdef', 'abc', false )
+        assertError( assertNotStrContains, 'abcdef', 'a.c', true )
+        assertNotStrContains( 'abcdef', 'a.cx', true )
     end
 
     function TestLuaUnitAssertions:test_assertNotStrIContains()
@@ -699,6 +709,15 @@ TestLuaUnitErrorMsg = {} --class
         assertErrorMsg( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )
         assertErrorMsg( 'Error, substring "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc' )
         assertErrorMsg( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx' )
+
+        assertErrorMsg( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx', false )
+        assertErrorMsg( 'Error, substring "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc', false )
+        assertErrorMsg( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx', false )
+
+        assertErrorMsg( 'Error, regexp "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx', true )
+        assertErrorMsg( 'Error, regexp "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc', true )
+        assertErrorMsg( 'Error, regexp "xxx" was not found in string ""', assertStrContains, '', 'xxx', true )
+
     end 
 
     function TestLuaUnitErrorMsg:test_assertStrIContains()
@@ -708,6 +727,8 @@ TestLuaUnitErrorMsg = {} --class
 
     function TestLuaUnitErrorMsg:test_assertNotStrContains()
         assertErrorMsg( 'Error, substring "abc" was found in string "abcdef"', assertNotStrContains, 'abcdef', 'abc' )
+        assertErrorMsg( 'Error, substring "abc" was found in string "abcdef"', assertNotStrContains, 'abcdef', 'abc', false )
+        assertErrorMsg( 'Error, regexp "..." was found in string "abcdef"', assertNotStrContains, 'abcdef', '...', true)
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotStrIContains()
