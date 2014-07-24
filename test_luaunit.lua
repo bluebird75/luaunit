@@ -182,16 +182,16 @@ TestLuaUnitUtilities = {} --class
         assertEquals( table.keytostring( 'a0!' ), '"a0!"' )
     end
 
-    function TestLuaUnitUtilities:test_mytostring()
-        assertEquals( mytostring( 1 ), "1" )
-        assertEquals( mytostring( 1.1 ), "1.1" )
-        assertEquals( mytostring( 'abc' ), '"abc"' )
-        assertEquals( mytostring( 'ab\ncd' ), '"ab\ncd"' )
-        assertEquals( mytostring( 'ab\ncd', true ), '"ab\\ncd"' )
-        assertEquals( mytostring( 'ab"cd' ), "'ab\"cd'" )
-        assertEquals( mytostring( "ab'cd" ), '"ab\'cd"' )
-        assertEquals( mytostring( {1,2,3} ), "{1,2,3}" )
-        assertEquals( mytostring( {a=1,bb=2,ab=3} ), '{a=1,ab=3,bb=2}' )
+    function TestLuaUnitUtilities:test_prettystr()
+        assertEquals( prettystr( 1 ), "1" )
+        assertEquals( prettystr( 1.1 ), "1.1" )
+        assertEquals( prettystr( 'abc' ), '"abc"' )
+        assertEquals( prettystr( 'ab\ncd' ), '"ab\ncd"' )
+        assertEquals( prettystr( 'ab\ncd', true ), '"ab\\ncd"' )
+        assertEquals( prettystr( 'ab"cd' ), "'ab\"cd'" )
+        assertEquals( prettystr( "ab'cd" ), '"ab\'cd"' )
+        assertEquals( prettystr( {1,2,3} ), "{1,2,3}" )
+        assertEquals( prettystr( {a=1,bb=2,ab=3} ), '{a=1,ab=3,bb=2}' )
     end
 
 

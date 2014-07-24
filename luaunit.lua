@@ -117,32 +117,32 @@ function prefixString( prefix, s )
 end
 
 function table.keytostring(k)
-    -- like mytostring but do not enclose with "" if the string is just alphanumerical
+    -- like prettystr but do not enclose with "" if the string is just alphanumerical
     -- this is better for displaying table keys who are often simple strings
     if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
         return k
     else
-        return mytostring(k)
+        return prettystr(k)
     end
 end
 
 function table.tostring( tbl )
     local result, done = {}, {}
     for k, v in ipairs( tbl ) do
-        table.insert( result, mytostring( v ) )
+        table.insert( result, prettystr( v ) )
         done[ k ] = true
     end
 
     for k, v in sortedPairs( tbl ) do
         if not done[ k ] then
             table.insert( result,
-                table.keytostring( k ) .. "=" .. mytostring( v, true ) )
+                table.keytostring( k ) .. "=" .. prettystr( v, true ) )
         end
     end
     return "{" .. table.concat( result, "," ) .. "}"
 end
 
-function mytostring( v, keeponeline )
+function prettystr( v, keeponeline )
     --[[ Better string conversion, to display nice variable content:
     For strings, if keeponeline is set to true, string is displayed on one line, with visible \n
     * string are enclosed with " by default, or with ' if string contains a "
@@ -261,10 +261,10 @@ function errormsg(actual, expected)
         expected, actual = actual, expected
     end
     if type(expected) == 'string' then
-        errorMsg = "expected: "..mytostring(expected).."\n"..
-                         "actual: "..mytostring(actual).."\n"
+        errorMsg = "expected: "..prettystr(expected).."\n"..
+                         "actual: "..prettystr(actual).."\n"
     else
-        errorMsg = "expected: "..mytostring(expected)..", actual: "..mytostring(actual)
+        errorMsg = "expected: "..prettystr(expected)..", actual: "..prettystr(actual)
     end
     return errorMsg
 end
@@ -279,13 +279,13 @@ end
 
 function assertTrue(value)
     if not value then
-        error("expected: true, actual: " ..mytostring(value), 2)
+        error("expected: true, actual: " ..prettystr(value), 2)
     end
 end
 
 function assertFalse(value)
     if value then
-        error("expected: false, actual: " ..mytostring(value), 2)
+        error("expected: false, actual: " ..prettystr(value), 2)
     end
 end
 
@@ -316,7 +316,7 @@ function assertNotEquals(actual, expected)
         genError = true
     end
     if genError then
-        error( 'Received the not expected value: ' .. mytostring(actual), 2 )
+        error( 'Received the not expected value: ' .. prettystr(actual), 2 )
     end
 end
 
@@ -330,7 +330,7 @@ function assertStrContains( str, sub, useRe )
         else
             s = 'regexp'
         end
-        error( 'Error, '..s..' '..mytostring(sub)..' was not found in string '..mytostring(str), 2)
+        error( 'Error, '..s..' '..prettystr(sub)..' was not found in string '..prettystr(str), 2)
     end
 end
 
@@ -341,7 +341,7 @@ function assertStrIContains( str, sub )
     lstr = string.lower(str)
     lsub = string.lower(sub)
     if string.find(lstr, lsub, 1, true) == nil then
-        error( 'Error, substring '..mytostring(sub)..' was not found (case insensitively) in string '..mytostring(str),2)
+        error( 'Error, substring '..prettystr(sub)..' was not found (case insensitively) in string '..prettystr(str),2)
     end
 end
     
@@ -355,7 +355,7 @@ function assertNotStrContains( str, sub, useRe )
         else
             s = 'regexp'
         end
-        error( 'Error, '..s..' '..mytostring(sub)..' was found in string '..mytostring(str),2)
+        error( 'Error, '..s..' '..prettystr(sub)..' was found in string '..prettystr(str),2)
     end
 end
 
@@ -366,47 +366,47 @@ function assertNotStrIContains( str, sub )
     lstr = string.lower(str)
     lsub = string.lower(sub)
     if string.find(lstr, lsub, 1, true) ~= nil then
-        error( 'Error, substring '..mytostring(sub)..' was found (case insensitively) in string '..mytostring(str),2)
+        error( 'Error, substring '..prettystr(sub)..' was found (case insensitively) in string '..prettystr(str),2)
     end
 end
 
-function errorMsgIsMismatch( expectedType, actual )
-    return "Expected: a "..expectedType..' value, actual: type '..type(actual)..', value '..mytostring(actual)
+function errorMsgTypeMismatch( expectedType, actual )
+    return "Expected: a "..expectedType..' value, actual: type '..type(actual)..', value '..prettystr(actual)
 end
 
 function assertIsNumber(value)
     if type(value) ~= 'number' then
-        error( errorMsgIsMismatch( 'number', value ), 2 )
+        error( errorMsgTypeMismatch( 'number', value ), 2 )
     end
 end
 
 function assertIsString(value)
     if type(value) ~= "string" then
-        error( errorMsgIsMismatch( 'string', value ), 2 )
+        error( errorMsgTypeMismatch( 'string', value ), 2 )
     end
 end
 
 function assertIsTable(value)
     if type(value) ~= 'table' then
-        error( errorMsgIsMismatch( 'table', value ), 2 )
+        error( errorMsgTypeMismatch( 'table', value ), 2 )
     end
 end
 
 function assertIsBoolean(value)
     if type(value) ~= 'boolean' then
-        error( errorMsgIsMismatch( 'boolean', value ), 2 )
+        error( errorMsgTypeMismatch( 'boolean', value ), 2 )
     end
 end
 
 function assertIsNil(value)
     if type(value) ~= "nil" then
-        error( errorMsgIsMismatch( 'nil', value ), 2 )
+        error( errorMsgTypeMismatch( 'nil', value ), 2 )
     end
 end
 
 function assertIsFunction(value)
     if type(value) ~= 'function' then
-        error( errorMsgIsMismatch( 'function', value ), 2 )
+        error( errorMsgTypeMismatch( 'function', value ), 2 )
     end
 end
 
@@ -415,7 +415,7 @@ function assertIs(actual, expected)
         actual, expected = expected, actual
     end
     if actual ~= expected then
-        error( 'Expected object and actual object are not the same\nExpected: '..mytostring(expected)..', actual: '..mytostring(actual), 2)
+        error( 'Expected object and actual object are not the same\nExpected: '..prettystr(expected)..', actual: '..prettystr(actual), 2)
     end
 end
 
@@ -424,7 +424,7 @@ function assertNotIs(actual, expected)
         actual, expected = expected, actual
     end
     if actual == expected then
-        error( 'Expected object and actual object are the same object: '..mytostring(expected), 2 )
+        error( 'Expected object and actual object are the same object: '..prettystr(expected), 2 )
     end
 end
 
@@ -433,7 +433,7 @@ function assertItemsEquals(actual, expected)
     -- are contained in table actual. Warning, this function
     -- is at least O(n^2)
     if not _is_table_items_equals(actual, expected ) then
-        error( 'Contents of the tables are not identical:\nExpected: '..mytostring(expected)..'\nActual: '..mytostring(actual), 2 )
+        error( 'Contents of the tables are not identical:\nExpected: '..prettystr(expected)..'\nActual: '..prettystr(actual), 2 )
     end
 end
 
