@@ -337,6 +337,23 @@ function assertNotEquals(actual, expected)
     end
 end
 
+function assertNotAlmostEquals( actual, expected, margin )
+    -- check that two floats are not close by margin
+    if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
+        error('assertNotAlmostEquals: must supply only number arguments.\nArguments supplied: '..actual..', '..expected..', '..margin, 2)
+    end
+    if margin <= 0 then
+        error( 'assertNotAlmostEquals: margin must be positive, current value is '..margin, 2)
+    end
+
+    -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
+    -- which by default does not work. We need to give margin a small boost
+    realmargin = margin + 0.00000000001
+    if math.abs(expected - actual) <= realmargin then
+        error( 'Values are almost equal\nExpected: '..expected..' with a difference above margin of '..margin..', received: '..actual, 2)
+    end
+end
+
 function assertStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string

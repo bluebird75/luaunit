@@ -325,7 +325,25 @@ TestLuaUnitAssertions = {} --class
         assertError( assertNotEquals, true, true )
         assertError( assertNotEquals, f, f)
         assertError( assertNotEquals, {one=1,two={1,{2,nil}},three=3}, {two={1,{2,nil}},three=3,one=1})
+    end
 
+    function TestLuaUnitAssertions:test_assertNotAlmostEquals()
+        assertNotAlmostEquals( 1, 1.2, 0.1 )
+
+        assertNotAlmostEquals( 1, 1.3, 0.2 )
+        assertNotAlmostEquals( -1, -1.3, 0.2 )
+        assertNotAlmostEquals( 0.1, -0.1, 0.1 )
+
+        assertNotAlmostEquals( 1, 1.1, 0.09 )
+        assertNotAlmostEquals( -1, -1.1, 0.09 )
+        assertNotAlmostEquals( 0.1, -0.1, 0.11 )
+
+        assertError( assertNotAlmostEquals, 1, 1.11, 0.2 )
+        assertError( assertNotAlmostEquals, -1, -1.11, 0.2 )
+        assertError( assertNotAlmostEquals, -1, 1, nil )
+        assertError( assertNotAlmostEquals, -1, nil, 0 )
+        assertError( assertNotAlmostEquals, 1, 1.1, 0 )
+        assertError( assertNotAlmostEquals, 1, 1.1, -0.1 )
     end
 
     function TestLuaUnitAssertions:test_assertNotEqualsDifferentTypes2()
@@ -710,6 +728,10 @@ TestLuaUnitErrorMsg = {} --class
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsMsg()
         assertErrorMsg('Values are not almost equal\nExpected: 1 with margin of 0.1, received: 2', assertAlmostEquals, 2, 1, 0.1 )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
+        assertErrorMsg('Values are almost equal\nExpected: 1 with a difference above margin of 0.2, received: 1.1', assertNotAlmostEquals, 1.1, 1, 0.2 )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotEqualsMsg()
