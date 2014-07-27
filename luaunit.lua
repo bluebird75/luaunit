@@ -688,7 +688,8 @@ TextOutput_MT = { -- class
         else
             successPercent = math.ceil( 100 * successCount / self.result.testCount )
         end
-        print( string.format("Success : %d%% - %d / %d",
+        print( string.format("Suite run in: %f seconds.", self.result.duration))
+        print( string.format("Success: %d%% - %d / %d",
             successPercent, successCount, self.result.testCount) )
     end
 
@@ -760,6 +761,7 @@ LuaUnit_MT = { __index = LuaUnit }
         self.result.currentClassName = ""
         self.result.currentTestHasFailure = false
         self.result.suiteStarted = true
+        self.result.startTime = os.clock()
         self.outputType = self.outputType or TextOutput
         self.output = self.outputType:new()
         self.output.runner = self
@@ -799,6 +801,7 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
     function LuaUnit:endSuite()
+        self.result.duration = os.clock()-self.result.startTime
         self.result.suiteStarted = false
         self.output:endSuite()
     end
