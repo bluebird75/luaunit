@@ -255,7 +255,7 @@ end
 --
 ----------------------------------------------------------------
 
-function errormsg(actual, expected)
+function errorMsgEquality(actual, expected)
     local errorMsg
     if not ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
@@ -292,12 +292,29 @@ end
 function assertEquals(actual, expected)
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
-            error( errormsg(actual, expected), 2 )
+            error( errorMsgEquality(actual, expected), 2 )
         end
     elseif type(actual) ~= type(expected) then
-        error( errormsg(actual, expected), 2 )
+        error( errorMsgEquality(actual, expected), 2 )
     elseif actual ~= expected then
-        error( errormsg(actual, expected), 2 )
+        error( errorMsgEquality(actual, expected), 2 )
+    end
+end
+
+function assertAlmostEquals( actual, expected, margin )
+    -- check that two floats are close by margin
+    if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
+        error('assertAlmostEquals: must supply only number arguments.\nArguments supplied: '..actual..', '..expected..', '..margin, 2)
+    end
+    if margin < 0 then
+        error( 'assertAlmostEquals: margin must be positive, current value is '..margin, 2)
+    end
+
+    -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
+    -- which by default does not work. We need to give margin a small boost
+    realmargin = margin + 0.00000000001
+    if math.abs(expected - actual) > realmargin then
+        error( 'Values are not almost equal\nExpected: '..expected..' with margin of '..margin..', received: '..actual, 2)
     end
 end
 
@@ -369,6 +386,13 @@ function assertNotStrIContains( str, sub )
         error( 'Error, substring '..prettystr(sub)..' was found (case insensitively) in string '..prettystr(str),2)
     end
 end
+
+--[[
+function assertStrMatches( str, regexp )
+    -- Verify a full match for the string
+    -- for a partial match, simply use assertStrContains with useRe set to true
+end
+]]
 
 function errorMsgTypeMismatch( expectedType, actual )
     return "Expected: a "..expectedType..' value, actual: type '..type(actual)..', value '..prettystr(actual)
