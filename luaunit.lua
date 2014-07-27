@@ -741,7 +741,25 @@ LuaUnit_MT = { __index = LuaUnit }
     -----------------[[ Utility methods ]]---------------------
 
     function LuaUnit.isFunction(aObject) 
+        -- return true if aObject is a function
         return 'function' == type(aObject)
+    end
+
+    function LuaUnit.isClassMethod(aName)
+        -- return true if aName contains a class + a method name in the form class:method
+        return not not string.find(aName, ':' )
+    end
+
+    function LuaUnit.splitClassMethod(someName)
+        -- return a pair className, methodName for a name in the form class:method
+        -- return nil if not a class + method name
+        -- name is class + method
+        local hasMethod
+        hasMethod = string.find(someName, ':' )
+        if not hasMethod then return nil end
+        methodName = string.sub(someName, hasMethod+1)
+        className = string.sub(someName,1,hasMethod-1)
+        return className, methodName
     end
 
     --------------[[ Output methods ]]-------------------------
@@ -859,7 +877,7 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
 
-    function LuaUnit:_runTestMethod(className, methodName, classInstance, methodInstance)
+    function LuaUnit:execOneFunction(className, methodName, classInstance, methodInstance)
         -- When executing a class method, all parameters are set
         -- When executing a test function, className and classInstance are nil
 
@@ -897,6 +915,44 @@ LuaUnit_MT = { __index = LuaUnit }
         end
 
         self:endTest()
+    end
+
+    function LuaUnit:execOneClass( className, classInstance )
+        self:ensureSuiteStarted()
+
+        for methodName, methodInstance in sortedPairs(classInstance) do
+            if LuaUnit.isFunction(methodInstance) and string.sub(methodName, 1, 4) == "test" then
+                self:execOneFunction( className, methodName, classInstance, methodInstance )
+            end
+        end
+    end
+
+    function LuaUnit:runSuiteByInstances( listOfInstName )
+        self:ensureSuiteStarted()
+
+        for i,v in ipairs( listOfInstName ) do
+            name, instance = v[1], v[2]
+            if LuaUnit.isFunction(instance) then
+                self:execOneFunction( nil, name, nil, instance )
+                return
+            else 
+                if type(instance) ~= 'table' then
+                    error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
+                else
+
+                    if LuaUnit.isClassMethod( name ) then
+                        className, instanceName = LuaUnit.splitClassMethod( name )
+                        methodInstance = instance[methodName]
+                        if methodInstance == nil then
+                            error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
+                        end
+                        self:execOneFunction( className, methodName, instance, methodInstance )
+                    else
+                        self:execOneClass( name, instance )
+                    end
+                end
+            end
+        end
     end
 
     function LuaUnit:runSomeTest( someName, someInstance )
@@ -940,7 +996,7 @@ LuaUnit_MT = { __index = LuaUnit }
                 error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
             end
 
-            self:_runTestMethod( className, methodName, classInstance, methodInstance )
+            self:execOneFunction( className, methodName, classInstance, methodInstance )
             return
         end
 
@@ -963,14 +1019,14 @@ LuaUnit_MT = { __index = LuaUnit }
 
             for methodName, methodInstance in sortedPairs(classInstance) do
                 if LuaUnit.isFunction(methodInstance) and string.sub(methodName, 1, 4) == "test" then
-                    self:_runTestMethod( className, methodName, classInstance, methodInstance )
+                    self:execOneFunction( className, methodName, classInstance, methodInstance )
                 end
             end
             return
         end
 
         if type(someInstance) == 'function' then
-            self:_runTestMethod( nil, someName, nil, someInstance )
+            self:execOneFunction( nil, someName, nil, someInstance )
             return
         end
 

@@ -194,7 +194,21 @@ TestLuaUnitUtilities = {} --class
         assertEquals( prettystr( {a=1,bb=2,ab=3} ), '{a=1,ab=3,bb=2}' )
     end
 
+    function TestLuaUnitUtilities:test_IsFunction()
+        assertEquals( LuaUnit.isFunction( function (a,b) end ), true )
+        assertEquals( LuaUnit.isFunction( nil ), false )
+    end
 
+    function TestLuaUnitUtilities:test_IsClassMethod()
+        assertEquals( LuaUnit.isClassMethod( 'toto' ), false )
+        assertEquals( LuaUnit.isClassMethod( 'toto:titi' ), true )
+    end
+
+    function TestLuaUnitUtilities:test_splitClassMethod()
+        assertEquals( LuaUnit.splitClassMethod( 'toto' ), nil )
+        v1, v2 = LuaUnit.splitClassMethod( 'toto:titi' )
+        assertEquals( {v1, v2}, {'toto', 'titi'} )
+    end
 
 ------------------------------------------------------------------
 --
@@ -878,7 +892,7 @@ TestLuaUnitExecution = {} --class
         assertEquals( #executedTests, 0 )
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSomeTest( 'Toto', MyTestToto1 )
+        runner:runSuiteByInstances( { { 'Toto', MyTestToto1 } }  )
         assertEquals( #executedTests, 5 )
     end
 
@@ -889,7 +903,7 @@ TestLuaUnitExecution = {} --class
         assertEquals( #executedTests, 0 )
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSomeTest( 'MyLocalTestToto1', MyLocalTestToto1 )
+        runner:runSuiteByInstances( { { 'MyLocalTestToto1', MyLocalTestToto1 } } )
         assertEquals( #executedTests, 1 )
         assertEquals( executedTests[1], 'MyLocalTestToto1:test1')
     end
@@ -901,7 +915,7 @@ TestLuaUnitExecution = {} --class
 
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSomeTest( 'mytest', mytest )
+        runner:runSuiteByInstances( { { 'mytest', mytest } } )
         assertEquals( #executedTests, 1 )
         assertEquals( executedTests[1], 'mytest')
 
@@ -939,7 +953,7 @@ TestLuaUnitExecution = {} --class
 
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSomeTest( 'MyTestWithSetupTeardown:test1', MyTestWithSetupTeardown )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupTeardown:test1', MyTestWithSetupTeardown } } )
         assertEquals( runner.result.failureCount, 0 )
         assertEquals( myExecutedTests[1], 'setUp' )   
         assertEquals( myExecutedTests[2], 'test1')
@@ -957,7 +971,7 @@ TestLuaUnitExecution = {} --class
 
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSomeTest( 'MyTestWithSetupError', MyTestWithSetupError )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         assertEquals( runner.result.failureCount, 1 )
         assertEquals( runner.result.testCount, 1 )
         assertEquals( myExecutedTests[1], 'setUp' )   
@@ -975,7 +989,7 @@ TestLuaUnitExecution = {} --class
 
         runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSomeTest( 'MyTestWithSetupError', MyTestWithSetupError )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         assertEquals( runner.result.failureCount, 1 )
         assertEquals( runner.result.testCount, 1 )
         assertEquals( myExecutedTests[1], 'setUp' )   
@@ -994,7 +1008,7 @@ TestLuaUnitExecution = {} --class
 
         runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSomeTest( 'MyTestWithSetupError', MyTestWithSetupError )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         assertEquals( runner.result.failureCount, 1 )
         assertEquals( runner.result.testCount, 1 )
         assertEquals( myExecutedTests[1], 'setUp' )   
@@ -1012,7 +1026,7 @@ TestLuaUnitExecution = {} --class
 
         runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSomeTest( 'MyTestWithSetupError', MyTestWithSetupError )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         assertEquals( runner.result.failureCount, 1 )
         assertEquals( runner.result.testCount, 1 )
         assertEquals( myExecutedTests[1], 'setUp' )   
@@ -1030,7 +1044,7 @@ TestLuaUnitExecution = {} --class
 
         runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSomeTest( 'MyTestWithSetupError', MyTestWithSetupError )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         assertEquals( runner.result.failureCount, 1 )
         assertEquals( runner.result.testCount, 1 )
         assertEquals( myExecutedTests[1], 'setUp' )   
