@@ -878,8 +878,8 @@ LuaUnit_MT = { __index = LuaUnit }
 
 
     function LuaUnit:execOneFunction(className, methodName, classInstance, methodInstance)
-        -- When executing a class method, all parameters are set
-        -- When executing a test function, className and classInstance are nil
+        -- When executing a test function, className and classInstance must be nil
+        -- When executing a class method, all parameters must be set
 
         if type(methodInstance) ~= 'function' then
             error( tostring(methodName)..'must be a function, not '..type(methodInstance))
@@ -918,6 +918,8 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
     function LuaUnit:execOneClass( className, classInstance )
+        -- execute all test methods of class classInstance whose name is className
+        -- both arguments are mandatory
         self:ensureSuiteStarted()
 
         for methodName, methodInstance in sortedPairs(classInstance) do
@@ -928,6 +930,11 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
     function LuaUnit:runSuiteByInstances( listOfInstName )
+        -- Run an explicit list of tests. All test instances and names must be supplied.
+        -- each test must be one of:
+        --   * { function name, function instance }
+        --   * { class name, class instance }
+        --   * { class:method name, class instance }
         self:ensureSuiteStarted()
 
         for i,v in ipairs( listOfInstName ) do
@@ -954,6 +961,11 @@ LuaUnit_MT = { __index = LuaUnit }
             end
         end
     end
+
+    -- runSuiteByNames(), explicit list of names to run, error if name is not found
+
+    -- collectTestNames()
+    -- applyKeyWordFilters
 
     function LuaUnit:runSomeTest( someName, someInstance )
         -- name is mandatory
