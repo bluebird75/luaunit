@@ -884,7 +884,7 @@ TestLuaUnitExecution = {} --class
         assertEquals( #executedTests, 0 )
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSomeTest( 'MyTestToto1' )
+        runner:runSuiteByNames( { 'MyTestToto1' } )
         assertEquals( #executedTests, 5 )
     end
 

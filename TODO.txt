@@ -1,37 +1,67 @@
 Notes:
-- why isItemsEquals ?
-- why _table_contains ?
-- is_table_equals new implementation risks of printing inverted error message
 - itemsEquals sorts tables before comparing them ? Side-effect ?
-- assertIs should print the actual value and not just the type
-- assertIs and assertNotIs are used for what ?
 
+How to run the test suite today:
+- function name + function instance
+- function name
+- class name
+- class name + class instance
+- method name
+- method name + class instance
+
+What we want:
+- list of names, each name being: function name, class name, method name
+- class name, method name, function name
+- class instance + class name
+- class instance + method name
+- list of test functions
+
+func runSuite( [ list of names ] )
+	+ collect all test names
+	+ filter according to suite names
+	+ pass to run suite implementation
+end
+
+func runSuiteByInstances( [ [ className, classInstance ], [ className, classInstance], ... ] )
+
+func _runSuite( [ list of names ] )
+	+ find instance for each name
+	+ run it
+end
+
+
+TODO v0.5:
+- add travis-ci badges to README
+- replace methodInstance with real test name in reports
+- control verbosity and output type with command line
+- assert with matching of the error message
+- more user documentation
+- endSuite should make sure that endClass is called if necessary
+- endClass should make sure that endTest is called if necessary
 
 TODO:
-- replace methodInstance with real test name in reports
+- check how lua floats comparison works to improve assertAlmostEquals
+- global setup / teardown
 - distinguish errors and failures
-- better error display of assertIsXXX functions
-- test failures path of output
-- move all assertions together
-- make all assertions use the errormsg function
-- strip luaunit stack more intelligently
-- control verbosity and output type with command line
-- choose which tests to run with include/exclude rules
-- more user documentation
-- display time to run all tests
+- test failures, verify that output is correct
 - make sure test suite ends when running tests with RunByTestClass or RunByTestMethod
-- add assertAlmostEquals for floats
 - add assertMatch for strings
-- allow to skip tests
 - add other types of output
 - validate test output (TAP, ...)
 - better error messages for table assertions:
 	+ expected length of X, got Y
 	+ keys differing in table 1 and 2
+- allow to skip tests
 
-Nice to have: stack unwrapping like in py.test
+Nice to have: 
+- stack unwrapping like in py.test
+- strip luaunit stack more intelligently: exclude content of luaunit
+- choose which tests to run with include/exclude rules
 
 Done:
+x display time to run all tests
+x move all assertions together
+x better error display of assertIsXXX functions
 x add assertContains for strings
 x add assertIsNumber, assertIsXXX
 x table assertions

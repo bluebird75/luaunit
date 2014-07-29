@@ -819,6 +819,9 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
     function LuaUnit:endSuite()
+        if self.result.suiteStarted == false then
+            error('LuaUnit:endSuite() -- suite was already ended' )
+        end
         self.result.duration = os.clock()-self.result.startTime
         self.result.suiteStarted = false
         self.output:endSuite()
@@ -929,7 +932,7 @@ LuaUnit_MT = { __index = LuaUnit }
         end
     end
 
-    function LuaUnit:runSuiteByInstances( listOfInstName )
+    function LuaUnit:runSuiteByInstances( listOfNameAndInst )
         -- Run an explicit list of tests. All test instances and names must be supplied.
         -- each test must be one of:
         --   * { function name, function instance }
@@ -937,7 +940,7 @@ LuaUnit_MT = { __index = LuaUnit }
         --   * { class:method name, class instance }
         self:ensureSuiteStarted()
 
-        for i,v in ipairs( listOfInstName ) do
+        for i,v in ipairs( listOfNameAndInst ) do
             name, instance = v[1], v[2]
             if LuaUnit.isFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
@@ -962,89 +965,54 @@ LuaUnit_MT = { __index = LuaUnit }
         end
     end
 
-    -- runSuiteByNames(), explicit list of names to run, error if name is not found
-
-    -- collectTestNames()
-    -- applyKeyWordFilters
-
-    function LuaUnit:runSomeTest( someName, someInstance )
-        -- name is mandatory
-        -- if instance is not given, it's looked up in the global namespace
-        -- name can be a test class, a test function, or a test class + test method
-        -- instance can be a test class or a test function
-        -- example: runSomeTest( 'TestToto' )
-        -- example: runSomeTest( 'TestToto', TestToto )
-        -- example: runSomeTest( 'TestToto:testTiti' )
-        -- example: runSomeTest( 'TestToto:testTiti', TestToto )
-        -- example: runSomeTest( 'testFunction' )
-        -- example: runSomeTest( 'testFunction' , testFunction )
+    function LuaUnit:runSuiteByNames( listOfName )
+        -- Run an explicit list of test names
 
         self:ensureSuiteStarted()
 
-        local hasMethod, methodName, methodInstance, className, classInstance
-        if someName == nil or someName == '' then
-            error( 'Name is required!')
-        end
+        listOfNameAndInst = {}
 
-        hasMethod = string.find(someName, ':' )
+        for i,name in ipairs( listOfName ) do
+            if LuaUnit.isClassMethod( name ) then
+                className, methodName = LuaUnit.splitClassMethod( name )
+                instanceName = className
+                instance = _G[instanceName]
 
-        -- name is class + method
-        if hasMethod then
-            methodName = string.sub(someName, hasMethod+1)
-            className = string.sub(someName,1,hasMethod-1)
-            classInstance = someInstance
-
-            classInstance = classInstance or _G[className]
-            if classInstance == nil then
-                error( "No such class: "..className )
-            end
-
-            if type(classInstance) ~= 'table' then
-                error( 'Instance must be a table')
-            end
-
-            methodInstance = classInstance[methodName]
-            if methodInstance == nil then
-                error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
-            end
-
-            self:execOneFunction( className, methodName, classInstance, methodInstance )
-            return
-        end
-
-        if someInstance == nil then
-            someInstance = _G[someName]
-            if not someInstance then
-                error( "No such variable: "..someName )
-            end
-        end
-
-        if (type(someInstance) ~= 'table' and type(someInstance) ~= 'function') then
-            error( 'Instance must be function or table')
-        end
-
-        -- name is either a function or a class
-        if type(someInstance) == 'table' then
-            -- run all test methods of the class
-            className = someName
-            classInstance = someInstance
-
-            for methodName, methodInstance in sortedPairs(classInstance) do
-                if LuaUnit.isFunction(methodInstance) and string.sub(methodName, 1, 4) == "test" then
-                    self:execOneFunction( className, methodName, classInstance, methodInstance )
+                if instance == nil then
+                    error( "No such name in global space: "..instanceName )
                 end
+
+                if type(instance) ~= 'table' then
+                    error( 'Instance of '..instanceName..' must be a table, not '..type(instance))
+                end
+
+                methodInstance = instance[methodName]
+                if methodInstance == nil then
+                    error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
+                end
+
+            else
+                -- for functions and classes
+                instanceName = name
+                instance = _G[instanceName]
             end
-            return
+
+            if instance == nil then
+                error( "No such name in global space: "..instanceName )
+            end
+
+            if (type(instance) ~= 'table' and type(instance) ~= 'function') then
+                error( 'Name must match a function or a table: '..instanceName )
+            end
+
+            table.insert( listOfNameAndInst, { name, instance } )
         end
 
-        if type(someInstance) == 'function' then
-            self:execOneFunction( nil, someName, nil, someInstance )
-            return
-        end
-
-        error( 'Should never be reached...')
-
+        self:runSuiteByInstances( listOfNameAndInst )
     end
+
+    -- collectTestNames()
+    -- applyKeyWordFilters
 
     function LuaUnit:run(...)
         -- Run some specific test classes.
@@ -1080,9 +1048,7 @@ LuaUnit_MT = { __index = LuaUnit }
             table.sort( args )
         end
 
-        for i,testName in ipairs( args ) do
-            self:runSomeTest( testName )
-        end
+        self:runSuiteByNames( args )
 
         if self.lastClassName ~= nil then
             self:endClass()
