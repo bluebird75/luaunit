@@ -762,6 +762,16 @@ LuaUnit_MT = { __index = LuaUnit }
         return className, methodName
     end
 
+    function LuaUnit.isTestName( s )
+        -- return true is the name matches the name of a test
+        -- default rule is that is starts with 'Test' or with 'test'
+        if string.sub(s,1,4):lower() == 'test' then 
+            return true
+        end
+        return false
+
+    end
+
     --------------[[ Output methods ]]-------------------------
 
     function LuaUnit:ensureSuiteStarted( )
@@ -926,7 +936,7 @@ LuaUnit_MT = { __index = LuaUnit }
         self:ensureSuiteStarted()
 
         for methodName, methodInstance in sortedPairs(classInstance) do
-            if LuaUnit.isFunction(methodInstance) and string.sub(methodName, 1, 4) == "test" then
+            if LuaUnit.isFunction(methodInstance) and LuaUnit.isTestName( methodName ) then
                 self:execOneFunction( className, methodName, classInstance, methodInstance )
             end
         end
@@ -1041,7 +1051,7 @@ LuaUnit_MT = { __index = LuaUnit }
             -- not iterate over _G while modifying it.
             args = {}
             for key, val in pairs(_G) do 
-                if string.sub(key,1,4):lower() == 'test' then 
+                if LuaUnit.isTestName( key ) then
                     table.insert( args, key )
                 end
             end

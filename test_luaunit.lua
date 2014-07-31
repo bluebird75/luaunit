@@ -210,6 +210,13 @@ TestLuaUnitUtilities = {} --class
         assertEquals( {v1, v2}, {'toto', 'titi'} )
     end
 
+    function TestLuaUnitUtilities:test_isTestName()
+        assertEquals( LuaUnit.isTestName( 'testToto' ), true )
+        assertEquals( LuaUnit.isTestName( 'TestToto' ), true )
+        assertEquals( LuaUnit.isTestName( 'TESTToto' ), true )
+        assertEquals( LuaUnit.isTestName( 'xTESTToto' ), false )
+        assertEquals( LuaUnit.isTestName( '' ), false )
+    end
 ------------------------------------------------------------------
 --
 --                  Assertion Tests              
