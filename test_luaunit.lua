@@ -853,10 +853,13 @@ TestLuaUnitExecution = {} --class
 
     function TestLuaUnitExecution:tearDown()
         executedTests = {}
+        LuaUnit.isTestName = LuaUnit.isTestNameOld
     end
 
     function TestLuaUnitExecution:setUp()
         executedTests = {}
+        LuaUnit.isTestNameOld = LuaUnit.isTestName
+        LuaUnit.isTestName = function( s ) return (string.sub(s,1,6) == 'MyTest') end
     end
 
     MyTestToto1 = {} --class
@@ -866,6 +869,9 @@ TestLuaUnitExecution = {} --class
         function MyTestToto1:testa() table.insert( executedTests, "MyTestToto1:testa" ) end
         function MyTestToto1:test2() table.insert( executedTests, "MyTestToto1:test2" ) end
 
+    MyTestToto2 = {} --class
+        function MyTestToto2:test1() table.insert( executedTests, "MyTestToto2:test2" ) end
+
     MyTestWithFailures = {} --class
         function MyTestWithFailures:testWithFailure1() assertEquals(1, 2) end
         function MyTestWithFailures:testWithFailure2() assertError( function() end ) end
@@ -874,6 +880,15 @@ TestLuaUnitExecution = {} --class
     MyTestOk = {} --class
         function MyTestOk:testOk1() end
         function MyTestOk:testOk2() end
+
+    function MyTestFunction()
+        table.insert( executedTests, "MyTestFunction" ) 
+    end
+
+    function TestLuaUnitExecution:test_collectTests()
+        allTests = LuaUnit.collectTests()
+        assertEquals( prettystr( allTests ), '{"MyTestFunction","MyTestOk","MyTestToto1","MyTestToto2","MyTestWithFailures"}')
+    end
 
     function TestLuaUnitExecution:test_MethodsAreExecutedInRightOrder()
         local runner = LuaUnit:new()
@@ -887,12 +902,15 @@ TestLuaUnitExecution = {} --class
         assertEquals( executedTests[5], "MyTestToto1:testb" )
     end
 
-    function TestLuaUnitExecution:testRunSomeTestByName( )
-        assertEquals( #executedTests, 0 )
+    function TestLuaUnitExecution:test_runSuiteByNames()
+        -- note: this also test that names are executed in explicit order
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByNames( { 'MyTestToto1' } )
-        assertEquals( #executedTests, 5 )
+        runner:runSuiteByNames( { 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' } )
+        assertEquals( #executedTests, 7 )
+        assertEquals( executedTests[1], "MyTestToto2:test2" )
+        assertEquals( executedTests[2], "MyTestToto1:test1" )
+        assertEquals( executedTests[7], "MyTestFunction" )
     end
 
     function TestLuaUnitExecution:testRunSomeTestByGlobalInstance( )
@@ -906,28 +924,24 @@ TestLuaUnitExecution = {} --class
     function TestLuaUnitExecution:testRunSomeTestByLocalInstance( )
         MyLocalTestToto1 = {} --class
         function MyLocalTestToto1:test1() table.insert( executedTests, "MyLocalTestToto1:test1" ) end
+        MyLocalTestToto2 = {} --class
+        function MyLocalTestToto2:test1() table.insert( executedTests, "MyLocalTestToto2:test1" ) end
+        function MyLocalTestToto2:test2() table.insert( executedTests, "MyLocalTestToto2:test2" ) end
+        function MyLocalTestFunction() table.insert( executedTests, "MyLocalTestFunction" ) end
  
         assertEquals( #executedTests, 0 )
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstances( { { 'MyLocalTestToto1', MyLocalTestToto1 } } )
-        assertEquals( #executedTests, 1 )
+        runner:runSuiteByInstances( { 
+            { 'MyLocalTestToto1', MyLocalTestToto1 },
+            { 'MyLocalTestToto2:test2', MyLocalTestToto2 },
+            { 'MyLocalTestFunction', MyLocalTestFunction },
+        } )
+        assertEquals( #executedTests, 3 )
         assertEquals( executedTests[1], 'MyLocalTestToto1:test1')
+        assertEquals( executedTests[2], 'MyLocalTestToto2:test2')
+        assertEquals( executedTests[3], 'MyLocalTestFunction')
     end
-
-    function TestLuaUnitExecution:testRunTestByTestFunction()
-        local function mytest()
-            table.insert( executedTests, "mytest" )
-        end
-
-        local runner = LuaUnit:new()
-        runner:setOutputType( "NIL" )
-        runner:runSuiteByInstances( { { 'mytest', mytest } } )
-        assertEquals( #executedTests, 1 )
-        assertEquals( executedTests[1], 'mytest')
-
-    end
-
 
     function TestLuaUnitExecution:testRunReturnsNumberOfFailures()
         local runner = LuaUnit:new()
@@ -951,21 +965,44 @@ TestLuaUnitExecution = {} --class
         assertEquals( runner.result.failureCount, 0)
     end
 
-    function TestLuaUnitExecution:testRunTestMethod()
+    function TestLuaUnitExecution:testRunSetupAndTeardown()
         local myExecutedTests = {}
         local MyTestWithSetupTeardown = {}
-            function MyTestWithSetupTeardown:setUp()    table.insert( myExecutedTests, 'setUp' ) end
-            function MyTestWithSetupTeardown:test1()    table.insert( myExecutedTests, 'test1' ) end
-            function MyTestWithSetupTeardown:tearDown() table.insert( myExecutedTests, 'tearDown' )  end
+            function MyTestWithSetupTeardown:setUp()    table.insert( myExecutedTests, '1setUp' ) end
+            function MyTestWithSetupTeardown:test1()    table.insert( myExecutedTests, '1test1' ) end
+            function MyTestWithSetupTeardown:test2()    table.insert( myExecutedTests, '1test2' ) end
+            function MyTestWithSetupTeardown:tearDown() table.insert( myExecutedTests, '1tearDown' )  end
+
+        local MyTestWithSetupTeardown2 = {}
+            function MyTestWithSetupTeardown2:setUp()    table.insert( myExecutedTests, '2setUp' ) end
+            function MyTestWithSetupTeardown2:test1()    table.insert( myExecutedTests, '2test1' ) end
+            function MyTestWithSetupTeardown2:tearDown() table.insert( myExecutedTests, '2tearDown' )  end
 
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupTeardown:test1', MyTestWithSetupTeardown } } )
         assertEquals( runner.result.failureCount, 0 )
-        assertEquals( myExecutedTests[1], 'setUp' )   
-        assertEquals( myExecutedTests[2], 'test1')
-        assertEquals( myExecutedTests[3], 'tearDown')
+        assertEquals( myExecutedTests[1], '1setUp' )   
+        assertEquals( myExecutedTests[2], '1test1')
+        assertEquals( myExecutedTests[3], '1tearDown')
         assertEquals( #myExecutedTests, 3)
+
+        myExecutedTests = {}
+        runner:runSuiteByInstances( { 
+            { 'MyTestWithSetupTeardown', MyTestWithSetupTeardown },
+            { 'MyTestWithSetupTeardown2', MyTestWithSetupTeardown2 } 
+        } )
+        assertEquals( runner.result.failureCount, 0 )
+        assertEquals( myExecutedTests[1], '1setUp' )   
+        assertEquals( myExecutedTests[2], '1test1')
+        assertEquals( myExecutedTests[3], '1tearDown')
+        assertEquals( myExecutedTests[4], '1setUp' )   
+        assertEquals( myExecutedTests[5], '1test2')
+        assertEquals( myExecutedTests[6], '1tearDown')
+        assertEquals( myExecutedTests[7], '2setUp' )   
+        assertEquals( myExecutedTests[8], '2test1')
+        assertEquals( myExecutedTests[9], '2tearDown')
+        assertEquals( #myExecutedTests, 9)
     end
 
     function TestLuaUnitExecution:testWithSetupTeardownErrors1()

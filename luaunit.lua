@@ -762,6 +762,15 @@ LuaUnit_MT = { __index = LuaUnit }
         return className, methodName
     end
 
+    function LuaUnit.isMethodTestName( s )
+        -- return true is the name matches the name of a test method
+        -- default rule is that is starts with 'Test' or with 'test'
+        if string.sub(s,1,4):lower() == 'test' then 
+            return true
+        end
+        return false
+    end
+
     function LuaUnit.isTestName( s )
         -- return true is the name matches the name of a test
         -- default rule is that is starts with 'Test' or with 'test'
@@ -769,7 +778,20 @@ LuaUnit_MT = { __index = LuaUnit }
             return true
         end
         return false
+    end
 
+    function LuaUnit.collectTests()
+        -- return a list of all test names in the global namespace
+        -- that match LuaUnit.isTestName
+
+        testNames = {}
+        for key, val in pairs(_G) do 
+            if LuaUnit.isTestName( key ) then
+                table.insert( testNames , key )
+            end
+        end
+        table.sort( testNames )
+        return testNames 
     end
 
     --------------[[ Output methods ]]-------------------------
@@ -936,7 +958,7 @@ LuaUnit_MT = { __index = LuaUnit }
         self:ensureSuiteStarted()
 
         for methodName, methodInstance in sortedPairs(classInstance) do
-            if LuaUnit.isFunction(methodInstance) and LuaUnit.isTestName( methodName ) then
+            if LuaUnit.isFunction(methodInstance) and LuaUnit.isMethodTestName( methodName ) then
                 self:execOneFunction( className, methodName, classInstance, methodInstance )
             end
         end
@@ -1021,9 +1043,6 @@ LuaUnit_MT = { __index = LuaUnit }
         self:runSuiteByInstances( listOfNameAndInst )
     end
 
-    -- collectTestNames()
-    -- applyKeyWordFilters
-
     function LuaUnit:run(...)
         -- Run some specific test classes.
         -- If no arguments are passed, run the class names specified on the
@@ -1038,7 +1057,32 @@ LuaUnit_MT = { __index = LuaUnit }
         return runner:runSuite(...)
     end
 
-    function LuaUnit:runSuite(...)
+    function LuaUnit:runSuiteByFilter( testNames, keywordFilter )
+        -- Run all the test of the test suite according to the arguments
+        -- testNames: explicit list of tests to run, or nil to run all the tests of the test suite
+        -- keywordFilter: a list of patterns listing all the tests to include. nil to include everything
+
+        if testNames == nil then
+            testNames = LuaUnit.collectTests()
+        end
+
+        if keywordFilter == nil then
+            testToRun = testNames
+        else
+            testToRun = {}
+            for i,name in ipairs(testNames) do
+                for j,keyword in ipairs(keywordFilter) do
+                    if string.find( name, keyword ) then
+                        table.insert( testToRun, name )
+                    end
+                end
+            end
+        end
+
+        self:runSuiteByNames( testToRun )
+    end
+
+    function LuaUnit:runSuite( ... )
         self:startSuite()
 
         args={...};
@@ -1049,15 +1093,10 @@ LuaUnit_MT = { __index = LuaUnit }
         if #args == 0 then
             -- create the list of classes to run now ! If not, you can
             -- not iterate over _G while modifying it.
-            args = {}
-            for key, val in pairs(_G) do 
-                if LuaUnit.isTestName( key ) then
-                    table.insert( args, key )
-                end
-            end
-            table.sort( args )
+            args = LuaUnit.collectTests()
         end
 
+        --print( 'runSuite: args='..prettystr(args))
         self:runSuiteByNames( args )
 
         if self.lastClassName ~= nil then
