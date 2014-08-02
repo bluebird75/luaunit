@@ -15,7 +15,10 @@ assertEquals( expected, actual ).
 ]]--
 ORDER_ACTUAL_EXPECTED = true
 
-DEFAULT_VERBOSITY = 1
+VERBOSITY_DEFAULT = 10
+VERBOSITY_LOW     = 1
+VERBOSITY_QUIET   = 0
+VERBOSITY_VERBOSE = 20 
 
 ----------------------------------------------------------------
 --
@@ -511,7 +514,7 @@ TapOutput_MT = { __index = TapOutput }
 
     function TapOutput:new()
         local t = {}
-        t.verbosity = 0
+        t.verbosity = VERBOSITY_LOW
         setmetatable( t, TapOutput_MT )
         return t
     end
@@ -521,10 +524,10 @@ TapOutput_MT = { __index = TapOutput }
 
     function TapOutput:addFailure( errorMsg, stackTrace )
        print(string.format("not ok %d\t%s", self.result.testCount, self.result.currentTestName ))
-       if self.verbosity > 0 then
+       if self.verbosity > VERBOSITY_LOW then
            print( prefixString( '    ', errorMsg ) )
         end
-       if self.verbosity > 1 then
+       if self.verbosity > VERBOSITY_DEFAULT then
            print( prefixString( '    ', stackTrace ) )
         end
     end
@@ -559,7 +562,7 @@ JUnitOutput_MT = { __index = JUnitOutput }
 
     function JUnitOutput:new()
         local t = {}
-        t.verbosity = 0
+        t.verbosity = VERBOSITY_LOW
         setmetatable( t, JUnitOutput_MT )
         return t
     end
@@ -608,7 +611,7 @@ TextOutput_MT = { -- class
         t.runner = nil
         t.result = nil
         t.errorList ={}
-        t.verbosity = 1
+        t.verbosity = VERBOSITY_DEFAULT
         setmetatable( t, TextOutput_MT )
         return t
     end
@@ -617,23 +620,23 @@ TextOutput_MT = { -- class
     end
 
     function TextOutput:startClass(className)
-        if self.verbosity > 0 then
+        if self.verbosity > VERBOSITY_DEFAULT then
             print( '>>>>>>>>> '.. self.result.currentClassName )
         end
     end
 
     function TextOutput:startTest(testName)
-        if self.verbosity > 0 then
-            print( ">>> ".. self.result.currentTestName )
-        end
-    end
+        if self.verbosity > VERBOSITY_LOW then 
+            print( ">>> ".. self.result.currentTestName ) 
+        end 
+    end 
 
-    function TextOutput:addFailure( errorMsg, stackTrace )
-        table.insert( self.errorList, { self.result.currentTestName, errorMsg, stackTrace } )
+    function TextOutput:addFailure( errorMsg, stackTrace ) 
+        table.insert( self.errorList, { self.result.currentTestName, errorMsg, stackTrace } ) 
         if self.verbosity == 0 then
-            io.stdout:write("F")
+            io.stdout:write("F") 
         end
-        if self.verbosity > 0 then
+        if self.verbosity > VERBOSITY_LOW then
             print( errorMsg )
             print( 'Failed' )
         end
@@ -641,7 +644,7 @@ TextOutput_MT = { -- class
 
     function TextOutput:endTest(testHasFailure)
         if not testHasFailure then
-            if self.verbosity > 0 then
+            if self.verbosity > VERBOSITY_LOW then
                 --print ("Ok" )
             else 
                 io.stdout:write(".")
@@ -650,7 +653,7 @@ TextOutput_MT = { -- class
     end
 
     function TextOutput:endClass()
-        if self.verbosity > 0 then
+        if self.verbosity > VERBOSITY_LOW then
            print()
         end
     end
@@ -659,7 +662,7 @@ TextOutput_MT = { -- class
         testName, errorMsg, stackTrace = unpack( failure )
         print(">>> "..testName.." failed")
         print( errorMsg )
-        if self.verbosity > 1 then
+        if self.verbosity > VERBOSITY_DEFAULT then
             print( stackTrace )
         end
     end
@@ -675,7 +678,7 @@ TextOutput_MT = { -- class
     end
 
     function TextOutput:endSuite()
-        if self.verbosity == 0 then
+        if self.verbosity == VERBOSITY_LOW then
             print()
         else
             print("=========================================================")
@@ -727,7 +730,7 @@ end
 
 LuaUnit = {
     outputType = TextOutput,
-    verbosity = DEFAULT_VERBOSITY,
+    verbosity = VERBOSITY_DEFAULT,
     __class__ = 'LuaUnit'
 }
 LuaUnit_MT = { __index = LuaUnit }
@@ -792,6 +795,91 @@ LuaUnit_MT = { __index = LuaUnit }
         end
         table.sort( testNames )
         return testNames 
+    end
+
+    function LuaUnit.parseCmdLine( cmdLine )
+        -- parse the command line 
+        -- Supported command line parameters:
+        -- --verbose, -v: increase verbosity
+        -- --quiet, -q: silence output
+        -- --output, -o, + name: select output type
+        -- --pattern, -p, + pattern: run test matching pattern, may be repeated
+        -- [testnames, ...]: run selected test names
+        --
+        -- Returnsa table with the following fields:
+        -- verbosity: nil, VERBOSITY_DEFAULT, VERBOSITY_QUIET, VERBOSITY_VERBOSE
+        -- output: nil, 'tap', 'junit', 'text', 'nil'
+        -- testNames: nil or a list of test names to run
+        -- pattern: nil or a list of patterns
+
+        local result = {}
+        local state = nil
+        local SET_OUTPUT = 1
+        local SET_PATTERN = 2
+
+        if cmdLine == nil then
+            return result
+        end
+
+        local function parseOption( arg )
+            if arg == '--verbose' or arg == '-v' then
+                result['verbosity'] = VERBOSITY_VERBOSE
+                return
+            end
+            if arg == '--quiet' or arg == '-q' then
+                result['verbosity'] = VERBOSITY_QUIET
+                return
+            end
+            if arg == '--output' or arg == '-o' then
+                state = SET_OUTPUT
+                return state
+            end
+            if arg == '--pattern' or arg == '-p' then
+                state = SET_PATTERN
+                return state
+            end
+            error('Unknown option: '..arg)
+        end
+
+        local function setArg( arg, state )
+            if state == SET_OUTPUT then
+                result['output'] = arg
+                return
+            end
+            if state == SET_PATTERN then
+                if result['pattern'] then
+                    table.insert( result['pattern'], arg )
+                else
+                    result['pattern'] = { arg }
+                end
+                return
+            end
+            error('Unknown parse state: '.. state)
+        end
+
+
+        for i, arg in ipairs(cmdLine) do
+            if state ~= nil then
+                setArg( arg, state, result )
+                state = nil
+            else 
+                if arg:sub(1,1) == '-' then
+                    state = parseOption( arg )
+                else 
+                    if result['testNames'] then
+                        table.insert( result['testNames'], arg )
+                    else
+                        result['testNames'] = { arg }
+                    end
+                end
+            end
+        end
+
+        if state ~= nil then
+            error('Missing argument after '..cmdLine[ #cmdLine ] )
+        end
+
+        return result
     end
 
     --------------[[ Output methods ]]-------------------------
@@ -1057,47 +1145,34 @@ LuaUnit_MT = { __index = LuaUnit }
         return runner:runSuite(...)
     end
 
-    function LuaUnit:runSuiteByFilter( testNames, keywordFilter )
-        -- Run all the test of the test suite according to the arguments
-        -- testNames: explicit list of tests to run, or nil to run all the tests of the test suite
-        -- keywordFilter: a list of patterns listing all the tests to include. nil to include everything
-
-        if testNames == nil then
-            testNames = LuaUnit.collectTests()
-        end
-
-        if keywordFilter == nil then
-            testToRun = testNames
-        else
-            testToRun = {}
-            for i,name in ipairs(testNames) do
-                for j,keyword in ipairs(keywordFilter) do
-                    if string.find( name, keyword ) then
-                        table.insert( testToRun, name )
-                    end
-                end
-            end
-        end
-
-        self:runSuiteByNames( testToRun )
-    end
-
     function LuaUnit:runSuite( ... )
-        self:startSuite()
 
-        args={...};
+        local args={...};
         if #args == 0 then
             args = argv
         end
 
-        if #args == 0 then
-            -- create the list of classes to run now ! If not, you can
-            -- not iterate over _G while modifying it.
-            args = LuaUnit.collectTests()
+        options = LuaUnit.parseCmdLine( args )
+
+        if options.verbosity then
+            self.verbosity = options.verbosity
         end
 
-        --print( 'runSuite: args='..prettystr(args))
-        self:runSuiteByNames( args )
+        if options.output then
+            self:setOutputType(options.output)
+        end
+
+        -- do something with patterns
+
+        testNames = options['testNames']
+
+        if testNames == nil then
+            -- create the list of classes to run now ! If not, you can
+            -- not iterate over _G while modifying it.
+            testNames = LuaUnit.collectTests()
+        end
+
+        self:runSuiteByNames( testNames )
 
         if self.lastClassName ~= nil then
             self:endClass()

@@ -217,6 +217,37 @@ TestLuaUnitUtilities = {} --class
         assertEquals( LuaUnit.isTestName( 'xTESTToto' ), false )
         assertEquals( LuaUnit.isTestName( '' ), false )
     end
+
+    function TestLuaUnitUtilities:test_parseCmdLine()
+        --test names
+        assertEquals( LuaUnit.parseCmdLine(), {} )
+        assertEquals( LuaUnit.parseCmdLine( { 'someTest' } ), { testNames={'someTest'} } )
+        assertEquals( LuaUnit.parseCmdLine( { 'someTest', 'someOtherTest' } ), { testNames={'someTest', 'someOtherTest'} } )
+
+        -- verbosity
+        assertEquals( LuaUnit.parseCmdLine( { '--verbose' } ), { verbosity=VERBOSITY_VERBOSE } )
+        assertEquals( LuaUnit.parseCmdLine( { '-v' } ), { verbosity=VERBOSITY_VERBOSE } )
+        assertEquals( LuaUnit.parseCmdLine( { '--quiet' } ), { verbosity=VERBOSITY_QUIET } )
+        assertEquals( LuaUnit.parseCmdLine( { '-q' } ), { verbosity=VERBOSITY_QUIET } )
+        assertEquals( LuaUnit.parseCmdLine( { '-v', '-q' } ), { verbosity=VERBOSITY_QUIET } )
+
+        --output
+        assertEquals( LuaUnit.parseCmdLine( { '--output', 'toto' } ), { output='toto'} )
+        assertEquals( LuaUnit.parseCmdLine( { '-o', 'toto' } ), { output='toto'} )
+        assertErrorMsgMatch( 'Missing argument after %-o', LuaUnit.parseCmdLine, { '-o', } )
+
+        --patterns
+        assertEquals( LuaUnit.parseCmdLine( { '--pattern', 'toto' } ), { pattern={'toto'} } )
+        assertEquals( LuaUnit.parseCmdLine( { '-p', 'toto' } ), { pattern={'toto'} } )
+        assertEquals( LuaUnit.parseCmdLine( { '-p', 'titi', '-p', 'toto' } ), { pattern={'titi', 'toto'} } )
+        assertErrorMsgMatch( 'Missing argument after %-p', LuaUnit.parseCmdLine, { '-p', } )
+
+        --megamix
+        assertEquals( LuaUnit.parseCmdLine( { '-p', 'toto', 'titi', '-v', 'tata', '-o', 'tintin', '-p', 'tutu', 'prout' } ), 
+            { pattern={'toto', 'tutu'}, verbosity=VERBOSITY_VERBOSE, output='tintin', testNames={'titi', 'tata', 'prout'} } )
+
+        assertErrorMsgMatch( 'option: %-x', LuaUnit.parseCmdLine, { '-x', } )
+    end
 ------------------------------------------------------------------
 --
 --                  Assertion Tests              
