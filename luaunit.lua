@@ -845,7 +845,7 @@ LuaUnit_MT = { __index = LuaUnit }
                 state = SET_PATTERN
                 return state
             end
-            error('Unknown option: '..option)
+            error('Unknown option: '..option,3)
         end
 
         local function setArg( cmdArg, state )
@@ -883,7 +883,7 @@ LuaUnit_MT = { __index = LuaUnit }
         end
 
         if state ~= nil then
-            error('Missing argument after '..cmdLine[ #cmdLine ] )
+            error('Missing argument after '..cmdLine[ #cmdLine ],2 )
         end
 
         return result
@@ -973,7 +973,7 @@ LuaUnit_MT = { __index = LuaUnit }
             self.outputType = TextOutput
             return
         end
-        error( 'No such format: '..outputType)
+        error( 'No such format: '..outputType,2)
     end
 
     function LuaUnit:setVerbosity( verbosity )
@@ -1163,14 +1163,27 @@ LuaUnit_MT = { __index = LuaUnit }
             args = cmdline_argv
         end
 
-        options = LuaUnit.parseCmdLine( args )
+        local no_error, error_msg, options, val
+        no_error, val = pcall( LuaUnit.parseCmdLine, args )
+        if not no_error then 
+            error_msg = val
+            print(error_msg)
+            os.exit(-1)
+        end 
+
+        options = val
 
         if options.verbosity then
             self.verbosity = options.verbosity
         end
 
         if options.output then
-            self:setOutputType(options.output)
+            no_error, val = pcall(self.setOutputType,self,options.output)
+            if not no_error then 
+                error_msg = val
+                print(error_msg)
+                os.exit(-1)
+            end 
         end
 
         -- do something with patterns
