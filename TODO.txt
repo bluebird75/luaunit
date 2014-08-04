@@ -1,52 +1,26 @@
 Notes:
 - itemsEquals sorts tables before comparing them ? Side-effect ?
 
-How to run the test suite today:
-- function name + function instance
-- function name
-- class name
-- class name + class instance
-- method name
-- method name + class instance
-
-What we want:
-- list of names, each name being: function name, class name, method name
-- class name, method name, function name
-- class instance + class name
-- class instance + method name
-- list of test functions
-
-func runSuite( [ list of names ] )
-	+ collect all test names
-	+ filter according to suite names
-	+ pass to run suite implementation
-end
-
-func runSuiteByInstances( [ [ className, classInstance ], [ className, classInstance], ... ] )
-
-func _runSuite( [ list of names ] )
-	+ find instance for each name
-	+ run it
-end
-
-
 TODO v0.5:
 - add travis-ci badges to README
 - replace methodInstance with real test name in reports
-- control verbosity and output type with command line
 - assert with matching of the error message
 - more user documentation
 - endSuite should make sure that endClass is called if necessary
 - endClass should make sure that endTest is called if necessary
+- check why endSuite is not called in output junit
+- make itemsEquals non recursive
+- better error messages for wrong command line option, or wrong output type
 
 TODO:
-- check how lua floats comparison works to improve assertAlmostEquals
 - global setup / teardown
+- class setup / teardown
 - distinguish errors and failures
 - test failures, verify that output is correct
 - make sure test suite ends when running tests with RunByTestClass or RunByTestMethod
 - add assertMatch for strings
 - add other types of output
+- add duration information to TAP and JUNIT output
 - validate test output (TAP, ...)
 - better error messages for table assertions:
 	+ expected length of X, got Y
@@ -56,9 +30,9 @@ TODO:
 Nice to have: 
 - stack unwrapping like in py.test
 - strip luaunit stack more intelligently: exclude content of luaunit
-- choose which tests to run with include/exclude rules
 
 Done:
+x control verbosity and output type with command line
 x display time to run all tests
 x move all assertions together
 x better error display of assertIsXXX functions

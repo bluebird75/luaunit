@@ -8,8 +8,6 @@ Lot of improvements by Philippe Fremy <phil@freehackers.org>
 License: BSD License, see LICENSE.txt
 ]]--
 
-argv = arg
-
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
 assertEquals( expected, actual ).
 ]]--
@@ -821,36 +819,36 @@ LuaUnit_MT = { __index = LuaUnit }
             return result
         end
 
-        local function parseOption( arg )
-            if arg == '--verbose' or arg == '-v' then
+        local function parseOption( option )
+            if option == '--verbose' or option == '-v' then
                 result['verbosity'] = VERBOSITY_VERBOSE
                 return
             end
-            if arg == '--quiet' or arg == '-q' then
+            if option == '--quiet' or option == '-q' then
                 result['verbosity'] = VERBOSITY_QUIET
                 return
             end
-            if arg == '--output' or arg == '-o' then
+            if option == '--output' or option == '-o' then
                 state = SET_OUTPUT
                 return state
             end
-            if arg == '--pattern' or arg == '-p' then
+            if option == '--pattern' or option == '-p' then
                 state = SET_PATTERN
                 return state
             end
-            error('Unknown option: '..arg)
+            error('Unknown option: '..option)
         end
 
-        local function setArg( arg, state )
+        local function setArg( cmdArg, state )
             if state == SET_OUTPUT then
-                result['output'] = arg
+                result['output'] = cmdArg
                 return
             end
             if state == SET_PATTERN then
                 if result['pattern'] then
-                    table.insert( result['pattern'], arg )
+                    table.insert( result['pattern'], cmdArg )
                 else
-                    result['pattern'] = { arg }
+                    result['pattern'] = { cmdArg }
                 end
                 return
             end
@@ -858,18 +856,18 @@ LuaUnit_MT = { __index = LuaUnit }
         end
 
 
-        for i, arg in ipairs(cmdLine) do
+        for i, cmdArg in ipairs(cmdLine) do
             if state ~= nil then
-                setArg( arg, state, result )
+                setArg( cmdArg, state, result )
                 state = nil
             else 
-                if arg:sub(1,1) == '-' then
-                    state = parseOption( arg )
+                if cmdArg:sub(1,1) == '-' then
+                    state = parseOption( cmdArg )
                 else 
                     if result['testNames'] then
-                        table.insert( result['testNames'], arg )
+                        table.insert( result['testNames'], cmdArg )
                     else
-                        result['testNames'] = { arg }
+                        result['testNames'] = { cmdArg }
                     end
                 end
             end
@@ -1149,7 +1147,7 @@ LuaUnit_MT = { __index = LuaUnit }
 
         local args={...};
         if #args == 0 then
-            args = argv
+            args = arg
         end
 
         options = LuaUnit.parseCmdLine( args )
