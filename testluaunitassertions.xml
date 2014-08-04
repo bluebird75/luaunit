@@ -1,0 +1,31 @@
+<testsuite name="TestLuaUnitAssertions">
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertAlmostEquals"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertEquals"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertError"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertErrorMsgFunctionSupportRegexp"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertFalse"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertIs"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertIsBoolean"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertIsFunction"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertIsNil"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertIsNumber"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertIsString"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertIsTable"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertItemsEquals"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertNotAlmostEquals"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertNotEquals"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertNotEqualsDifferentTypes2"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertNotIs"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertNotStrContains"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertNotStrIContains"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertStrContains"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertStrIContains"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertTableAdditions"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertTableLev2"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertTableList"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertTableNil"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertTableNilFront"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertTableNum"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertTableStr"></testcase>
+<testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions:test_assertTrue"></testcase>
+</testsuite>

@@ -1,0 +1,17 @@
+<testsuite name="TestLuaUnitUtilities">
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_IsClassMethod"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_IsFunction"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_genSortedIndex"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_isTestName"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_parseCmdLine"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_prefixString"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_prettystr"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_sortedNextReturnsSortedKeyValues"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_sortedNextWorksOnTwoTables"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_sortedNextWorksTwiceOnTable"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_splitClassMethod"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_strSplit3CharDelim"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_strSplitOnFailure"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_strSplitOneCharDelim"></testcase>
+<testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities:test_table_keytostring"></testcase>
+</testsuite>

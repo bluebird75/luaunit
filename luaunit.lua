@@ -18,6 +18,9 @@ VERBOSITY_LOW     = 1
 VERBOSITY_QUIET   = 0
 VERBOSITY_VERBOSE = 20 
 
+-- we need to keep a copy of argv before it is overriden
+cmdline_argv = arg
+
 ----------------------------------------------------------------
 --
 --                 general utility functions
@@ -584,11 +587,14 @@ JUnitOutput_MT = { __index = JUnitOutput }
        if xmlFile then xmlFile:write('</testcase>\n') end
     end
 
-    function JUnitOutput:endClass() end
+    function JUnitOutput:endClass()
+        if xmlFile then 
+            xmlFile:write('</testsuite>\n') 
+            xmlFile:close()
+        end 
+    end
 
     function JUnitOutput:endSuite()
-       if xmlFile then xmlFile:write('</testsuite>\n') end
-       if xmlFile then xmlFile:close() end
        return self.result.failureCount
     end
 
@@ -1056,7 +1062,7 @@ LuaUnit_MT = { __index = LuaUnit }
         --   * { function name, function instance }
         --   * { class name, class instance }
         --   * { class:method name, class instance }
-        self:ensureSuiteStarted()
+        self:startSuite()
 
         for i,v in ipairs( listOfNameAndInst ) do
             name, instance = v[1], v[2]
@@ -1081,12 +1087,16 @@ LuaUnit_MT = { __index = LuaUnit }
                 end
             end
         end
+
+        if self.lastClassName ~= nil then
+            self:endClass()
+        end
+
+        self:endSuite()
     end
 
     function LuaUnit:runSuiteByNames( listOfName )
         -- Run an explicit list of test names
-
-        self:ensureSuiteStarted()
 
         listOfNameAndInst = {}
 
@@ -1147,7 +1157,7 @@ LuaUnit_MT = { __index = LuaUnit }
 
         local args={...};
         if #args == 0 then
-            args = arg
+            args = cmdline_argv
         end
 
         options = LuaUnit.parseCmdLine( args )
@@ -1172,10 +1182,6 @@ LuaUnit_MT = { __index = LuaUnit }
 
         self:runSuiteByNames( testNames )
 
-        if self.lastClassName ~= nil then
-            self:endClass()
-        end
-        self:endSuite()
         return self.result.failureCount
     end
 -- class LuaUnit
