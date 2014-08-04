@@ -182,7 +182,10 @@ function _table_contains(t, element)
         for _, value in pairs(t) do
             if type(value) == type(element) then
                 if type(element) == 'table' then
-                    if _is_table_items_equals(v, expected) then
+                    -- if we wanted recursive items content comparison, we could use
+                    -- _is_table_items_equals(v, expected) but one level of just comparing
+                    -- items is sufficient
+                    if _is_table_equals( value, element ) then
                         return true
                     end
                 else

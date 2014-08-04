@@ -509,9 +509,19 @@ TestLuaUnitAssertions = {} --class
         assertError(assertItemsEquals, {1,2,three=3}, {3,4,a=1,b=2})
         assertError(assertItemsEquals, {1,2,three=3,four=4}, {3,a=1,b=2})
 
-        assertItemsEquals({1,{2,1},3}, {3,1,{1,2}})
-        assertItemsEquals({one=1,two={1,2},three=3}, {one={2,1},two=1,three=3})
-        assertItemsEquals({one=1,two={1,{3,2,one=1}},three=3}, {two={{3,one=1,2},1},one=1,three=3})
+        assertItemsEquals({one=1,two={1,2},three=3}, {one={1,2},two=1,three=3})
+        assertItemsEquals({one=1,
+                           two={1,{3,2,one=1}},
+                           three=3}, 
+                        {two={1,{3,2,one=1}},
+                         one=1,
+                         three=3})
+        -- itemsEquals is not recursive:
+        assertError( assertItemsEquals,{1,{2,1},3}, {3,1,{1,2}})
+        assertError( assertItemsEquals,{one=1,two={1,2},three=3}, {one={2,1},two=1,three=3})
+        assertError( assertItemsEquals,{one=1,two={1,{3,2,one=1}},three=3}, {two={{3,one=1,2},1},one=1,three=3})
+        assertError( assertItemsEquals,{one=1,two={1,{3,2,one=1}},three=3}, {two={{3,2,one=1},1},one=1,three=3})
+
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three=2})
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,four=4})
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three})
