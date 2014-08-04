@@ -1154,23 +1154,29 @@ LuaUnit_MT = { __index = LuaUnit }
         self:runSuiteByInstances( listOfNameAndInst )
     end
 
-    function LuaUnit:run(...)
+    function LuaUnit.run(...)
         -- Run some specific test classes.
         -- If no arguments are passed, run the class names specified on the
         -- command line. If no class name is specified on the command line
         -- run all classes whose name starts with 'Test'
         --
         -- If arguments are passed, they must be strings of the class names 
-        -- that you want to run
-        local runner = self:new()
-        local outputType = os.getenv("outputType")
-        if outputType then LuaUnit:setOutputType(outputType) end
+        -- that you want to run or generic command line arguments (-o, -p, -v, ...)
+
+        local runner = LuaUnit.new()
         return runner:runSuite(...)
     end
 
     function LuaUnit:runSuite( ... )
 
         local args={...};
+        if args[1] ~= nil and type(args[1]) == 'table' and args[1].__class__ == 'LuaUnit' then
+            -- run was called with the syntax LuaUnit:runSuite()
+            -- we support both LuaUnit.run() and LuaUnit:run()
+            -- strip out the first argument
+            table.remove(args,1)
+        end
+
         if #args == 0 then
             args = cmdline_argv
         end

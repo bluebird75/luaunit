@@ -58,6 +58,24 @@ TestToto = {} --class
         assertEquals( {1,2}, self.t3 )
     end
 
+    function TestToto:test8a()
+        -- failure occurs in a submethod
+        self:funcWithError()
+    end
+
+    function TestToto:test8b()
+        -- failure occurs in a submethod
+        self:funcWithFuncWithError()
+    end
+
+    function TestToto:funcWithFuncWithError()
+        self:funcWithError()
+    end
+
+    function TestToto:funcWithError()
+        error('Bouhouhoum error!')
+    end
+
 
 -- class TestToto
 
@@ -127,5 +145,5 @@ end
 lu = LuaUnit
 -- lu:setOutputType( "NIL" )
 -- lu:setOutputType( "TAP" )
-lu:setVerbosity( 1 )
-os.exit( lu:run() )
+-- lu:setVerbosity( 1 )
+os.exit( LuaUnit.run() )

@@ -1216,4 +1216,4 @@ TestLuaUnitExecution = {} --class
     end
 
 LuaUnit.verbosity = 2
-os.exit( LuaUnit:run() )
+os.exit( LuaUnit.run() )
