@@ -987,10 +987,10 @@ LuaUnit_MT = { __index = LuaUnit }
 
     SPLITTER = '\n>----------<\n'
 
-    function LuaUnit:protectedCall( classInstance , methodInstance)
+    function LuaUnit:protectedCall( classInstance , methodInstance, prettyFuncName)
         -- if classInstance is nil, this is just a function run
         local function err_handler(e)
-            return debug.traceback(e..SPLITTER, 4)
+            return debug.traceback(e..SPLITTER, 3)
         end
 
         local ok=true, errorMsg, stackTrace
@@ -1000,13 +1000,20 @@ LuaUnit_MT = { __index = LuaUnit }
         else
             ok, errorMsg = xpcall( function () methodInstance() end, err_handler )
         end
-        if not ok then
-            t = strsplit( SPLITTER, errorMsg )
-            stackTrace = string.sub(t[2],2)
-            self:addFailure( t[1], stackTrace )
+        if ok then
+            return ok
         end
 
+        t = strsplit( SPLITTER, errorMsg )
+        stackTrace = string.sub(t[2],2)
+        if methodName then
+            -- we do have the real method name, improve the stack trace
+            stackTrace = string.gsub( stackTrace, "in function 'methodInstance'", "in function '"..prettyFuncName.."'")
+        end
+
+        self:addFailure( t[1], stackTrace )
         return ok
+
     end
 
 
@@ -1020,6 +1027,9 @@ LuaUnit_MT = { __index = LuaUnit }
 
         if className == nil then
             className = '<TestFunction>'
+            prettyFuncName = methodName
+        else
+            prettyFuncName = className..'.'..methodName
         end
 
         if self.lastClassName ~= className then
@@ -1034,17 +1044,17 @@ LuaUnit_MT = { __index = LuaUnit }
 
         -- run setUp first(if any)
         if classInstance and self.isFunction( classInstance.setUp ) then
-            self:protectedCall( classInstance, classInstance.setUp)
+            self:protectedCall( classInstance, classInstance.setUp, className..':setUp')
         end
 
         -- run testMethod()
         if not self.result.currentTestHasFailure then
-            self:protectedCall( classInstance, methodInstance)
+            self:protectedCall( classInstance, methodInstance, prettyFuncName)
         end
 
         -- lastly, run tearDown(if any)
         if classInstance and self.isFunction(classInstance.tearDown) then
-            self:protectedCall( classInstance, classInstance.tearDown)
+            self:protectedCall( classInstance, classInstance.tearDown, className..':tearDown')
         end
 
         self:endTest()
@@ -1074,7 +1084,6 @@ LuaUnit_MT = { __index = LuaUnit }
             name, instance = v[1], v[2]
             if LuaUnit.isFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
-                return
             else 
                 if type(instance) ~= 'table' then
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
