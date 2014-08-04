@@ -624,10 +624,13 @@ TextOutput_MT = { -- class
     end
 
     function TextOutput:startSuite()
+        if self.verbosity > VERBOSITY_QUIET then
+            print( 'Starting on '.. self.result.startDate )
+        end
     end
 
     function TextOutput:startClass(className)
-        if self.verbosity > VERBOSITY_DEFAULT then
+        if self.verbosity > VERBOSITY_LOW then
             print( '>>>>>>>>> '.. self.result.currentClassName )
         end
     end
@@ -685,7 +688,7 @@ TextOutput_MT = { -- class
     end
 
     function TextOutput:endSuite()
-        if self.verbosity == VERBOSITY_LOW then
+        if self.verbosity <= VERBOSITY_LOW then
             print()
         else
             print("=========================================================")
@@ -698,9 +701,8 @@ TextOutput_MT = { -- class
         else
             successPercent = math.ceil( 100 * successCount / self.result.testCount )
         end
-        print( string.format("Suite run in: %f seconds.", self.result.duration))
-        print( string.format("Success: %d%% - %d / %d",
-            successPercent, successCount, self.result.testCount) )
+        print( string.format("Success: %d%% - %d / %d, executed in %0.3f seconds",
+            successPercent, successCount, self.result.testCount, self.result.duration) )
     end
 
 
@@ -907,6 +909,7 @@ LuaUnit_MT = { __index = LuaUnit }
         self.result.currentTestHasFailure = false
         self.result.suiteStarted = true
         self.result.startTime = os.clock()
+        self.result.startDate = os.date()
         self.outputType = self.outputType or TextOutput
         self.output = self.outputType:new()
         self.output.runner = self
