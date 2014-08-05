@@ -1,26 +1,20 @@
 Notes:
 - itemsEquals sorts tables before comparing them ? Side-effect ?
+- verbose and non verbose tap output
 
-TODO v0.5:
+TODO v0.6:
 - add travis-ci badges to README
-- replace methodInstance with real test name in reports
-- assert with matching of the error message
 - more user documentation
-- endSuite should make sure that endClass is called if necessary
-- endClass should make sure that endTest is called if necessary
-- check why endSuite is not called in output junit
-- make itemsEquals non recursive
-- better error messages for wrong command line option, or wrong output type
 
 TODO:
+- assert with matching of the error message
 - global setup / teardown
 - class setup / teardown
 - distinguish errors and failures
 - test failures, verify that output is correct
-- make sure test suite ends when running tests with RunByTestClass or RunByTestMethod
 - add assertMatch for strings
 - add other types of output
-- add duration information to TAP and JUNIT output
+- add date and duration to tap output, junit output
 - validate test output (TAP, ...)
 - better error messages for table assertions:
 	+ expected length of X, got Y
@@ -32,6 +26,10 @@ Nice to have:
 - strip luaunit stack more intelligently: exclude content of luaunit
 
 Done:
+x support --version
+x support --help
+x replace methodInstance with real test name in reports
+x better error messages for wrong command line option, or wrong output type
 x control verbosity and output type with command line
 x display time to run all tests
 x move all assertions together

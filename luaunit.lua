@@ -6,7 +6,10 @@ Homepage: https://github.com/bluebird75/luaunit
 Initial author: Ryu, Gwang (http://www.gpgstudy.com/gpgiki/LuaUnit)
 Lot of improvements by Philippe Fremy <phil@freehackers.org>
 License: BSD License, see LICENSE.txt
+Version: 0.6
 ]]--
+
+VERSION='0.6'
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
 assertEquals( expected, actual ).
@@ -20,6 +23,20 @@ VERBOSITY_VERBOSE = 20
 
 -- we need to keep a copy of argv before it is overriden
 cmdline_argv = arg
+
+USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
+Options:
+  -h, --help:             Print this help
+  --version:              Print version information
+  -v, --verbose:          Increase verbosity
+  -q, --quiet:            Set verbosity to minimum
+  -o, --output OUTPUT:    Set output type to OUTPUT
+                          Possible values: text, tap, junit, nil
+  -p, --pattern PATTERN:  Execute all test names matching the lua PATTERN
+                          May be repeated to include severals patterns
+  testname1, testname2, ... : tests to run in the form of testFunction, 
+                              TestClass or TestClass:testMethod
+]]
 
 ----------------------------------------------------------------
 --
@@ -831,6 +848,14 @@ LuaUnit_MT = { __index = LuaUnit }
         end
 
         local function parseOption( option )
+            if option == '--help' or option == '-h' then
+                result['help'] = true
+                return
+            end
+            if option == '--version' then
+                result['version'] = true
+                return
+            end
             if option == '--verbose' or option == '-v' then
                 result['verbosity'] = VERBOSITY_VERBOSE
                 return
@@ -884,6 +909,14 @@ LuaUnit_MT = { __index = LuaUnit }
             end
         end
 
+        if result['help'] then
+            LuaUnit.help()
+        end
+
+        if result['version'] then
+            LuaUnit.version()
+        end
+
         if state ~= nil then
             error('Missing argument after '..cmdLine[ #cmdLine ],2 )
         end
@@ -891,6 +924,15 @@ LuaUnit_MT = { __index = LuaUnit }
         return result
     end
 
+    function LuaUnit.help()
+        print(USAGE)
+        os.exit(0)
+    end
+
+    function LuaUnit.version()
+        print('LuaUnit v'..VERSION..' by Philippe Fremy <phil@freehackers.org>')
+        os.exit(0)
+    end
     --------------[[ Output methods ]]-------------------------
 
     function LuaUnit:ensureSuiteStarted( )
@@ -1186,6 +1228,8 @@ LuaUnit_MT = { __index = LuaUnit }
         if not no_error then 
             error_msg = val
             print(error_msg)
+            print()
+            print(USAGE)
             os.exit(-1)
         end 
 
@@ -1200,6 +1244,8 @@ LuaUnit_MT = { __index = LuaUnit }
             if not no_error then 
                 error_msg = val
                 print(error_msg)
+                print()
+                print(USAGE)
                 os.exit(-1)
             end 
         end
@@ -1218,4 +1264,5 @@ LuaUnit_MT = { __index = LuaUnit }
 
         return self.result.failureCount
     end
+
 -- class LuaUnit
