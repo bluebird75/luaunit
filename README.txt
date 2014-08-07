@@ -1,20 +1,22 @@
-		luaunit.lua  by Philippe Fremy
+		LuaUnit  by Philippe Fremy
 
-Luaunit is a unit-testing framework for Lua, in the spirit of many
-others unit-testing framework. Luaunit let's you write test functions,
-test classes with test methods and setup/teardown functionality.
+Luaunit is a unit-testing framework for Lua. It allows you 
+to write test functions and test classes with test methods, combined with 
+setup/teardown functionality. A wide range of assertions are supported.
 
-Luaunit can output test failures using the TAP format, for easier integration
-into Continuous Integration platforms like Jenkins.
+Luaunit supports several output format, like Junit or TAP, for easier integration
+into Continuous Integration platforms like Jenkins and Maven. The integrated command-line 
+options provide a flexible interface to select tests by name or patterns, control output 
+format, set verbosity, ...
 
-Luaunit is derived from the initial work of Ryu Gwang. 
-It is released under the BSD license.
-
-Luaunit should work on all platforms supported by lua. It was tested on
-Windows XP and Gentoo Linux.
+LuaUnit works with Lua 5.1 and 5.2 . It was tested on Windows XP and Ubuntu 12.04 (see 
+continuous build results on travic-ci.org ) and should work on all platforms supported by lua.
+It has no other dependency than lua itself. 
 
 Luaunit is now maintained on github:
 https://github.com/bluebird75/luaunit
+
+It is released under the BSD license.
 
 See file example_with_luaunit.lua to understand how to use it.
 
@@ -22,9 +24,18 @@ History:
 ========
 
 
-version 1.6: (in progress)
+version 1.6:
 ------------
-- more assertions
+- moved to Github
+- full documentation available in text and html
+- new output format: JUnit
+- much better table assertions
+- new assertions for strings, with patterns and case insensitivity: assertStrContains, 
+  assertNotStrContains, assertNotStrIContains, assertStrIContains
+- new assertions for floats: assertAlmostEquals, assertNotAlmostEquals
+- type assertions: assertIsString, assertIsNumber, ...
+- improved error messages for several assertions
+- command-line options to select test, control output type and verbosity
 
 
 version 1.5: 8. Nov 2012
