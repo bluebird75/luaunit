@@ -26,6 +26,7 @@ Nice to have:
 - strip luaunit stack more intelligently: exclude content of luaunit
 
 Done:
+x filter by pattern
 x support --version
 x support --help
 x replace methodInstance with real test name in reports

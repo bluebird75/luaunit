@@ -933,6 +933,24 @@ LuaUnit_MT = { __index = LuaUnit }
         print('LuaUnit v'..VERSION..' by Philippe Fremy <phil@freehackers.org>')
         os.exit(0)
     end
+
+    function LuaUnit.patternInclude( patternFilter, expr )
+        -- check if any of patternFilter is contained in expr. If so, return true.
+        -- return false if None of the patterns are contained in expr
+        -- if patternFilter is nil, return true (no filtering)
+        if patternFilter == nil then
+            return true
+        end
+
+        for i,pattern in ipairs(patternFilter) do
+            if string.find(expr, pattern) then
+                return true
+            end
+        end
+
+        return false
+    end
+
     --------------[[ Output methods ]]-------------------------
 
     function LuaUnit:ensureSuiteStarted( )
@@ -952,6 +970,7 @@ LuaUnit_MT = { __index = LuaUnit }
         self.result.suiteStarted = true
         self.result.startTime = os.clock()
         self.result.startDate = os.date()
+        self.result.patternFilter = self.patternFilter
         self.outputType = self.outputType or TextOutput
         self.output = self.outputType:new()
         self.output.runner = self
@@ -1064,7 +1083,7 @@ LuaUnit_MT = { __index = LuaUnit }
         -- When executing a class method, all parameters must be set
 
         if type(methodInstance) ~= 'function' then
-            error( tostring(methodName)..'must be a function, not '..type(methodInstance))
+            error( tostring(methodName)..' must be a function, not '..type(methodInstance))
         end
 
         if className == nil then
@@ -1072,6 +1091,10 @@ LuaUnit_MT = { __index = LuaUnit }
             prettyFuncName = methodName
         else
             prettyFuncName = className..'.'..methodName
+        end
+
+        if self.patternFilter and not self.patternInclude( self.patternFilter, prettyFuncName ) then
+            return
         end
 
         if self.lastClassName ~= className then
@@ -1082,11 +1105,11 @@ LuaUnit_MT = { __index = LuaUnit }
             self.lastClassName = className
         end
 
-        self:startTest(className..':'..methodName)
+        self:startTest(prettyFuncName)
 
         -- run setUp first(if any)
         if classInstance and self.isFunction( classInstance.setUp ) then
-            self:protectedCall( classInstance, classInstance.setUp, className..':setUp')
+            self:protectedCall( classInstance, classInstance.setUp, className..'.setUp')
         end
 
         -- run testMethod()
@@ -1096,7 +1119,7 @@ LuaUnit_MT = { __index = LuaUnit }
 
         -- lastly, run tearDown(if any)
         if classInstance and self.isFunction(classInstance.tearDown) then
-            self:protectedCall( classInstance, classInstance.tearDown, className..':tearDown')
+            self:protectedCall( classInstance, classInstance.tearDown, className..'.tearDown')
         end
 
         self:endTest()
@@ -1250,13 +1273,13 @@ LuaUnit_MT = { __index = LuaUnit }
             end 
         end
 
-        -- do something with patterns
+        if options.pattern then
+            self.patternFilter = options.pattern
+        end
 
         testNames = options['testNames']
 
         if testNames == nil then
-            -- create the list of classes to run now ! If not, you can
-            -- not iterate over _G while modifying it.
             testNames = LuaUnit.collectTests()
         end
 

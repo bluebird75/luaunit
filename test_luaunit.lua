@@ -248,6 +248,15 @@ TestLuaUnitUtilities = {} --class
 
         assertErrorMsgMatch( 'option: %-x', LuaUnit.parseCmdLine, { '-x', } )
     end
+
+    function TestLuaUnitUtilities:test_includePattern()
+        assertEquals( LuaUnit.patternInclude( nil, 'toto'), true )
+        assertEquals( LuaUnit.patternInclude( {}, 'toto'), false  )
+        assertEquals( LuaUnit.patternInclude( {'toto'}, 'toto'), true )
+        assertEquals( LuaUnit.patternInclude( {'toto'}, 'yyytotoxxx'), true )
+        assertEquals( LuaUnit.patternInclude( {'titi', 'toto'}, 'yyytotoxxx'), true )
+        assertEquals( LuaUnit.patternInclude( {'titi', 'to..'}, 'yyytoxxx'), true )
+    end
 ------------------------------------------------------------------
 --
 --                  Assertion Tests              
@@ -1152,7 +1161,7 @@ TestLuaUnitExecution = {} --class
         assertEquals(#m.calls[2], 3 )
 
         assertEquals( m.calls[3][1], 'startTest' )
-        assertEquals( m.calls[3][3], 'MyTestWithFailures:testOk' )
+        assertEquals( m.calls[3][3], 'MyTestWithFailures.testOk' )
         assertEquals(#m.calls[3], 3 )
 
         assertEquals( m.calls[4][1], 'endTest' )
@@ -1160,7 +1169,7 @@ TestLuaUnitExecution = {} --class
         assertEquals(#m.calls[4], 3 )
 
         assertEquals( m.calls[5][1], 'startTest' )
-        assertEquals( m.calls[5][3], 'MyTestWithFailures:testWithFailure1' )
+        assertEquals( m.calls[5][3], 'MyTestWithFailures.testWithFailure1' )
         assertEquals(#m.calls[5], 3 )
 
         assertEquals( m.calls[6][1], 'addFailure' )
@@ -1172,7 +1181,7 @@ TestLuaUnitExecution = {} --class
 
 
         assertEquals( m.calls[8][1], 'startTest' )
-        assertEquals( m.calls[8][3], 'MyTestWithFailures:testWithFailure2' )
+        assertEquals( m.calls[8][3], 'MyTestWithFailures.testWithFailure2' )
         assertEquals(#m.calls[8], 3 )
 
         assertEquals( m.calls[9][1], 'addFailure' )
@@ -1190,7 +1199,7 @@ TestLuaUnitExecution = {} --class
         assertEquals(#m.calls[12], 3 )
 
         assertEquals( m.calls[13][1], 'startTest' )
-        assertEquals( m.calls[13][3], 'MyTestOk:testOk1' )
+        assertEquals( m.calls[13][3], 'MyTestOk.testOk1' )
         assertEquals(#m.calls[13], 3 )
 
         assertEquals( m.calls[14][1], 'endTest' )
@@ -1198,7 +1207,7 @@ TestLuaUnitExecution = {} --class
         assertEquals(#m.calls[14], 3 )
 
         assertEquals( m.calls[15][1], 'startTest' )
-        assertEquals( m.calls[15][3], 'MyTestOk:testOk2' )
+        assertEquals( m.calls[15][3], 'MyTestOk.testOk2' )
         assertEquals(#m.calls[15], 3 )
 
         assertEquals( m.calls[16][1], 'endTest' )
@@ -1213,6 +1222,21 @@ TestLuaUnitExecution = {} --class
 
         assertEquals( m.calls[19], nil )
 
+    end
+
+    function TestLuaUnitExecution:test_filterWithPattern()
+
+        runner = LuaUnit:new()
+        runner:setOutputType( "NIL" )
+        runner:runSuite('-p', 'Function', '-p', 'Toto.' )
+        assertEquals( executedTests[1], "MyTestFunction" )
+        assertEquals( executedTests[2], "MyTestToto1:test1" )
+        assertEquals( executedTests[3], "MyTestToto1:test2" )
+        assertEquals( executedTests[4], "MyTestToto1:test3" )
+        assertEquals( executedTests[5], "MyTestToto1:testa" )
+        assertEquals( executedTests[6], "MyTestToto1:testb" )
+        assertEquals( executedTests[7], "MyTestToto2:test2" )
+        assertEquals( #executedTests, 7)
     end
 
 LuaUnit.verbosity = 2
