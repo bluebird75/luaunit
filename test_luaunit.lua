@@ -257,6 +257,19 @@ TestLuaUnitUtilities = {} --class
         assertEquals( LuaUnit.patternInclude( {'titi', 'toto'}, 'yyytotoxxx'), true )
         assertEquals( LuaUnit.patternInclude( {'titi', 'to..'}, 'yyytoxxx'), true )
     end
+
+    function TestLuaUnitUtilities:test_strMatch()
+        assertEquals( strMatch('toto', 't.t.'), true )
+        assertEquals( strMatch('toto', 't.t.', 1, 4), true )
+        assertEquals( strMatch('toto', 't.t.', 2, 5), false )
+        assertEquals( strMatch('toto', '.t.t.'), false )
+        assertEquals( strMatch('ototo', 't.t.'), false )
+        assertEquals( strMatch('totot', 't.t.'), false )
+        assertEquals( strMatch('ototot', 't.t.'), false )
+        assertEquals( strMatch('ototot', 't.t.',2,3), false )
+        assertEquals( strMatch('ototot', 't.t.',2,5), true  )
+        assertEquals( strMatch('ototot', 't.t.',2,6), false )
+    end
 ------------------------------------------------------------------
 --
 --                  Assertion Tests              

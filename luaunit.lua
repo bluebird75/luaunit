@@ -21,7 +21,7 @@ VERBOSITY_LOW     = 1
 VERBOSITY_QUIET   = 0
 VERBOSITY_VERBOSE = 20 
 
--- we need to keep a copy of argv before it is overriden
+-- we need to keep a copy of the script args before it is overriden
 cmdline_argv = arg
 
 USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
@@ -34,6 +34,7 @@ Options:
                           Possible values: text, tap, junit, nil
   -p, --pattern PATTERN:  Execute all test names matching the lua PATTERN
                           May be repeated to include severals patterns
+                          Make sure you esape magic chars like +? with %
   testname1, testname2, ... : tests to run in the form of testFunction, 
                               TestClass or TestClass:testMethod
 ]]
@@ -135,6 +136,31 @@ function prefixString( prefix, s )
     t = strsplit('\n', s)
     s2 = prefix..table.concat(t, '\n'..prefix)
     return s2
+end
+
+function strMatch(s, pattern, start, final )
+    -- return true if s matches completely the pattern from index start to index end
+    -- if start is nil, matches from the beginning of the string
+    -- if end is nil, matches to the end of the string
+    if start == nil then
+        start = 1
+    end
+
+    if final == nil then
+        final = string.len(s)
+    end
+
+    foundStart, foundEnd = string.find(s, pattern, start)
+    if not foundStart then
+        -- no match
+        return false
+    end
+    
+    if foundStart == start and foundEnd == final then
+        return true
+    end
+
+    return false
 end
 
 function table.keytostring(k)
