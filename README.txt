@@ -5,7 +5,7 @@ to write test functions and test classes with test methods, combined with
 setup/teardown functionality. A wide range of assertions are supported.
 
 Luaunit supports several output format, like Junit or TAP, for easier integration
-into Continuous Integration platforms like Jenkins and Maven. The integrated command-line 
+into Continuous Integration platforms (Jenkins, Maven, ...) . The integrated command-line 
 options provide a flexible interface to select tests by name or patterns, control output 
 format, set verbosity, ...
 

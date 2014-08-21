@@ -5,8 +5,13 @@ Notes:
 TODO v0.6:
 - add travis-ci badges to README
 - more user documentation
+- assertNil + assertNotNil
+- display number of non selected tests
+- readthedocs integration
+- reduce output when --quiet is used to one character per test run
 
 TODO:
+- coloured output
 - assert with matching of the error message
 - global setup / teardown
 - class setup / teardown
