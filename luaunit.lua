@@ -36,7 +36,7 @@ Options:
                           May be repeated to include severals patterns
                           Make sure you esape magic chars like +? with %
   testname1, testname2, ... : tests to run in the form of testFunction, 
-                              TestClass or TestClass:testMethod
+                              TestClass or TestClass.testMethod
 ]]
 
 ----------------------------------------------------------------
@@ -461,6 +461,42 @@ function assertStrMatches( str, regexp )
 end
 ]]
 
+function assertErrorMsgIs( expectedMsg, func, ... )
+    -- assert that calling f with the arguments will raise an error
+    -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
+    local no_error, error_msg = pcall( func, ... )
+    if no_error then
+        error( 'No error generated but expected error: "'..expectedMsg..'"', 2 )
+    end
+    if not (error_msg == expectedMsg) then
+        error( 'Exact error message expected: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
+    end
+end
+
+function assertErrorMsgContains( partialMsg, func, ... )
+    -- assert that calling f with the arguments will raise an error
+    -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
+    local no_error, error_msg = pcall( func, ... )
+    if no_error then
+        error( 'No error generated but expected error: "'..expectedMsg..'"', 2 )
+    end
+    if string.find( error_msg, partialMsg ) then
+        error( 'Error message does not contain: "'..partialMsg..'"\nError message received: "'..error_msg..'"\n',2)
+    end
+end
+
+function assertErrorMsgMatch( expectedMsg, func, ... )
+    -- assert that calling f with the arguments will raise an error
+    -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
+    local no_error, error_msg = pcall( func, ... )
+    if no_error then
+        error( 'No error generated but expected error match: "'..expectedMsg..'"', 2 )
+    end
+    if not string.match( error_msg, expectedMsg, 1 ) then
+        error( 'Error message expected to match: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
+    end
+end
+
 function errorMsgTypeMismatch( expectedType, actual )
     return "Expected: a "..expectedType..' value, actual: type '..type(actual)..', value '..prettystr(actual)
 end
@@ -668,7 +704,7 @@ TextOutput_MT = { -- class
 
     function TextOutput:startSuite()
         if self.verbosity > VERBOSITY_QUIET then
-            print( 'Starting on '.. self.result.startDate )
+            print( 'Started on '.. self.result.startDate )
         end
     end
 
@@ -1113,7 +1149,7 @@ LuaUnit_MT = { __index = LuaUnit }
         end
 
         if className == nil then
-            className = '<TestFunction>'
+            className = '<TestFunctions>'
             prettyFuncName = methodName
         else
             prettyFuncName = className..'.'..methodName
