@@ -135,15 +135,6 @@ function test3()
     assert( 'a' == 'a')
 end
 
--- LuaUnit:run( 'test2_withFailure' )  -- run only one test function
--- LuaUnit:run( 'TestFunctions:test1_withFailure' )
--- LuaUnit:run( 'TestToto' ) -- run only on test class
--- LuaUnit:run( 'TestTiti:test3') -- run only one test method of a test class
--- LuaUnit:run() -- run everything
-
----- Control test output:
-lu = LuaUnit
--- lu:setOutputType( "NIL" )
--- lu:setOutputType( "TAP" )
--- lu:setVerbosity( 1 )
-os.exit( LuaUnit.run() )
+lu = LuaUnit.new()
+lu:setOutputType("tap")
+os.exit( lu:runSuite() )

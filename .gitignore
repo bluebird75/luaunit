@@ -32,8 +32,12 @@ Thumbs.db
 obj/
 [Rr]elease*/
 _ReSharper*/
+
+# LuaUnit ignores
 [Tt]est[Rr]esult*
 *.sublime-project
 *.lsln
 *.sublime-workspace
 junitxml
+doc/_build/
+
