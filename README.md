@@ -18,11 +18,10 @@ https://github.com/bluebird75/luaunit
 
 It is released under the BSD license.
 
-See file example_with_luaunit.lua to understand how to use it.
+Documentation is available on read-the-docs: https://github.com/bluebird75/luaunit
 
 History:
 ========
-
 
 version 1.6:
 ------------
