@@ -785,7 +785,7 @@ TestLuaUnitErrorMsg = {} --class
     end
 
     function TestLuaUnitErrorMsg:test_assertErrorMsgFunctionFailsWhenNoError()
-        assertError( assertErrorMsgIs, 'toto', assertEquals, 1, 1  )
+        assertError( assertErrorMsgEquals, 'toto', assertEquals, 1, 1  )
     end
 
     function TestLuaUnitAssertions:test_assertErrorMsgFunctionSupportRegexp()
@@ -793,114 +793,114 @@ TestLuaUnitErrorMsg = {} --class
     end 
 
     function TestLuaUnitErrorMsg:test_assertEqualsMsg()
-        assertErrorMsgIs( 'expected: 2, actual: 1', assertEquals, 1, 2  )
-        assertErrorMsgIs( 'expected: "exp"\nactual: "act"\n', assertEquals, 'act', 'exp' )
-        assertErrorMsgIs( 'expected: true, actual: false', assertEquals, false, true )
-        assertErrorMsgIs( 'expected: 1.2, actual: 1', assertEquals, 1.0, 1.2)
-        assertErrorMsgIs( 'expected: {1,2,3}, actual: {3,2,1}', assertEquals, {3,2,1}, {1,2,3} )
-        assertErrorMsgIs( 'expected: {one=1,two=2}, actual: {3,2,1}', assertEquals, {3,2,1}, {one=1,two=2} )
-        assertErrorMsgIs( 'expected: 2, actual: nil', assertEquals, nil, 2 )
+        assertErrorMsgEquals( 'expected: 2, actual: 1', assertEquals, 1, 2  )
+        assertErrorMsgEquals( 'expected: "exp"\nactual: "act"\n', assertEquals, 'act', 'exp' )
+        assertErrorMsgEquals( 'expected: true, actual: false', assertEquals, false, true )
+        assertErrorMsgEquals( 'expected: 1.2, actual: 1', assertEquals, 1.0, 1.2)
+        assertErrorMsgEquals( 'expected: {1,2,3}, actual: {3,2,1}', assertEquals, {3,2,1}, {1,2,3} )
+        assertErrorMsgEquals( 'expected: {one=1,two=2}, actual: {3,2,1}', assertEquals, {3,2,1}, {one=1,two=2} )
+        assertErrorMsgEquals( 'expected: 2, actual: nil', assertEquals, nil, 2 )
     end 
 
     function TestLuaUnitErrorMsg:test_assertEqualsOrderReversedMsg()
         ORDER_ACTUAL_EXPECTED = false
-        assertErrorMsgIs( 'expected: 1, actual: 2', assertEquals, 1, 2  )
-        assertErrorMsgIs( 'expected: "act"\nactual: "exp"\n', assertEquals, 'act', 'exp' )
+        assertErrorMsgEquals( 'expected: 1, actual: 2', assertEquals, 1, 2  )
+        assertErrorMsgEquals( 'expected: "act"\nactual: "exp"\n', assertEquals, 'act', 'exp' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsMsg()
-        assertErrorMsgIs('Values are not almost equal\nExpected: 1 with margin of 0.1, received: 2', assertAlmostEquals, 2, 1, 0.1 )
+        assertErrorMsgEquals('Values are not almost equal\nExpected: 1 with margin of 0.1, received: 2', assertAlmostEquals, 2, 1, 0.1 )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
-        assertErrorMsgIs('Values are almost equal\nExpected: 1 with a difference above margin of 0.2, received: 1.1', assertNotAlmostEquals, 1.1, 1, 0.2 )
+        assertErrorMsgEquals('Values are almost equal\nExpected: 1 with a difference above margin of 0.2, received: 1.1', assertNotAlmostEquals, 1.1, 1, 0.2 )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotEqualsMsg()
-        assertErrorMsgIs( 'Received the not expected value: 1', assertNotEquals, 1, 1  )
-        assertErrorMsgIs( 'Received the not expected value: {1,2}', assertNotEquals, {1,2}, {1,2} )
-        assertErrorMsgIs( 'Received the not expected value: nil', assertNotEquals, nil, nil )
+        assertErrorMsgEquals( 'Received the not expected value: 1', assertNotEquals, 1, 1  )
+        assertErrorMsgEquals( 'Received the not expected value: {1,2}', assertNotEquals, {1,2}, {1,2} )
+        assertErrorMsgEquals( 'Received the not expected value: nil', assertNotEquals, nil, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertTrueFalse()
-        assertErrorMsgIs( 'expected: true, actual: false', assertTrue, false )
-        assertErrorMsgIs( 'expected: true, actual: nil', assertTrue, nil )
-        assertErrorMsgIs( 'expected: false, actual: true', assertFalse, true )
-        assertErrorMsgIs( 'expected: false, actual: 0', assertFalse, 0)
-        assertErrorMsgIs( 'expected: false, actual: {}', assertFalse, {})
-        assertErrorMsgIs( 'expected: false, actual: "abc"', assertFalse, 'abc')
+        assertErrorMsgEquals( 'expected: true, actual: false', assertTrue, false )
+        assertErrorMsgEquals( 'expected: true, actual: nil', assertTrue, nil )
+        assertErrorMsgEquals( 'expected: false, actual: true', assertFalse, true )
+        assertErrorMsgEquals( 'expected: false, actual: 0', assertFalse, 0)
+        assertErrorMsgEquals( 'expected: false, actual: {}', assertFalse, {})
+        assertErrorMsgEquals( 'expected: false, actual: "abc"', assertFalse, 'abc')
         assertErrorMsgMatch( 'expected: false, actual: function', assertFalse, function () end )
     end 
 
     function TestLuaUnitErrorMsg:test_assertStrContains()
-        assertErrorMsgIs( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )
-        assertErrorMsgIs( 'Error, substring "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc' )
-        assertErrorMsgIs( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx' )
+        assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )
+        assertErrorMsgEquals( 'Error, substring "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc' )
+        assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx' )
 
-        assertErrorMsgIs( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx', false )
-        assertErrorMsgIs( 'Error, substring "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc', false )
-        assertErrorMsgIs( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx', false )
+        assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx', false )
+        assertErrorMsgEquals( 'Error, substring "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc', false )
+        assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx', false )
 
-        assertErrorMsgIs( 'Error, regexp "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx', true )
-        assertErrorMsgIs( 'Error, regexp "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc', true )
-        assertErrorMsgIs( 'Error, regexp "xxx" was not found in string ""', assertStrContains, '', 'xxx', true )
+        assertErrorMsgEquals( 'Error, regexp "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx', true )
+        assertErrorMsgEquals( 'Error, regexp "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc', true )
+        assertErrorMsgEquals( 'Error, regexp "xxx" was not found in string ""', assertStrContains, '', 'xxx', true )
 
     end 
 
     function TestLuaUnitErrorMsg:test_assertStrIContains()
-        assertErrorMsgIs( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )
-        assertErrorMsgIs( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx' )
+        assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )
+        assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotStrContains()
-        assertErrorMsgIs( 'Error, substring "abc" was found in string "abcdef"', assertNotStrContains, 'abcdef', 'abc' )
-        assertErrorMsgIs( 'Error, substring "abc" was found in string "abcdef"', assertNotStrContains, 'abcdef', 'abc', false )
-        assertErrorMsgIs( 'Error, regexp "..." was found in string "abcdef"', assertNotStrContains, 'abcdef', '...', true)
+        assertErrorMsgEquals( 'Error, substring "abc" was found in string "abcdef"', assertNotStrContains, 'abcdef', 'abc' )
+        assertErrorMsgEquals( 'Error, substring "abc" was found in string "abcdef"', assertNotStrContains, 'abcdef', 'abc', false )
+        assertErrorMsgEquals( 'Error, regexp "..." was found in string "abcdef"', assertNotStrContains, 'abcdef', '...', true)
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotStrIContains()
-        assertErrorMsgIs( 'Error, substring "aBc" was found (case insensitively) in string "abcdef"', assertNotStrIContains, 'abcdef', 'aBc' )
-        assertErrorMsgIs( 'Error, substring "abc" was found (case insensitively) in string "abcdef"', assertNotStrIContains, 'abcdef', 'abc' )
+        assertErrorMsgEquals( 'Error, substring "aBc" was found (case insensitively) in string "abcdef"', assertNotStrIContains, 'abcdef', 'aBc' )
+        assertErrorMsgEquals( 'Error, substring "abc" was found (case insensitively) in string "abcdef"', assertNotStrIContains, 'abcdef', 'abc' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsNumber()
-        assertErrorMsgIs( 'Expected: a number value, actual: type string, value "abc"', assertIsNumber, 'abc' )
-        assertErrorMsgIs( 'Expected: a number value, actual: type nil, value nil', assertIsNumber, nil )
+        assertErrorMsgEquals( 'Expected: a number value, actual: type string, value "abc"', assertIsNumber, 'abc' )
+        assertErrorMsgEquals( 'Expected: a number value, actual: type nil, value nil', assertIsNumber, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsString()
-        assertErrorMsgIs( 'Expected: a string value, actual: type number, value 1.2', assertIsString, 1.2 )
-        assertErrorMsgIs( 'Expected: a string value, actual: type nil, value nil', assertIsString, nil )
+        assertErrorMsgEquals( 'Expected: a string value, actual: type number, value 1.2', assertIsString, 1.2 )
+        assertErrorMsgEquals( 'Expected: a string value, actual: type nil, value nil', assertIsString, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsTable()
-        assertErrorMsgIs( 'Expected: a table value, actual: type number, value 1.2', assertIsTable, 1.2 )
-        assertErrorMsgIs( 'Expected: a table value, actual: type nil, value nil', assertIsTable, nil )
+        assertErrorMsgEquals( 'Expected: a table value, actual: type number, value 1.2', assertIsTable, 1.2 )
+        assertErrorMsgEquals( 'Expected: a table value, actual: type nil, value nil', assertIsTable, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsBoolean()
-        assertErrorMsgIs( 'Expected: a boolean value, actual: type number, value 1.2', assertIsBoolean, 1.2 )
-        assertErrorMsgIs( 'Expected: a boolean value, actual: type nil, value nil', assertIsBoolean, nil )
+        assertErrorMsgEquals( 'Expected: a boolean value, actual: type number, value 1.2', assertIsBoolean, 1.2 )
+        assertErrorMsgEquals( 'Expected: a boolean value, actual: type nil, value nil', assertIsBoolean, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsFunction()
-        assertErrorMsgIs( 'Expected: a function value, actual: type number, value 1.2', assertIsFunction, 1.2 )
-        assertErrorMsgIs( 'Expected: a function value, actual: type nil, value nil', assertIsFunction, nil )
+        assertErrorMsgEquals( 'Expected: a function value, actual: type number, value 1.2', assertIsFunction, 1.2 )
+        assertErrorMsgEquals( 'Expected: a function value, actual: type nil, value nil', assertIsFunction, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIs()
-        assertErrorMsgIs( 'Expected object and actual object are not the same\nExpected: 1, actual: 2', assertIs, 2, 1 )
+        assertErrorMsgEquals( 'Expected object and actual object are not the same\nExpected: 1, actual: 2', assertIs, 2, 1 )
         ORDER_ACTUAL_EXPECTED = false
-        assertErrorMsgIs( 'Expected object and actual object are not the same\nExpected: 2, actual: 1', assertIs, 2, 1 )
+        assertErrorMsgEquals( 'Expected object and actual object are not the same\nExpected: 2, actual: 1', assertIs, 2, 1 )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIs()
         local v = {1,2}
-        assertErrorMsgIs( 'Expected object and actual object are the same object: {1,2}', assertNotIs, v, v )
+        assertErrorMsgEquals( 'Expected object and actual object are the same object: {1,2}', assertNotIs, v, v )
     end 
 
     function TestLuaUnitErrorMsg:test_assertItemsEquals()
-        assertErrorMsgIs('Contents of the tables are not identical:\nExpected: {one=2,two=3}\nActual: {1,2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
+        assertErrorMsgEquals('Contents of the tables are not identical:\nExpected: {one=2,two=3}\nActual: {1,2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
     end 
 ------------------------------------------------------------------
 --

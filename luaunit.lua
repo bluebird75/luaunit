@@ -473,7 +473,7 @@ function assertStrMatches( str, regexp )
 end
 ]]
 
-function assertErrorMsgIs( expectedMsg, func, ... )
+function assertErrorMsgEquals( expectedMsg, func, ... )
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
