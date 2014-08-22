@@ -6,10 +6,10 @@ Homepage: https://github.com/bluebird75/luaunit
 Initial author: Ryu, Gwang (http://www.gpgstudy.com/gpgiki/LuaUnit)
 Lot of improvements by Philippe Fremy <phil@freehackers.org>
 License: BSD License, see LICENSE.txt
-Version: 0.6
+Version: 1.0
 ]]--
 
-VERSION='0.6'
+VERSION='1.0'
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
 assertEquals( expected, actual ).
