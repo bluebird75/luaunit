@@ -27,7 +27,7 @@ Documentation is available on [read-the-docs](http://luaunit.readthedocs.org/en/
 
 ### History 
 
-#### Version 1.6
+#### Version 1.6 - 2014
 
 - moved to Github
 - full documentation available in text and html
@@ -41,7 +41,7 @@ Documentation is available on [read-the-docs](http://luaunit.readthedocs.org/en/
 - command-line options to select test, control output type and verbosity
 
 
-#### Version 1.5: 8. Nov 2012
+#### Version 1.5 - 8. Nov 2012
 - compatibility with Lua 5.1 and 5.2
 - better object model internally
 - a lot more of internal tests
@@ -51,19 +51,19 @@ Documentation is available on [read-the-docs](http://luaunit.readthedocs.org/en/
 - several level of verbosity
 
 
-#### Version 1.4: 26. Jul 2012
+#### Version 1.4 - 26. Jul 2012
 - switch from X11 to more popular BSD license
 - add TAP output format for integration into Jenkins
 - official repository now on github
 
 
-#### Version 1.3: 30. Oct 2007
+#### Version 1.3 - 30. Oct 2007
 - port to lua 5.1
 - iterate over the test classes, methods and functions in the alphabetical order
 - change the default order of expected, actual in assertEquals (adjustable with USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS).
 
 
-#### Version 1.2: 13. Jun 2005  
+#### Version 1.2 - 13. Jun 2005  
 - first public release
 
 
