@@ -77,7 +77,7 @@ If they are functions, or if they are tables that contain
 functions that start with *test* or *Test*, they are run as part of the test suite.
 
 So just write a function whose name starts with test. Inside test functions, use the assertions functions provided by LuaUnit, such
-as #assertEquals.
+as :func:`assertEquals`.
 
 Let's see that in practice.
 
@@ -109,7 +109,7 @@ You write the following tests::
     end
 
 
-*assertEquals* is the most common used assertion function. It simply
+:func:`assertEquals` is the most common used assertion function. It simply
 verifies that both argument are equals, in the order actual value, expected value.
 
 Rerun your test script::
@@ -135,9 +135,9 @@ You always have:
 
 
 You also want to test that when the function receives negative numbers, it generates an error. Use
-#assertError or even better, #assertErrorMsgContains to also validate the content
-of the error message. There are other types or error checking functions, see #ErrorAssertions. Here
-we use #assertErrorMsgContains . First argument is the expected message, then the function to call
+:func:`assertError` or even better, :func:`assertErrorMsgContains` to also validate the content
+of the error message. There are other types or error checking functions, see :ref:`assert-error` . Here
+we use :func:`assertErrorMsgContains` . First argument is the expected message, then the function to call
 and the optional arguments::
 
     function testAddError()
@@ -153,8 +153,8 @@ Now, suppose we also have the following function to test::
     end
 
 We want to test the type of the value returned by adder and its behavior. LuaUnit
-provides assertion for type testing (see #TypeAssertions). In this case, we use
-*assertIsFunction*::
+provides assertion for type testing (see :ref:`assert-type`). In this case, we use
+:func:`assertIsFunction`::
 
     function testAdder()
         f = adder(3)
@@ -355,8 +355,12 @@ the reference documentation for a complete list of
 assertions, command-line options and specific behavior.
 
 
+.. _reference-documentation:
+
 Reference documentation
 ***********************
+
+.. _luaunit-run:
 
 LuaUnit.run() function
 ======================
@@ -405,7 +409,7 @@ pattern(s). Only the test that match the pattern(s) are actually executed.
 
 **setup and teardown**
 
-The functions *setUp()* is executed before each test if it exists in the table. 
+The function *setUp()* is executed before each test if it exists in the table. 
 The function *tearDown()* is executed after every test if it exists in the table.
 
 Note:
@@ -427,6 +431,8 @@ some parameters, like the output format, you must use a slightly different synta
 with a LuaUnit instance as first argument, and it will use the LuaUnit
 instance settings.
   
+
+.. _command-line:
 
 Command-line options
 ====================
@@ -471,31 +477,142 @@ Make sure you esape magic chars like +?-* with % .
 *  -q, --quiet:  Set verbosity to minimum. The exact effect depends on the output format.
 
 
+.. _assertions-label:
+
 Assertions functions
 =====================
+
+.. _assert-equality:
 
 Equality assertions
 ----------------------
 
+.. function:: assertEquals(actual, expected)
+
+    bla bla bla
+    
+.. function:: assertNotEquals(actual, expected)
+
+    bla bla bla
+    
+.. function:: assertAlmostEquals( actual, expected, margin )
+
+    bla bla bla
+    
+.. function:: assertNotAlmostEquals( actual, expected, margin )
+
+    bla bla bla
+    
+.. _assert-value:
+
 Value assertions
 ----------------------
+.. function:: assertTrue(value)
 
-String related assertions
---------------------------
+    bla bla bla
+    
+.. function:: assertFalse(value)
 
-Error related assertions
+    bla bla bla
+    
+.. _assert-string:
+
+String assertions
 --------------------------
+.. function:: assertStrContains( str, sub, useRe )
+
+    bla bla bla
+    
+.. function:: assertStrIContains( str, sub )
+
+    bla bla bla
+    
+.. function:: assertNotStrContains( str, sub, useRe )
+
+    bla bla bla
+    
+.. function:: assertNotStrIContains( str, sub )
+
+    bla bla bla
+    
+.. function:: assertStrMatches( str, regexp )
+
+    bla bla bla
+    
+
+.. _assert-error:
+
+Error assertions
+--------------------------
+.. function:: assertError(f, ...)
+
+    bla bla bla
+    
+.. function:: assertErrorMsgIs( expectedMsg, func, ... )
+
+    bla bla bla
+    
+.. function:: assertErrorMsgContains( partialMsg, func, ... )
+
+    bla bla bla
+    
+.. function:: assertErrorMsgMatch( expectedMsg, func, ... )
+
+    bla bla bla
+    
+
+.. _assert-type:
+
 
 Type assertions
 --------------------------
+.. function:: assertIsNumber(value)
 
-Table related assertions
+    bla bla bla
+    
+.. function:: assertIsString(value)
+
+    bla bla bla
+    
+.. function:: assertIsTable(value)
+
+    bla bla bla
+    
+.. function:: assertIsBoolean(value)
+
+    bla bla bla
+    
+.. function:: assertIsNil(value)
+
+    bla bla bla
+    
+.. function:: assertIsFunction(value)
+
+    bla bla bla
+    
+.. function:: assertIs(actual, expected)
+
+    bla bla bla
+    
+.. function:: assertNotIs(actual, expected)
+
+    bla bla bla
+    
+
+.. _assert-table:
+
+Table assertions
 --------------------------
 
-Indices and tables
-==================
+.. function:: assertItemsEquals(actual, expected)
+
+    bla bla bla
+    
+
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Annex: index and search page
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
 
