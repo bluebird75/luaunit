@@ -450,6 +450,28 @@ TestLuaUnitAssertions = {} --class
         assertError( assertFalse, { 1 } )
     end
 
+    function TestLuaUnitAssertions:test_assertNil()
+        assertNil(nil)
+        assertError( assertTrue, false)
+        assertError( assertNil, 0)
+        assertError( assertNil, "")
+        assertError( assertNil, "abc")
+        assertError( assertNil,  function() return true end )
+        assertError( assertNil,  {} )
+        assertError( assertNil,  { 1 } )
+    end
+
+    function TestLuaUnitAssertions:test_assertNotNil()
+        assertError( assertNotNil, nil)
+        assertNotNil( false )
+        assertNotNil( 0 )
+        assertNotNil( "" )
+        assertNotNil( "abc" )
+        assertNotNil( function() return true end )
+        assertNotNil( {} )
+        assertNotNil( { 1 } )
+    end
+
     function TestLuaUnitAssertions:test_assertStrContains()
         assertStrContains( 'abcdef', 'abc' )
         assertStrContains( 'abcdef', 'bcd' )

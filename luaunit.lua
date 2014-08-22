@@ -339,6 +339,18 @@ function assertFalse(value)
     end
 end
 
+function assertNil(value)
+    if value ~= nil then
+        error("expected: nil, actual: " ..prettystr(value), 2)
+    end
+end
+
+function assertNotNil(value)
+    if value == nil then
+        error("expected non nil value, received nil", 2)
+    end
+end
+
 function assertEquals(actual, expected)
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
