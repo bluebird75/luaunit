@@ -1,6 +1,6 @@
 This software is distributed under the BSD License.
 
-Copyright (c) 2005,2007,2012, Philippe Fremy <phil at freehackers dot org>
+Copyright (c) 2005-2014, Philippe Fremy <phil at freehackers dot org>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:

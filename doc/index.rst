@@ -34,12 +34,19 @@ It has no other dependency than lua itself.
 Development
 ===========
 
-Luaunit is developed on github:
-https://github.com/bluebird75/luaunit
+Luaunit is developed on `Github`_.
 
-Bugs or feature requests must be reported using GitHub.
+.. _Github: https://github.com/bluebird75/luaunit
+
+Bugs or feature requests must be reported using `GitHub issues`_.
+
+.. _Github issues: https://github.com/bluebird75/luaunit/issues
 
 It is released under the BSD license.
+
+This documentation is available at `Read-the-docs`_.
+
+.. _Read-the-docs: http://luaunit.readthedocs.org/en/latest/
 
 Getting started
 ***************
@@ -455,7 +462,7 @@ Formats available:
 
 * text: the default output format of LuaUnit
 * nil: no output at all
-* tap: output compatible with the *Test Anything Protocol* (See http://testanything.org/ )
+* tap: output compatible with the *`Test Anything Protocol <http://testanything.org/>`*
 * junit: output compatible with the *JUnit xml* format
 
 **Selecting tests with patterns**
