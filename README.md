@@ -1,6 +1,10 @@
 ## LuaUnit  
 	by Philippe Fremy
- 
+
+[![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
+[![Documentation Status](https://readthedocs.org/projects/luaunit/badge/?version=latest)](https://readthedocs.org/projects/luaunit/?badge=latest)
+
+
 Luaunit is a unit-testing framework for Lua. It allows you 
 to write test functions and test classes with test methods, combined with 
 setup/teardown functionality. A wide range of assertions are supported.
@@ -11,7 +15,7 @@ options provide a flexible interface to select tests by name or patterns, contro
 format, set verbosity, ...
 
 LuaUnit works with Lua 5.1 and 5.2 . It was tested on Windows XP and Ubuntu 12.04 (see 
-continuous build results on travic-ci.org ) and should work on all platforms supported by lua.
+continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) ) and should work on all platforms supported by lua.
 It has no other dependency than lua itself. 
 
 Luaunit is now maintained on github:
@@ -19,7 +23,7 @@ https://github.com/bluebird75/luaunit
 
 It is released under the BSD license.
 
-Documentation is available on read-the-docs: http://luaunit.readthedocs.org/en/latest/
+Documentation is available on [read-the-docs](http://luaunit.readthedocs.org/en/latest/)
 
 ### History 
 
