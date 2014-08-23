@@ -1,5 +1,6 @@
-		LuaUnit  by Philippe Fremy
-
+## LuaUnit  
+	by Philippe Fremy
+ 
 Luaunit is a unit-testing framework for Lua. It allows you 
 to write test functions and test classes with test methods, combined with 
 setup/teardown functionality. A wide range of assertions are supported.
