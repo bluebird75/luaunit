@@ -18,13 +18,12 @@ https://github.com/bluebird75/luaunit
 
 It is released under the BSD license.
 
-Documentation is available on read-the-docs: https://github.com/bluebird75/luaunit
+Documentation is available on read-the-docs: http://luaunit.readthedocs.org/en/latest/
 
-History:
-========
+### History 
 
-version 1.6:
-------------
+#### Version 1.6
+
 - moved to Github
 - full documentation available in text and html
 - new output format: JUnit
@@ -37,8 +36,7 @@ version 1.6:
 - command-line options to select test, control output type and verbosity
 
 
-version 1.5: 8. Nov 2012
-------------
+#### Version 1.5: 8. Nov 2012
 - compatibility with Lua 5.1 and 5.2
 - better object model internally
 - a lot more of internal tests
@@ -48,27 +46,23 @@ version 1.5: 8. Nov 2012
 - several level of verbosity
 
 
-version 1.4: 26. Jul 2012
-------------
+#### Version 1.4: 26. Jul 2012
 - switch from X11 to more popular BSD license
 - add TAP output format for integration into Jenkins
 - official repository now on github
 
 
-version 1.3: 30. Oct 2007
-------------
+#### Version 1.3: 30. Oct 2007
 - port to lua 5.1
 - iterate over the test classes, methods and functions in the alphabetical order
 - change the default order of expected, actual in assertEquals (adjustable with USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS).
 
 
-version 1.2: 13. Jun 2005  
-------------
+#### Version 1.2: 13. Jun 2005  
 - first public release
 
 
-version 1.1:
-------------
+#### Version 1.1
 - move global variables to internal variables
 - assertion order is configurable between expected/actual or actual/expected
 - new assertion to check that a function call returns an error
