@@ -234,19 +234,19 @@ TestLuaUnitUtilities = {} --class
         --output
         assertEquals( LuaUnit.parseCmdLine( { '--output', 'toto' } ), { output='toto'} )
         assertEquals( LuaUnit.parseCmdLine( { '-o', 'toto' } ), { output='toto'} )
-        assertErrorMsgMatch( 'Missing argument after %-o', LuaUnit.parseCmdLine, { '-o', } )
+        assertErrorMsgContains( 'Missing argument after -o', LuaUnit.parseCmdLine, { '-o', } )
 
         --patterns
         assertEquals( LuaUnit.parseCmdLine( { '--pattern', 'toto' } ), { pattern={'toto'} } )
         assertEquals( LuaUnit.parseCmdLine( { '-p', 'toto' } ), { pattern={'toto'} } )
         assertEquals( LuaUnit.parseCmdLine( { '-p', 'titi', '-p', 'toto' } ), { pattern={'titi', 'toto'} } )
-        assertErrorMsgMatch( 'Missing argument after %-p', LuaUnit.parseCmdLine, { '-p', } )
+        assertErrorMsgContains( 'Missing argument after -p', LuaUnit.parseCmdLine, { '-p', } )
 
         --megamix
         assertEquals( LuaUnit.parseCmdLine( { '-p', 'toto', 'titi', '-v', 'tata', '-o', 'tintin', '-p', 'tutu', 'prout' } ), 
             { pattern={'toto', 'tutu'}, verbosity=VERBOSITY_VERBOSE, output='tintin', testNames={'titi', 'tata', 'prout'} } )
 
-        assertErrorMsgMatch( 'option: %-x', LuaUnit.parseCmdLine, { '-x', } )
+        assertErrorMsgContains( 'option: -x', LuaUnit.parseCmdLine, { '-x', } )
     end
 
     function TestLuaUnitUtilities:test_includePattern()
@@ -279,46 +279,6 @@ TestLuaUnitUtilities = {} --class
 TestLuaUnitAssertions = {} --class
 
     TestLuaUnitAssertions.__class__ = 'TestLuaUnitAssertions'
-
-    function TestLuaUnitAssertions:test_assertError()
-        local function f( v ) 
-            v = v + 1
-        end
-        local function f_with_error(v)
-            v = v + 2
-            error('coucou')
-        end
-
-        local x = 1
-
-        -- f_with_error generates an error
-        has_error = not pcall( f_with_error, x )
-        assertEquals( has_error, true )
-
-        -- f does not generate an error
-        has_error = not pcall( f, x )
-        assertEquals( has_error, false )
-
-        -- assertError is happy with f_with_error
-        assertError( f_with_error, x )
-
-        -- assertError is unhappy with f
-        has_error = not pcall( assertError, f, x )
-        assertError( has_error, true )
-
-        -- multiple arguments
-        local function f_with_multi_arguments(a,b,c)
-            if a == b and b == c then return end
-            error("three arguments not equal")
-        end
-
-        assertError( f_with_multi_arguments, 1, 1, 3 )
-        assertError( f_with_multi_arguments, 1, 3, 1 )
-        assertError( f_with_multi_arguments, 3, 1, 1 )
-
-        has_error = not pcall( assertError, f_with_multi_arguments, 1, 1, 1 )
-        assertEquals( has_error, true )
-    end
 
     function TestLuaUnitAssertions:test_assertEquals()
         f = function() return true end
@@ -532,6 +492,23 @@ TestLuaUnitAssertions = {} --class
         assertNotStrIContains( 'abcdef', 'abcdefg' )
         assertError( assertNotStrIContains, 'abcdef', {} ) 
         assertError( assertNotStrIContains, 'abcdef', nil ) 
+    end
+
+    function TestLuaUnitAssertions:test_assertStrMatches()
+        assertStrMatches( 'abcdef', 'abcdef' )
+        assertStrMatches( 'abcdef', '..cde.' )
+        assertError( assertStrMatches, 'abcdef', '..def')
+        assertError( assertStrMatches, 'abCDEf', '..cde.')
+        assertStrMatches( 'abcdef', 'bcdef', 2 )
+        assertStrMatches( 'abcdef', 'bcde', 2, 5 )
+        assertStrMatches( 'abcdef', 'b..e', 2, 5 )
+        assertStrMatches( 'abcdef', 'ab..e', nil, 5 )
+        assertError( assertStrMatches, 'abcdef', '' )
+        assertError( assertStrMatches, '', 'abcdef' )
+
+        assertError( assertStrMatches, 'abcdef', 0 ) 
+        assertError( assertStrMatches, 'abcdef', {} ) 
+        assertError( assertStrMatches, 'abcdef', nil ) 
     end
 
     function TestLuaUnitAssertions:test_assertItemsEquals()
@@ -771,6 +748,78 @@ TestLuaUnitAssertions = {} --class
         assertNotEquals( {1,x=2,3,y=4}, {1,x=2,3} )
     end
 
+
+TestLuaUnitAssertionsError = {}
+
+    function TestLuaUnitAssertionsError:setUp()
+        self.f = function ( v )
+            local y = v + 1
+        end
+        self.f_with_error = function (v)
+            local y = v + 2
+            error('This is an error', 2)
+        end
+    end
+
+    function TestLuaUnitAssertionsError:test_assertError()
+        local x = 1
+
+        -- f_with_error generates an error
+        has_error = not pcall( self.f_with_error, x )
+        assertEquals( has_error, true )
+
+        -- f does not generate an error
+        has_error = not pcall( self.f, x )
+        assertEquals( has_error, false )
+
+        -- assertError is happy with f_with_error
+        assertError( self.f_with_error, x )
+
+        -- assertError is unhappy with f
+        has_error = not pcall( assertError, self.f, x )
+        assertError( has_error, true )
+
+        -- multiple arguments
+        local function f_with_multi_arguments(a,b,c)
+            if a == b and b == c then return end
+            error("three arguments not equal")
+        end
+
+        assertError( f_with_multi_arguments, 1, 1, 3 )
+        assertError( f_with_multi_arguments, 1, 3, 1 )
+        assertError( f_with_multi_arguments, 3, 1, 1 )
+
+        has_error = not pcall( assertError, f_with_multi_arguments, 1, 1, 1 )
+        assertEquals( has_error, true )
+    end
+
+    function TestLuaUnitAssertionsError:test_assertErrorMsgContains()
+        local x = 1
+        assertError( assertErrorMsgContains, 'toto', self.f, x )
+        assertErrorMsgContains( 'is an err', self.f_with_error, x )
+        assertErrorMsgContains( 'This is an error', self.f_with_error, x )
+        assertError( assertErrorMsgContains, ' This is an error', self.f_with_error, x )
+        assertError( assertErrorMsgContains, 'This .. an error', self.f_with_error, x )
+    end
+
+    function TestLuaUnitAssertionsError:test_assertErrorMsgEquals()
+        local x = 1
+        assertError( assertErrorMsgEquals, 'toto', self.f, x )
+        assertError( assertErrorMsgEquals, 'is an err', self.f_with_error, x )
+        assertErrorMsgEquals( 'This is an error', self.f_with_error, x )
+        assertError( assertErrorMsgEquals, ' This is an error', self.f_with_error, x )
+        assertError( assertErrorMsgEquals, 'This .. an error', self.f_with_error, x )
+    end
+
+    function TestLuaUnitAssertionsError:test_assertErrorMsgMatches()
+        local x = 1
+        assertError( assertErrorMsgMatches, 'toto', self.f, x )
+        assertError( assertErrorMsgMatches, 'is an err', self.f_with_error, x )
+        assertErrorMsgMatches( 'This is an error', self.f_with_error, x )
+        assertErrorMsgMatches( 'This is .. error', self.f_with_error, x )
+        assertError( assertErrorMsgMatches, ' This is an error', self.f_with_error, x )
+    end
+
 ------------------------------------------------------------------
 --
 --                       Error message tests
@@ -783,14 +832,6 @@ TestLuaUnitErrorMsg = {} --class
     function TestLuaUnitErrorMsg:tearDown()
         ORDER_ACTUAL_EXPECTED = true
     end
-
-    function TestLuaUnitErrorMsg:test_assertErrorMsgFunctionFailsWhenNoError()
-        assertError( assertErrorMsgEquals, 'toto', assertEquals, 1, 1  )
-    end
-
-    function TestLuaUnitAssertions:test_assertErrorMsgFunctionSupportRegexp()
-        assertErrorMsgMatch( 'expected', assertEquals, 1, 2  )
-    end 
 
     function TestLuaUnitErrorMsg:test_assertEqualsMsg()
         assertErrorMsgEquals( 'expected: 2, actual: 1', assertEquals, 1, 2  )
@@ -812,14 +853,29 @@ TestLuaUnitErrorMsg = {} --class
         assertErrorMsgEquals('Values are not almost equal\nExpected: 1 with margin of 0.1, received: 2', assertAlmostEquals, 2, 1, 0.1 )
     end
 
+    function TestLuaUnitErrorMsg:test_assertAlmostEqualsOrderReversedMsg()
+        ORDER_ACTUAL_EXPECTED = false
+        assertErrorMsgEquals('Values are not almost equal\nExpected: 2 with margin of 0.1, received: 1', assertAlmostEquals, 2, 1, 0.1 )
+    end
+
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
         assertErrorMsgEquals('Values are almost equal\nExpected: 1 with a difference above margin of 0.2, received: 1.1', assertNotAlmostEquals, 1.1, 1, 0.2 )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
+        ORDER_ACTUAL_EXPECTED = false
+        assertErrorMsgEquals('Values are almost equal\nExpected: 1.1 with a difference above margin of 0.2, received: 1', assertNotAlmostEquals, 1.1, 1, 0.2 )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotEqualsMsg()
         assertErrorMsgEquals( 'Received the not expected value: 1', assertNotEquals, 1, 1  )
         assertErrorMsgEquals( 'Received the not expected value: {1,2}', assertNotEquals, {1,2}, {1,2} )
         assertErrorMsgEquals( 'Received the not expected value: nil', assertNotEquals, nil, nil )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertNotEqualsOrderReversedMsg()
+        ORDER_ACTUAL_EXPECTED = false
+        assertErrorMsgEquals( 'Received the not expected value: 1', assertNotEquals, 1, 1  )
     end 
 
     function TestLuaUnitErrorMsg:test_assertTrueFalse()
@@ -829,8 +885,13 @@ TestLuaUnitErrorMsg = {} --class
         assertErrorMsgEquals( 'expected: false, actual: 0', assertFalse, 0)
         assertErrorMsgEquals( 'expected: false, actual: {}', assertFalse, {})
         assertErrorMsgEquals( 'expected: false, actual: "abc"', assertFalse, 'abc')
-        assertErrorMsgMatch( 'expected: false, actual: function', assertFalse, function () end )
+        assertErrorMsgContains( 'expected: false, actual: function', assertFalse, function () end )
     end 
+
+    function TestLuaUnitErrorMsg:test_assertNil()
+        assertErrorMsgEquals( 'expected: nil, actual: false', assertNil, false )
+        assertErrorMsgEquals( 'expected non nil value, received nil', assertNotNil, nil )
+    end
 
     function TestLuaUnitErrorMsg:test_assertStrContains()
         assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )

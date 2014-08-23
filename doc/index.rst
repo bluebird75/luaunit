@@ -556,7 +556,7 @@ Error assertions
 
     bla bla bla
     
-.. function:: assertErrorMsgIs( expectedMsg, func, ... )
+.. function:: assertErrorMsgEquals( expectedMsg, func, ... )
 
     bla bla bla
     
@@ -564,7 +564,7 @@ Error assertions
 
     bla bla bla
     
-.. function:: assertErrorMsgMatch( expectedMsg, func, ... )
+.. function:: assertErrorMsgMatches( expectedMsg, func, ... )
 
     bla bla bla
     

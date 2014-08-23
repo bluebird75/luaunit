@@ -113,11 +113,11 @@ function strsplit(delimiter, text)
 -- example: strsplit(",%s*", "Anna, Bob, Charlie,Dolores")
     local list = {}
     local pos = 1
-    if string.find("", delimiter, 1) then -- this would result in endless loops
+    if string.find("", delimiter, 1, true) then -- this would result in endless loops
         error("delimiter matches empty string!")
     end
     while 1 do
-        local first, last = string.find(text, delimiter, pos)
+        local first, last = string.find(text, delimiter, pos, true)
         if first then -- found?
             table.insert(list, string.sub(text, pos, first-1))
             pos = last+1
@@ -140,6 +140,7 @@ end
 
 function strMatch(s, pattern, start, final )
     -- return true if s matches completely the pattern from index start to index end
+    -- return false in every other cases
     -- if start is nil, matches from the beginning of the string
     -- if end is nil, matches to the end of the string
     if start == nil then
@@ -150,7 +151,7 @@ function strMatch(s, pattern, start, final )
         final = string.len(s)
     end
 
-    foundStart, foundEnd = string.find(s, pattern, start)
+    foundStart, foundEnd = string.find(s, pattern, start, false)
     if not foundStart then
         -- no match
         return false
@@ -372,6 +373,10 @@ function assertAlmostEquals( actual, expected, margin )
         error( 'assertAlmostEquals: margin must be positive, current value is '..margin, 2)
     end
 
+    if not ORDER_ACTUAL_EXPECTED then
+        expected, actual = actual, expected
+    end
+    
     -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
     -- which by default does not work. We need to give margin a small boost
     realmargin = margin + 0.00000000001
@@ -408,6 +413,10 @@ function assertNotAlmostEquals( actual, expected, margin )
         error( 'assertNotAlmostEquals: margin must be positive, current value is '..margin, 2)
     end
 
+    if not ORDER_ACTUAL_EXPECTED then
+        expected, actual = actual, expected
+    end
+    
     -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
     -- which by default does not work. We need to give margin a small boost
     realmargin = margin + 0.00000000001
@@ -466,12 +475,13 @@ function assertNotStrIContains( str, sub )
     end
 end
 
---[[
-function assertStrMatches( str, regexp )
+function assertStrMatches( str, pattern, start, final )
     -- Verify a full match for the string
     -- for a partial match, simply use assertStrContains with useRe set to true
+    if not strMatch( str, pattern, start, final ) then
+        error( 'Error, pattern '..prettystr(pattern)..' was not matched by string '..prettystr(str),2)
+    end
 end
-]]
 
 function assertErrorMsgEquals( expectedMsg, func, ... )
     -- assert that calling f with the arguments will raise an error
@@ -490,21 +500,21 @@ function assertErrorMsgContains( partialMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        error( 'No error generated but expected error: "'..expectedMsg..'"', 2 )
+        error( 'No error generated but expected error: '..prettystr(partialMsg), 2 )
     end
-    if string.find( error_msg, partialMsg ) then
-        error( 'Error message does not contain: "'..partialMsg..'"\nError message received: "'..error_msg..'"\n',2)
+    if not string.find( error_msg, partialMsg, nil, true ) then
+        error( 'Error message does not contain: '..prettystr(partialMsg)..'\nError message received: '..prettystr(error_msg)..'\n',2)
     end
 end
 
-function assertErrorMsgMatch( expectedMsg, func, ... )
+function assertErrorMsgMatches( expectedMsg, func, ... )
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
         error( 'No error generated but expected error match: "'..expectedMsg..'"', 2 )
     end
-    if not string.match( error_msg, expectedMsg, 1 ) then
+    if not strMatch( error_msg, expectedMsg ) then
         error( 'Error message expected to match: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
     end
 end
