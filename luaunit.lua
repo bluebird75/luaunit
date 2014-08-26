@@ -325,7 +325,7 @@ function assertError(f, ...)
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( f, ... )
     if not no_error then return end 
-    error( "Expected an error but no error generated", 2 )
+    error( "Expected an error when calling function but no error generated", 2 )
 end
 
 function assertTrue(value)
@@ -376,7 +376,7 @@ function assertAlmostEquals( actual, expected, margin )
     if not ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
-    
+
     -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
     -- which by default does not work. We need to give margin a small boost
     realmargin = margin + 0.00000000001
@@ -488,7 +488,7 @@ function assertErrorMsgEquals( expectedMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        error( 'No error generated but expected error: "'..expectedMsg..'"', 2 )
+        error( 'No error generated when calling function but expected error: "'..expectedMsg..'"', 2 )
     end
     if not (error_msg == expectedMsg) then
         error( 'Exact error message expected: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
@@ -500,7 +500,7 @@ function assertErrorMsgContains( partialMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        error( 'No error generated but expected error: '..prettystr(partialMsg), 2 )
+        error( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), 2 )
     end
     if not string.find( error_msg, partialMsg, nil, true ) then
         error( 'Error message does not contain: '..prettystr(partialMsg)..'\nError message received: '..prettystr(error_msg)..'\n',2)
@@ -512,10 +512,10 @@ function assertErrorMsgMatches( expectedMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        error( 'No error generated but expected error match: "'..expectedMsg..'"', 2 )
+        error( 'No error generated when calling function but expected error matching: "'..expectedMsg..'"', 2 )
     end
     if not strMatch( error_msg, expectedMsg ) then
-        error( 'Error message expected to match: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
+        error( 'Error message does not match: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
     end
 end
 

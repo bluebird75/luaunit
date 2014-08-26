@@ -963,6 +963,21 @@ TestLuaUnitErrorMsg = {} --class
     function TestLuaUnitErrorMsg:test_assertItemsEquals()
         assertErrorMsgEquals('Contents of the tables are not identical:\nExpected: {one=2,two=3}\nActual: {1,2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
     end 
+
+    function TestLuaUnitErrorMsg:test_assertError()
+        assertErrorMsgEquals('Expected an error when calling function but no error generated' , assertError, function( v ) local y = v+1 end, 3 )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertErrorMsg()
+        assertErrorMsgEquals('No error generated when calling function but expected error: "bla bla bla"' , assertErrorMsgEquals, 'bla bla bla', function( v ) local y = v+1 end, 3 )
+        assertErrorMsgEquals('No error generated when calling function but expected error containing: "bla bla bla"' , assertErrorMsgContains, 'bla bla bla', function( v ) local y = v+1 end, 3 )
+        assertErrorMsgEquals('No error generated when calling function but expected error matching: "bla bla bla"' , assertErrorMsgMatches, 'bla bla bla', function( v ) local y = v+1 end, 3 )
+
+        assertErrorMsgEquals('Exact error message expected: "bla bla bla"\nError message received: "toto xxx"\n' , assertErrorMsgEquals, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+        assertErrorMsgEquals('Error message does not contain: "bla bla bla"\nError message received: "toto xxx"\n' , assertErrorMsgContains, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+        assertErrorMsgEquals('Error message does not match: "bla bla bla"\nError message received: "toto xxx"\n' , assertErrorMsgMatches, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+
+    end 
 ------------------------------------------------------------------
 --
 --                       Execution Tests 
