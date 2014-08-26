@@ -924,6 +924,10 @@ TestLuaUnitErrorMsg = {} --class
         assertErrorMsgEquals( 'Error, substring "abc" was found (case insensitively) in string "abcdef"', assertNotStrIContains, 'abcdef', 'abc' )
     end 
 
+    function TestLuaUnitErrorMsg:test_assertStrMatches()
+        assertErrorMsgEquals('Error, pattern "xxx" was not matched by string "abcdef"', assertStrMatches, 'abcdef', 'xxx' )
+    end 
+
     function TestLuaUnitErrorMsg:test_assertIsNumber()
         assertErrorMsgEquals( 'Expected: a number value, actual: type string, value "abc"', assertIsNumber, 'abc' )
         assertErrorMsgEquals( 'Expected: a number value, actual: type nil, value nil', assertIsNumber, nil )
