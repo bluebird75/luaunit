@@ -617,13 +617,17 @@ TapOutput = { -- class
 }
 TapOutput_MT = { __index = TapOutput }
 
+    -- For a good reference for TAP format, check: http://testanything.org/tap-specification.html
+
     function TapOutput:new()
         local t = {}
         t.verbosity = VERBOSITY_LOW
         setmetatable( t, TapOutput_MT )
         return t
     end
-    function TapOutput:startSuite() end
+    function TapOutput:startSuite() 
+        print('# Started on '..os.date())
+    end
     function TapOutput:startClass(className) end
     function TapOutput:startTest(testName) end
 
@@ -647,6 +651,8 @@ TapOutput_MT = { __index = TapOutput }
 
     function TapOutput:endSuite()
        print("1.."..self.result.testCount)
+       print(string.format('# %d tests, %d successes, %d failures, executed in %0.3f seconds', 
+            self.result.testCount, self.result.testCount-self.result.failureCount, self.result.failureCount, self.result.duration))
        return self.result.failureCount
     end
 
