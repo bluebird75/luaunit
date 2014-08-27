@@ -639,11 +639,15 @@ TapOutput_MT = { __index = TapOutput }
     function TapOutput:startSuite() 
         print('# Started on '..os.date())
     end
-    function TapOutput:startClass(className) end
+    function TapOutput:startClass(className) 
+        if className ~= '<TestFunctions>' then
+            print('# Starting class: '..className)
+        end
+    end
     function TapOutput:startTest(testName) end
 
     function TapOutput:addFailure( errorMsg, stackTrace )
-       print(string.format("not ok %d\t%s", self.result.testCount, self.result.currentTestName ))
+       print(string.format("not ok %d\t%s", self.result.currentTestNumber, self.result.currentTestName ))
        if self.verbosity > VERBOSITY_LOW then
            print( prefixString( '    ', errorMsg ) )
         end
@@ -654,7 +658,7 @@ TapOutput_MT = { __index = TapOutput }
 
     function TapOutput:endTest(testHasFailure)
        if not self.result.currentTestHasFailure then
-          print(string.format("ok     %d\t%s", self.result.testCount, self.result.currentTestName ))
+          print(string.format("ok     %d\t%s", self.result.currentTestNumber, self.result.currentTestName ))
        end
     end
 
@@ -662,7 +666,7 @@ TapOutput_MT = { __index = TapOutput }
 
     function TapOutput:endSuite()
        print("1.."..self.result.testCount)
-       print(string.format('# %d tests, %d successes, %d failures, executed in %0.3f seconds', 
+       print(string.format('# Ran %d tests, %d successes, %d failures, executed in %0.3f seconds', 
             self.result.testCount, self.result.testCount-self.result.failureCount, self.result.failureCount, self.result.duration))
        return self.result.failureCount
     end
@@ -1065,6 +1069,7 @@ LuaUnit_MT = { __index = LuaUnit }
         self.result = {}
         self.result.failureCount = 0
         self.result.testCount = 0
+        self.result.currentTestNumber = 0
         self.result.currentTestName = ""
         self.result.currentClassName = ""
         self.result.currentTestHasFailure = false
@@ -1088,6 +1093,7 @@ LuaUnit_MT = { __index = LuaUnit }
     function LuaUnit:startTest( testName  )
         self.result.currentTestName = testName
         self.result.testCount = self.result.testCount + 1
+        self.result.currentTestNumber = self.result.currentTestNumber + 1
         self.result.currentTestHasFailure = false
         self.output:startTest( testName )
     end
