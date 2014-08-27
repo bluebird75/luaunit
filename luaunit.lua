@@ -637,6 +637,7 @@ TapOutput_MT = { __index = TapOutput }
         return t
     end
     function TapOutput:startSuite() 
+        print("1.."..self.result.testCount)
         print('# Started on '..os.date())
     end
     function TapOutput:startClass(className) 
@@ -665,7 +666,6 @@ TapOutput_MT = { __index = TapOutput }
     function TapOutput:endClass() end
 
     function TapOutput:endSuite()
-       print("1.."..self.result.testCount)
        print(string.format('# Ran %d tests, %d successes, %d failures, executed in %0.3f seconds', 
             self.result.testCount, self.result.testCount-self.result.failureCount, self.result.failureCount, self.result.duration))
        return self.result.failureCount
