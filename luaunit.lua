@@ -866,7 +866,7 @@ LuaUnit_MT = { __index = LuaUnit }
 
     function LuaUnit.isClassMethod(aName)
         -- return true if aName contains a class + a method name in the form class:method
-        return not not string.find(aName, ':' )
+        return not not string.find(aName, '.', nil, true )
     end
 
     function LuaUnit.splitClassMethod(someName)
@@ -874,7 +874,7 @@ LuaUnit_MT = { __index = LuaUnit }
         -- return nil if not a class + method name
         -- name is class + method
         local hasMethod
-        hasMethod = string.find(someName, ':' )
+        hasMethod = string.find(someName, '.', nil, true )
         if not hasMethod then return nil end
         methodName = string.sub(someName, hasMethod+1)
         className = string.sub(someName,1,hasMethod-1)

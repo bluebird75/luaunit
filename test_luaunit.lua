@@ -201,12 +201,12 @@ TestLuaUnitUtilities = {} --class
 
     function TestLuaUnitUtilities:test_IsClassMethod()
         assertEquals( LuaUnit.isClassMethod( 'toto' ), false )
-        assertEquals( LuaUnit.isClassMethod( 'toto:titi' ), true )
+        assertEquals( LuaUnit.isClassMethod( 'toto.titi' ), true )
     end
 
     function TestLuaUnitUtilities:test_splitClassMethod()
         assertEquals( LuaUnit.splitClassMethod( 'toto' ), nil )
-        v1, v2 = LuaUnit.splitClassMethod( 'toto:titi' )
+        v1, v2 = LuaUnit.splitClassMethod( 'toto.titi' )
         assertEquals( {v1, v2}, {'toto', 'titi'} )
     end
 
@@ -1075,7 +1075,7 @@ TestLuaUnitExecution = {} --class
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { 
             { 'MyLocalTestToto1', MyLocalTestToto1 },
-            { 'MyLocalTestToto2:test2', MyLocalTestToto2 },
+            { 'MyLocalTestToto2.test2', MyLocalTestToto2 },
             { 'MyLocalTestFunction', MyLocalTestFunction },
         } )
         assertEquals( #executedTests, 3 )
@@ -1121,7 +1121,7 @@ TestLuaUnitExecution = {} --class
 
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstances( { { 'MyTestWithSetupTeardown:test1', MyTestWithSetupTeardown } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupTeardown.test1', MyTestWithSetupTeardown } } )
         assertEquals( runner.result.failureCount, 0 )
         assertEquals( myExecutedTests[1], '1setUp' )   
         assertEquals( myExecutedTests[2], '1test1')
