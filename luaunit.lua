@@ -176,6 +176,12 @@ end
 
 function table.tostring( tbl )
     local result, done = {}, {}
+    local dispOnMultLines = false
+
+    if #tbl > 3 then
+        dispOnMultLines = true
+    end
+
     for k, v in ipairs( tbl ) do
         table.insert( result, prettystr( v ) )
         done[ k ] = true
@@ -187,7 +193,12 @@ function table.tostring( tbl )
                 table.keytostring( k ) .. "=" .. prettystr( v, true ) )
         end
     end
-    return "{" .. table.concat( result, "," ) .. "}"
+    if dispOnMultLines then
+        result = "{\n\t" .. table.concat( result, ",\n\t" ) .. "}"
+    else
+        result = "{" .. table.concat( result, ", " ) .. "}"
+    end
+    return result
 end
 
 function prettystr( v, keeponeline )
@@ -211,9 +222,9 @@ function prettystr( v, keeponeline )
         return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
     end
     if type(v) == 'table' then
-        if v.__class__ then
-            return string.gsub( tostring(v), 'table', v.__class__ )
-        end
+        --if v.__class__ then
+        --    return string.gsub( tostring(v), 'table', v.__class__ )
+        --end
         return table.tostring(v)
     end
     return tostring(v)
@@ -311,9 +322,9 @@ function errorMsgEquality(actual, expected)
     if not ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
-    if type(expected) == 'string' then
+    if type(expected) == 'string' or type(expected) == 'table' then
         errorMsg = "expected: "..prettystr(expected).."\n"..
-                         "actual: "..prettystr(actual).."\n"
+                         "actual: "..prettystr(actual)
     else
         errorMsg = "expected: "..prettystr(expected)..", actual: "..prettystr(actual)
     end

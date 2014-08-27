@@ -190,8 +190,8 @@ TestLuaUnitUtilities = {} --class
         assertEquals( prettystr( 'ab\ncd', true ), '"ab\\ncd"' )
         assertEquals( prettystr( 'ab"cd' ), "'ab\"cd'" )
         assertEquals( prettystr( "ab'cd" ), '"ab\'cd"' )
-        assertEquals( prettystr( {1,2,3} ), "{1,2,3}" )
-        assertEquals( prettystr( {a=1,bb=2,ab=3} ), '{a=1,ab=3,bb=2}' )
+        assertEquals( prettystr( {1,2,3} ), "{1, 2, 3}" )
+        assertEquals( prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
     end
 
     function TestLuaUnitUtilities:test_IsFunction()
@@ -835,18 +835,18 @@ TestLuaUnitErrorMsg = {} --class
 
     function TestLuaUnitErrorMsg:test_assertEqualsMsg()
         assertErrorMsgEquals( 'expected: 2, actual: 1', assertEquals, 1, 2  )
-        assertErrorMsgEquals( 'expected: "exp"\nactual: "act"\n', assertEquals, 'act', 'exp' )
+        assertErrorMsgEquals( 'expected: "exp"\nactual: "act"', assertEquals, 'act', 'exp' )
         assertErrorMsgEquals( 'expected: true, actual: false', assertEquals, false, true )
         assertErrorMsgEquals( 'expected: 1.2, actual: 1', assertEquals, 1.0, 1.2)
-        assertErrorMsgEquals( 'expected: {1,2,3}, actual: {3,2,1}', assertEquals, {3,2,1}, {1,2,3} )
-        assertErrorMsgEquals( 'expected: {one=1,two=2}, actual: {3,2,1}', assertEquals, {3,2,1}, {one=1,two=2} )
+        assertErrorMsgEquals( 'expected: {1, 2, 3}\nactual: {3, 2, 1}', assertEquals, {3,2,1}, {1,2,3} )
+        assertErrorMsgEquals( 'expected: {one=1, two=2}\nactual: {3, 2, 1}', assertEquals, {3,2,1}, {one=1,two=2} )
         assertErrorMsgEquals( 'expected: 2, actual: nil', assertEquals, nil, 2 )
     end 
 
     function TestLuaUnitErrorMsg:test_assertEqualsOrderReversedMsg()
         ORDER_ACTUAL_EXPECTED = false
         assertErrorMsgEquals( 'expected: 1, actual: 2', assertEquals, 1, 2  )
-        assertErrorMsgEquals( 'expected: "act"\nactual: "exp"\n', assertEquals, 'act', 'exp' )
+        assertErrorMsgEquals( 'expected: "act"\nactual: "exp"', assertEquals, 'act', 'exp' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsMsg()
@@ -869,7 +869,7 @@ TestLuaUnitErrorMsg = {} --class
 
     function TestLuaUnitErrorMsg:test_assertNotEqualsMsg()
         assertErrorMsgEquals( 'Received the not expected value: 1', assertNotEquals, 1, 1  )
-        assertErrorMsgEquals( 'Received the not expected value: {1,2}', assertNotEquals, {1,2}, {1,2} )
+        assertErrorMsgEquals( 'Received the not expected value: {1, 2}', assertNotEquals, {1,2}, {1,2} )
         assertErrorMsgEquals( 'Received the not expected value: nil', assertNotEquals, nil, nil )
     end 
 
@@ -961,11 +961,11 @@ TestLuaUnitErrorMsg = {} --class
 
     function TestLuaUnitErrorMsg:test_assertNotIs()
         local v = {1,2}
-        assertErrorMsgEquals( 'Expected object and actual object are the same object: {1,2}', assertNotIs, v, v )
+        assertErrorMsgEquals( 'Expected object and actual object are the same object: {1, 2}', assertNotIs, v, v )
     end 
 
     function TestLuaUnitErrorMsg:test_assertItemsEquals()
-        assertErrorMsgEquals('Contents of the tables are not identical:\nExpected: {one=2,two=3}\nActual: {1,2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
+        assertErrorMsgEquals('Contents of the tables are not identical:\nExpected: {one=2, two=3}\nActual: {1, 2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
     end 
 
     function TestLuaUnitErrorMsg:test_assertError()
@@ -1028,7 +1028,7 @@ TestLuaUnitExecution = {} --class
 
     function TestLuaUnitExecution:test_collectTests()
         allTests = LuaUnit.collectTests()
-        assertEquals( prettystr( allTests ), '{"MyTestFunction","MyTestOk","MyTestToto1","MyTestToto2","MyTestWithFailures"}')
+        assertEquals( allTests, {"MyTestFunction", "MyTestOk", "MyTestToto1", "MyTestToto2","MyTestWithFailures"})
     end
 
     function TestLuaUnitExecution:test_MethodsAreExecutedInRightOrder()
