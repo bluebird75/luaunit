@@ -1058,17 +1058,11 @@ LuaUnit_MT = { __index = LuaUnit }
 
     --------------[[ Output methods ]]-------------------------
 
-    function LuaUnit:ensureSuiteStarted( )
-        if self.result and self.result.suiteStarted then
-            return
-        end
-        self:startSuite()
-    end
-
-    function LuaUnit:startSuite()
+    function LuaUnit:startSuite(testCount, nonSelectedCount)
         self.result = {}
         self.result.failureCount = 0
-        self.result.testCount = 0
+        self.result.testCount = testCount
+        self.result.nonSelectedCount = nonSelectedCount
         self.result.currentTestNumber = 0
         self.result.currentTestName = ""
         self.result.currentClassName = ""
@@ -1092,7 +1086,6 @@ LuaUnit_MT = { __index = LuaUnit }
 
     function LuaUnit:startTest( testName  )
         self.result.currentTestName = testName
-        self.result.testCount = self.result.testCount + 1
         self.result.currentTestNumber = self.result.currentTestNumber + 1
         self.result.currentTestHasFailure = false
         self.output:startTest( testName )
@@ -1200,10 +1193,6 @@ LuaUnit_MT = { __index = LuaUnit }
             prettyFuncName = className..'.'..methodName
         end
 
-        if self.patternFilter and not self.patternInclude( self.patternFilter, prettyFuncName ) then
-            return
-        end
-
         if self.lastClassName ~= className then
             if self.lastClassName ~= nil then
                 self:endClass()
@@ -1232,16 +1221,59 @@ LuaUnit_MT = { __index = LuaUnit }
         self:endTest()
     end
 
-    function LuaUnit:execOneClass( className, classInstance )
-        -- execute all test methods of class classInstance whose name is className
-        -- both arguments are mandatory
-        self:ensureSuiteStarted()
-
+    function LuaUnit.expandOneClass( result, className, classInstance )
+        -- add all test methods of classInstance to result
         for methodName, methodInstance in sortedPairs(classInstance) do
             if LuaUnit.isFunction(methodInstance) and LuaUnit.isMethodTestName( methodName ) then
-                self:execOneFunction( className, methodName, classInstance, methodInstance )
+                table.insert( result, { className..'.'..methodName, classInstance } )
             end
         end
+    end
+
+    function LuaUnit.expandClasses( listOfNameAndInst )
+        -- expand all classes (proveded as {className, classInstance}) to a list of {className.methodName, classInstance}
+        -- functions and methods remain untouched
+        local result = {}
+
+        for i,v in ipairs( listOfNameAndInst ) do
+            name, instance = v[1], v[2]
+            if LuaUnit.isFunction(instance) then
+                table.insert( result, { name, instance } )
+            else 
+                if type(instance) ~= 'table' then
+                    error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
+                end
+                if LuaUnit.isClassMethod( name ) then
+                    className, instanceName = LuaUnit.splitClassMethod( name )
+                    methodInstance = instance[methodName]
+                    if methodInstance == nil then
+                        error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
+                    end
+                    table.insert( result, { name, instance } )
+                else
+                    LuaUnit.expandOneClass( result, name, instance )
+                end
+            end
+        end
+
+        return result
+    end
+
+    function LuaUnit.applyPatternFilter( patternFilter, listOfNameAndInst )
+        local included = {}
+        local excluded = {}
+
+        for i,v in ipairs( listOfNameAndInst ) do
+            name, instance = v[1], v[2]
+
+            if patternFilter and not LuaUnit.patternInclude( patternFilter, name ) then
+                table.insert( excluded, v )
+            else
+                table.insert( included, v )
+            end
+        end
+        return included, excluded
+
     end
 
     function LuaUnit:runSuiteByInstances( listOfNameAndInst )
@@ -1249,10 +1281,15 @@ LuaUnit_MT = { __index = LuaUnit }
         -- each test must be one of:
         --   * { function name, function instance }
         --   * { class name, class instance }
-        --   * { class:method name, class instance }
-        self:startSuite()
+        --   * { class.method name, class instance }
 
-        for i,v in ipairs( listOfNameAndInst ) do
+        expandedList = self.expandClasses( listOfNameAndInst )
+
+        filteredList, filteredOutList = self.applyPatternFilter( self.patternFilter, expandedList )
+
+        self:startSuite( #filteredList, #filteredOutList )
+
+        for i,v in ipairs( filteredList ) do
             name, instance = v[1], v[2]
             if LuaUnit.isFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
@@ -1260,17 +1297,13 @@ LuaUnit_MT = { __index = LuaUnit }
                 if type(instance) ~= 'table' then
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 else
-
-                    if LuaUnit.isClassMethod( name ) then
-                        className, instanceName = LuaUnit.splitClassMethod( name )
-                        methodInstance = instance[methodName]
-                        if methodInstance == nil then
-                            error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
-                        end
-                        self:execOneFunction( className, methodName, instance, methodInstance )
-                    else
-                        self:execOneClass( name, instance )
+                    assert( LuaUnit.isClassMethod( name ) )
+                    className, instanceName = LuaUnit.splitClassMethod( name )
+                    methodInstance = instance[methodName]
+                    if methodInstance == nil then
+                        error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
                     end
+                    self:execOneFunction( className, methodName, instance, methodInstance )
                 end
             end
         end

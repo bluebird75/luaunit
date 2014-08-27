@@ -258,6 +258,22 @@ TestLuaUnitUtilities = {} --class
         assertEquals( LuaUnit.patternInclude( {'titi', 'to..'}, 'yyytoxxx'), true )
     end
 
+    function TestLuaUnitUtilities:test_applyPatternFilter()
+        myTestToto1Value = { 'MyTestToto1.test1', MyTestToto1 }
+
+        included, excluded = LuaUnit.applyPatternFilter( nil, { myTestToto1Value } )
+        assertEquals( excluded, {} )
+        assertEquals( included, { myTestToto1Value } )
+
+        included, excluded = LuaUnit.applyPatternFilter( {'T.to'}, { myTestToto1Value } )
+        assertEquals( excluded, {} )
+        assertEquals( included, { myTestToto1Value } )
+
+        included, excluded = LuaUnit.applyPatternFilter( {'T.ti'}, { myTestToto1Value } )
+        assertEquals( excluded, { myTestToto1Value } )
+        assertEquals( included, {} )
+    end
+
     function TestLuaUnitUtilities:test_strMatch()
         assertEquals( strMatch('toto', 't.t.'), true )
         assertEquals( strMatch('toto', 't.t.', 1, 4), true )
@@ -270,6 +286,44 @@ TestLuaUnitUtilities = {} --class
         assertEquals( strMatch('ototot', 't.t.',2,5), true  )
         assertEquals( strMatch('ototot', 't.t.',2,6), false )
     end
+
+    function TestLuaUnitUtilities:test_expandOneClass()
+        local result = {}
+        LuaUnit.expandOneClass( result, 'titi', {} )
+        assertEquals( result, {} )
+
+        result = {}
+        LuaUnit.expandOneClass( result, 'MyTestToto1', MyTestToto1 )
+        assertEquals( result, { 
+            {'MyTestToto1.test1', MyTestToto1 },
+            {'MyTestToto1.test2', MyTestToto1 },
+            {'MyTestToto1.test3', MyTestToto1 },
+            {'MyTestToto1.testa', MyTestToto1 },
+            {'MyTestToto1.testb', MyTestToto1 },
+        } )
+    end
+
+    function TestLuaUnitUtilities:test_expandClasses()
+        local result = {}
+        result = LuaUnit.expandClasses( {} )
+        assertEquals( result, {} )
+
+        result = LuaUnit.expandClasses( { { 'MyTestFunction', MyTestFunction } } )
+        assertEquals( result, { { 'MyTestFunction', MyTestFunction } } )
+
+        result = LuaUnit.expandClasses( { { 'MyTestToto1.test1', MyTestToto1 } } )
+        assertEquals( result, { { 'MyTestToto1.test1', MyTestToto1 } } )
+
+        result = LuaUnit.expandClasses( { { 'MyTestToto1', MyTestToto1 } } )
+        assertEquals( result, { 
+            {'MyTestToto1.test1', MyTestToto1 },
+            {'MyTestToto1.test2', MyTestToto1 },
+            {'MyTestToto1.test3', MyTestToto1 },
+            {'MyTestToto1.testa', MyTestToto1 },
+            {'MyTestToto1.testb', MyTestToto1 },
+        } )
+    end
+
 ------------------------------------------------------------------
 --
 --                  Assertion Tests              
