@@ -570,6 +570,18 @@ function assertIsFunction(value)
     end
 end
 
+function assertIsUserdata(value)
+    if type(value) ~= 'userdata' then
+        error( errorMsgTypeMismatch( 'userdata', value ), 2 )
+    end
+end
+
+function assertIsThread(value)
+    if type(value) ~= 'thread' then
+        error( errorMsgTypeMismatch( 'thread', value ), 2 )
+    end
+end
+
 function assertIs(actual, expected)
     if not ORDER_ACTUAL_EXPECTED then
         actual, expected = expected, actual

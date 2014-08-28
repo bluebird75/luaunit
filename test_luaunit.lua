@@ -612,6 +612,7 @@ TestLuaUnitAssertions = {} --class
         assertError(assertIsNumber, {})
         assertError(assertIsNumber, {1,2,3})
         assertError(assertIsNumber, {1})
+        assertError(assertIsNumber, coroutine.create( function(v) local y=v+1 end ) )
         assertError(assertIsTable, true)
     end
 
@@ -623,6 +624,7 @@ TestLuaUnitAssertions = {} --class
         assertError(assertIsString, {})
         assertError(assertIsString, {1,2,3})
         assertError(assertIsString, {1})
+        assertError(assertIsString, coroutine.create( function(v) local y=v+1 end ) )
         assertError(assertIsTable, true)
     end
 
@@ -635,6 +637,7 @@ TestLuaUnitAssertions = {} --class
         assertIsTable({1,2,3})
         assertIsTable({1})
         assertError(assertIsTable, true)
+        assertError(assertIsTable, coroutine.create( function(v) local y=v+1 end ) )
     end
 
     function TestLuaUnitAssertions:test_assertIsBoolean()
@@ -645,6 +648,7 @@ TestLuaUnitAssertions = {} --class
         assertError(assertIsBoolean, {})
         assertError(assertIsBoolean, {1,2,3})
         assertError(assertIsBoolean, {1})
+        assertError(assertIsBoolean, coroutine.create( function(v) local y=v+1 end ) )
         assertIsBoolean(true)
         assertIsBoolean(false)
     end
@@ -658,6 +662,7 @@ TestLuaUnitAssertions = {} --class
         assertError(assertIsNil, {1,2,3})
         assertError(assertIsNil, {1})
         assertError(assertIsNil, false)
+        assertError(assertIsNil, coroutine.create( function(v) local y=v+1 end ) )
     end
 
     function TestLuaUnitAssertions:test_assertIsFunction()
@@ -671,7 +676,34 @@ TestLuaUnitAssertions = {} --class
         assertError(assertIsFunction, {1,2,3})
         assertError(assertIsFunction, {1})
         assertError(assertIsFunction, false)
+        assertError(assertIsFunction, coroutine.create( function(v) local y=v+1 end ) )
         assertIsFunction(f)
+    end
+
+    function TestLuaUnitAssertions:test_assertIsThread()
+        assertError(assertIsThread, 1)
+        assertError(assertIsThread, 1.4)
+        assertError(assertIsThread, "hi there!")
+        assertError(assertIsThread, nil)
+        assertError(assertIsThread, {})
+        assertError(assertIsThread, {1,2,3})
+        assertError(assertIsThread, {1})
+        assertError(assertIsThread, false)
+        assertError(assertIsThread, function(v) local y=v+1 end )
+        assertIsThread(coroutine.create( function(v) local y=v+1 end ) )
+    end
+
+    function TestLuaUnitAssertions:test_assertIsUserdata()
+        assertError(assertIsUserdata, 1)
+        assertError(assertIsUserdata, 1.4)
+        assertError(assertIsUserdata, "hi there!")
+        assertError(assertIsUserdata, nil)
+        assertError(assertIsUserdata, {})
+        assertError(assertIsUserdata, {1,2,3})
+        assertError(assertIsUserdata, {1})
+        assertError(assertIsUserdata, false)
+        assertError(assertIsUserdata, function(v) local y=v+1 end )
+        assertError(assertIsUserdata, coroutine.create( function(v) local y=v+1 end ) )
     end
 
     function TestLuaUnitAssertions:test_assertIs()
@@ -1005,6 +1037,16 @@ TestLuaUnitErrorMsg = {} --class
     function TestLuaUnitErrorMsg:test_assertIsFunction()
         assertErrorMsgEquals( 'Expected: a function value, actual: type number, value 1.2', assertIsFunction, 1.2 )
         assertErrorMsgEquals( 'Expected: a function value, actual: type nil, value nil', assertIsFunction, nil )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertIsThread()
+        assertErrorMsgEquals( 'Expected: a thread value, actual: type number, value 1.2', assertIsThread, 1.2 )
+        assertErrorMsgEquals( 'Expected: a thread value, actual: type nil, value nil', assertIsThread, nil )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertIsUserdata()
+        assertErrorMsgEquals( 'Expected: a userdata value, actual: type number, value 1.2', assertIsUserdata, 1.2 )
+        assertErrorMsgEquals( 'Expected: a userdata value, actual: type nil, value nil', assertIsUserdata, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIs()
