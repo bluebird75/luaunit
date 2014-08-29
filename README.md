@@ -18,6 +18,8 @@ LuaUnit works with Lua 5.1 and 5.2 . It was tested on Windows XP and Ubuntu 12.0
 continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) ) and should work on all platforms supported by lua.
 It has no other dependency than lua itself. 
 
+LuaUnit is packed into a single-file, to make it easy to use it in any projects.
+
 Luaunit is now maintained on github:
 https://github.com/bluebird75/luaunit
 
@@ -27,16 +29,20 @@ Documentation is available on [read-the-docs](http://luaunit.readthedocs.org/en/
 
 ### History 
 
-#### Version 1.6 - 2014
+#### Version 3.0 - 2014
+
+Since some people have forked LuaUnit and release some 2.x version, I am
+jumping the version number.
 
 - moved to Github
-- full documentation available in text and html
+- full documentation available in text, html and pdf at read-the-docs.org
 - new output format: JUnit
 - much better table assertions
 - new assertions for strings, with patterns and case insensitivity: assertStrContains, 
-  assertNotStrContains, assertNotStrIContains, assertStrIContains
+  assertNotStrContains, assertNotStrIContains, assertStrIContains, assertStrMatches
 - new assertions for floats: assertAlmostEquals, assertNotAlmostEquals
 - type assertions: assertIsString, assertIsNumber, ...
+- error assertions: assertErrorMsgEquals, assertErrorMsgContains, assertErrorMsgMatches
 - improved error messages for several assertions
 - command-line options to select test, control output type and verbosity
 
