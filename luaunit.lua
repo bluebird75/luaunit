@@ -660,27 +660,32 @@ TapOutput_MT = { __index = TapOutput }
     function TapOutput:startTest(testName) end
 
     function TapOutput:addFailure( errorMsg, stackTrace )
-       print(string.format("not ok %d\t%s", self.result.currentTestNumber, self.result.currentTestName ))
-       if self.verbosity > VERBOSITY_LOW then
+        print(string.format("not ok %d\t%s", self.result.currentTestNumber, self.result.currentTestName ))
+        if self.verbosity > VERBOSITY_LOW then
            print( prefixString( '    ', errorMsg ) )
         end
-       if self.verbosity > VERBOSITY_DEFAULT then
+        if self.verbosity > VERBOSITY_DEFAULT then
            print( prefixString( '    ', stackTrace ) )
         end
     end
 
     function TapOutput:endTest(testHasFailure)
-       if not self.result.currentTestHasFailure then
-          print(string.format("ok     %d\t%s", self.result.currentTestNumber, self.result.currentTestName ))
-       end
+        if not self.result.currentTestHasFailure then
+            print(string.format("ok     %d\t%s", self.result.currentTestNumber, self.result.currentTestName ))
+        end
     end
 
     function TapOutput:endClass() end
 
     function TapOutput:endSuite()
-       print(string.format('# Ran %d tests, %d successes, %d failures, executed in %0.3f seconds', 
-            self.result.testCount, self.result.testCount-self.result.failureCount, self.result.failureCount, self.result.duration))
-       return self.result.failureCount
+        t = {}
+        table.insert(t, string.format('# Ran %d tests in %0.3f seconds, %d successes, %d failures',
+            self.result.testCount, self.result.duration, self.result.testCount-self.result.failureCount, self.result.failureCount ) )
+        if self.result.nonSelectedCount > 0 then
+            table.insert(t, string.format(", %d non selected tests", self.result.nonSelectedCount ) )
+        end
+        print( table.concat(t) )
+        return self.result.failureCount
     end
 
 
