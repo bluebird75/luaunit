@@ -1,0 +1,211 @@
+<testsuites>
+    <testsuite name="TestTiti">
+        <testcase classname="TestTiti"
+            name="TestTiti.test1_withFailure">
+            <failure type="example_with_luaunit.lua:99: expected: 2, actual: 1>
+                <![CDATA[stack traceback:
+	.\luaunit.lua:375: in function 'assertEquals'
+	example_with_luaunit.lua:99: in function 'TestTiti.test1_withFailure'
+	.\luaunit.lua:1222: in function <.\luaunit.lua:1222>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1222: in function 'protectedCall'
+	.\luaunit.lua:1275: in function 'execOneFunction'
+	.\luaunit.lua:1368: in function 'runSuiteByInstances'
+	.\luaunit.lua:1421: in function 'runSuiteByNames'
+	.\luaunit.lua:1492: in function 'runSuite'
+	example_with_luaunit.lua:140: in main chunk
+	[C]: ?]]</failure>
+        </testcase>
+        <testcase classname="TestTiti"
+            name="TestTiti.test2_withFailure">
+            <failure type="example_with_luaunit.lua:108: expected: "bof"
+actual: "hop">
+                <![CDATA[stack traceback:
+	.\luaunit.lua:375: in function 'assertEquals'
+	example_with_luaunit.lua:108: in function 'TestTiti.test2_withFailure'
+	.\luaunit.lua:1222: in function <.\luaunit.lua:1222>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1222: in function 'protectedCall'
+	.\luaunit.lua:1275: in function 'execOneFunction'
+	.\luaunit.lua:1368: in function 'runSuiteByInstances'
+	.\luaunit.lua:1421: in function 'runSuiteByNames'
+	.\luaunit.lua:1492: in function 'runSuite'
+	example_with_luaunit.lua:140: in main chunk
+	[C]: ?]]</failure>
+        </testcase>
+        <testcase classname="TestTiti"
+            name="TestTiti.test3">
+        </testcase>
+    </testsuite>
+    <testsuite name="TestToto">
+        <testcase classname="TestToto"
+            name="TestToto.test1_withFailure">
+            <failure type="example_with_luaunit.lua:19: expected: 2, actual: 1>
+                <![CDATA[stack traceback:
+	.\luaunit.lua:375: in function 'assertEquals'
+	example_with_luaunit.lua:19: in function 'TestToto.test1_withFailure'
+	.\luaunit.lua:1222: in function <.\luaunit.lua:1222>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1222: in function 'protectedCall'
+	.\luaunit.lua:1275: in function 'execOneFunction'
+	.\luaunit.lua:1368: in function 'runSuiteByInstances'
+	.\luaunit.lua:1421: in function 'runSuiteByNames'
+	.\luaunit.lua:1492: in function 'runSuite'
+	example_with_luaunit.lua:140: in main chunk
+	[C]: ?]]</failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test2_withFailure">
+            <failure type="example_with_luaunit.lua:28: expected: "bof"
+actual: "hop">
+                <![CDATA[stack traceback:
+	.\luaunit.lua:375: in function 'assertEquals'
+	example_with_luaunit.lua:28: in function 'TestToto.test2_withFailure'
+	.\luaunit.lua:1222: in function <.\luaunit.lua:1222>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1222: in function 'protectedCall'
+	.\luaunit.lua:1275: in function 'execOneFunction'
+	.\luaunit.lua:1368: in function 'runSuiteByInstances'
+	.\luaunit.lua:1421: in function 'runSuiteByNames'
+	.\luaunit.lua:1492: in function 'runSuite'
+	example_with_luaunit.lua:140: in main chunk
+	[C]: ?]]</failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test3">
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test4">
+            <failure type="example_with_luaunit.lua:41: Received the not expected value: 1>
+                <![CDATA[stack traceback:
+	.\luaunit.lua:415: in function 'assertNotEquals'
+	example_with_luaunit.lua:41: in function 'TestToto.test4'
+	.\luaunit.lua:1222: in function <.\luaunit.lua:1222>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1222: in function 'protectedCall'
+	.\luaunit.lua:1275: in function 'execOneFunction'
+	.\luaunit.lua:1368: in function 'runSuiteByInstances'
+	.\luaunit.lua:1421: in function 'runSuiteByNames'
+	.\luaunit.lua:1492: in function 'runSuite'
+	example_with_luaunit.lua:140: in main chunk
+	[C]: ?]]</failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test5">
+            <failure type="example_with_luaunit.lua:47: expected: false, actual: 1>
+                <![CDATA[stack traceback:
+	.\luaunit.lua:351: in function 'assertFalse'
+	example_with_luaunit.lua:47: in function 'TestToto.test5'
+	.\luaunit.lua:1222: in function <.\luaunit.lua:1222>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1222: in function 'protectedCall'
+	.\luaunit.lua:1275: in function 'execOneFunction'
+	.\luaunit.lua:1368: in function 'runSuiteByInstances'
+	.\luaunit.lua:1421: in function 'runSuiteByNames'
+	.\luaunit.lua:1492: in function 'runSuite'
+	example_with_luaunit.lua:140: in main chunk
+	[C]: ?]]</failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test6">
+            <failure type="example_with_luaunit.lua:52: expected: true, actual: false>
+                <![CDATA[stack traceback:
+	.\luaunit.lua:345: in function 'assertTrue'
+	example_with_luaunit.lua:52: in function 'TestToto.test6'
+	.\luaunit.lua:1222: in function <.\luaunit.lua:1222>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1222: in function 'protectedCall'
+	.\luaunit.lua:1275: in function 'execOneFunction'
+	.\luaunit.lua:1368: in function 'runSuiteByInstances'
+	.\luaunit.lua:1421: in function 'runSuiteByNames'
+	.\luaunit.lua:1492: in function 'runSuite'
+	example_with_luaunit.lua:140: in main chunk
+	[C]: ?]]</failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test7">
+            <failure type="example_with_luaunit.lua:58: expected: {1, 2, three=3}
+actual: {1, 2}>
+                <![CDATA[stack traceback:
+	.\luaunit.lua:370: in function 'assertEquals'
+	example_with_luaunit.lua:58: in function 'TestToto.test7'
+	.\luaunit.lua:1222: in function <.\luaunit.lua:1222>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1222: in function 'protectedCall'
+	.\luaunit.lua:1275: in function 'execOneFunction'
+	.\luaunit.lua:1368: in function 'runSuiteByInstances'
+	.\luaunit.lua:1421: in function 'runSuiteByNames'
+	.\luaunit.lua:1492: in function 'runSuite'
+	example_with_luaunit.lua:140: in main chunk
+	[C]: ?]]</failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test8a">
+            <failure type="example_with_luaunit.lua:76: Bouhouhoum error!>
+                <![CDATA[stack traceback:
+	example_with_luaunit.lua:76: in function 'funcWithError'
+	example_with_luaunit.lua:63: in function 'TestToto.test8a'
+	.\luaunit.lua:1222: in function <.\luaunit.lua:1222>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1222: in function 'protectedCall'
+	.\luaunit.lua:1275: in function 'execOneFunction'
+	.\luaunit.lua:1368: in function 'runSuiteByInstances'
+	.\luaunit.lua:1421: in function 'runSuiteByNames'
+	.\luaunit.lua:1492: in function 'runSuite'
+	example_with_luaunit.lua:140: in main chunk
+	[C]: ?]]</failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test8b">
+            <failure type="example_with_luaunit.lua:76: Bouhouhoum error!>
+                <![CDATA[stack traceback:
+	example_with_luaunit.lua:76: in function 'funcWithError'
+	example_with_luaunit.lua:72: in function 'funcWithFuncWithError'
+	example_with_luaunit.lua:68: in function 'TestToto.test8b'
+	.\luaunit.lua:1222: in function <.\luaunit.lua:1222>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1222: in function 'protectedCall'
+	.\luaunit.lua:1275: in function 'execOneFunction'
+	.\luaunit.lua:1368: in function 'runSuiteByInstances'
+	.\luaunit.lua:1421: in function 'runSuiteByNames'
+	.\luaunit.lua:1492: in function 'runSuite'
+	example_with_luaunit.lua:140: in main chunk
+	[C]: ?]]</failure>
+        </testcase>
+    </testsuite>
+    <testsuite name="<TestFunctions>">
+        <testcase classname="<TestFunctions>"
+            name="test1_withFailure">
+            <failure type="example_with_luaunit.lua:124: assertion failed!>
+                <![CDATA[stack traceback:
+	example_with_luaunit.lua:124: in function 'test1_withFailure'
+	.\luaunit.lua:1224: in function <.\luaunit.lua:1224>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1224: in function 'protectedCall'
+	.\luaunit.lua:1275: in function 'execOneFunction'
+	.\luaunit.lua:1357: in function 'runSuiteByInstances'
+	.\luaunit.lua:1421: in function 'runSuiteByNames'
+	.\luaunit.lua:1492: in function 'runSuite'
+	example_with_luaunit.lua:140: in main chunk
+	[C]: ?]]</failure>
+        </testcase>
+        <testcase classname="<TestFunctions>"
+            name="test2_withFailure">
+            <failure type="example_with_luaunit.lua:130: assertion failed!>
+                <![CDATA[stack traceback:
+	example_with_luaunit.lua:130: in function 'test2_withFailure'
+	.\luaunit.lua:1224: in function <.\luaunit.lua:1224>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1224: in function 'protectedCall'
+	.\luaunit.lua:1275: in function 'execOneFunction'
+	.\luaunit.lua:1357: in function 'runSuiteByInstances'
+	.\luaunit.lua:1421: in function 'runSuiteByNames'
+	.\luaunit.lua:1492: in function 'runSuite'
+	example_with_luaunit.lua:140: in main chunk
+	[C]: ?]]</failure>
+        </testcase>
+        <testcase classname="<TestFunctions>"
+            name="test3">
+        </testcase>
+    </testsuite>
+</testsuites>

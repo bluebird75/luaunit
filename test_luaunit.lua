@@ -236,6 +236,11 @@ TestLuaUnitUtilities = {} --class
         assertEquals( LuaUnit.parseCmdLine( { '-o', 'toto' } ), { output='toto'} )
         assertErrorMsgContains( 'Missing argument after -o', LuaUnit.parseCmdLine, { '-o', } )
 
+        --name
+        assertEquals( LuaUnit.parseCmdLine( { '--name', 'toto' } ), { fname='toto'} )
+        assertEquals( LuaUnit.parseCmdLine( { '-n', 'toto' } ), { fname='toto'} )
+        assertErrorMsgContains( 'Missing argument after -n', LuaUnit.parseCmdLine, { '-n', } )
+
         --patterns
         assertEquals( LuaUnit.parseCmdLine( { '--pattern', 'toto' } ), { pattern={'toto'} } )
         assertEquals( LuaUnit.parseCmdLine( { '-p', 'toto' } ), { pattern={'toto'} } )
@@ -243,8 +248,8 @@ TestLuaUnitUtilities = {} --class
         assertErrorMsgContains( 'Missing argument after -p', LuaUnit.parseCmdLine, { '-p', } )
 
         --megamix
-        assertEquals( LuaUnit.parseCmdLine( { '-p', 'toto', 'titi', '-v', 'tata', '-o', 'tintin', '-p', 'tutu', 'prout' } ), 
-            { pattern={'toto', 'tutu'}, verbosity=VERBOSITY_VERBOSE, output='tintin', testNames={'titi', 'tata', 'prout'} } )
+        assertEquals( LuaUnit.parseCmdLine( { '-p', 'toto', 'titi', '-v', 'tata', '-o', 'tintin', '-p', 'tutu', 'prout', '-n', 'toto.xml' } ), 
+            { pattern={'toto', 'tutu'}, verbosity=VERBOSITY_VERBOSE, output='tintin', testNames={'titi', 'tata', 'prout'}, fname='toto.xml' } )
 
         assertErrorMsgContains( 'option: -x', LuaUnit.parseCmdLine, { '-x', } )
     end

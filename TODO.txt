@@ -1,16 +1,17 @@
 Notes:
 - itemsEquals sorts tables before comparing them ? Side-effect ?
-- verbose and non verbose tap output
 
-TODO v0.6:
-- add travis-ci badges to README
-- more user documentation
-- assertNil + assertNotNil
-- display number of non selected tests
-- readthedocs integration
+TODO v1.6:
+- finish user documentation
 - reduce output when --quiet is used to one character per test run
+- switch version 3.0
+- mention mailing-list
+- check documentation link glitch to TAP 
+- improve junit xml output (one file, choice of filename) 
 
 TODO:
+- luarocks integration
+- randomized testing
 - coloured output
 - assert with matching of the error message
 - global setup / teardown
@@ -31,6 +32,14 @@ Nice to have:
 - strip luaunit stack more intelligently: exclude content of luaunit
 
 Done:
+x display number of non selected tests
+x assertIs with all types
+x mention one file distribution
+x improve TAP output: pre-calculate test numbers, display test summary as comment
+x test error messages of assertStrMatches and all error functions
+x assertNil + assertNotNil
+x readthedocs integration
+x add travis-ci badges to README
 x filter by pattern
 x support --version
 x support --help

@@ -32,6 +32,7 @@ Options:
   -q, --quiet:            Set verbosity to minimum
   -o, --output OUTPUT:    Set output type to OUTPUT
                           Possible values: text, tap, junit, nil
+  -n, --name NAME:        Name of output file (for junit only, defaults to stdout)
   -p, --pattern PATTERN:  Execute all test names matching the lua PATTERN
                           May be repeated to include severals patterns
                           Make sure you esape magic chars like +? with %
@@ -695,11 +696,14 @@ TapOutput_MT = { __index = TapOutput }
 --                     class JUnitOutput
 ----------------------------------------------------------------
 
+-- For more junit format information, check: 
+-- https://svn.jenkins-ci.org/trunk/hudson/dtkit/dtkit-format/dtkit-junit-model/src/main/resources/com/thalesgroup/dtkit/junit/model/xsd/junit-4.xsd
 JUnitOutput = { -- class
     __class__ = 'JUnitOutput',
     runner = nil,
     result = nil,
-    xmlFile = nil,
+    fd = nil,
+    fname = nil,
 }
 JUnitOutput_MT = { __index = JUnitOutput }
 
@@ -709,35 +713,58 @@ JUnitOutput_MT = { __index = JUnitOutput }
         setmetatable( t, JUnitOutput_MT )
         return t
     end
-    function JUnitOutput:startSuite() end
+    function JUnitOutput:startSuite()
+        if self.fname and self.fname ~= 'stdout' then
+            if string.sub(self.fname,-4) ~= '.xml' then
+                self.fname = self.fname..'.xml'
+            end
+            self.fd = io.open(self.fname, "w")
+            if self.fd == nil then
+                error("Could not open file for writing: "..self.fname)
+            end
+            print('# XML output to '..self.fname)
+        end
+        print('# Started on '..os.date())
+        if self.fd then self.fd:write('<testsuites>\n') end
+    end
     function JUnitOutput:startClass(className) 
-       xmlFile = io.open(string.lower(className) .. ".xml", "w")
-       xmlFile:write('<testsuite name="' .. className .. '">\n')
+        if self.fd then self.fd:write('    <testsuite name="' .. className .. '">\n') end
     end
     function JUnitOutput:startTest(testName)
-       if xmlFile then xmlFile:write('<testcase classname="' .. self.result.currentClassName .. '" name="'.. testName .. '">') end
+        print('# Starting test: '..testName)
+        if self.fd then self.fd:write('        <testcase classname="' .. self.result.currentClassName .. '"\n            name="'.. testName .. '">\n') end
     end
 
     function JUnitOutput:addFailure( errorMsg, stackTrace )
-       if xmlFile then 
-          xmlFile:write('<failure type="lua runtime error">' ..errorMsg .. '</failure>\n') 
-          xmlFile:write('<system-err><![CDATA[' ..stackTrace .. ']]></system-err>\n')
-       end
+        print('# Failure: '..errorMsg)
+        print('# '..stackTrace)
+        if self.fd then 
+            self.fd:write('            <failure type="' ..errorMsg .. '>\n')  
+            self.fd:write('                <![CDATA[' ..stackTrace .. ']]</failure>\n')
+        end
     end
 
     function JUnitOutput:endTest(testHasFailure)
-       if xmlFile then xmlFile:write('</testcase>\n') end
+        if self.fd then self.fd:write('        </testcase>\n') end
     end
 
     function JUnitOutput:endClass()
-        if xmlFile then 
-            xmlFile:write('</testsuite>\n') 
-            xmlFile:close()
-        end 
+        if self.fd then self.fd:write('    </testsuite>\n')  end
     end
 
     function JUnitOutput:endSuite()
-       return self.result.failureCount
+        t = {}
+        table.insert(t, string.format('# Ran %d tests in %0.3f seconds, %d successes, %d failures',
+            self.result.testCount, self.result.duration, self.result.testCount-self.result.failureCount, self.result.failureCount ) )
+        if self.result.nonSelectedCount > 0 then
+            table.insert(t, string.format(", %d non selected tests", self.result.nonSelectedCount ) )
+        end
+        print( table.concat(t) )
+        if self.fd then 
+            self.fd:write('</testsuites>\n') 
+            self.fd:close()
+        end
+        return self.result.failureCount
     end
 
 
@@ -952,6 +979,7 @@ LuaUnit_MT = { __index = LuaUnit }
         -- --quiet, -q: silence output
         -- --output, -o, + name: select output type
         -- --pattern, -p, + pattern: run test matching pattern, may be repeated
+        -- --name, -n, + fname: name of output file for junit, default to stdout
         -- [testnames, ...]: run selected test names
         --
         -- Returnsa table with the following fields:
@@ -964,6 +992,7 @@ LuaUnit_MT = { __index = LuaUnit }
         local state = nil
         local SET_OUTPUT = 1
         local SET_PATTERN = 2
+        local SET_FNAME = 3
 
         if cmdLine == nil then
             return result
@@ -990,6 +1019,10 @@ LuaUnit_MT = { __index = LuaUnit }
                 state = SET_OUTPUT
                 return state
             end
+            if option == '--name' or option == '-n' then
+                state = SET_FNAME
+                return state
+            end
             if option == '--pattern' or option == '-p' then
                 state = SET_PATTERN
                 return state
@@ -1000,6 +1033,10 @@ LuaUnit_MT = { __index = LuaUnit }
         local function setArg( cmdArg, state )
             if state == SET_OUTPUT then
                 result['output'] = cmdArg
+                return
+            end
+            if state == SET_FNAME then
+                result['fname'] = cmdArg
                 return
             end
             if state == SET_PATTERN then
@@ -1093,6 +1130,7 @@ LuaUnit_MT = { __index = LuaUnit }
         self.output.runner = self
         self.output.result = self.result
         self.output.verbosity = self.verbosity
+        self.output.fname = self.fname
         self.output:startSuite()
     end
 
@@ -1159,6 +1197,10 @@ LuaUnit_MT = { __index = LuaUnit }
 
     function LuaUnit:setVerbosity( verbosity )
         self.verbosity = verbosity
+    end
+
+    function LuaUnit:setFname( fname )
+        self.fname = fname
     end
 
     --------------[[ Runner ]]-----------------
@@ -1416,7 +1458,7 @@ LuaUnit_MT = { __index = LuaUnit }
         options = val
 
         if options.verbosity then
-            self.verbosity = options.verbosity
+            self:setVerbosity( options.verbosity )
         end
 
         if options.output then
@@ -1428,6 +1470,10 @@ LuaUnit_MT = { __index = LuaUnit }
                 print(USAGE)
                 os.exit(-1)
             end 
+        end
+
+        if options.fname then
+            self:setFname( options.fname )
         end
 
         if options.pattern then

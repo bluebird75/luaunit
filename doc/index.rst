@@ -31,6 +31,8 @@ LuaUnit works with Lua 5.1 and 5.2 . It is tested on Windows XP and Ubuntu 12.04
 continuous build results on travic-ci.org ) and should work on all platforms supported by lua.
 It has no other dependency than lua itself. 
 
+LuaUnit is packed into a single-file, to make it easy to use it in any projects.
+
 Development
 ===========
 
@@ -462,8 +464,10 @@ Formats available:
 
 * text: the default output format of LuaUnit
 * nil: no output at all
-* tap: output compatible with the *`Test Anything Protocol <http://testanything.org/>`*
+* tap: output compatible with the `Test Anything Protocol`_ 
 * junit: output compatible with the *JUnit xml* format
+
+.. _Test Anything Protocol: http://testanything.org/
 
 **Selecting tests with patterns**
 
@@ -595,6 +599,14 @@ Type assertions
     bla bla bla
     
 .. function:: assertIsFunction(value)
+
+    bla bla bla
+    
+.. function:: assertIsUserdata(value)
+
+    bla bla bla
+    
+.. function:: assertIsThread(value)
 
     bla bla bla
     
