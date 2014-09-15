@@ -3,13 +3,13 @@
 
 Description: A unit testing framework
 Homepage: https://github.com/bluebird75/luaunit
-Initial author: Ryu, Gwang (http://www.gpgstudy.com/gpgiki/LuaUnit)
-Lot of improvements by Philippe Fremy <phil@freehackers.org>
+Development by Philippe Fremy <phil@freehackers.org>
+Based on initial work of Ryu, Gwang (http://www.gpgstudy.com/gpgiki/LuaUnit)
 License: BSD License, see LICENSE.txt
-Version: 1.6
+Version: 3.0
 ]]--
 
-VERSION='1.6'
+VERSION='3.0'
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
 assertEquals( expected, actual ).
@@ -32,7 +32,7 @@ Options:
   -q, --quiet:            Set verbosity to minimum
   -o, --output OUTPUT:    Set output type to OUTPUT
                           Possible values: text, tap, junit, nil
-  -n, --name NAME:        Name of output file (for junit only, defaults to stdout)
+  -n, --name NAME:        For junit only, mandatory name of xml file 
   -p, --pattern PATTERN:  Execute all test names matching the lua PATTERN
                           May be repeated to include severals patterns
                           Make sure you esape magic chars like +? with %
@@ -577,11 +577,13 @@ function assertIsUserdata(value)
     end
 end
 
-function assertIsThread(value)
+function assertIsCoroutine(value)
     if type(value) ~= 'thread' then
         error( errorMsgTypeMismatch( 'thread', value ), 2 )
     end
 end
+
+assertIsThread = assertIsCoroutine
 
 function assertIs(actual, expected)
     if not ORDER_ACTUAL_EXPECTED then
@@ -651,7 +653,7 @@ TapOutput_MT = { __index = TapOutput }
     end
     function TapOutput:startSuite() 
         print("1.."..self.result.testCount)
-        print('# Started on '..os.date())
+        print('# Started on '..self.result.startDate)
     end
     function TapOutput:startClass(className) 
         if className ~= '<TestFunctions>' then
@@ -702,54 +704,57 @@ JUnitOutput = { -- class
     __class__ = 'JUnitOutput',
     runner = nil,
     result = nil,
-    fd = nil,
-    fname = nil,
 }
 JUnitOutput_MT = { __index = JUnitOutput }
 
     function JUnitOutput:new()
         local t = {}
+        t.testList = {}
         t.verbosity = VERBOSITY_LOW
+        t.fd = nil
+        t.fname = nil
         setmetatable( t, JUnitOutput_MT )
         return t
     end
     function JUnitOutput:startSuite()
-        if self.fname and self.fname ~= 'stdout' then
-            if string.sub(self.fname,-4) ~= '.xml' then
-                self.fname = self.fname..'.xml'
-            end
-            self.fd = io.open(self.fname, "w")
-            if self.fd == nil then
-                error("Could not open file for writing: "..self.fname)
-            end
-            print('# XML output to '..self.fname)
+        if self.fname == nil then
+            error('With Junit, an output filename must be supplied with --name!')
         end
-        print('# Started on '..os.date())
-        if self.fd then self.fd:write('<testsuites>\n') end
+        if string.sub(self.fname,-4) ~= '.xml' then
+            self.fname = self.fname..'.xml'
+        end
+        self.fd = io.open(self.fname, "w")
+        if self.fd == nil then
+            error("Could not open file for writing: "..self.fname)
+        end
+        print('# XML output to '..self.fname)
+        print('# Started on '..self.result.startDate)
+        self.fd:write('<testsuites>\n')
     end
     function JUnitOutput:startClass(className) 
-        if self.fd then self.fd:write('    <testsuite name="' .. className .. '">\n') end
+        if className ~= '<TestFunctions>' then
+            print('# Starting class: '..className)
+        end
+        self.fd:write('    <testsuite name="' .. className .. '">\n')
     end
     function JUnitOutput:startTest(testName)
         print('# Starting test: '..testName)
-        if self.fd then self.fd:write('        <testcase classname="' .. self.result.currentClassName .. '"\n            name="'.. testName .. '">\n') end
+        self.fd:write('        <testcase classname="' .. self.result.currentClassName .. '"\n            name="'.. testName .. '">\n')
     end
 
     function JUnitOutput:addFailure( errorMsg, stackTrace )
         print('# Failure: '..errorMsg)
         print('# '..stackTrace)
-        if self.fd then 
-            self.fd:write('            <failure type="' ..errorMsg .. '>\n')  
-            self.fd:write('                <![CDATA[' ..stackTrace .. ']]</failure>\n')
-        end
+        self.fd:write('            <failure type="' ..errorMsg .. '>\n')  
+        self.fd:write('                <![CDATA[' ..stackTrace .. ']]</failure>\n')
     end
 
     function JUnitOutput:endTest(testHasFailure)
-        if self.fd then self.fd:write('        </testcase>\n') end
+        self.fd:write('        </testcase>\n')
     end
 
     function JUnitOutput:endClass()
-        if self.fd then self.fd:write('    </testsuite>\n')  end
+        self.fd:write('    </testsuite>\n')
     end
 
     function JUnitOutput:endSuite()
@@ -760,10 +765,8 @@ JUnitOutput_MT = { __index = JUnitOutput }
             table.insert(t, string.format(", %d non selected tests", self.result.nonSelectedCount ) )
         end
         print( table.concat(t) )
-        if self.fd then 
-            self.fd:write('</testsuites>\n') 
-            self.fd:close()
-        end
+        self.fd:write('</testsuites>\n') 
+        self.fd:close()
         return self.result.failureCount
     end
 
@@ -1124,6 +1127,7 @@ LuaUnit_MT = { __index = LuaUnit }
         self.result.suiteStarted = true
         self.result.startTime = os.clock()
         self.result.startDate = os.date()
+        self.result.startIsodate = os.date('%Y-%m-%dT%H-%M-%S')
         self.result.patternFilter = self.patternFilter
         self.outputType = self.outputType or TextOutput
         self.output = self.outputType:new()
@@ -1459,6 +1463,11 @@ LuaUnit_MT = { __index = LuaUnit }
 
         if options.verbosity then
             self:setVerbosity( options.verbosity )
+        end
+
+        if options.output and options.output:lower() == 'junit' and options.fname == nil then
+            print('With junit output, a filename must be supplied with -n or --name')
+            os.exit(-1)
         end
 
         if options.output then

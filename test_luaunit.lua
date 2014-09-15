@@ -685,17 +685,17 @@ TestLuaUnitAssertions = {} --class
         assertIsFunction(f)
     end
 
-    function TestLuaUnitAssertions:test_assertIsThread()
-        assertError(assertIsThread, 1)
-        assertError(assertIsThread, 1.4)
-        assertError(assertIsThread, "hi there!")
-        assertError(assertIsThread, nil)
-        assertError(assertIsThread, {})
-        assertError(assertIsThread, {1,2,3})
-        assertError(assertIsThread, {1})
-        assertError(assertIsThread, false)
-        assertError(assertIsThread, function(v) local y=v+1 end )
-        assertIsThread(coroutine.create( function(v) local y=v+1 end ) )
+    function TestLuaUnitAssertions:test_assertIsCoroutine()
+        assertError(assertIsCoroutine, 1)
+        assertError(assertIsCoroutine, 1.4)
+        assertError(assertIsCoroutine, "hi there!")
+        assertError(assertIsCoroutine, nil)
+        assertError(assertIsCoroutine, {})
+        assertError(assertIsCoroutine, {1,2,3})
+        assertError(assertIsCoroutine, {1})
+        assertError(assertIsCoroutine, false)
+        assertError(assertIsCoroutine, function(v) local y=v+1 end )
+        assertIsCoroutine(coroutine.create( function(v) local y=v+1 end ) )
     end
 
     function TestLuaUnitAssertions:test_assertIsUserdata()
@@ -720,11 +720,13 @@ TestLuaUnitAssertions = {} --class
         local t4= {a=1,{1,2},day="today"}
         local s1='toto'
         local s2='toto'
+        local s3='to'..'to'
 
         assertIs(1,1)
         assertIs(f,f)
         assertIs('toto', 'toto')
         assertIs(s1, s2)
+        assertIs(s1, s3)
         assertIs(t1,t1)
         assertIs(t4,t4)
 
@@ -1044,9 +1046,9 @@ TestLuaUnitErrorMsg = {} --class
         assertErrorMsgEquals( 'Expected: a function value, actual: type nil, value nil', assertIsFunction, nil )
     end 
 
-    function TestLuaUnitErrorMsg:test_assertIsThread()
-        assertErrorMsgEquals( 'Expected: a thread value, actual: type number, value 1.2', assertIsThread, 1.2 )
-        assertErrorMsgEquals( 'Expected: a thread value, actual: type nil, value nil', assertIsThread, nil )
+    function TestLuaUnitErrorMsg:test_assertIsCoroutine()
+        assertErrorMsgEquals( 'Expected: a thread value, actual: type number, value 1.2', assertIsCoroutine, 1.2 )
+        assertErrorMsgEquals( 'Expected: a thread value, actual: type nil, value nil', assertIsCoroutine, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsUserdata()
