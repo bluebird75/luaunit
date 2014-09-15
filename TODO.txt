@@ -1,15 +1,21 @@
 Notes:
 - itemsEquals sorts tables before comparing them ? Side-effect ?
 
-TODO v1.6:
+TODO v3.0:
+============
 - finish user documentation
 - reduce output when --quiet is used to one character per test run
-- switch version 3.0
 - mention mailing-list
 - check documentation link glitch to TAP 
-- improve junit xml output (one file, choice of filename) 
+- mention that general error are correctly handled by luaunit as failures
+- how to add optional parameters describtion with rst
 
-TODO:
+TODO Future:
+============
+- improve testresult:
+	- contain the list of tests, with status of each test
+- improve junit output:
+	- make number of failures part of the xml <testsuites>
 - luarocks integration
 - randomized testing
 - coloured output
@@ -18,7 +24,6 @@ TODO:
 - class setup / teardown
 - distinguish errors and failures
 - test failures, verify that output is correct
-- add assertMatch for strings
 - add other types of output
 - add date and duration to tap output, junit output
 - validate test output (TAP, ...)
@@ -28,10 +33,16 @@ TODO:
 - allow to skip tests
 
 Nice to have: 
+============
 - stack unwrapping like in py.test
 - strip luaunit stack more intelligently: exclude content of luaunit
 
 Done:
+============
+x switch version 3.0
+x add assertMatch for strings
+x document --name
+x improve junit xml output (one file, choice of filename) 
 x display number of non selected tests
 x assertIs with all types
 x mention one file distribution

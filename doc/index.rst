@@ -11,6 +11,8 @@ Welcome to LuaUnit's documentation!
 .. toctree::
    :maxdepth: 2
 
+.. highlight:: lua
+
 
 Introduction
 ************
@@ -28,8 +30,10 @@ Platform support
 ================
 
 LuaUnit works with Lua 5.1 and 5.2 . It is tested on Windows XP and Ubuntu 12.04 (see 
-continuous build results on travic-ci.org ) and should work on all platforms supported by lua.
+continuous build results on `Travis-CI`_ ) and should work on all platforms supported by lua.
 It has no other dependency than lua itself. 
+
+.. _Travis-CI: https://travis-ci.org/bluebird75/luaunit
 
 LuaUnit is packed into a single-file, to make it easy to use it in any projects.
 
@@ -422,9 +426,9 @@ pattern(s). Only the test that match the pattern(s) are actually executed.
 The function *setUp()* is executed before each test if it exists in the table. 
 The function *tearDown()* is executed after every test if it exists in the table.
 
-Note:
-    Failures in setUp() or tearDown() are considered as a general test failures.
-    tearDown() is always executed if it exists, even if there was a failure in the test or in the setUp() function
+.. Note::
+    *tearDown()* is always executed if it exists, even if there was a failure in the test or in the *setUp()* function.
+    Failures in *setUp()* or *tearDown()* are considered as a general test failures.
 
 
 LuaUnit.runSuite() function
@@ -449,25 +453,34 @@ Command-line options
 
 Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] 
 
-**test names**
+**Test names**
 
 When no test names are supplied, all tests are collected. 
 
 The syntax for supplying test names can be either: name of the function, name of the table
 or name of the table + '.' + name of the function. Only the supplied tests will be executed.
 
-**selecting output format**
+**Selecting output format**
 
 Choose the output format with the syntax ``-o FORMAT`` or ``--output FORMAT``.
 
 Formats available:
 
-* text: the default output format of LuaUnit
-* nil: no output at all
-* tap: output compatible with the `Test Anything Protocol`_ 
-* junit: output compatible with the *JUnit xml* format
+* ``text``: the default output format of LuaUnit
+* ``nil``: no output at all
+* ``tap``: output compatible with the `Test Anything Protocol`_ 
+* ``junit``: output compatible with the *JUnit xml* format
 
 .. _Test Anything Protocol: http://testanything.org/
+
+.. Warning:: 
+
+    In the JUnit format, a destination filename must be supplied with ``--name`` or ``-n``
+
+**Destination filename**
+
+When using the JUnit format, the test suites writes an XML file with the test results. The
+file name is mandatory and must be supplied with: ``--name FILENAME`` or ``-n FILENAME``
 
 **Selecting tests with patterns**
 
@@ -478,42 +491,74 @@ The pattern is looked for on the full test name *TestTable.testMethod* . Only th
 actually match the pattern are selected. When specifying more than one pattern,
 they are tried one by one until the name matches (OR combination).
 
-Make sure you esape magic chars like +?-* with % .
+Make sure you esape magic chars like ``+?-*`` with ``%`` .
 
 
 **Other Options:**
 
-*  -h, --help: display the command-line help.
-*  --version: display the version information
-*  -v, --verbose: Increase the output verbosity. The exact effect depends on the output format. May be specified multiple times.
-*  -q, --quiet:  Set verbosity to minimum. The exact effect depends on the output format.
+*  ``-h``, ``--help``: display the command-line help.
+*  ``--version``: display the version information
+*  ``-v``, ``--verbose``: Increase the output verbosity. The exact effect depends on the output format. May be specified multiple times.
+*  ``-q``, ``--quiet``:  Set verbosity to minimum. The exact effect depends on the output format.
 
 
 .. _assertions-label:
 
 Assertions functions
 =====================
+You will now find the list of all assertion functions. For all functions, When an assertion fails, the failure
+message tries to be as informative as possible, by displaying the expectation and value that caused the failure.
 
 .. _assert-equality:
 
 Equality assertions
 ----------------------
+All equality assertions functions take two arguments, in the order 
+*actual value* then *expected value*. Some people are more familiar
+with the order *expected value* then *actual value*. It is possible to configure
+LuaUnit to use the opposite order for all equality assertions, by setting up a global
+variable:
+
+.. code-block:: lua
+
+    ORDER_ACTUAL_EXPECTED=false
+
+The order only matters for the message that is displayed in case of failures. It does
+not influence the test itself.
+
 
 .. function:: assertEquals(actual, expected)
 
-    bla bla bla
-    
+    Assert that two values are equal. 
+
+    For tables, the comparison is a deep comparison :
+
+    * number of elements must be the same
+    * tables must contain the same keys
+    * each key must contain the same values. The values
+      are also compared recursively with deep comparison.
+
+    LuaUnit provides other table-related assertions, see :ref:`assert-table`
+
 .. function:: assertNotEquals(actual, expected)
 
-    bla bla bla
-    
+    Assert that two values are different. The assertion
+    fails if the two values are identical.
+
+    It also uses table deep comparison.
+
 .. function:: assertAlmostEquals( actual, expected, margin )
 
-    bla bla bla
+    Assert that two floating point numbers are almost equal.
+
+    When comparing floating point numbers, strict equality does not work.
+    Computer arithmetic is so that an operation that mathematically
+    yields 1.00000000 might yield 0.999999999999 in lua . That's why you
+    need an *almost equals* comparison, where you specify the error margin.
     
 .. function:: assertNotAlmostEquals( actual, expected, margin )
 
-    bla bla bla
+    Assert that two floating point numbers are not almost equal.
     
 .. _assert-value:
 
@@ -521,103 +566,186 @@ Value assertions
 ----------------------
 .. function:: assertTrue(value)
 
-    bla bla bla
+    Assert that a given value compares to true. Lua coercion rules are applied
+    so that values like ``0``, ``""``, ``1.17`` all compare to *true*.
     
 .. function:: assertFalse(value)
 
-    bla bla bla
+    Assert that a given value compares to false. Lua coercion rules are applied
+    so that only *nil* and *false* all compare to *false*.
+    
+.. function:: assertNil(value)
+
+    Assert that a given value is *nil* .
+    
+.. function:: assertNotNil(value)
+
+    Assert that a given value is not *nil* . Lua coercion rules are applied
+    so that values like ``0``, ``""``, ``false`` all validate the assertion.
+    
+.. function:: assertIs(actual, expected)
+
+    Assert that two variables are identical. For string, numbers, boolean and for nil, 
+    this gives the same result as :func:`assertEquals` . For the other types, identity
+    means that the two variables refer to the same object. 
+
+    **Example :**
+
+.. code-block:: lua
+
+        s1='toto'
+        s2='to'..'to'
+        t1={1,2}
+        t2={1,2}
+
+        assertIs(s1,s1) -- ok
+        assertIs(s1,s2) -- ok
+        assertIs(t1,t1) -- ok
+        assertIs(t1,t2) -- fail
+    
+.. function:: assertNotIs(actual, expected)
+
+    Assert that two variables are not identical, in the sense that they do not
+    refer to the same value. See :func:`assertIs` for more details.
     
 .. _assert-string:
 
 String assertions
 --------------------------
-.. function:: assertStrContains( str, sub, useRe )
 
-    bla bla bla
+Assertions related to string and patterns.
+
+.. function:: assertStrContains( str, sub [, useRe] )
+
+    Assert that a string contains the given substring or pattern. 
+
+    By default, substring is searched in the string. If *useRe*
+    is provided and is true, *sub* is treated as a pattern which
+    is searched inside the string *str* .
     
 .. function:: assertStrIContains( str, sub )
 
-    bla bla bla
-    
+    Assert that a string contains the given substring, irrespective of the case. 
+
+    Not that unlike :func:`assertStrcontains`, you can not search for a pattern.
+
+
 .. function:: assertNotStrContains( str, sub, useRe )
 
-    bla bla bla
+    Assert that a string does not contain a given substring or pattern.
+
+    By default, substring is searched in the string. If *useRe*
+    is provided and is true, *sub* is treated as a pattern which
+    is searched inside the string *str* .
     
 .. function:: assertNotStrIContains( str, sub )
 
-    bla bla bla
-    
-.. function:: assertStrMatches( str, regexp )
+    Assert that a string does not contain the given substring, irrespective of the case. 
 
-    bla bla bla
+    Not that unlike :func:`assertNotStrcontains`, you can not search for a pattern.
+
+.. function:: assertStrMatches( str, pattern [, start [, final] ] )
+
+    Assert that a string matches the full pattern *pattern*.
+
+    If *start* and *final* are not provided or are *nil*, the pattern must match the full string, from start to end. The
+    functions allows to specify the expected start and end position of the pattern in the string.
     
 
 .. _assert-error:
 
 Error assertions
 --------------------------
-.. function:: assertError(f, ...)
+Error related assertions, to verify error generation and error messages.
 
-    bla bla bla
+.. function:: assertError( func, ...)
+
+    Assert that calling functions *func* with the arguments yields an error. If the
+    function does not yield an error, the assertion fails.
+
+    Note that the error message itself is not checked, which means that this function
+    does not distinguish between the legitimate error that you expect and another error
+    that might be triggered by mistake.
+
+    The next functions provide a better approach to error testing, by checking
+    explicitly the error message content.
+
+.. Note::
+
+    When testing LuaUnit, switching from *assertError()* to  *assertErrorMsgEquals()*
+    revealed quite a few bugs!
     
 .. function:: assertErrorMsgEquals( expectedMsg, func, ... )
 
-    bla bla bla
+    Assert that calling function *func* will generate exactly the given error message. If the
+    function does not yield an error, or if the error message is not identical, the assertion fails.
+
+    Be careful when using this function that error messages usually contain the file name and
+    line number information of where the error was generated. This is usually inconvenient. To 
+    ignore the filename and line number information, you can either use a pattern with :func:`assertErrorMsgMatches`
+    or simply check for the message containt with :func:`assertErrorMsgContains` .
     
 .. function:: assertErrorMsgContains( partialMsg, func, ... )
 
-    bla bla bla
+    Assert that calling function *func* will generate an error message containing *partialMsg* . If the
+    function does not yield an error, or if the expected message is not contained in the error message, the 
+    assertion fails.
     
-.. function:: assertErrorMsgMatches( expectedMsg, func, ... )
+.. function:: assertErrorMsgMatches( expectedPattern, func, ... )
 
-    bla bla bla
+    Assert that calling function *func* will generate an error message matching *expectedPattern* . If the
+    function does not yield an error, or if the error message does not match the provided patternm the
+    assertion fails.
+
+    Note that matching is done from the start to the end of the error message. Be sure to escape magic all magic
+    characters with ``%`` (like ``-+.?*``) .
     
 
 .. _assert-type:
 
-
 Type assertions
 --------------------------
+
+    The following functions all perform type checking on their argument. If the
+    received value is not of the right type, the failure message will contain
+    the expected type, the received type and the received value to help you
+    identify better the problem.
+
 .. function:: assertIsNumber(value)
 
-    bla bla bla
+    Assert that the argument is a number (integer or float)
     
 .. function:: assertIsString(value)
 
-    bla bla bla
+    Assert that the argument is a string.
     
 .. function:: assertIsTable(value)
 
-    bla bla bla
+    Assert that the argument is a table.
     
 .. function:: assertIsBoolean(value)
 
-    bla bla bla
+    Assert that the argument is a boolean.
     
 .. function:: assertIsNil(value)
 
-    bla bla bla
+    Assert that the argument is a nil.
     
 .. function:: assertIsFunction(value)
 
-    bla bla bla
+    Assert that the argument is a function.
     
 .. function:: assertIsUserdata(value)
 
-    bla bla bla
+    Assert that the argument is a userdata.
+    
+.. function:: assertIsCoroutine(value)
+
+    Assert that the argument is a coroutine (an object with type *thread* ).
     
 .. function:: assertIsThread(value)
 
-    bla bla bla
-    
-.. function:: assertIs(actual, expected)
-
-    bla bla bla
-    
-.. function:: assertNotIs(actual, expected)
-
-    bla bla bla
-    
+    An alias for :func:`assertIsCoroutine`.
 
 .. _assert-table:
 
@@ -626,8 +754,26 @@ Table assertions
 
 .. function:: assertItemsEquals(actual, expected)
 
-    bla bla bla
-    
+    Assert that two tables contain the same items, irrespective of their keys.
+
+    This function is practical for example if you want to compare two lists but
+    where items are not in the same order:
+
+.. code-block:: lua
+
+        assertItemsEquals( {1,2,3}, {3,2,1} ) -- assertion succeeds
+
+..
+
+    The comparison is not recursive on the items: if any of the items are tables,
+    they are compared using table equality (like as in :func:`assertEquals` ), where
+    the key matters.
+
+
+.. code-block:: lua
+
+        assertItemsEquals( {1,{2,3},4}, {4,{3,2,},1} ) -- assertion fails because {2,3} ~= {3,2}
+
 
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Annex: index and search page
