@@ -18,7 +18,7 @@ LuaUnit works with Lua 5.1 and 5.2 . It was tested on Windows XP and Ubuntu 12.0
 continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) ) and should work on all platforms supported by lua.
 It has no other dependency than lua itself. 
 
-LuaUnit is packed into a single-file, to make it easy to use it in any projects.
+LuaUnit is packed into a single-file. To make start using it, just add the file to your project.
 
 Luaunit is now maintained on github:
 https://github.com/bluebird75/luaunit

@@ -35,7 +35,7 @@ It has no other dependency than lua itself.
 
 .. _Travis-CI: https://travis-ci.org/bluebird75/luaunit
 
-LuaUnit is packed into a single-file, to make it easy to use it in any projects.
+LuaUnit is packed into a single-file. To make start using it, just add the file to your project.
 
 Development
 ===========
