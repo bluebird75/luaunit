@@ -103,7 +103,3 @@ if __name__ == '__main__':
 
 
 
-# git checkout
-# store version number
-# generate zip and tgz
-# run example with several versions of lua, check return value
