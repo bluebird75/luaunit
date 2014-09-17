@@ -50,10 +50,16 @@ def packageit():
         pass
     subprocess.check_call(['d:/program/msysgit/msysgit/bin/git.exe', 'clone', '--no-hardlinks', REPO_PATH, RELEASE_DIR])
     os.chdir( RELEASE_DIR )
+
+    # Release dir cleanup 
     shutil.rmtree('.git')
     os.unlink('.gitignore')
     run_tests()
     run_example()
+    makedoc()
+    shutil.rmtree('doc/_build')
+
+    # Packaging
     os.chdir('..')
     report('Start packaging')
     shutil.make_archive(RELEASE_NAME, 'zip', root_dir='.', base_dir=RELEASE_NAME )
@@ -67,7 +73,11 @@ def help():
 
 def makedoc():
     os.chdir('doc')
+    if os.path.exists('html'):
+        shutil.rmtree('html')
     subprocess.check_call(['make.bat', 'html'])
+    shutil.copytree('_build/html', 'html')
+    os.chdir('..')
 
 
 OptToFunc = {
