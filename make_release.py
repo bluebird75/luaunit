@@ -1,6 +1,6 @@
-import subprocess, sys, os, shutil, os.path
+import subprocess, sys, os, shutil, os.path, optparse
 
-VERSION='1.5'
+VERSION='3.0'
 RELEASE_NAME='luaunit-%s' % VERSION
 RELEASE_DIR='release/' + RELEASE_NAME + '/'
 TARGET_ZIP=RELEASE_NAME + '.zip'
@@ -36,10 +36,11 @@ def run_example():
     for lua, luaversion in ALL_LUA:
         report( 'Running examples with %s' % luaversion )
         retcode = subprocess.call( [lua, 'example_with_luaunit.lua'] )
-        if retcode != 6:
+        if retcode != 12:
             report( 'Invalid retcode when running examples: %d' % retcode )
             sys.exit( retcode )
     report( 'All examples ran!' )
+
 
 def packageit():
     shutil.rmtree('release', True)
@@ -47,7 +48,7 @@ def packageit():
         os.mkdir('release')
     except OSError:
         pass
-    subprocess.check_call(['c:/Program Files/Git/bin/git.exe', 'clone', '--no-hardlinks', REPO_PATH, RELEASE_DIR])
+    subprocess.check_call(['d:/program/msysgit/msysgit/bin/git.exe', 'clone', '--no-hardlinks', REPO_PATH, RELEASE_DIR])
     os.chdir( RELEASE_DIR )
     shutil.rmtree('.git')
     os.unlink('.gitignore')
@@ -59,10 +60,36 @@ def packageit():
     shutil.make_archive(RELEASE_NAME, 'gztar', root_dir='.', base_dir=RELEASE_NAME )
     report('Zip and tgz ready!')
 
+def help():
+    print( 'Available actions:')
+    for opt in OptToFunc:
+        print '\t%s' % opt
+
+def makedoc():
+    os.chdir('doc')
+    subprocess.check_call(['make.bat', 'html'])
+
+
+OptToFunc = {
+    'runtests'      : run_tests,
+    'runexample'    : run_example,
+    'packageit'     : packageit,
+    'makedoc'       : makedoc,
+    'help'          : help,
+}
+
 if __name__ == '__main__':
-    # run_tests()
-    # run_example()
-    packageit()
+    doingNothing = True
+    for arg in sys.argv[1:]:
+        if OptToFunc.has_key(arg):
+            doingNothing = False
+            OptToFunc[arg]()
+        else:
+            print 'No such action :', arg
+            sys.exit(-1)
+
+    if doingNothing:
+        help()
 
 
 
