@@ -29,7 +29,7 @@ Documentation is available on [read-the-docs](http://luaunit.readthedocs.org/en/
 
 ### History 
 
-#### Version 3.0 - 2014
+#### Version 3.0 - 9. Oct 2014
 
 Since some people have forked LuaUnit and release some 2.x version, I am
 jumping the version number.
