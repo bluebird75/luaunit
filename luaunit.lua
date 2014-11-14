@@ -175,7 +175,10 @@ function table.keytostring(k)
     end
 end
 
-function table.tostring( tbl )
+-- Jennal add @params recurrencyTable
+function table.tostring( tbl, recurrencyTable )
+    recurrencyTable = recurrencyTable or {[tbl] = true}
+
     local result, done = {}, {}
     local dispOnMultLines = false
 
@@ -184,25 +187,43 @@ function table.tostring( tbl )
     end
 
     for k, v in ipairs( tbl ) do
-        table.insert( result, prettystr( v ) )
+        if recurrencyTable[v] then
+            table.insert( result, "#ref("..tostring(v)..")" )
+        else
+            table.insert( result, prettystr( v, false, recurrencyTable ) )
+        end
+
         done[ k ] = true
+        if type(v) == "table" then
+            recurrencyTable[v] = true
+        end
     end
 
     for k, v in sortedPairs( tbl ) do
         if not done[ k ] then
-            table.insert( result,
-                table.keytostring( k ) .. "=" .. prettystr( v, true ) )
+            if recurrencyTable[v] then
+                table.insert( result, 
+                    table.keytostring( k ) .. "=" .. "#ref("..tostring(v)..")" )
+            else
+                table.insert( result,
+                    table.keytostring( k ) .. "=" .. prettystr( v, true, recurrencyTable ) )
+            end
+
+            if type(v) == "table" then
+                recurrencyTable[v] = true
+            end
         end
     end
     if dispOnMultLines then
-        result = "{\n\t" .. table.concat( result, ",\n\t" ) .. "}"
+        result = tostring(tbl).."{\n\t" .. table.concat( result, ",\n\t" ) .. "}"
     else
-        result = "{" .. table.concat( result, ", " ) .. "}"
+        result = tostring(tbl).."{" .. table.concat( result, ", " ) .. "}"
     end
     return result
 end
 
-function prettystr( v, keeponeline )
+-- Jennal add @params recurrencyTable
+function prettystr( v, keeponeline, recurrencyTable )
     --[[ Better string conversion, to display nice variable content:
     For strings, if keeponeline is set to true, string is displayed on one line, with visible \n
     * string are enclosed with " by default, or with ' if string contains a "
@@ -226,7 +247,7 @@ function prettystr( v, keeponeline )
         --if v.__class__ then
         --    return string.gsub( tostring(v), 'table', v.__class__ )
         --end
-        return table.tostring(v)
+        return table.tostring(v, recurrencyTable)
     end
     return tostring(v)
 end
