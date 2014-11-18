@@ -177,7 +177,8 @@ function table.keytostring(k)
 end
 
 -- Jennal add @params recurrencyTable
-function table.tostring( tbl, recurrencyTable )
+function table.tostring( tbl, printTableRefs, recurrencyTable )
+    printTableRefs = printTableRefs or PRINT_TABLE_REF_IN_ERROR_MSG
     recurrencyTable = recurrencyTable or {}
     recurrencyTable[tbl] = true
 
@@ -190,9 +191,11 @@ function table.tostring( tbl, recurrencyTable )
 
     for k, v in ipairs( tbl ) do
         if recurrencyTable[v] then
-            table.insert( result, "#ref("..tostring(v)..")" )
+            -- recursion detected!
+            recurrencyTable['recursionDetected'] = true
+            table.insert( result, "<"..tostring(v)..">" )
         else
-            table.insert( result, prettystr( v, false, recurrencyTable ) )
+            table.insert( result, prettystr_sub( v, false, printTableRefs, recurrencyTable ) )
         end
 
         done[ k ] = true
@@ -201,16 +204,17 @@ function table.tostring( tbl, recurrencyTable )
     for k, v in sortedPairs( tbl ) do
         if not done[ k ] then
             if recurrencyTable[v] then
+                -- recursion detected!
+                recurrencyTable['recursionDetected'] = true
                 table.insert( result, 
-                    table.keytostring( k ) .. "=" .. "#ref("..tostring(v)..")" )
+                    table.keytostring( k ) .. "=" .. "<"..tostring(v)..">" )
             else
                 table.insert( result,
-                    table.keytostring( k ) .. "=" .. prettystr( v, true, recurrencyTable ) )
+                    table.keytostring( k ) .. "=" .. prettystr_sub( v, true, printTableRefs, recurrencyTable ) )
             end
         end
     end
-    if PRINT_TABLE_REF_IN_ERROR_MSG then
-        -- table_ref = " <table "..strsplit(' ',tostring(tbl))[2].."> "
+    if printTableRefs then
         table_ref = "<"..tostring(tbl).."> "
     else
         table_ref = ''
@@ -223,14 +227,26 @@ function table.tostring( tbl, recurrencyTable )
     return result
 end
 
--- Jennal add @params recurrencyTable
-function prettystr( v, keeponeline, recurrencyTable )
+function prettystr( v, keeponeline )
     --[[ Better string conversion, to display nice variable content:
     For strings, if keeponeline is set to true, string is displayed on one line, with visible \n
     * string are enclosed with " by default, or with ' if string contains a "
     * if table is a class, display class name
     * tables are expanded
     ]]--
+    recurrencyTable = {}
+    s = prettystr_sub(v, keeponeline, PRINT_TABLE_REF_IN_ERROR_MSG, recurrencyTable)
+    if recurrencyTable['recursionDetected'] == true and PRINT_TABLE_REF_IN_ERROR_MSG == false then
+        -- some table contain recursive references, 
+        -- so we must recompute the value by including all table references
+        -- else the result looks like crap
+        recurrencyTable = {}
+        s = prettystr_sub(v, keeponeline, true, recurrencyTable)
+    end
+    return s
+end
+
+function prettystr_sub(v, keeponeline, printTableRefs, recurrencyTable )
     if "string" == type( v ) then
         if keeponeline then
             v = string.gsub( v, "\n", "\\n" )
@@ -248,7 +264,7 @@ function prettystr( v, keeponeline, recurrencyTable )
         --if v.__class__ then
         --    return string.gsub( tostring(v), 'table', v.__class__ )
         --end
-        return table.tostring(v, recurrencyTable)
+        return table.tostring(v, printTableRefs, recurrencyTable)
     end
     return tostring(v)
 end

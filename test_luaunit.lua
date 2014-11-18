@@ -195,15 +195,21 @@ TestLuaUnitUtilities = {} --class
 
         local t = {}
         t.__index = t
-        assertStrContains(prettystr(t), "{__index=#ref(table:")
+        assertStrMatches(prettystr(t), "<table: [0x]?[%x]+> {__index=<table: [0x]?[%x]+>}")
 
         local t1 = {}
         local t2 = {}
         t1.t2 = t2
         t2.t1 = t1
         local t3 = { t1 = t1, t2 = t2 }
-        assertStrContains(prettystr(t1), "{t1=#ref(table:")
-        assertStrContains(prettystr(t3), ", t2=#ref(table:")
+        assertStrMatches(prettystr(t1), "<table: [0x]?[%x]+> {t2=<table: [0x]?[%x]+> {t1=<table: [0x]?[%x]+>}}")
+        assertStrMatches(prettystr(t3), "<table: [0x]?[%x]+> {t1=<table: [0x]?[%x]+> {t2=<table: [0x]?[%x]+> {t1=<table: [0x]?[%x]+>}}, t2=<table: [0x]?[%x]+>}")
+
+        local t4 = {1,2}
+        local t5 = {3,4,t4}
+        t4[3] = t5
+        assertStrMatches(prettystr(t5), "<table: [0x]?[%x]+> {3, 4, <table: [0x]?[%x]+> {1, 2, <table: [0x]?[%x]+>}}")
+
     end
 
     function TestLuaUnitUtilities:test_IsFunction()
