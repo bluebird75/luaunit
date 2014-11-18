@@ -196,6 +196,14 @@ TestLuaUnitUtilities = {} --class
         local t = {}
         t.__index = t
         assertStrContains(prettystr(t), "{__index=#ref(table:")
+
+        local t1 = {}
+        local t2 = {}
+        t1.t2 = t2
+        t2.t1 = t1
+        local t3 = { t1 = t1, t2 = t2 }
+        assertStrContains(prettystr(t1), "{t1=#ref(table:")
+        assertStrContains(prettystr(t3), ", t2=#ref(table:")
     end
 
     function TestLuaUnitUtilities:test_IsFunction()

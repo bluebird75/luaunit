@@ -177,7 +177,8 @@ end
 
 -- Jennal add @params recurrencyTable
 function table.tostring( tbl, recurrencyTable )
-    recurrencyTable = recurrencyTable or {[tbl] = true}
+    recurrencyTable = recurrencyTable or {}
+    recurrencyTable[tbl] = true
 
     local result, done = {}, {}
     local dispOnMultLines = false
@@ -194,9 +195,6 @@ function table.tostring( tbl, recurrencyTable )
         end
 
         done[ k ] = true
-        if type(v) == "table" then
-            recurrencyTable[v] = true
-        end
     end
 
     for k, v in sortedPairs( tbl ) do
@@ -207,10 +205,6 @@ function table.tostring( tbl, recurrencyTable )
             else
                 table.insert( result,
                     table.keytostring( k ) .. "=" .. prettystr( v, true, recurrencyTable ) )
-            end
-
-            if type(v) == "table" then
-                recurrencyTable[v] = true
             end
         end
     end
