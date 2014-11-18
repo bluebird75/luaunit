@@ -934,8 +934,14 @@ TestLuaUnitAssertionsError = {}
 TestLuaUnitErrorMsg = {} --class
     TestLuaUnitErrorMsg.__class__ = 'TestLuaUnitErrorMsg'
 
+    function TestLuaUnitErrorMsg:setUp()
+        self.old_ORDER_ACTUAL_EXPECTED = ORDER_ACTUAL_EXPECTED
+        self.old_PRINT_TABLE_REF_IN_ERROR_MSG = PRINT_TABLE_REF_IN_ERROR_MSG
+    end
+
     function TestLuaUnitErrorMsg:tearDown()
-        ORDER_ACTUAL_EXPECTED = true
+        ORDER_ACTUAL_EXPECTED = self.old_ORDER_ACTUAL_EXPECTED
+        PRINT_TABLE_REF_IN_ERROR_MSG = self.old_PRINT_TABLE_REF_IN_ERROR_MSG
     end
 
     function TestLuaUnitErrorMsg:test_assertEqualsMsg()
@@ -943,8 +949,8 @@ TestLuaUnitErrorMsg = {} --class
         assertErrorMsgEquals( 'expected: "exp"\nactual: "act"', assertEquals, 'act', 'exp' )
         assertErrorMsgEquals( 'expected: true, actual: false', assertEquals, false, true )
         assertErrorMsgEquals( 'expected: 1.2, actual: 1', assertEquals, 1.0, 1.2)
-        assertErrorMsgMatches( 'expected: table: [0x]?[%a%d]+{1, 2, 3}\nactual: table: [0x]?[%a%d]+{3, 2, 1}', assertEquals, {3,2,1}, {1,2,3} )
-        assertErrorMsgMatches( 'expected: table: [0x]?[%a%d]+{one=1, two=2}\nactual: table: [0x]?[%a%d]+{3, 2, 1}', assertEquals, {3,2,1}, {one=1,two=2} )
+        assertErrorMsgMatches( 'expected: {1, 2, 3}\nactual: {3, 2, 1}', assertEquals, {3,2,1}, {1,2,3} )
+        assertErrorMsgMatches( 'expected: {one=1, two=2}\nactual: {3, 2, 1}', assertEquals, {3,2,1}, {one=1,two=2} )
         assertErrorMsgEquals( 'expected: 2, actual: nil', assertEquals, nil, 2 )
     end 
 
@@ -974,7 +980,7 @@ TestLuaUnitErrorMsg = {} --class
 
     function TestLuaUnitErrorMsg:test_assertNotEqualsMsg()
         assertErrorMsgEquals( 'Received the not expected value: 1', assertNotEquals, 1, 1  )
-        assertErrorMsgMatches( 'Received the not expected value: table: [0x]?[%a%d]+{1, 2}', assertNotEquals, {1,2}, {1,2} )
+        assertErrorMsgMatches( 'Received the not expected value: {1, 2}', assertNotEquals, {1,2}, {1,2} )
         assertErrorMsgEquals( 'Received the not expected value: nil', assertNotEquals, nil, nil )
     end 
 
@@ -988,7 +994,7 @@ TestLuaUnitErrorMsg = {} --class
         assertErrorMsgEquals( 'expected: true, actual: nil', assertTrue, nil )
         assertErrorMsgEquals( 'expected: false, actual: true', assertFalse, true )
         assertErrorMsgEquals( 'expected: false, actual: 0', assertFalse, 0)
-        assertErrorMsgMatches( 'expected: false, actual: table: [0x]?[%a%d]+{}', assertFalse, {})
+        assertErrorMsgMatches( 'expected: false, actual: {}', assertFalse, {})
         assertErrorMsgEquals( 'expected: false, actual: "abc"', assertFalse, 'abc')
         assertErrorMsgContains( 'expected: false, actual: function', assertFalse, function () end )
     end 
@@ -1076,11 +1082,11 @@ TestLuaUnitErrorMsg = {} --class
 
     function TestLuaUnitErrorMsg:test_assertNotIs()
         local v = {1,2}
-        assertErrorMsgMatches( 'Expected object and actual object are the same object: table: [0x]?[%a%d]+{1, 2}', assertNotIs, v, v )
+        assertErrorMsgMatches( 'Expected object and actual object are the same object: {1, 2}', assertNotIs, v, v )
     end 
 
     function TestLuaUnitErrorMsg:test_assertItemsEquals()
-        assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: table: [0x]?[%a%d]+{one=2, two=3}\nActual: table: [0x]?[%a%d]+{1, 2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
+        assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: {one=2, two=3}\nActual: {1, 2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
     end 
 
     function TestLuaUnitErrorMsg:test_assertError()
@@ -1097,6 +1103,22 @@ TestLuaUnitErrorMsg = {} --class
         assertErrorMsgEquals('Error message does not match: "bla bla bla"\nError message received: "toto xxx"\n' , assertErrorMsgMatches, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
 
     end 
+
+    function TestLuaUnitErrorMsg:test_printTableWithRef()
+        PRINT_TABLE_REF_IN_ERROR_MSG = true
+        assertErrorMsgMatches( 'Received the not expected value: <table: [0x]?[%x]+> {1, 2}', assertNotEquals, {1,2}, {1,2} )
+        -- trigger multiline prettystr
+        assertErrorMsgMatches( 'Received the not expected value: <table: [0x]?[%x]+> {\n\t1,\n\t2,\n\t3,\n\t4}', assertNotEquals, {1,2,3,4}, {1,2,3,4} )
+        assertErrorMsgMatches( 'expected: false, actual: <table: [0x]?[%x]+> {}', assertFalse, {})
+        local v = {1,2}
+        assertErrorMsgMatches( 'Expected object and actual object are the same object: <table: [0x]?[%x]+> {1, 2}', assertNotIs, v, v )
+        assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: <table: [0x]?[%x]+> {one=2, two=3}\nActual: <table: [0x]?[%x]+> {1, 2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
+        assertErrorMsgMatches( 'expected: <table: [0x]?[%x]+> {1, 2, 3}\nactual: <table: [0x]?[%x]+> {3, 2, 1}', assertEquals, {3,2,1}, {1,2,3} )
+        -- trigger multiline prettystr
+        assertErrorMsgMatches( 'expected: <table: [0x]?[%x]+> {\n\t1,\n\t2,\n\t3,\n\t4}\nactual: <table: [0x]?[%x]+> {\n\t3,\n\t2,\n\t1,\n\t4}', assertEquals, {3,2,1,4}, {1,2,3,4} )
+        assertErrorMsgMatches( 'expected: <table: [0x]?[%x]+> {one=1, two=2}\nactual: <table: [0x]?[%x]+> {3, 2, 1}', assertEquals, {3,2,1}, {one=1,two=2} )
+    end
+
 ------------------------------------------------------------------
 --
 --                       Execution Tests 

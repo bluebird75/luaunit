@@ -15,6 +15,7 @@ VERSION='3.0'
 assertEquals( expected, actual ).
 ]]--
 ORDER_ACTUAL_EXPECTED = true
+PRINT_TABLE_REF_IN_ERROR_MSG = false
 
 VERBOSITY_DEFAULT = 10
 VERBOSITY_LOW     = 1
@@ -208,10 +209,16 @@ function table.tostring( tbl, recurrencyTable )
             end
         end
     end
-    if dispOnMultLines then
-        result = tostring(tbl).."{\n\t" .. table.concat( result, ",\n\t" ) .. "}"
+    if PRINT_TABLE_REF_IN_ERROR_MSG then
+        -- table_ref = " <table "..strsplit(' ',tostring(tbl))[2].."> "
+        table_ref = "<"..tostring(tbl).."> "
     else
-        result = tostring(tbl).."{" .. table.concat( result, ", " ) .. "}"
+        table_ref = ''
+    end
+    if dispOnMultLines then
+        result = table_ref.."{".."\n\t" .. table.concat( result, ",\n\t" ) .. "}"
+    else
+        result = table_ref.."{".. table.concat( result, ", " ) .. "}"
     end
     return result
 end
