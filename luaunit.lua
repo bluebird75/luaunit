@@ -16,6 +16,7 @@ assertEquals( expected, actual ).
 ]]--
 ORDER_ACTUAL_EXPECTED = true
 PRINT_TABLE_REF_IN_ERROR_MSG = false
+LINE_LENGTH=80
 
 VERBOSITY_DEFAULT = 10
 VERBOSITY_LOW     = 1
@@ -176,26 +177,22 @@ function table.keytostring(k)
     end
 end
 
--- Jennal add @params recurrencyTable
-function table.tostring( tbl, printTableRefs, recurrencyTable )
+-- Jennal add @params recursionTable
+function table.tostring( tbl, indentLevel, printTableRefs, recursionTable )
     printTableRefs = printTableRefs or PRINT_TABLE_REF_IN_ERROR_MSG
-    recurrencyTable = recurrencyTable or {}
-    recurrencyTable[tbl] = true
+    recursionTable = recursionTable or {}
+    recursionTable[tbl] = true
 
     local result, done = {}, {}
     local dispOnMultLines = false
 
-    if #tbl > 3 then
-        dispOnMultLines = true
-    end
-
     for k, v in ipairs( tbl ) do
-        if recurrencyTable[v] then
+        if recursionTable[v] then
             -- recursion detected!
-            recurrencyTable['recursionDetected'] = true
+            recursionTable['recursionDetected'] = true
             table.insert( result, "<"..tostring(v)..">" )
         else
-            table.insert( result, prettystr_sub( v, false, printTableRefs, recurrencyTable ) )
+            table.insert( result, prettystr_sub( v, indentLevel+1, false, printTableRefs, recursionTable ) )
         end
 
         done[ k ] = true
@@ -203,14 +200,13 @@ function table.tostring( tbl, printTableRefs, recurrencyTable )
 
     for k, v in sortedPairs( tbl ) do
         if not done[ k ] then
-            if recurrencyTable[v] then
+            if recursionTable[v] then
                 -- recursion detected!
-                recurrencyTable['recursionDetected'] = true
-                table.insert( result, 
-                    table.keytostring( k ) .. "=" .. "<"..tostring(v)..">" )
+                recursionTable['recursionDetected'] = true
+                table.insert( result, table.keytostring( k ) .. "=" .. "<"..tostring(v)..">" )
             else
                 table.insert( result,
-                    table.keytostring( k ) .. "=" .. prettystr_sub( v, true, printTableRefs, recurrencyTable ) )
+                    table.keytostring( k ) .. "=" .. prettystr_sub( v, indentLevel+1, true, printTableRefs, recursionTable ) )
             end
         end
     end
@@ -219,12 +215,30 @@ function table.tostring( tbl, printTableRefs, recurrencyTable )
     else
         table_ref = ''
     end
-    if dispOnMultLines then
-        result = table_ref.."{".."\n\t" .. table.concat( result, ",\n\t" ) .. "}"
-    else
-        result = table_ref.."{".. table.concat( result, ", " ) .. "}"
+
+    local SEP_LENGTH=2     -- ", "
+    local totalLength = 0
+    for k, v in ipairs( result ) do
+        l = string.len( v )
+        totalLength = totalLength + l
+        if l > LINE_LENGTH-1 then
+            dispOnMultLines = true
+        end
     end
-    return result
+    -- adjust with length of separator
+    totalLength = totalLength + SEP_LENGTH * math.max( 0, #result-1) + 2 -- two items need 1 sep, thee items two seps + len of '{}'
+    if totalLength > LINE_LENGTH-1 then
+        dispOnMultLines = true
+    end
+
+    if dispOnMultLines then
+        indentString = string.rep("    ", indentLevel)
+        closingIndentString = string.rep("    ", math.max(0, indentLevel-1) )
+        result_str = table_ref.."{\n"..indentString .. table.concat( result, ",\n"..indentString  ) .. "\n"..closingIndentString.."}"
+    else
+        result_str = table_ref.."{".. table.concat( result, ", " ) .. "}"
+    end
+    return result_str
 end
 
 function prettystr( v, keeponeline )
@@ -234,19 +248,19 @@ function prettystr( v, keeponeline )
     * if table is a class, display class name
     * tables are expanded
     ]]--
-    recurrencyTable = {}
-    s = prettystr_sub(v, keeponeline, PRINT_TABLE_REF_IN_ERROR_MSG, recurrencyTable)
-    if recurrencyTable['recursionDetected'] == true and PRINT_TABLE_REF_IN_ERROR_MSG == false then
+    recursionTable = {}
+    s = prettystr_sub(v, 1, keeponeline, PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
+    if recursionTable['recursionDetected'] == true and PRINT_TABLE_REF_IN_ERROR_MSG == false then
         -- some table contain recursive references, 
         -- so we must recompute the value by including all table references
         -- else the result looks like crap
-        recurrencyTable = {}
-        s = prettystr_sub(v, keeponeline, true, recurrencyTable)
+        recursionTable = {}
+        s = prettystr_sub(v, 1, keeponeline, true, recursionTable)
     end
     return s
 end
 
-function prettystr_sub(v, keeponeline, printTableRefs, recurrencyTable )
+function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
     if "string" == type( v ) then
         if keeponeline then
             v = string.gsub( v, "\n", "\\n" )
@@ -264,7 +278,7 @@ function prettystr_sub(v, keeponeline, printTableRefs, recurrencyTable )
         --if v.__class__ then
         --    return string.gsub( tostring(v), 'table', v.__class__ )
         --end
-        return table.tostring(v, printTableRefs, recurrencyTable)
+        return table.tostring(v, indentLevel, printTableRefs, recursionTable)
     end
     return tostring(v)
 end

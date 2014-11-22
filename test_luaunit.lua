@@ -192,7 +192,97 @@ TestLuaUnitUtilities = {} --class
         assertEquals( prettystr( "ab'cd" ), '"ab\'cd"' )
         assertStrContains( prettystr( {1,2,3} ), "{1, 2, 3}" )
         assertStrContains( prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
+    end
 
+    function TestLuaUnitUtilities:test_prettystr_adv_tables()
+        local t1 = {1,2,3,4,5,6}
+        assertEquals(prettystr(t1), "{1, 2, 3, 4, 5, 6}" )
+
+        local t2 = {'aaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbb', 'ccccccccccccccccc', 'ddddddddddddd', 'eeeeeeeeeeeeeeeeee', 'ffffffffffffffff', 'ggggggggggg', 'hhhhhhhhhhhhhh'}
+        assertEquals(prettystr(t2), table.concat( {
+            '{',
+            '    "aaaaaaaaaaaaaaaaa",',
+            '    "bbbbbbbbbbbbbbbbbbbb",',
+            '    "ccccccccccccccccc",',
+            '    "ddddddddddddd",',
+            '    "eeeeeeeeeeeeeeeeee",',
+            '    "ffffffffffffffff",',
+            '    "ggggggggggg",',
+            '    "hhhhhhhhhhhhhh"',
+            '}',
+        } , '\n' ) )
+
+        local t2bis = { 1,2,3,'12345678901234567890123456789012345678901234567890123456789012345678901234567890', 4,5,6 }
+        assertEquals(prettystr(t2bis), [[{
+    1,
+    2,
+    3,
+    "12345678901234567890123456789012345678901234567890123456789012345678901234567890",
+    4,
+    5,
+    6
+}]] )
+
+        local t3 = { l1a = { l2a = { l3a='012345678901234567890123456789012345678901234567890123456789' }, 
+        l2b='bbb' }, l1b = 4}
+        assertEquals(prettystr(t3), [[{
+    l1a={
+        l2a={l3a="012345678901234567890123456789012345678901234567890123456789"},
+        l2b="bbb"
+    },
+    l1b=4
+}]] )
+
+        local t4 = { a=1, b=2, c=3 }
+        assertEquals(prettystr(t4), '{a=1, b=2, c=3}' )
+
+        local t5 = { t1, t2, t3 }
+        assertEquals( prettystr(t5), [[{
+    {1, 2, 3, 4, 5, 6},
+    {
+        "aaaaaaaaaaaaaaaaa",
+        "bbbbbbbbbbbbbbbbbbbb",
+        "ccccccccccccccccc",
+        "ddddddddddddd",
+        "eeeeeeeeeeeeeeeeee",
+        "ffffffffffffffff",
+        "ggggggggggg",
+        "hhhhhhhhhhhhhh"
+    },
+    {
+        l1a={
+            l2a={l3a="012345678901234567890123456789012345678901234567890123456789"},
+            l2b="bbb"
+        },
+        l1b=4
+    }
+}]] )
+
+        local t6 = { t1=t1, t2=t2, t3=t3, t4=t4 }
+        assertEquals(prettystr(t6),[[{
+    t1={1, 2, 3, 4, 5, 6},
+    t2={
+        "aaaaaaaaaaaaaaaaa",
+        "bbbbbbbbbbbbbbbbbbbb",
+        "ccccccccccccccccc",
+        "ddddddddddddd",
+        "eeeeeeeeeeeeeeeeee",
+        "ffffffffffffffff",
+        "ggggggggggg",
+        "hhhhhhhhhhhhhh"
+    },
+    t3={
+        l1a={
+            l2a={l3a="012345678901234567890123456789012345678901234567890123456789"},
+            l2b="bbb"
+        },
+        l1b=4
+    },
+    t4={a=1, b=2, c=3}
+}]])
+    end
+
+    function TestLuaUnitUtilities:test_prettstrTableRecursion()
         local t = {}
         t.__index = t
         assertStrMatches(prettystr(t), "<table: 0?x?[%x]+> {__index=<table: 0?x?[%x]+>}")
@@ -203,13 +293,15 @@ TestLuaUnitUtilities = {} --class
         t2.t1 = t1
         local t3 = { t1 = t1, t2 = t2 }
         assertStrMatches(prettystr(t1), "<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}}")
-        assertStrMatches(prettystr(t3), "<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}}, t2=<table: 0?x?[%x]+>}")
+        assertStrMatches(prettystr(t3), [[<table: 0?x?[%x]+> {
+    t1=<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}},
+    t2=<table: 0?x?[%x]+>
+}]])
 
         local t4 = {1,2}
         local t5 = {3,4,t4}
         t4[3] = t5
         assertStrMatches(prettystr(t5), "<table: 0?x?[%x]+> {3, 4, <table: 0?x?[%x]+> {1, 2, <table: 0?x?[%x]+>}}")
-
     end
 
     function TestLuaUnitUtilities:test_IsFunction()
@@ -1114,14 +1206,14 @@ TestLuaUnitErrorMsg = {} --class
         PRINT_TABLE_REF_IN_ERROR_MSG = true
         assertErrorMsgMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2}', assertNotEquals, {1,2}, {1,2} )
         -- trigger multiline prettystr
-        assertErrorMsgMatches( 'Received the not expected value: <table: 0?x?[%x]+> {\n\t1,\n\t2,\n\t3,\n\t4}', assertNotEquals, {1,2,3,4}, {1,2,3,4} )
+        assertErrorMsgMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2, 3, 4}', assertNotEquals, {1,2,3,4}, {1,2,3,4} )
         assertErrorMsgMatches( 'expected: false, actual: <table: 0?x?[%x]+> {}', assertFalse, {})
         local v = {1,2}
         assertErrorMsgMatches( 'Expected object and actual object are the same object: <table: 0?x?[%x]+> {1, 2}', assertNotIs, v, v )
         assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: <table: 0?x?[%x]+> {one=2, two=3}\nActual: <table: 0?x?[%x]+> {1, 2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
         assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', assertEquals, {3,2,1}, {1,2,3} )
         -- trigger multiline prettystr
-        assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {\n\t1,\n\t2,\n\t3,\n\t4}\nactual: <table: 0?x?[%x]+> {\n\t3,\n\t2,\n\t1,\n\t4}', assertEquals, {3,2,1,4}, {1,2,3,4} )
+        assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3, 4}\nactual: <table: 0?x?[%x]+> {3, 2, 1, 4}', assertEquals, {3,2,1,4}, {1,2,3,4} )
         assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {one=1, two=2}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', assertEquals, {3,2,1}, {one=1,two=2} )
     end
 
