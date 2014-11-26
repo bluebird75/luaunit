@@ -9,7 +9,7 @@ before_install:
   - sudo apt-get install $LUA
 
 script:
-  - $LUA test_luaunit.lua
+  - $LUA run_unit_tests.lua
 
 notifications:
   email:

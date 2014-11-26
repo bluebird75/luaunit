@@ -1565,5 +1565,4 @@ TestLuaUnitExecution = {} --class
         assertEquals( #executedTests, 7)
     end
 
-LuaUnit.verbosity = 2
-os.exit( LuaUnit.run() )
+-- To execute me , use: lua run_unit_tests.lua
