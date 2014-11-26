@@ -167,6 +167,37 @@ function strMatch(s, pattern, start, final )
     return false
 end
 
+function xmlEscape( s )
+    -- Return s escaped for XML attributes
+    -- escapes table:
+    -- "   &quot;
+    -- '   &apos;
+    -- <   &lt;
+    -- >   &gt;
+    -- &   &amp;
+    local substTable = {
+        { '&',   "&amp;" },
+        { '"',   "&quot;" },
+        { "'",   "&apos;" },
+        { '<',   "&lt;" },
+        { '>',   "&gt;" },
+    }
+
+    for k, v in ipairs( substTable ) do
+        s = string.gsub( s, v[1], v[2] )
+    end
+
+    return s
+end
+
+function xmlCDataEscape( s )
+    -- Return s escaped for CData section
+    -- escapes: "]]>" 
+    return s
+end
+
+
+
 function table.keytostring(k)
     -- like prettystr but do not enclose with "" if the string is just alphanumerical
     -- this is better for displaying table keys who are often simple strings
@@ -708,7 +739,7 @@ TapOutput_MT = { __index = TapOutput }
         print('# Started on '..self.result.startDate)
     end
     function TapOutput:startClass(className) 
-        if className ~= '<TestFunctions>' then
+        if className ~= '[TestFunctions]' then
             print('# Starting class: '..className)
         end
     end
@@ -784,7 +815,7 @@ JUnitOutput_MT = { __index = JUnitOutput }
         self.fd:write('<testsuites>\n')
     end
     function JUnitOutput:startClass(className) 
-        if className ~= '<TestFunctions>' then
+        if className ~= '[TestFunctions]' then
             print('# Starting class: '..className)
         end
         self.fd:write('    <testsuite name="' .. className .. '">\n')
@@ -797,8 +828,8 @@ JUnitOutput_MT = { __index = JUnitOutput }
     function JUnitOutput:addFailure( errorMsg, stackTrace )
         print('# Failure: '..errorMsg)
         print('# '..stackTrace)
-        self.fd:write('            <failure type="' ..errorMsg .. '>\n')  
-        self.fd:write('                <![CDATA[' ..stackTrace .. ']]</failure>\n')
+        self.fd:write('            <failure type="' ..xmlEscape(errorMsg) .. '">\n')  
+        self.fd:write('                <![CDATA[' ..stackTrace .. ']]></failure>\n')
     end
 
     function JUnitOutput:endTest(testHasFailure)
@@ -1302,7 +1333,7 @@ LuaUnit_MT = { __index = LuaUnit }
         end
 
         if className == nil then
-            className = '<TestFunctions>'
+            className = '[TestFunctions]'
             prettyFuncName = methodName
         else
             prettyFuncName = className..'.'..methodName

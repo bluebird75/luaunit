@@ -439,6 +439,13 @@ TestLuaUnitUtilities = {} --class
         } )
     end
 
+    function TestLuaUnitUtilities:test_xmlEscape()
+        assertEquals( xmlEscape( 'abc' ), 'abc' )
+        assertEquals( xmlEscape( 'a"bc' ), 'a&quot;bc' )
+        assertEquals( xmlEscape( "a'bc" ), 'a&apos;bc' )
+        assertEquals( xmlEscape( "a<b&c>" ), 'a&lt;b&amp;c&gt;' )
+    end
+
 ------------------------------------------------------------------
 --
 --                  Assertion Tests              
