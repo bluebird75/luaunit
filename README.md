@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
 [![Documentation Status](https://readthedocs.org/projects/luaunit/badge/?version=latest)](https://readthedocs.org/projects/luaunit/?badge=latest)
-
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/bluebird75/luaunit/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 Luaunit is a unit-testing framework for Lua. It allows you 
 to write test functions and test classes with test methods, combined with 
@@ -80,4 +80,3 @@ jumping the version number.
 - display the calling stack when an error is spotted
 - two verbosity level, like in python unittest
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/bluebird75/luaunit/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
