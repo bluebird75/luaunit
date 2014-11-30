@@ -446,6 +446,12 @@ TestLuaUnitUtilities = {} --class
         assertEquals( xmlEscape( "a<b&c>" ), 'a&lt;b&amp;c&gt;' )
     end
 
+    function TestLuaUnitUtilities:test_hasNewline()
+        assertEquals( hasNewLine(''), false )
+        assertEquals( hasNewLine('abc'), false )
+        assertEquals( hasNewLine('ab\nc'), true )
+    end
+
 ------------------------------------------------------------------
 --
 --                  Assertion Tests              
@@ -1052,6 +1058,7 @@ TestLuaUnitErrorMsg = {} --class
     function TestLuaUnitErrorMsg:test_assertEqualsMsg()
         assertErrorMsgEquals( 'expected: 2, actual: 1', assertEquals, 1, 2  )
         assertErrorMsgEquals( 'expected: "exp"\nactual: "act"', assertEquals, 'act', 'exp' )
+        assertErrorMsgEquals( 'expected: \n"exp\npxe"\nactual: \n"act\ntca"', assertEquals, 'act\ntca', 'exp\npxe' )
         assertErrorMsgEquals( 'expected: true, actual: false', assertEquals, false, true )
         assertErrorMsgEquals( 'expected: 1.2, actual: 1', assertEquals, 1.0, 1.2)
         assertErrorMsgMatches( 'expected: {1, 2, 3}\nactual: {3, 2, 1}', assertEquals, {3,2,1}, {1,2,3} )

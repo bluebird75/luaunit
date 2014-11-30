@@ -132,6 +132,10 @@ function strsplit(delimiter, text)
     return list
 end
 
+function hasNewLine( s )
+    -- return true if s has a newline
+    return (string.find(s, '\n', 1, true) ~= nil)
+end
 
 function prefixString( prefix, s )
     -- Prefix all the lines of s with prefix
@@ -208,7 +212,6 @@ function table.keytostring(k)
     end
 end
 
--- Jennal add @params recursionTable
 function table.tostring( tbl, indentLevel, printTableRefs, recursionTable )
     printTableRefs = printTableRefs or PRINT_TABLE_REF_IN_ERROR_MSG
     recursionTable = recursionTable or {}
@@ -406,11 +409,17 @@ function errorMsgEquality(actual, expected)
     if not ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
+    expectedStr = prettystr(expected)
+    actualStr = prettystr(actual)
     if type(expected) == 'string' or type(expected) == 'table' then
-        errorMsg = "expected: "..prettystr(expected).."\n"..
-                         "actual: "..prettystr(actual)
+        if hasNewLine( expectedStr..actualStr ) then
+            expectedStr = '\n'..expectedStr
+            actualStr = '\n'..actualStr
+        end
+        errorMsg = "expected: "..expectedStr.."\n"..
+                         "actual: "..actualStr
     else
-        errorMsg = "expected: "..prettystr(expected)..", actual: "..prettystr(actual)
+        errorMsg = "expected: "..expectedStr..", actual: "..actualStr
     end
     return errorMsg
 end
@@ -526,22 +535,34 @@ function assertStrContains( str, sub, useRe )
     noUseRe = not useRe
     if string.find(str, sub, 1, noUseRe) == nil then
         if noUseRe then
-            s = 'substring'
+            subType = 'substring'
         else
-            s = 'regexp'
+            subType = 'regexp'
         end
-        error( 'Error, '..s..' '..prettystr(sub)..' was not found in string '..prettystr(str), 2)
+        local subPretty = prettystr(sub)
+        local strPretty = prettystr(str)
+        if hasNewLine( subPretty..strPretty ) then
+            subPretty = '\n'..subPretty..'\n'
+            strPretty = '\n'..strPretty
+        end
+        error( 'Error, '..subType..' '..subPretty..' was not found in string '..strPretty, 2)
     end
 end
 
 function assertStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    local lstr, lsub
+    local lstr, lsub, subPretty, strPretty
     lstr = string.lower(str)
     lsub = string.lower(sub)
     if string.find(lstr, lsub, 1, true) == nil then
-        error( 'Error, substring '..prettystr(sub)..' was not found (case insensitively) in string '..prettystr(str),2)
+        subPretty = prettystr(sub)
+        strPretty = prettystr(str)
+        if hasNewLine( subPretty..strPretty ) then
+            subPretty = '\n'..subPretty..'\n'
+            strPretty = '\n'..strPretty
+        end
+        error( 'Error, substring '..subPretty..' was not found (case insensitively) in string '..strPretty,2)
     end
 end
     
@@ -550,12 +571,19 @@ function assertNotStrContains( str, sub, useRe )
     -- a string always contains the empty string
     noUseRe = not useRe
     if string.find(str, sub, 1, noUseRe) ~= nil then
+        local substrType
         if noUseRe then
-            s = 'substring'
+            substrType = 'substring'
         else
-            s = 'regexp'
+            substrType = 'regexp'
         end
-        error( 'Error, '..s..' '..prettystr(sub)..' was found in string '..prettystr(str),2)
+        local subPretty = prettystr(sub)
+        local strPretty = prettystr(str)
+        if hasNewLine( subPretty..strPretty ) then
+            subPretty = '\n'..subPretty..'\n'
+            strPretty = '\n'..strPretty
+        end
+        error( 'Error, '..substrType..' '..subPretty..' was found in string '..strPretty,2)
     end
 end
 
@@ -566,7 +594,13 @@ function assertNotStrIContains( str, sub )
     lstr = string.lower(str)
     lsub = string.lower(sub)
     if string.find(lstr, lsub, 1, true) ~= nil then
-        error( 'Error, substring '..prettystr(sub)..' was found (case insensitively) in string '..prettystr(str),2)
+        local subPretty = prettystr(sub)
+        local strPretty = prettystr(str)
+        if hasNewLine( subPretty..strPretty) then
+            subPretty = '\n'..subPretty..'\n'
+            strPretty = '\n'..strPretty
+        end
+        error( 'Error, substring '..subPretty..' was found (case insensitively) in string '..strPretty,2)
     end
 end
 
@@ -574,7 +608,13 @@ function assertStrMatches( str, pattern, start, final )
     -- Verify a full match for the string
     -- for a partial match, simply use assertStrContains with useRe set to true
     if not strMatch( str, pattern, start, final ) then
-        error( 'Error, pattern '..prettystr(pattern)..' was not matched by string '..prettystr(str),2)
+        local patternPretty = prettystr(pattern)
+        local strPretty = prettystr(str)
+        if hasNewLine( patternPretty..strPretty) then
+            patternPretty = '\n'..patternPretty..'\n'
+            strPretty = '\n'..strPretty
+        end
+        error( 'Error, pattern '..patternPretty..' was not matched by string '..strPretty,2)
     end
 end
 
@@ -586,6 +626,10 @@ function assertErrorMsgEquals( expectedMsg, func, ... )
         error( 'No error generated when calling function but expected error: "'..expectedMsg..'"', 2 )
     end
     if not (error_msg == expectedMsg) then
+        if hasNewLine( error_msg..expectedMsg ) then
+            expectedMsg = '\n'..expectedMsg
+            error_msg = '\n'..error_msg
+        end
         error( 'Exact error message expected: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
     end
 end
@@ -598,7 +642,13 @@ function assertErrorMsgContains( partialMsg, func, ... )
         error( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), 2 )
     end
     if not string.find( error_msg, partialMsg, nil, true ) then
-        error( 'Error message does not contain: '..prettystr(partialMsg)..'\nError message received: '..prettystr(error_msg)..'\n',2)
+        local partialMsgStr = prettystr(partialMsg)
+        local errorMsgStr = prettystr(error_msg)
+        if hasNewLine(error_msg..partialMsg) then
+            partialMsgStr = '\n'..partialMsgStr
+            errorMsgStr = '\n'..errorMsgStr
+        end
+        error( 'Error message does not contain: '..partialMsgStr..'\nError message received: '..errorMsgStr..'\n',2)
     end
 end
 
@@ -610,12 +660,20 @@ function assertErrorMsgMatches( expectedMsg, func, ... )
         error( 'No error generated when calling function but expected error matching: "'..expectedMsg..'"', 2 )
     end
     if not strMatch( error_msg, expectedMsg ) then
+        if hasNewLine(error_msg..expectedMsg) then
+            expectedMsg = '\n'..expectedMsg
+            error_msg = '\n'..error_msg
+        end
         error( 'Error message does not match: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
     end
 end
 
 function errorMsgTypeMismatch( expectedType, actual )
-    return "Expected: a "..expectedType..' value, actual: type '..type(actual)..', value '..prettystr(actual)
+    local actualStr = prettystr(actual)
+    if hasNewLine(actualStr) then
+        actualStr =  '\n'..actualStr
+    end
+    return "Expected: a "..expectedType..' value, actual: type '..type(actual)..', value '..actualStr
 end
 
 function assertIsNumber(value)
@@ -673,7 +731,15 @@ function assertIs(actual, expected)
         actual, expected = expected, actual
     end
     if actual ~= expected then
-        error( 'Expected object and actual object are not the same\nExpected: '..prettystr(expected)..', actual: '..prettystr(actual), 2)
+        local expectedStr = prettystr(expected)
+        local actualStr = prettystr(actual)
+        if hasNewLine(expectedStr..actualStr) then
+            expectedStr = '\n'..expectedStr..'\n'
+            actualStr =  '\n'..actualStr
+        else
+            expectedStr = expectedStr..', '
+        end
+        error( 'Expected object and actual object are not the same\nExpected: '..expectedStr..'actual: '..actualStr, 2)
     end
 end
 
@@ -682,7 +748,11 @@ function assertNotIs(actual, expected)
         actual, expected = expected, actual
     end
     if actual == expected then
-        error( 'Expected object and actual object are the same object: '..prettystr(expected), 2 )
+        local expectedStr = prettystr(expected)
+        if hasNewLine(expectedStr) then
+            expectedStr = '\n'..expectedStr
+        end
+        error( 'Expected object and actual object are the same object: '..expectedStr, 2 )
     end
 end
 
@@ -691,7 +761,13 @@ function assertItemsEquals(actual, expected)
     -- are contained in table actual. Warning, this function
     -- is at least O(n^2)
     if not _is_table_items_equals(actual, expected ) then
-        error( 'Contents of the tables are not identical:\nExpected: '..prettystr(expected)..'\nActual: '..prettystr(actual), 2 )
+        local expectedStr = prettystr(expected)
+        local actualStr = prettystr(actual)
+        if hasNewLine(expectedStr..actualStr) then
+            expectedStr = '\n'..expectedStr
+            actualStr =  '\n'..actualStr
+        end
+        error( 'Contents of the tables are not identical:\nExpected: '..expectedStr..'\nActual: '..actualStr, 2 )
     end
 end
 
