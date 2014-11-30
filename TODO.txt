@@ -3,7 +3,6 @@ Notes:
 
 TODO v3.0:
 ============
-- finish user documentation
 - reduce output when --quiet is used to one character per test run
 - mention mailing-list
 - check documentation link glitch to TAP 
@@ -27,6 +26,7 @@ TODO Future:
 - add other types of output
 - add date and duration to tap output, junit output
 - validate test output (TAP, ...)
+- validate well-formed XML
 - better error messages for table assertions:
 	+ expected length of X, got Y
 	+ keys differing in table 1 and 2
@@ -37,8 +37,15 @@ Nice to have:
 - stack unwrapping like in py.test
 - strip luaunit stack more intelligently: exclude content of luaunit
 
+Done since 3.0:
+===============
+- fix display of tables with recursive references
+- improve display of nested tables in error messages
+- improve display of multiline strings in error messages
+
 Done:
 ============
+x finish user documentation
 x switch version 3.0
 x add assertMatch for strings
 x document --name
