@@ -8,6 +8,7 @@ TODO v3.0:
 - check documentation link glitch to TAP 
 - mention that general error are correctly handled by luaunit as failures
 - how to add optional parameters describtion with rst
+- escape --< in XML CData sections
 
 TODO Future:
 ============
@@ -42,6 +43,7 @@ Done since 3.0:
 - fix display of tables with recursive references
 - improve display of nested tables in error messages
 - improve display of multiline strings in error messages
+- fix junit output
 
 Done:
 ============
