@@ -197,6 +197,7 @@ end
 function xmlCDataEscape( s )
     -- Return s escaped for CData section
     -- escapes: "]]>" 
+    s = string.gsub( s, ']]>', ']]&gt;' )
     return s
 end
 

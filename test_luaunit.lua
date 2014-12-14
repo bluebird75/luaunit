@@ -446,6 +446,14 @@ TestLuaUnitUtilities = {} --class
         assertEquals( xmlEscape( "a<b&c>" ), 'a&lt;b&amp;c&gt;' )
     end
 
+    function TestLuaUnitUtilities:test_xmlCDataEscape()
+        assertEquals( xmlCDataEscape( 'abc' ), 'abc' )
+        assertEquals( xmlCDataEscape( 'a"bc' ), 'a"bc' )
+        assertEquals( xmlCDataEscape( "a'bc" ), "a'bc" )
+        assertEquals( xmlCDataEscape( "a<b&c>" ), 'a<b&c>' )
+        assertEquals( xmlCDataEscape( "a<b]]>--" ), 'a<b]]&gt;--' )
+    end
+
     function TestLuaUnitUtilities:test_hasNewline()
         assertEquals( hasNewLine(''), false )
         assertEquals( hasNewLine('abc'), false )
