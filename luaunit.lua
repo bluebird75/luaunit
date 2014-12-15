@@ -906,7 +906,7 @@ JUnitOutput_MT = { __index = JUnitOutput }
         print('# Failure: '..errorMsg)
         print('# '..stackTrace)
         self.fd:write('            <failure type="' ..xmlEscape(errorMsg) .. '">\n')  
-        self.fd:write('                <![CDATA[' ..stackTrace .. ']]></failure>\n')
+        self.fd:write('                <![CDATA[' ..xmlCDataEscape(stackTrace) .. ']]></failure>\n')
     end
 
     function JUnitOutput:endTest(testHasFailure)
