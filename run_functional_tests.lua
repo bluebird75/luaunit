@@ -15,8 +15,8 @@ function validate_junit_xml( generateJunitXml )
 		generateJunitXml = true
 	end
 
-	fnameJunitXml = 'output_junit.xml' -- os.tmpname()
-	fnameJunitStdout = 'junit_stdout.txt' -- os.tmpname()
+	fnameJunitXml = 'test/output_junit.xml' -- os.tmpname()
+	fnameJunitStdout = 'test/junit_stdout.txt' -- os.tmpname()
 	if generateJunitXml then
 		exitSuccess, exitReason, exitCode = os.execute(string.format(
 			'lua example_with_luaunit.lua --output junit --name %s > %s', fnameJunitXml, fnameJunitStdout )	 )
