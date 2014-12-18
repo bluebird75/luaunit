@@ -297,7 +297,8 @@ log file name, and erase the log filename after every test::
             os.remove(self.fname)
         end
 
-**Note:**
+.. Note::
+
     *Errors generated during execution of setUp() or tearDown()
     functions are considered    test failures.*
 
@@ -508,6 +509,43 @@ Assertions functions
 =====================
 You will now find the list of all assertion functions. For all functions, When an assertion fails, the failure
 message tries to be as informative as possible, by displaying the expectation and value that caused the failure.
+
+Display of tables
+------------------
+
+It is possible to always display the table id along with the content, by setting a global parameter. This
+helps identifying tables:
+
+.. code-block:: lua
+
+    PRINT_TABLE_REF_IN_ERROR_MSG = true
+
+    local t1 = {1,2,3}
+    -- display of table t1 becomes:
+    -- "<table: 0x29ab56> {1,2,3}"
+
+
+.. Note :: table loops
+
+    When displaying table content, it is possible to encounter loops, if for example two table references eachother. In such
+    cases, LuaUnit display the full table content once, along with the table id, and displays only the table id for the looping
+    reference.
+
+**Example:** displaying a table with reference loop
+
+.. code-block:: lua
+
+    local t1 = {}
+    local t2 = {}
+    t1.t2 = t2
+    t1.a = {1,2,3}
+    t2.t1 = t1
+
+    -- table t1 inside t2 is only displayed by its id. All tables being referenced
+    -- are displayed with their id
+    "<table: 0x29ab56> { a={1,2,3}, t2=<table: 0x27ab23> {t1=<table: 0x29ab56>} }"
+
+
 
 .. _assert-equality:
 
