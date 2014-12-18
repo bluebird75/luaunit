@@ -69,7 +69,7 @@ The script should import LuaUnit::
 The last line executes your script with LuaUnit and exit with the
 proper error code::
 
-    os.exit( LuaUnit.run() )
+    os.exit( LuaUnit:run() )
 
 Now, run your file with::
 
