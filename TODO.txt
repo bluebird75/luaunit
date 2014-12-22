@@ -3,12 +3,17 @@ Notes:
 
 TODO v3.0:
 ============
+- XML output:
+	+ tests to validate XML generation with data that contains XML already
+	+ move tests to tests
+- mention the new global variable config for displaying table content
 - reduce output when --quiet is used to one character per test run
 - mention mailing-list
 - check documentation link glitch to TAP 
 - mention that general error are correctly handled by luaunit as failures
 - how to add optional parameters describtion with rst
-- escape --< in XML CData sections
+- provide a luarock package. See: https://rocks.moonscript.org/modules/rjpcomputing/luaunit
+- mention version in documentation
 
 TODO Future:
 ============
