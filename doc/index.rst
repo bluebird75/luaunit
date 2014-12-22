@@ -26,6 +26,8 @@ into Continuous Integration platforms (Jenkins, Maven, ...) . The integrated com
 options provide a flexible interface to select tests by name or patterns, control output 
 format, set verbosity, ...
 
+This documentation describes the functionality of LuaUnit v3.0 
+
 Platform support
 ================
 
