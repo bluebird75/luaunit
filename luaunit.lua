@@ -370,16 +370,6 @@ function _is_table_equals(actual, expected)
             return false
         end
         local k,v
-        for k,v in ipairs(actual) do
-            if not _is_table_equals(v, expected[k]) then
-                return false
-            end
-        end
-        for k,v in ipairs(expected) do
-            if not _is_table_equals(v, actual[k]) then
-                return false
-            end
-        end
         for k,v in pairs(actual) do
             if not _is_table_equals(v, expected[k]) then
                 return false
