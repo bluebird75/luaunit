@@ -42,5 +42,7 @@ junitxml
 doc/_build/
 junit_stdout.txt
 output_junit.xml
+junit_stdout?.txt
+output_junit?.xml
 
 
