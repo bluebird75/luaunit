@@ -29,7 +29,7 @@ Documentation is available on [read-the-docs](http://luaunit.readthedocs.org/en/
 
 **Community**
 
-LuaUnit has a mailing list with low activity (a few emails per months). To subscribe or read the archives, please go to: http://lists.freehackers.org/list/luaunit%40freehackers.org/
+LuaUnit has a mailing list with low activity (a few emails per months). To subscribe or read the archives, please go to: [LuaUnit Mailing-list](http://lists.freehackers.org/list/luaunit%40freehackers.org/)
 
 ### History 
 
