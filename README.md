@@ -3,7 +3,6 @@
 
 [![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
 [![Documentation Status](https://readthedocs.org/projects/luaunit/badge/?version=latest)](https://readthedocs.org/projects/luaunit/?badge=latest)
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/bluebird75/luaunit/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 Luaunit is a unit-testing framework for Lua. It allows you 
 to write test functions and test classes with test methods, combined with 
@@ -20,12 +19,16 @@ It has no other dependency than lua itself.
 
 LuaUnit is packed into a single-file. To make start using it, just add the file to your project.
 
-Luaunit is now maintained on github:
+LuaUnit is now maintained on github:
 https://github.com/bluebird75/luaunit
 
 It is released under the BSD license.
 
 Documentation is available on [read-the-docs](http://luaunit.readthedocs.org/en/latest/)
+
+**Community**
+
+LuaUnit has a mailing list with low activity (a few emails per months). To subscribe or read the archives, please go to: http://lists.freehackers.org/list/luaunit%40freehackers.org/
 
 ### History 
 
