@@ -31,11 +31,12 @@ This documentation describes the functionality of LuaUnit v3.0
 Platform support
 ================
 
-LuaUnit works with Lua 5.1 and 5.2 . It is tested on Windows XP and Ubuntu 12.04 (see 
-continuous build results on `Travis-CI`_ ) and should work on all platforms supported by lua.
+LuaUnit works with Lua 5.1 and 5.2 . It is tested on Windows XP, Windows Server 2003 and Ubuntu 14.04 (see 
+continuous build results on `Travis-CI`_  and `AppVeyor`_ ) and should work on all platforms supported by lua.
 It has no other dependency than lua itself. 
 
 .. _Travis-CI: https://travis-ci.org/bluebird75/luaunit
+.. _AppVeyor: https://ci.appveyor.com/project/bluebird75/luaunit/history
 
 LuaUnit is packed into a single-file. To make start using it, just add the file to your project.
 
@@ -46,9 +47,13 @@ Luaunit is developed on `Github`_.
 
 .. _Github: https://github.com/bluebird75/luaunit
 
-Bugs or feature requests must be reported using `GitHub issues`_.
+Bugs or feature requests should be reported using `GitHub issues`_.
 
 .. _Github issues: https://github.com/bluebird75/luaunit/issues
+
+Usage and development may be discussed on `LuaUnit mailing-list`_
+
+.. _LuaUnit mailing-list: http://lists.freehackers.org/list/luaunit%40freehackers.org/ 
 
 It is released under the BSD license.
 
