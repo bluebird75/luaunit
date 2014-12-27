@@ -70,6 +70,8 @@ function __genSortedIndex( t )
     return sortedIndex
 end
 
+sortedNextCache = {}
+
 function sortedNext(t, state)
     -- Equivalent of the next() function of table iteration, but returns the
     -- keys in the alphabetic order. We use a temporary sorted key table that
@@ -82,16 +84,18 @@ function sortedNext(t, state)
     local key
     if state == nil then
         -- the first time, generate the index
-        t.__sortedIndex = nil
-        t.__sortedIndex = __genSortedIndex( t )
-        key = t.__sortedIndex[1]
+        sortedNextCache[ t ] = nil
+        -- t.__sortedIndex = nil
+        sortedNextCache[ t ] = __genSortedIndex( t )
+        -- t.__sortedIndex = __genSortedIndex( t )
+        key = sortedNextCache[t][1]
         return key, t[key]
     end
     -- fetch the next value
     key = nil
-    for i = 1,#t.__sortedIndex do
-        if t.__sortedIndex[i] == state then
-            key = t.__sortedIndex[i+1]
+    for i = 1,#sortedNextCache[t] do
+        if sortedNextCache[t][i] == state then
+            key = sortedNextCache[t][i+1]
         end
     end
 
@@ -100,13 +104,14 @@ function sortedNext(t, state)
     end
 
     -- no more value to return, cleanup
-    t.__sortedIndex = nil
+    sortedNextCache[t] = nil
     return
 end
 
 function sortedPairs(t)
     -- Equivalent of the pairs() function on tables. Allows to iterate
     -- in sorted order. This works only if the key types are all the same
+    -- and support comparison
     return sortedNext, t, nil
 end
 
