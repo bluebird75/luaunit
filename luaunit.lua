@@ -70,32 +70,45 @@ function __genSortedIndex( t )
     return sortedIndex
 end
 
+-- Contains the keys of the table being iterated, already sorted
+-- and the last index that has been iterated
+-- Example: 
+--    t a table on which we iterate
+--    sortedNextCache[ t ].idx is the sorted index of the table
+--    sortedNextCache[ t ].lastIdx is the last index used in the sorted index
 sortedNextCache = {}
 
 function sortedNext(t, state)
     -- Equivalent of the next() function of table iteration, but returns the
     -- keys in the alphabetic order. We use a temporary sorted key table that
-    -- is stored in the table being iterated.
-
-    -- the algorithm cost is suboptimal. We iterate everytime through
-    -- the sorted index to fetch the next key
+    -- is stored in a global variable. We also store the last index
+    -- used in the iteration to find the next one quickly
 
     --print("sortedNext: state = "..tostring(state) )
     local key
     if state == nil then
         -- the first time, generate the index
+        -- cleanup the previous index, just in case...
         sortedNextCache[ t ] = nil
-        -- t.__sortedIndex = nil
-        sortedNextCache[ t ] = __genSortedIndex( t )
-        -- t.__sortedIndex = __genSortedIndex( t )
-        key = sortedNextCache[t][1]
+        sortedNextCache[ t ] = { idx=__genSortedIndex( t ), lastIdx=1 }
+        key = sortedNextCache[t].idx[1]
         return key, t[key]
     end
-    -- fetch the next value
-    key = nil
-    for i = 1,#sortedNextCache[t] do
-        if sortedNextCache[t][i] == state then
-            key = sortedNextCache[t][i+1]
+
+    -- normally, the previous index in the orderedTable is there:
+    lastIndex = sortedNextCache[ t ].lastIdx
+    if sortedNextCache[t].idx[lastIndex] == state then
+        key = sortedNextCache[t].idx[lastIndex+1]
+        sortedNextCache[ t ].lastIdx = lastIndex+1
+    else
+        -- strange, we have to find the next value by ourselves
+        key = nil
+        for i = 1,#sortedNextCache[t] do
+            if sortedNextCache[t].idx[i] == state then
+                key = sortedNextCache[t].idx[i+1]
+                sortedNextCache[ t ].lastIdx = i+1
+                -- break
+            end
         end
     end
 
