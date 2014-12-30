@@ -1385,27 +1385,26 @@ LuaUnit_MT = { __index = LuaUnit }
             return debug.traceback(e..SPLITTER, 3)
         end
 
-        local ok=true, errorMsg, stackTrace
+        local ok=true, fullErrMsg, stackTrace, errMsg
         if classInstance then
-            -- stupid Lua < 5.2 does not allow xpcall with arguments so let's live with that
-            ok, errorMsg = xpcall( function () methodInstance(classInstance) end, err_handler )
+            -- stupid Lua < 5.2 does not allow xpcall with arguments so let's use a workaround
+            ok, fullErrMsg = xpcall( function () methodInstance(classInstance) end, err_handler )
         else
-            ok, errorMsg = xpcall( function () methodInstance() end, err_handler )
+            ok, fullErrMsg = xpcall( function () methodInstance() end, err_handler )
         end
         if ok then
             return ok
         end
 
-        t = strsplit( SPLITTER, errorMsg )
+        t = strsplit( SPLITTER, fullErrMsg )
+        errMsg = t[1]
         stackTrace = string.sub(t[2],2)
         if methodName then
             -- we do have the real method name, improve the stack trace
             stackTrace = string.gsub( stackTrace, "in function 'methodInstance'", "in function '"..prettyFuncName.."'")
         end
 
-        self:addFailure( t[1], stackTrace )
-        return ok
-
+        return ok, errMsg, stackTrace
     end
 
 
@@ -1436,17 +1435,26 @@ LuaUnit_MT = { __index = LuaUnit }
 
         -- run setUp first(if any)
         if classInstance and self.isFunction( classInstance.setUp ) then
-            self:protectedCall( classInstance, classInstance.setUp, className..'.setUp')
+            ok, errMsg, stackTrace = self:protectedCall( classInstance, classInstance.setUp, className..'.setUp')
+            if not ok then
+                self:addFailure( errMsg, stackTrace )
+            end
         end
 
         -- run testMethod()
         if not self.result.currentTestHasFailure then
-            self:protectedCall( classInstance, methodInstance, prettyFuncName)
+            ok, errMsg, stackTrace = self:protectedCall( classInstance, methodInstance, prettyFuncName)
+            if not ok then
+                self:addFailure( errMsg, stackTrace )
+            end
         end
 
         -- lastly, run tearDown(if any)
         if classInstance and self.isFunction(classInstance.tearDown) then
-            self:protectedCall( classInstance, classInstance.tearDown, className..'.tearDown')
+            ok, errMsg, stackTrace = self:protectedCall( classInstance, classInstance.tearDown, className..'.tearDown')
+            if not ok then
+                self:addFailure( errMsg, stackTrace )
+            end
         end
 
         self:endTest()
