@@ -1283,6 +1283,27 @@ LuaUnit_MT = { __index = LuaUnit }
 
     --------------[[ Output methods ]]-------------------------
 
+    NodeStatus = { -- class
+        __class__ = 'NodeStatus',
+        number = 0,
+        testName = '',
+        className = '',
+    }
+    -- NodeStatus_MT = { __index = NodeStatus }
+
+    function NodeStatus:new( number, testName, className )
+        local t = {}
+        t.number = number
+        t.testName = testName
+        t.className = className
+        t.execStatus = nil
+        -- setmetatable( t, NodeStatus_MT )
+        return t
+    end
+
+    STATUS_PASS='pass'
+    STATUS_FAIL='fail'
+
     function LuaUnit:startSuite(testCount, nonSelectedCount)
         self.result = {}
         self.result.failureCount = 0
@@ -1291,12 +1312,14 @@ LuaUnit_MT = { __index = LuaUnit }
         self.result.currentTestNumber = 0
         self.result.currentTestName = ""
         self.result.currentClassName = ""
+        self.result.currentNode = nil
         self.result.currentTestHasFailure = false
         self.result.suiteStarted = true
         self.result.startTime = os.clock()
         self.result.startDate = os.date()
         self.result.startIsodate = os.date('%Y-%m-%dT%H-%M-%S')
         self.result.patternFilter = self.patternFilter
+        self.result.tests = {}
         self.outputType = self.outputType or TextOutput
         self.output = self.outputType:new()
         self.output.runner = self
@@ -1312,8 +1335,14 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
     function LuaUnit:startTest( testName  )
-        self.result.currentTestName = testName
         self.result.currentTestNumber = self.result.currentTestNumber + 1
+        self.result.currentTestName = testName
+        self.result.currentNode = NodeStatus:new(
+            self.result.currentTestNumber,
+            testName,
+            self.result.currentClassName
+        )
+        table.insert( self.result.tests, self.currentNode )
         self.result.currentTestHasFailure = false
         self.output:startTest( testName )
     end
@@ -1322,6 +1351,11 @@ LuaUnit_MT = { __index = LuaUnit }
         if not self.result.currentTestHasFailure then
             self.result.failureCount = self.result.failureCount + 1
             self.result.currentTestHasFailure = true
+            self.result.currentNode.execStatus = {
+                status = STATUS_FAIL,
+                msg = errorMsg,
+                stackTrace = stackTrace
+            }
         end
         self.output:addFailure( errorMsg, stackTrace )
     end
@@ -1330,6 +1364,7 @@ LuaUnit_MT = { __index = LuaUnit }
         self.output:endTest( self.result.currentTestHasFailure )
         self.result.currentTestName = ""
         self.result.currentTestHasFailure = false
+        self.result.currentNode = nil
     end
 
     function LuaUnit:endClass()
@@ -1413,7 +1448,7 @@ LuaUnit_MT = { __index = LuaUnit }
         -- When executing a class method, all parameters must be set
 
         local ok, errMsg, stackTrace
-        
+
         if type(methodInstance) ~= 'function' then
             error( tostring(methodName)..' must be a function, not '..type(methodInstance))
         end
