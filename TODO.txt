@@ -1,38 +1,30 @@
 Notes:
 - itemsEquals sorts tables before comparing them ? Side-effect ?
 
-TODO v3.0:
+TODO v3.1:
 ============
-- XML output:
-	+ tests to validate XML generation with data that contains XML already
-	+ move tests to tests
-- mention the new global variable config for displaying table content
 - reduce output when --quiet is used to one character per test run
-- mention mailing-list
 - check documentation link glitch to TAP 
 - mention that general error are correctly handled by luaunit as failures
-- how to add optional parameters describtion with rst
-- provide a luarock package. See: https://rocks.moonscript.org/modules/rjpcomputing/luaunit
-- mention version in documentation
+- in rst, check how to document properly optional parameters
 
 TODO Future:
 ============
+- compatibility with LuaUnit v2.0 of rjbcomputing
+- provide a luarock package. See: https://rocks.moonscript.org/modules/rjpcomputing/luaunit
 - improve testresult:
 	- contain the list of tests, with status of each test
 - improve junit output:
 	- make number of failures part of the xml <testsuites>
-- luarocks integration
 - randomized testing
 - coloured output
-- assert with matching of the error message
 - global setup / teardown
 - class setup / teardown
 - distinguish errors and failures
 - test failures, verify that output is correct
-- add other types of output
 - add date and duration to tap output, junit output
-- validate test output (TAP, ...)
-- validate well-formed XML
+- validate test output (TAP, ...) with functional tests
+- validate well-formed XML with a DTD
 - better error messages for table assertions:
 	+ expected length of X, got Y
 	+ keys differing in table 1 and 2
@@ -40,18 +32,28 @@ TODO Future:
 
 Nice to have: 
 ============
+- lua 5.3 ? Need to wait for support by travis-CI
 - stack unwrapping like in py.test
 - strip luaunit stack more intelligently: exclude content of luaunit
 
 Done since 3.0:
 ===============
-- fix display of tables with recursive references
-- improve display of nested tables in error messages
-- improve display of multiline strings in error messages
-- fix junit output
+x validate well-formed xml
+x mention version in documentation
+x mention mailing-list
+x mention the new global variable config for displaying table content
+x XML output:
+	+ tests to validate XML generation with data that contains XML already
+	+ move tests to tests
+x fix display of tables with recursive references
+x improve display of nested tables in error messages
+x improve display of multiline strings in error messages
+x fix junit output
 
 Done:
 ============
+x add other types of output
+x assert with matching of the error message
 x finish user documentation
 x switch version 3.0
 x add assertMatch for strings
