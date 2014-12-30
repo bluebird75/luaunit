@@ -1412,6 +1412,8 @@ LuaUnit_MT = { __index = LuaUnit }
         -- When executing a test function, className and classInstance must be nil
         -- When executing a class method, all parameters must be set
 
+        local ok, errMsg, stackTrace
+        
         if type(methodInstance) ~= 'function' then
             error( tostring(methodName)..' must be a function, not '..type(methodInstance))
         end
