@@ -136,8 +136,18 @@ function main( )
     )
     errorCount = errorCount + validate_tap_output( 
         'example_with_luaunit.lua', '',
-        'test/tapOutput1.txt',
-        'test/ref/tapOutput1.txt'
+        'test/exampleTapDefault.txt',
+        'test/ref/exampleTapDefault.txt'
+    )
+    errorCount = errorCount + validate_tap_output( 
+        'example_with_luaunit.lua', '--verbose',
+        'test/exampleTapVerbose.txt',
+        'test/ref/exampleTapVerbose.txt'
+    )
+    errorCount = errorCount + validate_tap_output( 
+        'example_with_luaunit.lua', '--quiet',
+        'test/exampleTapQuiet.txt',
+        'test/ref/exampleTapQuiet.txt'
     )
     os.exit( errorCount )
 end
