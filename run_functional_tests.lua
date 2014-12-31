@@ -42,7 +42,7 @@ function adjustFile( fileOut, fileIn, pattern )
     end
 
     if source == nil then
-        error('No line in file '..fileIn..' matching pattern '..pattern )
+        error('No line in file '..fileIn..' matching pattern "'..pattern..'"')
     end
 
     -- print('Captured: '.. source )
@@ -103,8 +103,32 @@ function validate_tap_output( fileToRun, options, output, refOutput )
     -- remove output
     ret = osExec(string.format(
             'lua %s  --output TAP %s > %s', fileToRun, options, output )  )
-    adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
     adjustFile( output, refOutput, '# Started on (.*)')
+    adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
+
+    ret = osExec( string.format(
+        -- ignore the first line that include the date, always different
+        -- ignore the last line that include the dureation, always different
+        -- NOTE: we need to find a better way to compare the last line
+        'diff -NP -u %s %s', refOutput, output ) )
+    if not ret then
+        report('TAP Ouptut mismatch for file : '..output)
+        return 1
+    end
+    report('TAP Output ok: '..output)
+    return 0
+end
+
+function validate_text_output( fileToRun, options, output, refOutput )
+    local ret
+    -- remove output
+    ret = osExec(string.format(
+            'lua %s  --output text %s > %s', fileToRun, options, output )  )
+    if options ~= '--quiet' then
+        adjustFile( output, refOutput, 'Started on (.*)')
+    end
+    adjustFile( output, refOutput, 'Success: .*, executed in (%d.%d*) seconds' )
+ 
 
     ret = osExec( string.format(
         -- ignore the first line that include the date, always different
@@ -148,6 +172,21 @@ function main( )
         'example_with_luaunit.lua', '--quiet',
         'test/exampleTapQuiet.txt',
         'test/ref/exampleTapQuiet.txt'
+    )
+    errorCount = errorCount + validate_text_output( 
+        'example_with_luaunit.lua', '',
+        'test/exampleTextDefault.txt',
+        'test/ref/exampleTextDefault.txt'
+    )
+    errorCount = errorCount + validate_text_output( 
+        'example_with_luaunit.lua', '--verbose',
+        'test/exampleTextVerbose.txt',
+        'test/ref/exampleTextVerbose.txt'
+    )
+    errorCount = errorCount + validate_text_output( 
+        'example_with_luaunit.lua', '--quiet',
+        'test/exampleTextQuiet.txt',
+        'test/ref/exampleTextQuiet.txt'
     )
     os.exit( errorCount )
 end

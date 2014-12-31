@@ -1,0 +1,47 @@
+TestTiti:setUp
+some stuff test 1
+FTestTiti:tearDown
+TestTiti:setUp
+some stuff test 2
+FTestTiti:tearDown
+TestTiti:setUp
+some stuff test 3
+TestTiti:tearDown
+.some stuff test 1
+Fsome stuff test 2
+Fsome stuff test 3
+.some stuff test 4
+Fsome stuff test 5
+Fsome stuff test 6
+FFFFFF.
+Failed tests:
+-------------
+>>> TestTiti.test1_withFailure failed
+example_with_luaunit.lua:99: expected: 2, actual: 1
+>>> TestTiti.test2_withFailure failed
+example_with_luaunit.lua:108: expected: "bof"
+actual: "hop"
+>>> TestToto.test1_withFailure failed
+example_with_luaunit.lua:19: expected: 2, actual: 1
+>>> TestToto.test2_withFailure failed
+example_with_luaunit.lua:28: expected: "bof"
+actual: "hop"
+>>> TestToto.test4 failed
+example_with_luaunit.lua:41: Received the not expected value: 1
+>>> TestToto.test5 failed
+example_with_luaunit.lua:47: expected: false, actual: 1
+>>> TestToto.test6 failed
+example_with_luaunit.lua:52: expected: true, actual: false
+>>> TestToto.test7 failed
+example_with_luaunit.lua:58: expected: {1, 2, three=3}
+actual: {1, 2}
+>>> TestToto.test8a failed
+example_with_luaunit.lua:76: Bouhouhoum error!
+>>> TestToto.test8b failed
+example_with_luaunit.lua:76: Bouhouhoum error!
+>>> test1_withFailure failed
+example_with_luaunit.lua:124: assertion failed!
+>>> test2_withFailure failed
+example_with_luaunit.lua:130: assertion failed!
+
+Success: 20% - 3 / 15, executed in 0.016 seconds
