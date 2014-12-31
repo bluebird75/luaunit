@@ -72,11 +72,11 @@ function adjustFile( fileOut, fileIn, pattern )
 
 end
 
-function validate_junit_xml( fileToRun, fnameJunitXml, fnameJunitStdout, generateJunitXml )
+function check_junit_xml( fileToRun, fnameJunitXml, fnameJunitStdout, generateJunitXml )
     -- Set generateJunitXml to refresh XML. Default is true.
     local retCode = 0
     local ret
-    -- validate that junit output is a valid xml file
+    -- check that junit output is a valid xml file
     -- this assumes that xmllint is installed !
 
     if generateJunitXml == nil then
@@ -98,7 +98,7 @@ function validate_junit_xml( fileToRun, fnameJunitXml, fnameJunitStdout, generat
     return retCode
 end
 
-function validate_tap_output( fileToRun, options, output, refOutput )
+function check_tap_output( fileToRun, options, output, refOutput )
     local ret
     -- remove output
     ret = osExec(string.format(
@@ -119,7 +119,7 @@ function validate_tap_output( fileToRun, options, output, refOutput )
     return 0
 end
 
-function validate_text_output( fileToRun, options, output, refOutput )
+function check_text_output( fileToRun, options, output, refOutput )
     local ret
     -- remove output
     ret = osExec(string.format(
@@ -148,46 +148,25 @@ function main( )
     fnameJunitStdout = 'test/junit_stdout.txt' -- os.tmpname()
 
     errorCount = 0
-    errorCount = errorCount + validate_junit_xml( 
-        'example_with_luaunit.lua',
-        'test/output_junit.xml', 
-        'test/junit_stdout.txt' 
-    )
-    errorCount = errorCount + validate_junit_xml( 
-        'test/test_with_xml.lua',
-        'test/output_junit2.xml', 
-        'test/junit_stdout2.txt' 
-    )
-    errorCount = errorCount + validate_tap_output( 
-        'example_with_luaunit.lua', '',
-        'test/exampleTapDefault.txt',
-        'test/ref/exampleTapDefault.txt'
-    )
-    errorCount = errorCount + validate_tap_output( 
-        'example_with_luaunit.lua', '--verbose',
-        'test/exampleTapVerbose.txt',
-        'test/ref/exampleTapVerbose.txt'
-    )
-    errorCount = errorCount + validate_tap_output( 
-        'example_with_luaunit.lua', '--quiet',
-        'test/exampleTapQuiet.txt',
-        'test/ref/exampleTapQuiet.txt'
-    )
-    errorCount = errorCount + validate_text_output( 
-        'example_with_luaunit.lua', '',
-        'test/exampleTextDefault.txt',
-        'test/ref/exampleTextDefault.txt'
-    )
-    errorCount = errorCount + validate_text_output( 
-        'example_with_luaunit.lua', '--verbose',
-        'test/exampleTextVerbose.txt',
-        'test/ref/exampleTextVerbose.txt'
-    )
-    errorCount = errorCount + validate_text_output( 
-        'example_with_luaunit.lua', '--quiet',
-        'test/exampleTextQuiet.txt',
-        'test/ref/exampleTextQuiet.txt'
-    )
+
+    function check( result )
+        errorCount = errorCount + result
+    end
+
+    -- check xml conformity
+    check( check_junit_xml('example_with_luaunit.lua', 'test/output_junit.xml',  'test/junit_stdout.txt' ) )
+    check( check_junit_xml('test/test_with_xml.lua',   'test/output_junit2.xml', 'test/junit_stdout2.txt' ) )
+
+    -- check tap output
+    check( check_tap_output('example_with_luaunit.lua', '',          'test/exampleTapDefault.txt', 'test/ref/exampleTapDefault.txt' ) )
+    check( check_tap_output('example_with_luaunit.lua', '--verbose', 'test/exampleTapVerbose.txt', 'test/ref/exampleTapVerbose.txt' ) )
+    check( check_tap_output('example_with_luaunit.lua', '--quiet',   'test/exampleTapQuiet.txt',   'test/ref/exampleTapQuiet.txt' ) )
+
+    -- check text output
+    check( check_text_output('example_with_luaunit.lua', '',          'test/exampleTextDefault.txt', 'test/ref/exampleTextDefault.txt' ) )
+    check( check_text_output('example_with_luaunit.lua', '--verbose', 'test/exampleTextVerbose.txt', 'test/ref/exampleTextVerbose.txt' ) )
+    check( check_text_output('example_with_luaunit.lua', '--quiet',   'test/exampleTextQuiet.txt',   'test/ref/exampleTextQuiet.txt' ) )
+
     os.exit( errorCount )
 end
 
