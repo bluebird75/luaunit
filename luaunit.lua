@@ -1009,7 +1009,7 @@ TextOutput_MT = { -- class
         testName, errorMsg, stackTrace = unpack( failure )
         print(">>> "..testName.." failed")
         print( errorMsg )
-        if self.verbosity > VERBOSITY_DEFAULT then
+        if self.verbosity > VERBOSITY_LOW then
             print( stackTrace )
         end
     end
