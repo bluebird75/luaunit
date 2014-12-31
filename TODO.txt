@@ -1,12 +1,10 @@
-Notes:
-- itemsEquals sorts tables before comparing them ? Side-effect ?
-
 TODO v3.1:
 ============
-- reduce output when --quiet is used to one character per test run
+- reduce output when --quiet is used to standard output of python unit-tests
 - check documentation link glitch to TAP 
 - mention that general error are correctly handled by luaunit as failures
 - in rst, check how to document properly optional parameters
+- fill extra junit test parameters (duration, ...)
 
 TODO Future:
 ============
