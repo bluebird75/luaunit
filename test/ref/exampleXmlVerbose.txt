@@ -1,5 +1,5 @@
-# XML output to test/ref/exampleXmlDefault.xml
-# Started on 12/31/14 21:32:44
+# XML output to test/ref/exampleXmlVerbose.xml
+# Started on 12/31/14 21:33:10
 # Starting class: TestTiti
 # Starting test: TestTiti.test1_withFailure
 TestTiti:setUp
@@ -190,4 +190,4 @@ actual: {1, 2}
 	example_with_luaunit.lua:140: in main chunk
 	[C]: in ?
 # Starting test: test3
-# Ran 15 tests in 0.000 seconds, 3 successes, 12 failures
+# Ran 15 tests in 0.016 seconds, 3 successes, 12 failures

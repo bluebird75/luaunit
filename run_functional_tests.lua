@@ -190,8 +190,10 @@ function main( )
     -- check xml output
     check( check_xml_output('example_with_luaunit.lua', '',          'test/exampleXmlDefault.txt', 'test/exampleXmlDefault.xml',
         'test/exampleXmllintDefault.xml', 'test/ref/exampleXmlDefault.txt', 'test/ref/exampleXmlDefault.xml' ) )
-    -- check( check_xml_output('example_with_luaunit.lua', '--verbose', 'test/exampleXmlVerbose.txt', 'test/ref/exampleXmlVerbose.txt' ) )
-    -- check( check_xml_output('example_with_luaunit.lua', '--quiet',   'test/exampleXmlQuiet.txt',   'test/ref/exampleXmlQuiet.txt' ) )
+    check( check_xml_output('example_with_luaunit.lua', '--verbose', 'test/exampleXmlVerbose.txt', 'test/exampleXmlVerbose.xml',
+        'test/exampleXmllintVerbose.xml', 'test/ref/exampleXmlVerbose.txt', 'test/ref/exampleXmlVerbose.xml' ) )
+    check( check_xml_output('example_with_luaunit.lua', '--quiet',   'test/exampleXmlQuiet.txt', 'test/exampleXmlQuiet.xml',
+        'test/exampleXmllintQuiet.xml', 'test/ref/exampleXmlQuiet.txt', 'test/ref/exampleXmlQuiet.xml' ) )
 
     os.exit( errorCount )
 end

@@ -1,11 +1,9 @@
-# XML output to test/ref/exampleXmlDefault.xml
-# Started on 12/31/14 21:32:44
-# Starting class: TestTiti
-# Starting test: TestTiti.test1_withFailure
-TestTiti:setUp
-some stuff test 1
-# Failure: example_with_luaunit.lua:99: expected: 2, actual: 1
-# stack traceback:
+<testsuites>
+    <testsuite name="TestTiti">
+        <testcase classname="TestTiti"
+            name="TestTiti.test1_withFailure">
+            <failure type="example_with_luaunit.lua:99: expected: 2, actual: 1">
+                <![CDATA[stack traceback:
 	.\luaunit.lua:476: in function 'assertEquals'
 	example_with_luaunit.lua:99: in function 'TestTiti.test1_withFailure'
 	.\luaunit.lua:1426: in function <.\luaunit.lua:1426>
@@ -16,14 +14,13 @@ some stuff test 1
 	.\luaunit.lua:1635: in function 'runSuiteByNames'
 	.\luaunit.lua:1711: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
-TestTiti:tearDown
-# Starting test: TestTiti.test2_withFailure
-TestTiti:setUp
-some stuff test 2
-# Failure: example_with_luaunit.lua:108: expected: "bof"
-actual: "hop"
-# stack traceback:
+	[C]: in ?]]></failure>
+        </testcase>
+        <testcase classname="TestTiti"
+            name="TestTiti.test2_withFailure">
+            <failure type="example_with_luaunit.lua:108: expected: &quot;bof&quot;
+actual: &quot;hop&quot;">
+                <![CDATA[stack traceback:
 	.\luaunit.lua:476: in function 'assertEquals'
 	example_with_luaunit.lua:108: in function 'TestTiti.test2_withFailure'
 	.\luaunit.lua:1426: in function <.\luaunit.lua:1426>
@@ -34,17 +31,17 @@ actual: "hop"
 	.\luaunit.lua:1635: in function 'runSuiteByNames'
 	.\luaunit.lua:1711: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
-TestTiti:tearDown
-# Starting test: TestTiti.test3
-TestTiti:setUp
-some stuff test 3
-TestTiti:tearDown
-# Starting class: TestToto
-# Starting test: TestToto.test1_withFailure
-some stuff test 1
-# Failure: example_with_luaunit.lua:19: expected: 2, actual: 1
-# stack traceback:
+	[C]: in ?]]></failure>
+        </testcase>
+        <testcase classname="TestTiti"
+            name="TestTiti.test3">
+        </testcase>
+    </testsuite>
+    <testsuite name="TestToto">
+        <testcase classname="TestToto"
+            name="TestToto.test1_withFailure">
+            <failure type="example_with_luaunit.lua:19: expected: 2, actual: 1">
+                <![CDATA[stack traceback:
 	.\luaunit.lua:476: in function 'assertEquals'
 	example_with_luaunit.lua:19: in function 'TestToto.test1_withFailure'
 	.\luaunit.lua:1426: in function <.\luaunit.lua:1426>
@@ -55,12 +52,13 @@ some stuff test 1
 	.\luaunit.lua:1635: in function 'runSuiteByNames'
 	.\luaunit.lua:1711: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
-# Starting test: TestToto.test2_withFailure
-some stuff test 2
-# Failure: example_with_luaunit.lua:28: expected: "bof"
-actual: "hop"
-# stack traceback:
+	[C]: in ?]]></failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test2_withFailure">
+            <failure type="example_with_luaunit.lua:28: expected: &quot;bof&quot;
+actual: &quot;hop&quot;">
+                <![CDATA[stack traceback:
 	.\luaunit.lua:476: in function 'assertEquals'
 	example_with_luaunit.lua:28: in function 'TestToto.test2_withFailure'
 	.\luaunit.lua:1426: in function <.\luaunit.lua:1426>
@@ -71,13 +69,15 @@ actual: "hop"
 	.\luaunit.lua:1635: in function 'runSuiteByNames'
 	.\luaunit.lua:1711: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
-# Starting test: TestToto.test3
-some stuff test 3
-# Starting test: TestToto.test4
-some stuff test 4
-# Failure: example_with_luaunit.lua:41: Received the not expected value: 1
-# stack traceback:
+	[C]: in ?]]></failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test3">
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test4">
+            <failure type="example_with_luaunit.lua:41: Received the not expected value: 1">
+                <![CDATA[stack traceback:
 	.\luaunit.lua:516: in function 'assertNotEquals'
 	example_with_luaunit.lua:41: in function 'TestToto.test4'
 	.\luaunit.lua:1426: in function <.\luaunit.lua:1426>
@@ -88,11 +88,12 @@ some stuff test 4
 	.\luaunit.lua:1635: in function 'runSuiteByNames'
 	.\luaunit.lua:1711: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
-# Starting test: TestToto.test5
-some stuff test 5
-# Failure: example_with_luaunit.lua:47: expected: false, actual: 1
-# stack traceback:
+	[C]: in ?]]></failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test5">
+            <failure type="example_with_luaunit.lua:47: expected: false, actual: 1">
+                <![CDATA[stack traceback:
 	.\luaunit.lua:452: in function 'assertFalse'
 	example_with_luaunit.lua:47: in function 'TestToto.test5'
 	.\luaunit.lua:1426: in function <.\luaunit.lua:1426>
@@ -103,11 +104,12 @@ some stuff test 5
 	.\luaunit.lua:1635: in function 'runSuiteByNames'
 	.\luaunit.lua:1711: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
-# Starting test: TestToto.test6
-some stuff test 6
-# Failure: example_with_luaunit.lua:52: expected: true, actual: false
-# stack traceback:
+	[C]: in ?]]></failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test6">
+            <failure type="example_with_luaunit.lua:52: expected: true, actual: false">
+                <![CDATA[stack traceback:
 	.\luaunit.lua:446: in function 'assertTrue'
 	example_with_luaunit.lua:52: in function 'TestToto.test6'
 	.\luaunit.lua:1426: in function <.\luaunit.lua:1426>
@@ -118,11 +120,13 @@ some stuff test 6
 	.\luaunit.lua:1635: in function 'runSuiteByNames'
 	.\luaunit.lua:1711: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
-# Starting test: TestToto.test7
-# Failure: example_with_luaunit.lua:58: expected: {1, 2, three=3}
-actual: {1, 2}
-# stack traceback:
+	[C]: in ?]]></failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test7">
+            <failure type="example_with_luaunit.lua:58: expected: {1, 2, three=3}
+actual: {1, 2}">
+                <![CDATA[stack traceback:
 	.\luaunit.lua:471: in function 'assertEquals'
 	example_with_luaunit.lua:58: in function 'TestToto.test7'
 	.\luaunit.lua:1426: in function <.\luaunit.lua:1426>
@@ -133,10 +137,12 @@ actual: {1, 2}
 	.\luaunit.lua:1635: in function 'runSuiteByNames'
 	.\luaunit.lua:1711: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
-# Starting test: TestToto.test8a
-# Failure: example_with_luaunit.lua:76: Bouhouhoum error!
-# stack traceback:
+	[C]: in ?]]></failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test8a">
+            <failure type="example_with_luaunit.lua:76: Bouhouhoum error!">
+                <![CDATA[stack traceback:
 	example_with_luaunit.lua:76: in function 'funcWithError'
 	example_with_luaunit.lua:63: in function 'TestToto.test8a'
 	.\luaunit.lua:1426: in function <.\luaunit.lua:1426>
@@ -147,10 +153,12 @@ actual: {1, 2}
 	.\luaunit.lua:1635: in function 'runSuiteByNames'
 	.\luaunit.lua:1711: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
-# Starting test: TestToto.test8b
-# Failure: example_with_luaunit.lua:76: Bouhouhoum error!
-# stack traceback:
+	[C]: in ?]]></failure>
+        </testcase>
+        <testcase classname="TestToto"
+            name="TestToto.test8b">
+            <failure type="example_with_luaunit.lua:76: Bouhouhoum error!">
+                <![CDATA[stack traceback:
 	example_with_luaunit.lua:76: in function 'funcWithError'
 	example_with_luaunit.lua:72: in function 'funcWithFuncWithError'
 	example_with_luaunit.lua:68: in function 'TestToto.test8b'
@@ -162,10 +170,14 @@ actual: {1, 2}
 	.\luaunit.lua:1635: in function 'runSuiteByNames'
 	.\luaunit.lua:1711: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
-# Starting test: test1_withFailure
-# Failure: example_with_luaunit.lua:124: assertion failed!
-# stack traceback:
+	[C]: in ?]]></failure>
+        </testcase>
+    </testsuite>
+    <testsuite name="[TestFunctions]">
+        <testcase classname="[TestFunctions]"
+            name="test1_withFailure">
+            <failure type="example_with_luaunit.lua:124: assertion failed!">
+                <![CDATA[stack traceback:
 	example_with_luaunit.lua:124: in function 'test1_withFailure'
 	.\luaunit.lua:1428: in function <.\luaunit.lua:1428>
 	[C]: in function 'xpcall'
@@ -175,10 +187,12 @@ actual: {1, 2}
 	.\luaunit.lua:1635: in function 'runSuiteByNames'
 	.\luaunit.lua:1711: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
-# Starting test: test2_withFailure
-# Failure: example_with_luaunit.lua:130: assertion failed!
-# stack traceback:
+	[C]: in ?]]></failure>
+        </testcase>
+        <testcase classname="[TestFunctions]"
+            name="test2_withFailure">
+            <failure type="example_with_luaunit.lua:130: assertion failed!">
+                <![CDATA[stack traceback:
 	example_with_luaunit.lua:130: in function 'test2_withFailure'
 	.\luaunit.lua:1428: in function <.\luaunit.lua:1428>
 	[C]: in function 'xpcall'
@@ -188,6 +202,10 @@ actual: {1, 2}
 	.\luaunit.lua:1635: in function 'runSuiteByNames'
 	.\luaunit.lua:1711: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
-# Starting test: test3
-# Ran 15 tests in 0.000 seconds, 3 successes, 12 failures
+	[C]: in ?]]></failure>
+        </testcase>
+        <testcase classname="[TestFunctions]"
+            name="test3">
+        </testcase>
+    </testsuite>
+</testsuites>
