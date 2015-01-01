@@ -72,32 +72,6 @@ function adjustFile( fileOut, fileIn, pattern )
 
 end
 
-function check_junit_xml( fileToRun, fnameJunitXml, fnameJunitStdout, generateJunitXml )
-    -- Set generateJunitXml to refresh XML. Default is true.
-    local retCode = 0
-    local ret
-    -- check that junit output is a valid xml file
-    -- this assumes that xmllint is installed !
-
-    if generateJunitXml == nil then
-        generateJunitXml = true
-    end
-
-    if generateJunitXml then
-        ret = osExec(string.format(
-            'lua %s  --output junit --name %s > %s', fileToRun, fnameJunitXml, fnameJunitStdout )  )
-    end
-    ret = osExec( string.format('xmllint %s', fnameJunitXml ) )
-
-    if ret then
-        report(string.format('XMLLint validation ok: file %s', fnameJunitXml) )
-    else
-        report(string.format('XMLLint reported errors : file %s', fnameJunitXml) )
-        retCode = 1
-    end
-    return retCode
-end
-
 function check_tap_output( fileToRun, options, output, refOutput )
     local ret
     -- remove output
@@ -151,6 +125,45 @@ function check_nil_output( fileToRun, options, output, refOutput )
     return 0
 end
 
+function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput, refOutput, refXmlOutput )
+    local ret, retcode
+    retcode = 0
+
+    -- remove output
+    ret = osExec(string.format(
+            'lua %s %s --output junit --name %s > %s', fileToRun, options, xmlOutput, output )  )
+
+    adjustFile( output, refOutput, '# XML output to (.*)')
+    adjustFile( output, refOutput, '# Started on (.*)')
+    adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
+
+    ret = osExec( string.format('xmllint %s > %s', xmlOutput, xmlLintOutput ) )
+    if ret then
+        report(string.format('XMLLint validation ok: file %s', xmlLintOutput) )
+    else
+        report(string.format('XMLLint reported errors : file %s', xmlLintOutput) )
+        retcode = retcode + 1
+    end
+
+    ret = osExec( string.format('diff -NP -u %s %s', refXmlOutput, xmlOutput ) )
+    if not ret then
+        report('XML content mismatch for file : '..xmlOutput)
+        retcode = retcode + 1
+    end
+
+    ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
+    if not ret then
+        report('XML Output mismatch for file : '..output)
+        retcode = retcode + 1
+    end
+
+    if retcode == 0 then
+        report('XML Output ok: '..output)
+    end
+
+    return retcode
+end
+
 function main( )
     fnameJunitXml = 'test/output_junit.xml' -- os.tmpname()
     fnameJunitStdout = 'test/junit_stdout.txt' -- os.tmpname()
@@ -160,10 +173,6 @@ function main( )
     function check( result )
         errorCount = errorCount + result
     end
-
-    -- check xml conformity
-    check( check_junit_xml('example_with_luaunit.lua', 'test/output_junit.xml',  'test/junit_stdout.txt' ) )
-    check( check_junit_xml('test/test_with_xml.lua',   'test/output_junit2.xml', 'test/junit_stdout2.txt' ) )
 
     -- check tap output
     check( check_tap_output('example_with_luaunit.lua', '',          'test/exampleTapDefault.txt', 'test/ref/exampleTapDefault.txt' ) )
@@ -177,6 +186,12 @@ function main( )
 
     -- check nil output
     check( check_nil_output('example_with_luaunit.lua', '', 'test/exampleNilDefault.txt', 'test/ref/exampleNilDefault.txt' ) )
+
+    -- check xml output
+    check( check_xml_output('example_with_luaunit.lua', '',          'test/exampleXmlDefault.txt', 'test/exampleXmlDefault.xml',
+        'test/exampleXmllintDefault.xml', 'test/ref/exampleXmlDefault.txt', 'test/ref/exampleXmlDefault.xml' ) )
+    -- check( check_xml_output('example_with_luaunit.lua', '--verbose', 'test/exampleXmlVerbose.txt', 'test/ref/exampleXmlVerbose.txt' ) )
+    -- check( check_xml_output('example_with_luaunit.lua', '--quiet',   'test/exampleXmlQuiet.txt',   'test/ref/exampleXmlQuiet.txt' ) )
 
     os.exit( errorCount )
 end

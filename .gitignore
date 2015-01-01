@@ -45,4 +45,5 @@ output_junit.xml
 junit_stdout?.txt
 output_junit?.xml
 test/example*.txt
+test/example*.xml
 
