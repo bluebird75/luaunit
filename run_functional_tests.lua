@@ -106,18 +106,15 @@ function check_tap_output( fileToRun, options, output, refOutput )
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
 
-    ret = osExec( string.format(
-        -- ignore the first line that include the date, always different
-        -- ignore the last line that include the dureation, always different
-        -- NOTE: we need to find a better way to compare the last line
-        'diff -NP -u %s %s', refOutput, output ) )
+    ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
     if not ret then
-        report('TAP Ouptut mismatch for file : '..output)
+        report('TAP Output mismatch for file : '..output)
         return 1
     end
     report('TAP Output ok: '..output)
     return 0
 end
+
 
 function check_text_output( fileToRun, options, output, refOutput )
     local ret
@@ -130,16 +127,27 @@ function check_text_output( fileToRun, options, output, refOutput )
     adjustFile( output, refOutput, 'Success: .*, executed in (%d.%d*) seconds' )
  
 
-    ret = osExec( string.format(
-        -- ignore the first line that include the date, always different
-        -- ignore the last line that include the dureation, always different
-        -- NOTE: we need to find a better way to compare the last line
-        'diff -NP -u %s %s', refOutput, output ) )
+    ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
     if not ret then
-        report('Ouptut mismatch for file : '..output)
+        report('Text Output mismatch for file : '..output)
         return 1
     end
-    report('Output ok: '..output)
+    report('Text Output ok: '..output)
+    return 0
+end
+
+function check_nil_output( fileToRun, options, output, refOutput )
+    local ret
+    -- remove output
+    ret = osExec(string.format(
+            'lua %s  --output nil %s > %s', fileToRun, options, output )  )
+
+    ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
+    if not ret then
+        report('NIL Output mismatch for file : '..output)
+        return 1
+    end
+    report('NIL Output ok: '..output)
     return 0
 end
 
@@ -166,6 +174,9 @@ function main( )
     check( check_text_output('example_with_luaunit.lua', '',          'test/exampleTextDefault.txt', 'test/ref/exampleTextDefault.txt' ) )
     check( check_text_output('example_with_luaunit.lua', '--verbose', 'test/exampleTextVerbose.txt', 'test/ref/exampleTextVerbose.txt' ) )
     check( check_text_output('example_with_luaunit.lua', '--quiet',   'test/exampleTextQuiet.txt',   'test/ref/exampleTextQuiet.txt' ) )
+
+    -- check nil output
+    check( check_nil_output('example_with_luaunit.lua', '', 'test/exampleNilDefault.txt', 'test/ref/exampleNilDefault.txt' ) )
 
     os.exit( errorCount )
 end
