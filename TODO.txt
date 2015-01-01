@@ -5,6 +5,7 @@ TODO v3.1:
 - mention that general error are correctly handled by luaunit as failures
 - in rst, check how to document properly optional parameters
 - fill extra junit test parameters (duration, ...)
+- mention mailing-list in README.md
 
 TODO Future:
 ============
