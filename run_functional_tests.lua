@@ -1,4 +1,5 @@
 require('os')
+require('luaunit')
 
 function report( s )
     print('>>>>>>> '..s )
@@ -82,10 +83,9 @@ function check_tap_output( fileToRun, options, output, refOutput )
 
     ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
     if not ret then
-        report('TAP Output mismatch for file : '..output)
-        return 1
+        error('TAP Output mismatch for file : '..output)
     end
-    report('TAP Output ok: '..output)
+    -- report('TAP Output ok: '..output)
     return 0
 end
 
@@ -103,10 +103,10 @@ function check_text_output( fileToRun, options, output, refOutput )
 
     ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
     if not ret then
-        report('Text Output mismatch for file : '..output)
+        error('Text Output mismatch for file : '..output)
         return 1
     end
-    report('Text Output ok: '..output)
+    -- report('Text Output ok: '..output)
     return 0
 end
 
@@ -118,10 +118,9 @@ function check_nil_output( fileToRun, options, output, refOutput )
 
     ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
     if not ret then
-        report('NIL Output mismatch for file : '..output)
-        return 1
+        error('NIL Output mismatch for file : '..output)
     end
-    report('NIL Output ok: '..output)
+    -- report('NIL Output ok: '..output)
     return 0
 end
 
@@ -139,64 +138,93 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
 
     ret = osExec( string.format('xmllint %s > %s', xmlOutput, xmlLintOutput ) )
     if ret then
-        report(string.format('XMLLint validation ok: file %s', xmlLintOutput) )
+        -- report(string.format('XMLLint validation ok: file %s', xmlLintOutput) )
     else
-        report(string.format('XMLLint reported errors : file %s', xmlLintOutput) )
+        error(string.format('XMLLint reported errors : file %s', xmlLintOutput) )
         retcode = retcode + 1
     end
 
     ret = osExec( string.format('diff -NP -u %s %s', refXmlOutput, xmlOutput ) )
     if not ret then
-        report('XML content mismatch for file : '..xmlOutput)
+        error('XML content mismatch for file : '..xmlOutput)
         retcode = retcode + 1
     end
 
     ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
     if not ret then
-        report('XML Output mismatch for file : '..output)
+        error('XML Output mismatch for file : '..output)
         retcode = retcode + 1
     end
 
     if retcode == 0 then
-        report('XML Output ok: '..output)
+        -- report('XML Output ok: '..output)
     end
 
     return retcode
 end
 
-function main( )
-    fnameJunitXml = 'test/output_junit.xml' -- os.tmpname()
-    fnameJunitStdout = 'test/junit_stdout.txt' -- os.tmpname()
+-- check tap output
 
-    errorCount = 0
-
-    function check( result )
-        errorCount = errorCount + result
-    end
-
-    -- check tap output
-    check( check_tap_output('example_with_luaunit.lua', '',          'test/exampleTapDefault.txt', 'test/ref/exampleTapDefault.txt' ) )
-    check( check_tap_output('example_with_luaunit.lua', '--verbose', 'test/exampleTapVerbose.txt', 'test/ref/exampleTapVerbose.txt' ) )
-    check( check_tap_output('example_with_luaunit.lua', '--quiet',   'test/exampleTapQuiet.txt',   'test/ref/exampleTapQuiet.txt' ) )
-
-    -- check text output
-    check( check_text_output('example_with_luaunit.lua', '',          'test/exampleTextDefault.txt', 'test/ref/exampleTextDefault.txt' ) )
-    check( check_text_output('example_with_luaunit.lua', '--verbose', 'test/exampleTextVerbose.txt', 'test/ref/exampleTextVerbose.txt' ) )
-    check( check_text_output('example_with_luaunit.lua', '--quiet',   'test/exampleTextQuiet.txt',   'test/ref/exampleTextQuiet.txt' ) )
-
-    -- check nil output
-    check( check_nil_output('example_with_luaunit.lua', '', 'test/exampleNilDefault.txt', 'test/ref/exampleNilDefault.txt' ) )
-
-    -- check xml output
-    check( check_xml_output('example_with_luaunit.lua', '',          'test/exampleXmlDefault.txt', 'test/exampleXmlDefault.xml',
-        'test/exampleXmllintDefault.xml', 'test/ref/exampleXmlDefault.txt', 'test/ref/exampleXmlDefault.xml' ) )
-    check( check_xml_output('example_with_luaunit.lua', '--verbose', 'test/exampleXmlVerbose.txt', 'test/exampleXmlVerbose.xml',
-        'test/exampleXmllintVerbose.xml', 'test/ref/exampleXmlVerbose.txt', 'test/ref/exampleXmlVerbose.xml' ) )
-    check( check_xml_output('example_with_luaunit.lua', '--quiet',   'test/exampleXmlQuiet.txt', 'test/exampleXmlQuiet.xml',
-        'test/exampleXmllintQuiet.xml', 'test/ref/exampleXmlQuiet.txt', 'test/ref/exampleXmlQuiet.xml' ) )
-
-    os.exit( errorCount )
+function testExampleTapDefault()
+    assertEquals( 0,
+        check_tap_output('example_with_luaunit.lua', '',          'test/exampleTapDefault.txt', 'test/ref/exampleTapDefault.txt' ) )
 end
 
-main()
+function testExampleTapVerbose( ... )
+    assertEquals( 0,
+        check_tap_output('example_with_luaunit.lua', '--verbose', 'test/exampleTapVerbose.txt', 'test/ref/exampleTapVerbose.txt' ) )
+end
+
+function testExampleTapQuiet( ... )
+    assertEquals( 0,
+        check_tap_output('example_with_luaunit.lua', '--quiet',   'test/exampleTapQuiet.txt',   'test/ref/exampleTapQuiet.txt' ) )
+end
+
+-- check text output
+
+function testExampleTextDefault()
+    assertEquals( 0,
+        check_text_output('example_with_luaunit.lua', '',          'test/exampleTextDefault.txt', 'test/ref/exampleTextDefault.txt' ) )
+end
+
+function testExampleTextVerbose( ... )
+    assertEquals( 0,
+        check_text_output('example_with_luaunit.lua', '--verbose', 'test/exampleTextVerbose.txt', 'test/ref/exampleTextVerbose.txt' ) )
+end
+
+function testExampleTextQuiet( ... )
+    assertEquals( 0,
+        check_text_output('example_with_luaunit.lua', '--quiet',   'test/exampleTextQuiet.txt',   'test/ref/exampleTextQuiet.txt' ) )
+end
+
+-- check nil output
+
+function testExampleNilDefault()
+    assertEquals( 0,
+        check_nil_output('example_with_luaunit.lua', '', 'test/exampleNilDefault.txt', 'test/ref/exampleNilDefault.txt' ) )
+end
+
+-- check xml output
+
+function testExampleTextDefault()
+    assertEquals( 0,
+        check_xml_output('example_with_luaunit.lua', '',          'test/exampleXmlDefault.txt', 'test/exampleXmlDefault.xml',
+        'test/exampleXmllintDefault.xml', 'test/ref/exampleXmlDefault.txt', 'test/ref/exampleXmlDefault.xml' ) )
+end
+
+function testExampleTextVerbose( ... )
+    assertEquals( 0,
+        check_xml_output('example_with_luaunit.lua', '--verbose', 'test/exampleXmlVerbose.txt', 'test/exampleXmlVerbose.xml',
+        'test/exampleXmllintVerbose.xml', 'test/ref/exampleXmlVerbose.txt', 'test/ref/exampleXmlVerbose.xml' ) )
+end
+
+function testExampleTextQuiet( ... )
+    assertEquals( 0,
+        check_xml_output('example_with_luaunit.lua', '--quiet',   'test/exampleXmlQuiet.txt', 'test/exampleXmlQuiet.xml',
+        'test/exampleXmllintQuiet.xml', 'test/ref/exampleXmlQuiet.txt', 'test/ref/exampleXmlQuiet.xml' ) )
+end
+
+os.exit( LuaUnit.run() )
+
+
 
