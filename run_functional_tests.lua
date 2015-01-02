@@ -5,11 +5,39 @@ function report( s )
     print('>>>>>>> '..s )
 end
 
+-- This function is extracted from the lua Nucleo project.
+-- License is MIT so ok to reuse here
+-- https://github.com/lua-nucleo/lua-nucleo/blob/v0.1.0/lua-nucleo/string.lua#L245-L267
+local escape_lua_pattern
+do
+  local matches =
+  {
+    ["^"] = "%^";
+    ["$"] = "%$";
+    ["("] = "%(";
+    [")"] = "%)";
+    ["%"] = "%%";
+    ["."] = "%.";
+    ["["] = "%[";
+    ["]"] = "%]";
+    ["*"] = "%*";
+    ["+"] = "%+";
+    ["-"] = "%-";
+    ["?"] = "%?";
+    ["\0"] = "%z";
+  }
+
+  escape_lua_pattern = function(s)
+    return (s:gsub(".", matches))
+  end
+end
+
 function osExec( s )
     -- execute s with os.execute and return true if exit code is 0
     -- false in any other conditions
 
     -- print('osExec('..s..')')
+    local exitSuccess, exitReason, exitCode 
     exitSuccess, exitReason, exitCode = os.execute( s )
     -- print(exitSuccess)
     -- print(exitReason)
@@ -33,10 +61,13 @@ function adjustFile( fileOut, fileIn, pattern )
     fileOut lines are then read, and the first line matching pattern is modified, by applying
     the first capture of fileIn. fileOut is then rewritten.
     ]]
-    source = nil
+    local source = nil
     for line in io.lines(fileIn) do
-        idxStart, idxEnd, capture = string.find( line, pattern )
+        local idxStart, idxEnd, capture = string.find( line, pattern )
         if idxStart ~= nil then
+            if capture == nil then
+                error(string.format('Must specify a capture for pattern %s in function adjustFile()', pattern ) )
+            end
             source = capture
             break
         end
@@ -46,16 +77,18 @@ function adjustFile( fileOut, fileIn, pattern )
         error('No line in file '..fileIn..' matching pattern "'..pattern..'"')
     end
 
-    -- print('Captured: '.. source )
+    -- print('Captured in source: '.. source )
 
-    dest = nil
-    linesOut = {}
+    local dest = nil
+    local linesOut = {}
     for line in io.lines(fileOut) do
-        idxStart, idxEnd, capture = string.find( line, pattern )
+        local idxStart, idxEnd, capture = string.find( line, pattern )
         if idxStart ~= nil then
             dest = capture
             -- print('Modifying line: '..line )
-            line = string.gsub( line, dest, source )
+            line = string.gsub(line, dest, source)
+            -- line = line:sub(1,idxStart-1)..source..line:sub(idxEnd+1)
+            -- string.gsub( line, dest, source )
             -- print('Result: '..line )
         end
         table.insert( linesOut, line )
@@ -80,6 +113,10 @@ function check_tap_output( fileToRun, options, output, refOutput )
             'lua %s  --output TAP %s > %s', fileToRun, options, output )  )
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
+    if options == '--verbose' then
+        -- For Lua 5.1 / 5.2 compatibility
+        adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)' )
+    end
 
     ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
     if not ret then
@@ -135,6 +172,9 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     adjustFile( output, refOutput, '# XML output to (.*)')
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
+    -- For Lua 5.1 / 5.2 compatibility
+    adjustFile( output, refOutput, '(.+%[C%]: i?n? ?%?)' )
+    adjustFile( xmlOutput, refXmlOutput, '(.+%[C%]: i?n? ?%?.*)' )
 
     ret = osExec( string.format('xmllint %s > %s', xmlOutput, xmlLintOutput ) )
     if ret then
@@ -206,25 +246,35 @@ end
 
 -- check xml output
 
-function testExampleTextDefault()
+function testExampleXmlDefault()
     assertEquals( 0,
         check_xml_output('example_with_luaunit.lua', '',          'test/exampleXmlDefault.txt', 'test/exampleXmlDefault.xml',
         'test/exampleXmllintDefault.xml', 'test/ref/exampleXmlDefault.txt', 'test/ref/exampleXmlDefault.xml' ) )
 end
 
-function testExampleTextVerbose( ... )
+function testExampleXmlVerbose()
     assertEquals( 0,
         check_xml_output('example_with_luaunit.lua', '--verbose', 'test/exampleXmlVerbose.txt', 'test/exampleXmlVerbose.xml',
         'test/exampleXmllintVerbose.xml', 'test/ref/exampleXmlVerbose.txt', 'test/ref/exampleXmlVerbose.xml' ) )
 end
 
-function testExampleTextQuiet( ... )
+function testExampleXmlQuiet()
     assertEquals( 0,
         check_xml_output('example_with_luaunit.lua', '--quiet',   'test/exampleXmlQuiet.txt', 'test/exampleXmlQuiet.xml',
         'test/exampleXmllintQuiet.xml', 'test/ref/exampleXmlQuiet.txt', 'test/ref/exampleXmlQuiet.xml' ) )
 end
 
+function testTestXmlDefault()
+    assertEquals( 0,
+        check_xml_output('test/test_with_xml.lua', '', 'test/testWithXmlDefault.txt', 'test/testWithXmlDefault.xml',
+        'test/testWithXmlLintDefault.txt', 'test/ref/testWithXmlDefault.txt', 'test/ref/testWithXmlDefault.xml' ) )
+end
+
+
+
 os.exit( LuaUnit.run() )
 
+-- TODO check output of run_unit_tests
+-- TODO check return values of execution
 
 
