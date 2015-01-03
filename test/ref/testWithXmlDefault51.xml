@@ -1,0 +1,40 @@
+<testsuites>
+    <testsuite name="TestFailuresWithXml">
+        <testcase classname="TestFailuresWithXml"
+            name="TestFailuresWithXml.test_failure_with_cdata_xml">
+            <failure type="test/test_with_xml.lua:13: expected: &quot;got it&quot;
+actual: &quot;cdata does not like ]]&gt;&quot;">
+                <![CDATA[stack traceback:
+	.\luaunit.lua:476: in function 'assertEquals'
+	test/test_with_xml.lua:13: in function 'TestFailuresWithXml.test_failure_with_cdata_xml'
+	.\luaunit.lua:1426: in function <.\luaunit.lua:1426>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1426: in function 'protectedCall'
+	.\luaunit.lua:1483: in function 'execOneFunction'
+	.\luaunit.lua:1582: in function 'runSuiteByInstances'
+	.\luaunit.lua:1635: in function 'runSuiteByNames'
+	.\luaunit.lua:1711: in function <.\luaunit.lua:1651>
+	(tail call): ?
+	test/test_with_xml.lua:17: in main chunk
+	[C]: ?]]></failure>
+        </testcase>
+        <testcase classname="TestFailuresWithXml"
+            name="TestFailuresWithXml.test_failure_with_simple_xml">
+            <failure type="test/test_with_xml.lua:9: expected: &quot;got it&quot;
+actual: &apos;&lt;toto&gt;ti&quot;ti&lt;/toto&gt;&apos;">
+                <![CDATA[stack traceback:
+	.\luaunit.lua:476: in function 'assertEquals'
+	test/test_with_xml.lua:9: in function 'TestFailuresWithXml.test_failure_with_simple_xml'
+	.\luaunit.lua:1426: in function <.\luaunit.lua:1426>
+	[C]: in function 'xpcall'
+	.\luaunit.lua:1426: in function 'protectedCall'
+	.\luaunit.lua:1483: in function 'execOneFunction'
+	.\luaunit.lua:1582: in function 'runSuiteByInstances'
+	.\luaunit.lua:1635: in function 'runSuiteByNames'
+	.\luaunit.lua:1711: in function <.\luaunit.lua:1651>
+	(tail call): ?
+	test/test_with_xml.lua:17: in main chunk
+	[C]: ?]]></failure>
+        </testcase>
+    </testsuite>
+</testsuites>

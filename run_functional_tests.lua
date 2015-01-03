@@ -32,6 +32,18 @@ do
   end
 end
 
+function string_sub(s, orig, repl)
+    -- replace occurence of string orig by string repl
+    -- just like string.gsub, but with no pattern matching
+    safeOrig = escape_lua_pattern(orig)
+    return string.gsub( s, safeOrig, repl )
+end
+
+function testStringSub()
+    assertEquals( string_sub('aa a % b cc', 'a % b', 'a + b'), 'aa a + b cc' )
+    assertEquals( string_sub('aa: ?cc', ': ?', 'xx?'), 'aaxx?cc' )
+end
+
 function osExec( s )
     -- execute s with os.execute and return true if exit code is 0
     -- false in any other conditions
@@ -52,7 +64,7 @@ function osExec( s )
     end
 end
 
-function adjustFile( fileOut, fileIn, pattern )
+function adjustFile( fileOut, fileIn, pattern, mayBeAbsent )
     --[[ Adjust the content of fileOut by copying lines matching pattern from fileIn
 
     fileIn lines are read and the first line matching pattern is analysed. The first pattern
@@ -62,6 +74,7 @@ function adjustFile( fileOut, fileIn, pattern )
     the first capture of fileIn. fileOut is then rewritten.
     ]]
     local source = nil
+    mayBeAbsent = mayBeAbsent or false
     for line in io.lines(fileIn) do
         local idxStart, idxEnd, capture = string.find( line, pattern )
         if idxStart ~= nil then
@@ -74,6 +87,10 @@ function adjustFile( fileOut, fileIn, pattern )
     end
 
     if source == nil then
+        if mayBeAbsent == true then
+            -- no capture, just return
+            return
+        end
         error('No line in file '..fileIn..' matching pattern "'..pattern..'"')
     end
 
@@ -86,7 +103,7 @@ function adjustFile( fileOut, fileIn, pattern )
         if idxStart ~= nil then
             dest = capture
             -- print('Modifying line: '..line )
-            line = string.gsub(line, dest, source)
+            line = string_sub(line, dest, source)
             -- line = line:sub(1,idxStart-1)..source..line:sub(idxEnd+1)
             -- string.gsub( line, dest, source )
             -- print('Result: '..line )
@@ -136,6 +153,10 @@ function check_text_output( fileToRun, options, output, refOutput )
         adjustFile( output, refOutput, 'Started on (.*)')
     end
     adjustFile( output, refOutput, 'Success: .*, executed in (%d.%d*) seconds' )
+    if options ~= '--quiet' then
+        -- For Lua 5.1 / 5.2 compatibility
+        adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)' )
+    end
  
 
     ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
@@ -175,6 +196,7 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     -- For Lua 5.1 / 5.2 compatibility
     adjustFile( output, refOutput, '(.+%[C%]: i?n? ?%?)' )
     adjustFile( xmlOutput, refXmlOutput, '(.+%[C%]: i?n? ?%?.*)' )
+
 
     ret = osExec( string.format('xmllint %s > %s', xmlOutput, xmlLintOutput ) )
     if ret then
@@ -265,9 +287,41 @@ function testExampleXmlQuiet()
 end
 
 function testTestXmlDefault()
-    assertEquals( 0,
-        check_xml_output('test/test_with_xml.lua', '', 'test/testWithXmlDefault.txt', 'test/testWithXmlDefault.xml',
-        'test/testWithXmlLintDefault.txt', 'test/ref/testWithXmlDefault.txt', 'test/ref/testWithXmlDefault.xml' ) )
+    if _VERSION == 'Lua 5.1' then
+        -- this test differs slightly in Lua 5.1 and 5.2
+        -- I did not manage to adjust the "(...tail call...)" printed differently in Lua 5.2 vs 5.1
+        assertEquals( 0,
+            check_xml_output('test/test_with_xml.lua', '', 'test/testWithXmlDefault51.txt', 'test/testWithXmlDefault51.xml',
+            'test/testWithXmlLintDefault51.txt', 'test/ref/testWithXmlDefault51.txt', 'test/ref/testWithXmlDefault51.xml' ) )
+    else
+        assertEquals( 0,
+            check_xml_output('test/test_with_xml.lua', '', 'test/testWithXmlDefault.txt', 'test/testWithXmlDefault.xml',
+            'test/testWithXmlLintDefault.txt', 'test/ref/testWithXmlDefault.txt', 'test/ref/testWithXmlDefault.xml' ) )
+    end
+end
+
+function testTestXmlVerbose()
+    if _VERSION == 'Lua 5.1' then
+        assertEquals( 0,
+            check_xml_output('test/test_with_xml.lua', '--verbose', 'test/testWithXmlVerbose51.txt', 'test/testWithXmlVerbose51.xml',
+            'test/testWithXmlLintVerbose51.txt', 'test/ref/testWithXmlVerbose51.txt', 'test/ref/testWithXmlVerbose51.xml' ) )
+    else
+        assertEquals( 0,
+            check_xml_output('test/test_with_xml.lua', '--verbose', 'test/testWithXmlVerbose.txt', 'test/testWithXmlVerbose.xml',
+            'test/testWithXmlLintVerbose.txt', 'test/ref/testWithXmlVerbose.txt', 'test/ref/testWithXmlVerbose.xml' ) )
+    end
+end
+
+function testTestXmlQuiet()
+    if _VERSION == 'Lua 5.1' then
+        assertEquals( 0,
+            check_xml_output('test/test_with_xml.lua', '--quiet', 'test/testWithXmlQuiet51.txt', 'test/testWithXmlQuiet51.xml',
+            'test/testWithXmlLintQuiet51.txt', 'test/ref/testWithXmlQuiet51.txt', 'test/ref/testWithXmlQuiet51.xml' ) )
+    else
+        assertEquals( 0,
+            check_xml_output('test/test_with_xml.lua', '--quiet', 'test/testWithXmlQuiet.txt', 'test/testWithXmlQuiet.xml',
+            'test/testWithXmlLintQuiet.txt', 'test/ref/testWithXmlQuiet.txt', 'test/ref/testWithXmlQuiet.xml' ) )
+    end
 end
 
 
