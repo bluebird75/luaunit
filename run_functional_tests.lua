@@ -134,6 +134,9 @@ function check_tap_output( fileToRun, options, output, refOutput )
         -- For Lua 5.1 / 5.2 compatibility
         adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)' )
     end
+    -- Windows/Linux compatibility
+    adjustFile( output, '%.[/\\]luaunit')
+    adjustFile( xmlOutput, '%.[/\\]luaunit')
 
     ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
     if not ret then
@@ -157,6 +160,9 @@ function check_text_output( fileToRun, options, output, refOutput )
         -- For Lua 5.1 / 5.2 compatibility
         adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)' )
     end
+    -- Windows/Linux compatibility
+    adjustFile( output, '%.[/\\]luaunit')
+    adjustFile( xmlOutput, '%.[/\\]luaunit')
  
 
     ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
@@ -196,6 +202,9 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     -- For Lua 5.1 / 5.2 compatibility
     adjustFile( output, refOutput, '(.+%[C%]: i?n? ?%?)' )
     adjustFile( xmlOutput, refXmlOutput, '(.+%[C%]: i?n? ?%?.*)' )
+    -- Windows/Linux compatibility
+    adjustFile( output, '%.[/\\]luaunit')
+    adjustFile( xmlOutput, '%.[/\\]luaunit')
 
 
     ret = osExec( string.format('xmllint %s > %s', xmlOutput, xmlLintOutput ) )
