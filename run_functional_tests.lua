@@ -135,7 +135,7 @@ function check_tap_output( fileToRun, options, output, refOutput )
         adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)' )
     end
     -- Windows/Linux compatibility
-    adjustFile( output, refOutput,'%.[/\\]luaunit')
+    adjustFile( output, refOutput,'(%.[/\\]luaunit%.lua)', true)
 
     ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
     if not ret then
@@ -160,7 +160,7 @@ function check_text_output( fileToRun, options, output, refOutput )
         adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)' )
     end
     -- Windows/Linux compatibility
-    adjustFile( output, refOutput,'%.[/\\]luaunit')
+    adjustFile( output, refOutput,'(%.[/\\]luaunit%.lua)', true)
  
 
     ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
@@ -201,8 +201,8 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     adjustFile( output, refOutput, '(.+%[C%]: i?n? ?%?)' )
     adjustFile( xmlOutput, refXmlOutput, '(.+%[C%]: i?n? ?%?.*)' )
     -- Windows/Linux compatibility
-    adjustFile( output, refOutput,'%.[/\\]luaunit')
-    adjustFile( xmlOutput, refXmlOutput, '%.[/\\]luaunit')
+    adjustFile( output, refOutput,'(%.[/\\]luaunit%.lua)')
+    adjustFile( xmlOutput, refXmlOutput, '(%.[/\\]luaunit%.lua)', true)
 
 
     ret = osExec( string.format('xmllint %s > %s', xmlOutput, xmlLintOutput ) )
