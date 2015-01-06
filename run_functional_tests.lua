@@ -143,7 +143,7 @@ function check_tap_output( fileToRun, options, output, refOutput, refExitCode )
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
     if options == '--verbose' then
         -- For Lua 5.1 / 5.2 compatibility
-        adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)' )
+        adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)', true )
     end
     -- Windows/Linux compatibility
     adjustFile( output, refOutput,'(%.[/\\]luaunit%.lua)', true)
@@ -173,7 +173,7 @@ function check_text_output( fileToRun, options, output, refOutput, refExitCode )
     adjustFile( output, refOutput, 'Success: .*, executed in (%d.%d*) seconds' )
     if options ~= '--quiet' then
         -- For Lua 5.1 / 5.2 compatibility
-        adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)' )
+        adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)', true )
     end
     -- Windows/Linux compatibility
     adjustFile( output, refOutput,'(%.[/\\]luaunit%.lua)', true)
@@ -222,10 +222,10 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
     -- For Lua 5.1 / 5.2 compatibility
-    adjustFile( output, refOutput, '(.+%[C%]: i?n? ?%?)' )
-    adjustFile( xmlOutput, refXmlOutput, '(.+%[C%]: i?n? ?%?.*)' )
+    adjustFile( output, refOutput, '(.+%[C%]: i?n? ?%?)', true )
+    adjustFile( xmlOutput, refXmlOutput, '(.+%[C%]: i?n? ?%?.*)', true )
     -- Windows/Linux compatibility
-    adjustFile( output, refOutput,'(%.[/\\]luaunit%.lua)')
+    adjustFile( output, refOutput,'(%.[/\\]luaunit%.lua)', true)
     adjustFile( xmlOutput, refXmlOutput, '(%.[/\\]luaunit%.lua)', true)
 
 
@@ -258,65 +258,86 @@ end
 
 -- check tap output
 
-function testExampleTapDefault()
+function testTapDefault()
     assertEquals( 0,
         check_tap_output('example_with_luaunit.lua', '',          'test/exampleTapDefault.txt', 'test/ref/exampleTapDefault.txt', 12) )
     assertEquals( 0,
         check_tap_output('run_unit_tests.lua', '',          'test/unitTestsTapDefault.txt', 'test/ref/unitTestsTapDefault.txt', 0 ) )
 end
 
-function testExampleTapVerbose( ... )
+function testTapVerbose( ... )
     assertEquals( 0,
         check_tap_output('example_with_luaunit.lua', '--verbose', 'test/exampleTapVerbose.txt', 'test/ref/exampleTapVerbose.txt', 12 ) )
+    assertEquals( 0,
+        check_tap_output('run_unit_tests.lua', '--verbose', 'test/unitTestsVerbose.txt', 'test/ref/unitTestsTapVerbose.txt', 0 ) )
 end
 
-function testExampleTapQuiet( ... )
+function testTapQuiet( ... )
     assertEquals( 0,
         check_tap_output('example_with_luaunit.lua', '--quiet',   'test/exampleTapQuiet.txt',   'test/ref/exampleTapQuiet.txt', 12 ) )
+    assertEquals( 0,
+        check_tap_output('run_unit_tests.lua', '--quiet',   'test/unitTestsTapQuiet.txt',   'test/ref/unitTestsTapQuiet.txt', 0 ) )
 end
 
 -- check text output
 
-function testExampleTextDefault()
+function testTextDefault()
     assertEquals( 0,
         check_text_output('example_with_luaunit.lua', '',          'test/exampleTextDefault.txt', 'test/ref/exampleTextDefault.txt', 12 ) )
+    assertEquals( 0,
+        check_text_output('run_unit_tests.lua', '',          'test/unitTestsTextDefault.txt', 'test/ref/unitTestsTextDefault.txt', 0 ) )
 end
 
-function testExampleTextVerbose( ... )
+function testTextVerbose( ... )
     assertEquals( 0,
         check_text_output('example_with_luaunit.lua', '--verbose', 'test/exampleTextVerbose.txt', 'test/ref/exampleTextVerbose.txt', 12 ) )
+    assertEquals( 0,
+        check_text_output('run_unit_tests.lua', '--verbose', 'test/unitTestsTextVerbose.txt', 'test/ref/unitTestsTextVerbose.txt', 0 ) )
 end
 
-function testExampleTextQuiet( ... )
+function testTextQuiet( ... )
     assertEquals( 0,
         check_text_output('example_with_luaunit.lua', '--quiet',   'test/exampleTextQuiet.txt',   'test/ref/exampleTextQuiet.txt', 12 ) )
+    assertEquals( 0,
+        check_text_output('run_unit_tests.lua', '--quiet',   'test/unitTestsTextQuiet.txt',   'test/ref/unitTestsTextQuiet.txt', 0 ) )
 end
 
 -- check nil output
 
-function testExampleNilDefault()
+function testNilDefault()
     assertEquals( 0,
         check_nil_output('example_with_luaunit.lua', '', 'test/exampleNilDefault.txt', 'test/ref/exampleNilDefault.txt', 12 ) )
+    assertEquals( 0,
+        check_nil_output('run_unit_tests.lua', '', 'test/unitTestseNilDefault.txt', 'test/ref/unitTestsNilDefault.txt', 0 ) )
 end
 
 -- check xml output
 
-function testExampleXmlDefault()
+function testXmlDefault()
     assertEquals( 0,
         check_xml_output('example_with_luaunit.lua', '',          'test/exampleXmlDefault.txt', 'test/exampleXmlDefault.xml',
         'test/exampleXmllintDefault.xml', 'test/ref/exampleXmlDefault.txt', 'test/ref/exampleXmlDefault.xml', 12 ) )
+    assertEquals( 0,
+        check_xml_output('run_unit_tests.lua', '',          'test/unitTestsXmlDefault.txt', 'test/unitTestsXmlDefault.xml',
+        'test/unitTestsXmllintDefault.xml', 'test/ref/unitTestsXmlDefault.txt', 'test/ref/unitTestsXmlDefault.xml', 0 ) )
 end
 
-function testExampleXmlVerbose()
+function testXmlVerbose()
     assertEquals( 0,
         check_xml_output('example_with_luaunit.lua', '--verbose', 'test/exampleXmlVerbose.txt', 'test/exampleXmlVerbose.xml',
         'test/exampleXmllintVerbose.xml', 'test/ref/exampleXmlVerbose.txt', 'test/ref/exampleXmlVerbose.xml', 12 ) )
+    assertEquals( 0,
+        check_xml_output('run_unit_tests.lua', '--verbose', 'test/unitTestsXmlVerbose.txt', 'test/unitTestsXmlVerbose.xml',
+        'test/unitTestsXmllintVerbose.xml', 'test/ref/unitTestsXmlVerbose.txt', 'test/ref/unitTestsXmlVerbose.xml', 0 ) )
 end
 
-function testExampleXmlQuiet()
+function testXmlQuiet()
     assertEquals( 0,
         check_xml_output('example_with_luaunit.lua', '--quiet',   'test/exampleXmlQuiet.txt', 'test/exampleXmlQuiet.xml',
         'test/exampleXmllintQuiet.xml', 'test/ref/exampleXmlQuiet.txt', 'test/ref/exampleXmlQuiet.xml', 12 ) )
+    assertEquals( 0,
+        check_xml_output('run_unit_tests.lua', '--quiet',   'test/unitTestsXmlQuiet.txt', 'test/unitTestsXmlQuiet.xml',
+        'test/unitTestsXmllintQuiet.xml', 'test/ref/unitTestsXmlQuiet.txt', 'test/ref/unitTestsXmlQuiet.xml', 0 ) )
 end
 
 function testTestXmlDefault()
