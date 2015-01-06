@@ -51,7 +51,8 @@ Bugs or feature requests should be reported using `GitHub issues`_.
 
 .. _Github issues: https://github.com/bluebird75/luaunit/issues
 
-Usage and development may be discussed on `LuaUnit mailing-list`_
+Usage and development may be discussed on `LuaUnit mailing-list`_ . If you are using LuaUnit for your
+project, please drop us an note.
 
 .. _LuaUnit mailing-list: http://lists.freehackers.org/list/luaunit%40freehackers.org/ 
 
