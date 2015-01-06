@@ -48,4 +48,6 @@ test/example*.txt
 test/example*.xml
 test/testWithXml*.xml
 test/testWithXml*.txt
+test/unitTests*.xml
+test/unitTests*.txt
 

@@ -44,4 +44,4 @@ example_with_luaunit.lua:124: assertion failed!
 >>> test2_withFailure failed
 example_with_luaunit.lua:130: assertion failed!
 
-Success: 20% - 3 / 15, executed in 0.016 seconds
+Success: 20% - 3 / 15, executed in 0.000 seconds
