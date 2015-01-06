@@ -14,13 +14,13 @@ into Continuous Integration platforms (Jenkins, Maven, ...) . The integrated com
 options provide a flexible interface to select tests by name or patterns, control output 
 format, set verbosity, ...
 
-LuaUnit works with Lua 5.1 and 5.2 . It was tested on Windows XP and Ubuntu 12.04 (see 
-continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) ) and should work on all platforms supported by lua.
+LuaUnit works with Lua 5.1 and 5.2 . It was tested on Windows XP, Windows Server 2012 R2 (x64) and Ubuntu 14.04 (see 
+continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) and [AppVeyor](https://ci.appveyor.com/project/bluebird75/luaunit) ) and should work on all platforms supported by lua.
 It has no other dependency than lua itself. 
 
 LuaUnit is packed into a single-file. To make start using it, just add the file to your project.
 
-LuaUnit is now maintained on github:
+LuaUnit is maintained on github:
 https://github.com/bluebird75/luaunit
 
 It is released under the BSD license.
@@ -29,7 +29,7 @@ Documentation is available on [read-the-docs](http://luaunit.readthedocs.org/en/
 
 **Community**
 
-LuaUnit has a mailing list with low activity (a few emails per months). To subscribe or read the archives, please go to: [LuaUnit Mailing-list](http://lists.freehackers.org/list/luaunit%40freehackers.org/)
+LuaUnit has a mailing list with low activity (a few emails per months). To subscribe or read the archives, please go to: [LuaUnit Mailing-list](http://lists.freehackers.org/list/luaunit%40freehackers.org/). If you are using LuaUnit, please drop us a note, we are always happy to hear from new users.
 
 ### History 
 
