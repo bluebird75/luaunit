@@ -55,13 +55,18 @@ function osExec( s )
     -- print(exitReason)
     -- print(exitCode)
 
-    -- Lua 5.1 : exitSuccess == 0
-    -- Lua 5.2 : exitSuccess == true and exitReason == exit and exitCode == 0
-    if exitSuccess == 0 or (exitSuccess == true and exitReason == 'exit' and exitCode == 0) then
-        return true
-    else
+    if _VERSION == 'Lua 5.1' then
+        exitCode = exitSuccess
+        exitReason = 'exit'
+    end
+
+    if exitReason ~= 'exit' then
+        -- print('return false')
         return false
     end
+
+    -- print('return true')
+    return true
 end
 
 function adjustFile( fileOut, fileIn, pattern, mayBeAbsent )
@@ -237,6 +242,8 @@ end
 function testExampleTapDefault()
     assertEquals( 0,
         check_tap_output('example_with_luaunit.lua', '',          'test/exampleTapDefault.txt', 'test/ref/exampleTapDefault.txt' ) )
+    assertEquals( 0,
+        check_tap_output('run_unit_tests.lua', '',          'test/unitTestsTapDefault.txt', 'test/ref/unitTestsTapDefault.txt' ) )
 end
 
 function testExampleTapVerbose( ... )
@@ -331,9 +338,75 @@ function testTestXmlQuiet()
     end
 end
 
+filesToGenerate = {
+    { 'example_with_luaunit.lua', '', '--output junit --name test/ref/exampleXmlDefault.xml', 'test/ref/exampleXmlDefault.txt' },
+    { 'example_with_luaunit.lua', '--quiet', '--output junit --name test/ref/exampleXmlQuiet.xml', 'test/ref/exampleXmlQuiet.txt' },
+    { 'example_with_luaunit.lua', '--verbose', '--output junit --name test/ref/exampleXmlVerbose.xml', 'test/ref/exampleXmlVerbose.txt' },
+
+    { 'example_with_luaunit.lua', '', '--output tap', 'test/ref/exampleTapDefault.txt' },
+    { 'example_with_luaunit.lua', '--quiet', '--output tap', 'test/ref/exampleTapQuiet.txt' },
+    { 'example_with_luaunit.lua', '--verbose', '--output tap', 'test/ref/exampleTapVerbose.txt' },
+
+    { 'example_with_luaunit.lua', '', '--output text', 'test/ref/exampleTextDefault.txt' },
+    { 'example_with_luaunit.lua', '--quiet', '--output text', 'test/ref/exampleTextQuiet.txt' },
+    { 'example_with_luaunit.lua', '--verbose', '--output text', 'test/ref/exampleTextVerbose.txt' },
+
+    { 'example_with_luaunit.lua', '', '--output nil', 'test/ref/exampleNilDefault.txt' },
+
+    { 'run_unit_tests.lua', '', '--output junit --name test/ref/unitTestsXmlDefault.xml', 'test/ref/unitTestsXmlDefault.txt' },
+    { 'run_unit_tests.lua', '--quiet', '--output junit --name test/ref/unitTestsXmlQuiet.xml', 'test/ref/unitTestsXmlQuiet.txt' },
+    { 'run_unit_tests.lua', '--verbose', '--output junit --name test/ref/unitTestsXmlVerbose.xml', 'test/ref/unitTestsXmlVerbose.txt' },
+
+    { 'run_unit_tests.lua', '', '--output tap', 'test/ref/unitTestsTapDefault.txt' },
+    { 'run_unit_tests.lua', '--quiet', '--output tap', 'test/ref/unitTestsTapQuiet.txt' },
+    { 'run_unit_tests.lua', '--verbose', '--output tap', 'test/ref/unitTestsTapVerbose.txt' },
+
+    { 'run_unit_tests.lua', '', '--output text', 'test/ref/unitTestsTextDefault.txt' },
+    { 'run_unit_tests.lua', '--quiet', '--output text', 'test/ref/unitTestsTextQuiet.txt' },
+    { 'run_unit_tests.lua', '--verbose', '--output text', 'test/ref/unitTestsTextVerbose.txt' },
+}
+
+if _VERSION == 'Lua 5.1' then
+    table.insert( filesToGenerate, { 'test/test_with_xml.lua', '', '--output junit --name test/ref/testWithXmlDefault51.xml', 'test/ref/testWithXmlDefault51.txt' } )
+    table.insert( filesToGenerate, { 'test/test_with_xml.lua', '--verbose', '--output junit --name test/ref/testWithXmlVerbose51.xml', 'test/ref/testWithXmlVerbose51.txt' } )
+    table.insert( filesToGenerate, { 'test/test_with_xml.lua', '--quiet', '--output junit --name test/ref/testWithXmlQuiet51.xml', 'test/ref/testWithXmlQuiet51.txt' } )
+else
+    table.insert( filesToGenerate, { 'test/test_with_xml.lua', '', '--output junit --name test/ref/testWithXmlDefault.xml', 'test/ref/testWithXmlDefault.txt' } )
+    table.insert( filesToGenerate, { 'test/test_with_xml.lua', '--verbose', '--output junit --name test/ref/testWithXmlVerbose.xml', 'test/ref/testWithXmlVerbose.txt' } )
+    table.insert( filesToGenerate, { 'test/test_with_xml.lua', '--quiet', '--output junit --name test/ref/testWithXmlQuiet.xml', 'test/ref/testWithXmlQuiet.txt' } )
+end
+
+function updateRefFiles( filesToGenerate )
+    local ret
+
+    for i,v in ipairs(filesToGenerate) do 
+        report('Generating '..v[4])
+        ret = osExec( string.format('lua %s %s %s > %s', v[1], v[2], v[3], v[4]) )
+        if ret == false then
+            error('Error while generating '..prettystr(v) )
+            os.exit(1)
+        end
+    end
+end
 
 
-os.exit( LuaUnit.run() )
+function main()
+    if arg[1] == '--update' then
+        updateRefFiles( filesToGenerate )
+        --[[
+        for i,v in ipairs(arg) do
+            if v == '--update' then continue end
+            -- according to content of key, generate specific set of reference file
+        end
+        ]]
+        os.exit(0)
+    end
+
+    os.exit( LuaUnit.run() )
+    -- body
+end
+
+main()
 
 -- TODO check output of run_unit_tests
 -- TODO check return values of execution
