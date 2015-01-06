@@ -56,17 +56,18 @@ function osExec( s )
     -- print(exitCode)
 
     if _VERSION == 'Lua 5.1' then
-        exitCode = exitSuccess
+        -- Lua 5.1 returns only the exit code
         exitReason = 'exit'
+        exitCode = exitSuccess
     end
 
-    if exitReason ~= 'exit' then
+    if exitReason ~= 'exit' or exitCode ~= 0 then
         -- print('return false')
-        return false
+        return false, exitCode
     end
 
     -- print('return true')
-    return true
+    return true, exitCode
 end
 
 function adjustFile( fileOut, fileIn, pattern, mayBeAbsent )
@@ -128,11 +129,16 @@ function adjustFile( fileOut, fileIn, pattern, mayBeAbsent )
 
 end
 
-function check_tap_output( fileToRun, options, output, refOutput )
+function check_tap_output( fileToRun, options, output, refOutput, refExitCode )
     local ret
     -- remove output
-    ret = osExec(string.format(
+    ret, exitCode = osExec(string.format(
             'lua %s  --output TAP %s > %s', fileToRun, options, output )  )
+
+    if refExitCode ~= nil and exitCode ~= refExitCode then
+        error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
+    end
+
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
     if options == '--verbose' then
@@ -151,11 +157,16 @@ function check_tap_output( fileToRun, options, output, refOutput )
 end
 
 
-function check_text_output( fileToRun, options, output, refOutput )
+function check_text_output( fileToRun, options, output, refOutput, refExitCode )
     local ret
     -- remove output
-    ret = osExec(string.format(
+    ret, exitCode = osExec(string.format(
             'lua %s  --output text %s > %s', fileToRun, options, output )  )
+
+    if refExitCode ~= nil and exitCode ~= refExitCode then
+        error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
+    end
+
     if options ~= '--quiet' then
         adjustFile( output, refOutput, 'Started on (.*)')
     end
@@ -177,11 +188,15 @@ function check_text_output( fileToRun, options, output, refOutput )
     return 0
 end
 
-function check_nil_output( fileToRun, options, output, refOutput )
+function check_nil_output( fileToRun, options, output, refOutput, refExitCode )
     local ret
     -- remove output
-    ret = osExec(string.format(
+    ret, exitCode = osExec(string.format(
             'lua %s  --output nil %s > %s', fileToRun, options, output )  )
+
+    if refExitCode ~= nil and exitCode ~= refExitCode then
+        error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
+    end
 
     ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
     if not ret then
@@ -191,13 +206,17 @@ function check_nil_output( fileToRun, options, output, refOutput )
     return 0
 end
 
-function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput, refOutput, refXmlOutput )
+function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput, refOutput, refXmlOutput, refExitCode )
     local ret, retcode
     retcode = 0
 
     -- remove output
-    ret = osExec(string.format(
+    ret, exitCode = osExec(string.format(
             'lua %s %s --output junit --name %s > %s', fileToRun, options, xmlOutput, output )  )
+
+    if refExitCode ~= nil and exitCode ~= refExitCode then
+        error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
+    end
 
     adjustFile( output, refOutput, '# XML output to (.*)')
     adjustFile( output, refOutput, '# Started on (.*)')
@@ -241,43 +260,43 @@ end
 
 function testExampleTapDefault()
     assertEquals( 0,
-        check_tap_output('example_with_luaunit.lua', '',          'test/exampleTapDefault.txt', 'test/ref/exampleTapDefault.txt' ) )
+        check_tap_output('example_with_luaunit.lua', '',          'test/exampleTapDefault.txt', 'test/ref/exampleTapDefault.txt', 12) )
     assertEquals( 0,
-        check_tap_output('run_unit_tests.lua', '',          'test/unitTestsTapDefault.txt', 'test/ref/unitTestsTapDefault.txt' ) )
+        check_tap_output('run_unit_tests.lua', '',          'test/unitTestsTapDefault.txt', 'test/ref/unitTestsTapDefault.txt', 0 ) )
 end
 
 function testExampleTapVerbose( ... )
     assertEquals( 0,
-        check_tap_output('example_with_luaunit.lua', '--verbose', 'test/exampleTapVerbose.txt', 'test/ref/exampleTapVerbose.txt' ) )
+        check_tap_output('example_with_luaunit.lua', '--verbose', 'test/exampleTapVerbose.txt', 'test/ref/exampleTapVerbose.txt', 12 ) )
 end
 
 function testExampleTapQuiet( ... )
     assertEquals( 0,
-        check_tap_output('example_with_luaunit.lua', '--quiet',   'test/exampleTapQuiet.txt',   'test/ref/exampleTapQuiet.txt' ) )
+        check_tap_output('example_with_luaunit.lua', '--quiet',   'test/exampleTapQuiet.txt',   'test/ref/exampleTapQuiet.txt', 12 ) )
 end
 
 -- check text output
 
 function testExampleTextDefault()
     assertEquals( 0,
-        check_text_output('example_with_luaunit.lua', '',          'test/exampleTextDefault.txt', 'test/ref/exampleTextDefault.txt' ) )
+        check_text_output('example_with_luaunit.lua', '',          'test/exampleTextDefault.txt', 'test/ref/exampleTextDefault.txt', 12 ) )
 end
 
 function testExampleTextVerbose( ... )
     assertEquals( 0,
-        check_text_output('example_with_luaunit.lua', '--verbose', 'test/exampleTextVerbose.txt', 'test/ref/exampleTextVerbose.txt' ) )
+        check_text_output('example_with_luaunit.lua', '--verbose', 'test/exampleTextVerbose.txt', 'test/ref/exampleTextVerbose.txt', 12 ) )
 end
 
 function testExampleTextQuiet( ... )
     assertEquals( 0,
-        check_text_output('example_with_luaunit.lua', '--quiet',   'test/exampleTextQuiet.txt',   'test/ref/exampleTextQuiet.txt' ) )
+        check_text_output('example_with_luaunit.lua', '--quiet',   'test/exampleTextQuiet.txt',   'test/ref/exampleTextQuiet.txt', 12 ) )
 end
 
 -- check nil output
 
 function testExampleNilDefault()
     assertEquals( 0,
-        check_nil_output('example_with_luaunit.lua', '', 'test/exampleNilDefault.txt', 'test/ref/exampleNilDefault.txt' ) )
+        check_nil_output('example_with_luaunit.lua', '', 'test/exampleNilDefault.txt', 'test/ref/exampleNilDefault.txt', 12 ) )
 end
 
 -- check xml output
@@ -285,19 +304,19 @@ end
 function testExampleXmlDefault()
     assertEquals( 0,
         check_xml_output('example_with_luaunit.lua', '',          'test/exampleXmlDefault.txt', 'test/exampleXmlDefault.xml',
-        'test/exampleXmllintDefault.xml', 'test/ref/exampleXmlDefault.txt', 'test/ref/exampleXmlDefault.xml' ) )
+        'test/exampleXmllintDefault.xml', 'test/ref/exampleXmlDefault.txt', 'test/ref/exampleXmlDefault.xml', 12 ) )
 end
 
 function testExampleXmlVerbose()
     assertEquals( 0,
         check_xml_output('example_with_luaunit.lua', '--verbose', 'test/exampleXmlVerbose.txt', 'test/exampleXmlVerbose.xml',
-        'test/exampleXmllintVerbose.xml', 'test/ref/exampleXmlVerbose.txt', 'test/ref/exampleXmlVerbose.xml' ) )
+        'test/exampleXmllintVerbose.xml', 'test/ref/exampleXmlVerbose.txt', 'test/ref/exampleXmlVerbose.xml', 12 ) )
 end
 
 function testExampleXmlQuiet()
     assertEquals( 0,
         check_xml_output('example_with_luaunit.lua', '--quiet',   'test/exampleXmlQuiet.txt', 'test/exampleXmlQuiet.xml',
-        'test/exampleXmllintQuiet.xml', 'test/ref/exampleXmlQuiet.txt', 'test/ref/exampleXmlQuiet.xml' ) )
+        'test/exampleXmllintQuiet.xml', 'test/ref/exampleXmlQuiet.txt', 'test/ref/exampleXmlQuiet.xml', 12 ) )
 end
 
 function testTestXmlDefault()
@@ -306,11 +325,11 @@ function testTestXmlDefault()
         -- I did not manage to adjust the "(...tail call...)" printed differently in Lua 5.2 vs 5.1
         assertEquals( 0,
             check_xml_output('test/test_with_xml.lua', '', 'test/testWithXmlDefault51.txt', 'test/testWithXmlDefault51.xml',
-            'test/testWithXmlLintDefault51.txt', 'test/ref/testWithXmlDefault51.txt', 'test/ref/testWithXmlDefault51.xml' ) )
+            'test/testWithXmlLintDefault51.txt', 'test/ref/testWithXmlDefault51.txt', 'test/ref/testWithXmlDefault51.xml', 2 ) )
     else
         assertEquals( 0,
             check_xml_output('test/test_with_xml.lua', '', 'test/testWithXmlDefault.txt', 'test/testWithXmlDefault.xml',
-            'test/testWithXmlLintDefault.txt', 'test/ref/testWithXmlDefault.txt', 'test/ref/testWithXmlDefault.xml' ) )
+            'test/testWithXmlLintDefault.txt', 'test/ref/testWithXmlDefault.txt', 'test/ref/testWithXmlDefault.xml', 2 ) )
     end
 end
 
@@ -318,11 +337,11 @@ function testTestXmlVerbose()
     if _VERSION == 'Lua 5.1' then
         assertEquals( 0,
             check_xml_output('test/test_with_xml.lua', '--verbose', 'test/testWithXmlVerbose51.txt', 'test/testWithXmlVerbose51.xml',
-            'test/testWithXmlLintVerbose51.txt', 'test/ref/testWithXmlVerbose51.txt', 'test/ref/testWithXmlVerbose51.xml' ) )
+            'test/testWithXmlLintVerbose51.txt', 'test/ref/testWithXmlVerbose51.txt', 'test/ref/testWithXmlVerbose51.xml', 2 ) )
     else
         assertEquals( 0,
             check_xml_output('test/test_with_xml.lua', '--verbose', 'test/testWithXmlVerbose.txt', 'test/testWithXmlVerbose.xml',
-            'test/testWithXmlLintVerbose.txt', 'test/ref/testWithXmlVerbose.txt', 'test/ref/testWithXmlVerbose.xml' ) )
+            'test/testWithXmlLintVerbose.txt', 'test/ref/testWithXmlVerbose.txt', 'test/ref/testWithXmlVerbose.xml', 2 ) )
     end
 end
 
@@ -330,11 +349,11 @@ function testTestXmlQuiet()
     if _VERSION == 'Lua 5.1' then
         assertEquals( 0,
             check_xml_output('test/test_with_xml.lua', '--quiet', 'test/testWithXmlQuiet51.txt', 'test/testWithXmlQuiet51.xml',
-            'test/testWithXmlLintQuiet51.txt', 'test/ref/testWithXmlQuiet51.txt', 'test/ref/testWithXmlQuiet51.xml' ) )
+            'test/testWithXmlLintQuiet51.txt', 'test/ref/testWithXmlQuiet51.txt', 'test/ref/testWithXmlQuiet51.xml', 2 ) )
     else
         assertEquals( 0,
             check_xml_output('test/test_with_xml.lua', '--quiet', 'test/testWithXmlQuiet.txt', 'test/testWithXmlQuiet.xml',
-            'test/testWithXmlLintQuiet.txt', 'test/ref/testWithXmlQuiet.txt', 'test/ref/testWithXmlQuiet.xml' ) )
+            'test/testWithXmlLintQuiet.txt', 'test/ref/testWithXmlQuiet.txt', 'test/ref/testWithXmlQuiet.xml', 2 ) )
     end
 end
 
