@@ -5,6 +5,8 @@ function report( s )
     print('>>>>>>> '..s )
 end
 
+local IS_UNIX = ( package.config:sub(1,1) == '/' )
+
 -- This function is extracted from the lua Nucleo project.
 -- License is MIT so ok to reuse here
 -- https://github.com/lua-nucleo/lua-nucleo/blob/v0.1.0/lua-nucleo/string.lua#L245-L267
@@ -58,7 +60,13 @@ function osExec( s )
     if _VERSION == 'Lua 5.1' then
         -- Lua 5.1 returns only the exit code
         exitReason = 'exit'
-        exitCode = exitSuccess
+        if IS_UNIX then
+            -- in C:  exitCode = (exitSuccess >> 8) & 0xFF
+            exitCode = (exitSuccess / 256)
+        else
+            -- Windows, life is simple
+            exitCode = exitSuccess
+        end
     end
 
     if exitReason ~= 'exit' or exitCode ~= 0 then
