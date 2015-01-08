@@ -7,6 +7,7 @@ end
 
 local IS_UNIX = ( package.config:sub(1,1) == '/' )
 
+
 -- This function is extracted from the lua Nucleo project.
 -- License is MIT so ok to reuse here
 -- https://github.com/lua-nucleo/lua-nucleo/blob/v0.1.0/lua-nucleo/string.lua#L245-L267
@@ -62,6 +63,7 @@ function osExec( s )
         exitReason = 'exit'
         if IS_UNIX then
             -- in C:  exitCode = (exitSuccess >> 8) & 0xFF
+            -- poor approximation that works:
             exitCode = (exitSuccess / 256)
         else
             -- Windows, life is simple
@@ -76,6 +78,14 @@ function osExec( s )
 
     -- print('return true')
     return true, exitCode
+end
+
+local HAS_XMLLINT 
+do
+    HAS_XMLLINT = osExec('xmllint.exe --version 2> test/has_xmllint.txt')
+    if not HAS_XMLLINT then
+        report('WARNING: xmllint.exe absent, can not validate xml validity')
+    end
 end
 
 function adjustFile( fileOut, fileIn, pattern, mayBeAbsent )
@@ -237,12 +247,14 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     adjustFile( xmlOutput, refXmlOutput, '(%.[/\\]luaunit%.lua)', true)
 
 
-    ret = osExec( string.format('xmllint %s > %s', xmlOutput, xmlLintOutput ) )
-    if ret then
-        -- report(string.format('XMLLint validation ok: file %s', xmlLintOutput) )
-    else
-        error(string.format('XMLLint reported errors : file %s', xmlLintOutput) )
-        retcode = retcode + 1
+    if HAS_XMLLINT then
+        ret = osExec( string.format('xmllint %s > %s', xmlOutput, xmlLintOutput ) )
+        if ret then
+            -- report(string.format('XMLLint validation ok: file %s', xmlLintOutput) )
+        else
+            error(string.format('XMLLint reported errors : file %s', xmlLintOutput) )
+            retcode = retcode + 1
+        end
     end
 
     ret = osExec( string.format('diff -NP -u %s %s', refXmlOutput, xmlOutput ) )
