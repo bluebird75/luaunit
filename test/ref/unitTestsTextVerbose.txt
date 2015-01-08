@@ -1,4 +1,4 @@
-Started on 01/08/15 23:44:15
+Started on 01/09/15 00:13:12
 >>>>>>>>> TestLuaUnitAssertions
 >>> TestLuaUnitAssertions.test_assertAlmostEquals
 >>> TestLuaUnitAssertions.test_assertEquals

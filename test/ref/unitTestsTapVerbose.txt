@@ -1,5 +1,5 @@
 1..104
-# Started on 01/08/15 23:44:15
+# Started on 01/09/15 00:13:12
 # Starting class: TestLuaUnitAssertions
 ok     1	TestLuaUnitAssertions.test_assertAlmostEquals
 ok     2	TestLuaUnitAssertions.test_assertEquals

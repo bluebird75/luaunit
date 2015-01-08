@@ -841,7 +841,7 @@ TapOutput_MT = { __index = TapOutput }
     end
 
     function TapOutput:endTest(testHasFailure)
-        if not self.result.currentTestHasFailure then
+        if not self.result.currentNode:hasFailure() then
             print(string.format("ok     %d\t%s", self.result.currentTestNumber, self.result.currentNode.testName ))
         end
     end
@@ -1288,16 +1288,22 @@ LuaUnit_MT = { __index = LuaUnit }
         number = 0,
         testName = '',
         className = '',
+
+        hasFailure = function(self)
+            -- print('hasFailure: '..prettystr(self))
+            return (self.execStatus ~= nil) and (self.execStatus.status == STATUS_FAIL)
+        end
     }
-    -- NodeStatus_MT = { __index = NodeStatus }
+    NodeStatus_MT = { __index = NodeStatus }
 
     function NodeStatus:new( number, testName, className )
         local t = {}
         t.number = number
         t.testName = testName
         t.className = className
+        -- useless but we know it's the field we want to use
         t.execStatus = nil
-        -- setmetatable( t, NodeStatus_MT )
+        setmetatable( t, NodeStatus_MT )
         return t
     end
 
@@ -1312,7 +1318,7 @@ LuaUnit_MT = { __index = LuaUnit }
         self.result.currentTestNumber = 0
         self.result.currentClassName = ""
         self.result.currentNode = nil
-        self.result.currentTestHasFailure = false
+        -- self.result.currentTestHasFailure = false
         self.result.suiteStarted = true
         self.result.startTime = os.clock()
         self.result.startDate = os.date()
@@ -1341,14 +1347,14 @@ LuaUnit_MT = { __index = LuaUnit }
             self.result.currentClassName
         )
         table.insert( self.result.tests, self.currentNode )
-        self.result.currentTestHasFailure = false
+        -- self.result.currentTestHasFailure = false
         self.output:startTest( testName )
     end
 
     function LuaUnit:addFailure( errorMsg, stackTrace )
-        if not self.result.currentTestHasFailure then
+        if self.result.currentNode.execStatus == nil then
             self.result.failureCount = self.result.failureCount + 1
-            self.result.currentTestHasFailure = true
+            -- self.result.currentTestHasFailure = true
             self.result.currentNode.execStatus = {
                 status = STATUS_FAIL,
                 msg = errorMsg,
@@ -1359,8 +1365,11 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
     function LuaUnit:endTest()
-        self.output:endTest( self.result.currentTestHasFailure )
-        self.result.currentTestHasFailure = false
+        -- self.output:endTest( self.result.currentTestHasFailure )
+        -- print( 'endTEst() '..prettystr(self.result.currentNode))
+        -- print( 'endTEst() '..prettystr(self.result.currentNode:hasFailure()))
+        self.output:endTest( self.result.currentNode:hasFailure() )
+        -- self.result.currentTestHasFailure = false
         self.result.currentNode = nil
     end
 
@@ -1476,7 +1485,7 @@ LuaUnit_MT = { __index = LuaUnit }
         end
 
         -- run testMethod()
-        if not self.result.currentTestHasFailure then
+        if not self.result.currentNode:hasFailure() then
             ok, errMsg, stackTrace = self:protectedCall( classInstance, methodInstance, prettyFuncName)
             if not ok then
                 self:addFailure( errMsg, stackTrace )
