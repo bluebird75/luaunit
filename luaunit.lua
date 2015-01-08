@@ -1318,7 +1318,6 @@ LuaUnit_MT = { __index = LuaUnit }
         self.result.currentTestNumber = 0
         self.result.currentClassName = ""
         self.result.currentNode = nil
-        -- self.result.currentTestHasFailure = false
         self.result.suiteStarted = true
         self.result.startTime = os.clock()
         self.result.startDate = os.date()
@@ -1347,14 +1346,12 @@ LuaUnit_MT = { __index = LuaUnit }
             self.result.currentClassName
         )
         table.insert( self.result.tests, self.currentNode )
-        -- self.result.currentTestHasFailure = false
         self.output:startTest( testName )
     end
 
     function LuaUnit:addFailure( errorMsg, stackTrace )
         if self.result.currentNode.execStatus == nil then
             self.result.failureCount = self.result.failureCount + 1
-            -- self.result.currentTestHasFailure = true
             self.result.currentNode.execStatus = {
                 status = STATUS_FAIL,
                 msg = errorMsg,
@@ -1365,11 +1362,9 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
     function LuaUnit:endTest()
-        -- self.output:endTest( self.result.currentTestHasFailure )
         -- print( 'endTEst() '..prettystr(self.result.currentNode))
         -- print( 'endTEst() '..prettystr(self.result.currentNode:hasFailure()))
         self.output:endTest( self.result.currentNode:hasFailure() )
-        -- self.result.currentTestHasFailure = false
         self.result.currentNode = nil
     end
 
