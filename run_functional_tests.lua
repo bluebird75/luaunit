@@ -72,7 +72,7 @@ function osExec( s )
     end
 
     if exitReason ~= 'exit' or exitCode ~= 0 then
-        -- print('return false')
+        -- print('return false '..tostring(exitCode))
         return false, exitCode
     end
 
@@ -245,8 +245,8 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     adjustFile( output, refOutput, '(.+%[C%]: i?n? ?%?)', true )
     adjustFile( xmlOutput, refXmlOutput, '(.+%[C%]: i?n? ?%?.*)', true )
     -- Windows/Linux compatibility
-    adjustFile( output, refOutput,'(%.[/\\]luaunit%.lua)', true)
-    adjustFile( xmlOutput, refXmlOutput, '(%.[/\\]luaunit%.lua)', true)
+    adjustFile( output, refOutput,'(%.[/\\]luaunit%.lua:%d+:)', true)
+    adjustFile( xmlOutput, refXmlOutput, '(%.[/\\]luaunit%.lua:%d+:)', true)
 
 
     if HAS_XMLLINT then
@@ -259,13 +259,14 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
         end
     end
 
-    ret = osExec( string.format('diff -NP -u %s %s', refXmlOutput, xmlOutput ) )
+    -- ignore change in line numbers for luaunit
+    ret = osExec( string.format([[diff -NP -u -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refXmlOutput, xmlOutput ) )
     if not ret then
         error('XML content mismatch for file : '..xmlOutput)
         retcode = retcode + 1
     end
 
-    ret = osExec( string.format('diff -NP -u %s %s', refOutput, output ) )
+    ret = osExec( string.format([[diff -NP -u  -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output ) )
     if not ret then
         error('XML Output mismatch for file : '..output)
         retcode = retcode + 1
@@ -444,10 +445,13 @@ function updateRefFiles( filesToGenerate )
     for i,v in ipairs(filesToGenerate) do 
         report('Generating '..v[4])
         ret = osExec( string.format('lua %s %s %s > %s', v[1], v[2], v[3], v[4]) )
+        --[[
+        -- exitcode != 0 is not an error for us ...
         if ret == false then
             error('Error while generating '..prettystr(v) )
             os.exit(1)
         end
+        ]]
     end
 end
 

@@ -831,7 +831,7 @@ TapOutput_MT = { __index = TapOutput }
     function TapOutput:startTest(testName) end
 
     function TapOutput:addFailure( errorMsg, stackTrace )
-        print(string.format("not ok %d\t%s", self.result.currentTestNumber, self.result.currentTestName ))
+        print(string.format("not ok %d\t%s", self.result.currentTestNumber, self.result.currentNode.testName ))
         if self.verbosity > VERBOSITY_LOW then
            print( prefixString( '    ', errorMsg ) )
         end
@@ -842,7 +842,7 @@ TapOutput_MT = { __index = TapOutput }
 
     function TapOutput:endTest(testHasFailure)
         if not self.result.currentTestHasFailure then
-            print(string.format("ok     %d\t%s", self.result.currentTestNumber, self.result.currentTestName ))
+            print(string.format("ok     %d\t%s", self.result.currentTestNumber, self.result.currentNode.testName ))
         end
     end
 
@@ -974,12 +974,12 @@ TextOutput_MT = { -- class
 
     function TextOutput:startTest(testName)
         if self.verbosity > VERBOSITY_LOW then 
-            print( ">>> ".. self.result.currentTestName ) 
+            print( ">>> ".. self.result.currentNode.testName ) 
         end 
     end 
 
     function TextOutput:addFailure( errorMsg, stackTrace ) 
-        table.insert( self.errorList, { self.result.currentTestName, errorMsg, stackTrace } ) 
+        table.insert( self.errorList, { self.result.currentNode.testName, errorMsg, stackTrace } ) 
         if self.verbosity == 0 then
             io.stdout:write("F") 
         end
@@ -1310,7 +1310,6 @@ LuaUnit_MT = { __index = LuaUnit }
         self.result.testCount = testCount
         self.result.nonSelectedCount = nonSelectedCount
         self.result.currentTestNumber = 0
-        self.result.currentTestName = ""
         self.result.currentClassName = ""
         self.result.currentNode = nil
         self.result.currentTestHasFailure = false
@@ -1336,7 +1335,6 @@ LuaUnit_MT = { __index = LuaUnit }
 
     function LuaUnit:startTest( testName  )
         self.result.currentTestNumber = self.result.currentTestNumber + 1
-        self.result.currentTestName = testName
         self.result.currentNode = NodeStatus:new(
             self.result.currentTestNumber,
             testName,
@@ -1362,7 +1360,6 @@ LuaUnit_MT = { __index = LuaUnit }
 
     function LuaUnit:endTest()
         self.output:endTest( self.result.currentTestHasFailure )
-        self.result.currentTestName = ""
         self.result.currentTestHasFailure = false
         self.result.currentNode = nil
     end

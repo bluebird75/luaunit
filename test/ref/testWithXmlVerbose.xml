@@ -7,13 +7,13 @@ actual: &quot;cdata does not like ]]&gt;&quot;">
                 <![CDATA[stack traceback:
 	.\luaunit.lua:476: in function 'assertEquals'
 	test/test_with_xml.lua:13: in function 'TestFailuresWithXml.test_failure_with_cdata_xml'
-	.\luaunit.lua:1426: in function <.\luaunit.lua:1426>
+	.\luaunit.lua:1423: in function <.\luaunit.lua:1423>
 	[C]: in function 'xpcall'
-	.\luaunit.lua:1426: in function 'protectedCall'
-	.\luaunit.lua:1483: in function 'execOneFunction'
-	.\luaunit.lua:1582: in function 'runSuiteByInstances'
-	.\luaunit.lua:1635: in function 'runSuiteByNames'
-	.\luaunit.lua:1711: in function <.\luaunit.lua:1651>
+	.\luaunit.lua:1423: in function 'protectedCall'
+	.\luaunit.lua:1480: in function 'execOneFunction'
+	.\luaunit.lua:1579: in function 'runSuiteByInstances'
+	.\luaunit.lua:1632: in function 'runSuiteByNames'
+	.\luaunit.lua:1708: in function <.\luaunit.lua:1648>
 	(...tail calls...)
 	test/test_with_xml.lua:17: in main chunk
 	[C]: in ?]]></failure>
@@ -25,13 +25,13 @@ actual: &apos;&lt;toto&gt;ti&quot;ti&lt;/toto&gt;&apos;">
                 <![CDATA[stack traceback:
 	.\luaunit.lua:476: in function 'assertEquals'
 	test/test_with_xml.lua:9: in function 'TestFailuresWithXml.test_failure_with_simple_xml'
-	.\luaunit.lua:1426: in function <.\luaunit.lua:1426>
+	.\luaunit.lua:1423: in function <.\luaunit.lua:1423>
 	[C]: in function 'xpcall'
-	.\luaunit.lua:1426: in function 'protectedCall'
-	.\luaunit.lua:1483: in function 'execOneFunction'
-	.\luaunit.lua:1582: in function 'runSuiteByInstances'
-	.\luaunit.lua:1635: in function 'runSuiteByNames'
-	.\luaunit.lua:1711: in function <.\luaunit.lua:1651>
+	.\luaunit.lua:1423: in function 'protectedCall'
+	.\luaunit.lua:1480: in function 'execOneFunction'
+	.\luaunit.lua:1579: in function 'runSuiteByInstances'
+	.\luaunit.lua:1632: in function 'runSuiteByNames'
+	.\luaunit.lua:1708: in function <.\luaunit.lua:1648>
 	(...tail calls...)
 	test/test_with_xml.lua:17: in main chunk
 	[C]: in ?]]></failure>
