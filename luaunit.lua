@@ -907,7 +907,7 @@ JUnitOutput_MT = { __index = JUnitOutput }
     end
     function JUnitOutput:startTest(testName)
         print('# Starting test: '..testName)
-        self.fd:write('        <testcase classname="' .. self.result.currentClassName .. '"\n            name="'.. testName .. '">\n')
+        self.fd:write('        <testcase classname="' .. self.result.currentNode.className .. '"\n            name="'.. testName .. '">\n')
     end
 
     function JUnitOutput:addFailure( errorMsg, stackTrace )
