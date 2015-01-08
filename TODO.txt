@@ -5,7 +5,7 @@ TODO v3.1:
 - mention that general error are correctly handled by luaunit as failures
 - in rst, check how to document properly optional parameters
 - fill extra junit test parameters (duration, ...)
-- mention mailing-list in README.md
+- strip luaunit stack more intelligently: exclude content of luaunit
 
 TODO Future:
 ============
@@ -33,10 +33,10 @@ Nice to have:
 ============
 - lua 5.3 ? Need to wait for support by travis-CI
 - stack unwrapping like in py.test
-- strip luaunit stack more intelligently: exclude content of luaunit
 
 Done since 3.0:
 ===============
+x mention mailing-list in README.md
 x validate well-formed xml
 x mention version in documentation
 x mention mailing-list
