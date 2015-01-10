@@ -6,6 +6,7 @@ function report( s )
 end
 
 local IS_UNIX = ( package.config:sub(1,1) == '/' )
+local LUA=arg[-1]
 
 
 -- This function is extracted from the lua Nucleo project.
@@ -153,7 +154,7 @@ function check_tap_output( fileToRun, options, output, refOutput, refExitCode )
     local ret
     -- remove output
     ret, exitCode = osExec(string.format(
-            'lua %s  --output TAP %s > %s', fileToRun, options, output )  )
+            '%s %s  --output TAP %s > %s', LUA, fileToRun, options, output )  )
 
     if refExitCode ~= nil and exitCode ~= refExitCode then
         error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
@@ -181,7 +182,7 @@ function check_text_output( fileToRun, options, output, refOutput, refExitCode )
     local ret
     -- remove output
     ret, exitCode = osExec(string.format(
-            'lua %s  --output text %s > %s', fileToRun, options, output )  )
+            '%s %s  --output text %s > %s', LUA, fileToRun, options, output )  )
 
     if refExitCode ~= nil and exitCode ~= refExitCode then
         error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
@@ -212,7 +213,7 @@ function check_nil_output( fileToRun, options, output, refOutput, refExitCode )
     local ret
     -- remove output
     ret, exitCode = osExec(string.format(
-            'lua %s  --output nil %s > %s', fileToRun, options, output )  )
+            '%s %s  --output nil %s > %s', LUA, fileToRun, options, output )  )
 
     if refExitCode ~= nil and exitCode ~= refExitCode then
         error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
@@ -232,7 +233,7 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
 
     -- remove output
     ret, exitCode = osExec(string.format(
-            'lua %s %s --output junit --name %s > %s', fileToRun, options, xmlOutput, output )  )
+            '%s %s %s --output junit --name %s > %s', LUA, fileToRun, options, xmlOutput, output )  )
 
     if refExitCode ~= nil and exitCode ~= refExitCode then
         error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
@@ -444,7 +445,7 @@ function updateRefFiles( filesToGenerate )
 
     for i,v in ipairs(filesToGenerate) do 
         report('Generating '..v[4])
-        ret = osExec( string.format('lua %s %s %s > %s', v[1], v[2], v[3], v[4]) )
+        ret = osExec( string.format('%s %s %s %s > %s', LUA, v[1], v[2], v[3], v[4]) )
         --[[
         -- exitcode != 0 is not an error for us ...
         if ret == false then
