@@ -6,7 +6,7 @@ function report( s )
 end
 
 local IS_UNIX = ( package.config:sub(1,1) == '/' )
-local LUA=arg[-1]
+local LUA='"'..arg[-1]..'"'
 
 
 -- This function is extracted from the lua Nucleo project.
