@@ -6,6 +6,7 @@ TODO v3.1:
 - in rst, check how to document properly optional parameters
 - fill extra junit test parameters (duration, ...)
 - strip luaunit stack more intelligently: exclude content of luaunit
+- doc: move description of table printing to an annex
 
 TODO Future:
 ============
