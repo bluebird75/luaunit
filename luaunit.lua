@@ -1302,7 +1302,7 @@ LuaUnit_MT = { __index = LuaUnit }
         t.testName = testName
         t.className = className
         -- useless but we know it's the field we want to use
-        t.execStatus = nil
+        t.execStatus = { status=STATUS_PASS, stackTrace=nil, errorMsg=nil }
         setmetatable( t, NodeStatus_MT )
         return t
     end
@@ -1345,12 +1345,13 @@ LuaUnit_MT = { __index = LuaUnit }
             testName,
             self.result.currentClassName
         )
-        table.insert( self.result.tests, self.currentNode )
+        table.insert( self.result.tests, self.result.currentNode )
         self.output:startTest( testName )
     end
 
     function LuaUnit:addFailure( errorMsg, stackTrace )
-        if self.result.currentNode.execStatus == nil then
+        if self.result.currentNode.execStatus ~= nil and 
+            self.result.currentNode.execStatus.status == STATUS_PASS then
             self.result.failureCount = self.result.failureCount + 1
             self.result.currentNode.execStatus = {
                 status = STATUS_FAIL,

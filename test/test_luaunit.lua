@@ -1268,7 +1268,7 @@ TestLuaUnitExecution = {} --class
         function MyTestToto1:test2() table.insert( executedTests, "MyTestToto1:test2" ) end
 
     MyTestToto2 = {} --class
-        function MyTestToto2:test1() table.insert( executedTests, "MyTestToto2:test2" ) end
+        function MyTestToto2:test1() table.insert( executedTests, "MyTestToto2:test1" ) end
 
     MyTestWithFailures = {} --class
         function MyTestWithFailures:testWithFailure1() assertEquals(1, 2) end
@@ -1306,9 +1306,17 @@ TestLuaUnitExecution = {} --class
         runner:setOutputType( "NIL" )
         runner:runSuiteByNames( { 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' } )
         assertEquals( #executedTests, 7 )
-        assertEquals( executedTests[1], "MyTestToto2:test2" )
+        assertEquals( executedTests[1], "MyTestToto2:test1" )
         assertEquals( executedTests[2], "MyTestToto1:test1" )
         assertEquals( executedTests[7], "MyTestFunction" )
+
+        for i,v in ipairs(runner.result.tests) do
+            print( string.format("%s %s", v.testName, prettystr(v)) )
+        end
+        assertEquals( #runner.result.tests, 7 )
+        assertEquals( runner.result.tests[1].testName, "MyTestToto2.test1" )
+        assertEquals( runner.result.tests[2].testName, "MyTestToto1.test1" )
+        assertEquals( runner.result.tests[7].testName, "MyTestFunction" )
     end
 
     function TestLuaUnitExecution:testRunSomeTestByGlobalInstance( )
@@ -1583,7 +1591,7 @@ TestLuaUnitExecution = {} --class
         assertEquals( executedTests[4], "MyTestToto1:test3" )
         assertEquals( executedTests[5], "MyTestToto1:testa" )
         assertEquals( executedTests[6], "MyTestToto1:testb" )
-        assertEquals( executedTests[7], "MyTestToto2:test2" )
+        assertEquals( executedTests[7], "MyTestToto2:test1" )
         assertEquals( #executedTests, 7)
     end
 
