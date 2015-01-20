@@ -289,14 +289,14 @@ function testTapDefault()
         check_tap_output('run_unit_tests.lua', '',          'test/unitTestsTapDefault.txt', 'test/ref/unitTestsTapDefault.txt', 0 ) )
 end
 
-function testTapVerbose( ... )
+function testTapVerbose()
     assertEquals( 0,
         check_tap_output('example_with_luaunit.lua', '--verbose', 'test/exampleTapVerbose.txt', 'test/ref/exampleTapVerbose.txt', 12 ) )
     assertEquals( 0,
         check_tap_output('run_unit_tests.lua', '--verbose', 'test/unitTestsVerbose.txt', 'test/ref/unitTestsTapVerbose.txt', 0 ) )
 end
 
-function testTapQuiet( ... )
+function testTapQuiet()
     assertEquals( 0,
         check_tap_output('example_with_luaunit.lua', '--quiet',   'test/exampleTapQuiet.txt',   'test/ref/exampleTapQuiet.txt', 12 ) )
     assertEquals( 0,
@@ -312,14 +312,14 @@ function testTextDefault()
         check_text_output('run_unit_tests.lua', '',          'test/unitTestsTextDefault.txt', 'test/ref/unitTestsTextDefault.txt', 0 ) )
 end
 
-function testTextVerbose( ... )
+function testTextVerbose()
     assertEquals( 0,
         check_text_output('example_with_luaunit.lua', '--verbose', 'test/exampleTextVerbose.txt', 'test/ref/exampleTextVerbose.txt', 12 ) )
     assertEquals( 0,
         check_text_output('run_unit_tests.lua', '--verbose', 'test/unitTestsTextVerbose.txt', 'test/ref/unitTestsTextVerbose.txt', 0 ) )
 end
 
-function testTextQuiet( ... )
+function testTextQuiet()
     assertEquals( 0,
         check_text_output('example_with_luaunit.lua', '--quiet',   'test/exampleTextQuiet.txt',   'test/ref/exampleTextQuiet.txt', 12 ) )
     assertEquals( 0,

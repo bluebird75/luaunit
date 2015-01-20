@@ -205,7 +205,7 @@ function xmlEscape( s )
         { '>',   "&gt;" },
     }
 
-    for k, v in ipairs( substTable ) do
+    for _, v in ipairs( substTable ) do
         s = string.gsub( s, v[1], v[2] )
     end
 
@@ -337,8 +337,6 @@ function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTab
 end
 
 function _table_contains(t, element)
-    local _, value, v
-
     if t then
         for _, value in pairs(t) do
             if type(value) == type(element) then
@@ -362,7 +360,6 @@ end
 
 function _is_table_items_equals(actual, expected )
     if (type(actual) == 'table') and (type(expected) == 'table') then
-        local k,v
         for k,v in pairs(actual) do
             if not _table_contains(expected, v) then
                 return false
@@ -1134,9 +1131,9 @@ LuaUnit_MT = { __index = LuaUnit }
         -- that match LuaUnit.isTestName
 
         testNames = {}
-        for key, val in pairs(_G) do 
-            if LuaUnit.isTestName( key ) then
-                table.insert( testNames , key )
+        for k, v in pairs(_G) do 
+            if LuaUnit.isTestName( k ) then
+                table.insert( testNames , k )
             end
         end
         table.sort( testNames )

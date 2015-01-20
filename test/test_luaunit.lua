@@ -735,7 +735,7 @@ TestLuaUnitAssertions = {} --class
 
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three=2})
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,four=4})
-        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three})
+        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,'three'})
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,nil})
         assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1})
     end
