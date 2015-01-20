@@ -1,6 +1,7 @@
 require('os')
 require('luaunit')
 
+
 function report( s )
     print('>>>>>>> '..s )
 end

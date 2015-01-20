@@ -1310,9 +1310,6 @@ TestLuaUnitExecution = {} --class
         assertEquals( executedTests[2], "MyTestToto1:test1" )
         assertEquals( executedTests[7], "MyTestFunction" )
 
-        for i,v in ipairs(runner.result.tests) do
-            print( string.format("%s %s", v.testName, prettystr(v)) )
-        end
         assertEquals( #runner.result.tests, 7 )
         assertEquals( runner.result.tests[1].testName, "MyTestToto2.test1" )
         assertEquals( runner.result.tests[2].testName, "MyTestToto1.test1" )
