@@ -169,7 +169,7 @@ function check_tap_output( fileToRun, options, output, refOutput, refExitCode )
     -- Windows/Linux compatibility
     adjustFile( output, refOutput,'(%.[/\\]luaunit%.lua:%d+:)', true)
 
-    ret = osExec( string.format([[diff -NP -u  -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output ) )
+    ret = osExec( string.format([[diff -NPw -u  -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output ) )
     if not ret then
         error('TAP Output mismatch for file : '..output)
     end
@@ -200,7 +200,7 @@ function check_text_output( fileToRun, options, output, refOutput, refExitCode )
     adjustFile( output, refOutput,'(%.[/\\]luaunit%.lua:%d+:)', true)
  
 
-    ret = osExec( string.format([[diff -NP -u  -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output ) )
+    ret = osExec( string.format([[diff -NPw -u  -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output ) )
     if not ret then
         error('Text Output mismatch for file : '..output)
         return 1
@@ -219,7 +219,7 @@ function check_nil_output( fileToRun, options, output, refOutput, refExitCode )
         error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
     end
 
-    ret = osExec( string.format([[diff -NP -u  -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output ) )
+    ret = osExec( string.format([[diff -NPw -u  -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output ) )
     if not ret then
         error('NIL Output mismatch for file : '..output)
     end
@@ -261,13 +261,13 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     end
 
     -- ignore change in line numbers for luaunit
-    ret = osExec( string.format([[diff -NP -u -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refXmlOutput, xmlOutput ) )
+    ret = osExec( string.format([[diff -NPw -u -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refXmlOutput, xmlOutput ) )
     if not ret then
         error('XML content mismatch for file : '..xmlOutput)
         retcode = retcode + 1
     end
 
-    ret = osExec( string.format([[diff -NP -u  -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output ) )
+    ret = osExec( string.format([[diff -NPw -u  -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output ) )
     if not ret then
         error('XML Output mismatch for file : '..output)
         retcode = retcode + 1
