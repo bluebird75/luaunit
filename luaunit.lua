@@ -1299,7 +1299,7 @@ LuaUnit_MT = { __index = LuaUnit }
         t.testName = testName
         t.className = className
         -- useless but we know it's the field we want to use
-        t.execStatus = { status=STATUS_PASS, stackTrace=nil, errorMsg=nil }
+        t.execStatus = { status=STATUS_PASS, stackTrace=nil, msg=nil }
         setmetatable( t, NodeStatus_MT )
         return t
     end
