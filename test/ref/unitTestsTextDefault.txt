@@ -1,4 +1,4 @@
-Started on 01/09/15 00:13:12
+Started on 01/27/15 23:59:30
 >>>>>>>>> TestLuaUnitAssertions
 >>> TestLuaUnitAssertions.test_assertAlmostEquals
 >>> TestLuaUnitAssertions.test_assertEquals
@@ -122,4 +122,4 @@ Started on 01/09/15 00:13:12
 >>> TestMock.testMock
 
 =========================================================
-Success: 100% - 108 / 108, executed in 0.016 seconds
+Success: 100% - 108 / 108, executed in 0.031 seconds

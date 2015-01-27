@@ -1,19 +1,19 @@
 # XML output to test/ref/testWithXmlQuiet.xml
-# Started on 01/27/15 23:52:13
+# Started on 01/27/15 23:59:30
 # Starting class: TestFailuresWithXml
 # Starting test: TestFailuresWithXml.test_failure_with_cdata_xml
 # Failure: test/test_with_xml.lua:13: expected: "got it"
 actual: "cdata does not like ]]>"
 # stack traceback:
-	luaunit.lua:473: in function 'assertEquals'
+	./luaunit.lua:473: in function 'assertEquals'
 	test/test_with_xml.lua:13: in function 'TestFailuresWithXml.test_failure_with_cdata_xml'
-	luaunit.lua:1451: in function <luaunit.lua:1451>
+	./luaunit.lua:1451: in function <./luaunit.lua:1451>
 	[C]: in function 'xpcall'
-	luaunit.lua:1451: in function 'protectedCall'
-	luaunit.lua:1508: in function 'execOneFunction'
-	luaunit.lua:1607: in function 'runSuiteByInstances'
-	luaunit.lua:1660: in function 'runSuiteByNames'
-	luaunit.lua:1736: in function <luaunit.lua:1676>
+	./luaunit.lua:1451: in function 'protectedCall'
+	./luaunit.lua:1508: in function 'execOneFunction'
+	./luaunit.lua:1607: in function 'runSuiteByInstances'
+	./luaunit.lua:1660: in function 'runSuiteByNames'
+	./luaunit.lua:1736: in function <./luaunit.lua:1676>
 	(...tail calls...)
 	test/test_with_xml.lua:17: in main chunk
 	[C]: in ?
@@ -21,16 +21,16 @@ actual: "cdata does not like ]]>"
 # Failure: test/test_with_xml.lua:9: expected: "got it"
 actual: '<toto>ti"ti</toto>'
 # stack traceback:
-	luaunit.lua:473: in function 'assertEquals'
+	./luaunit.lua:473: in function 'assertEquals'
 	test/test_with_xml.lua:9: in function 'TestFailuresWithXml.test_failure_with_simple_xml'
-	luaunit.lua:1451: in function <luaunit.lua:1451>
+	./luaunit.lua:1451: in function <./luaunit.lua:1451>
 	[C]: in function 'xpcall'
-	luaunit.lua:1451: in function 'protectedCall'
-	luaunit.lua:1508: in function 'execOneFunction'
-	luaunit.lua:1607: in function 'runSuiteByInstances'
-	luaunit.lua:1660: in function 'runSuiteByNames'
-	luaunit.lua:1736: in function <luaunit.lua:1676>
+	./luaunit.lua:1451: in function 'protectedCall'
+	./luaunit.lua:1508: in function 'execOneFunction'
+	./luaunit.lua:1607: in function 'runSuiteByInstances'
+	./luaunit.lua:1660: in function 'runSuiteByNames'
+	./luaunit.lua:1736: in function <./luaunit.lua:1676>
 	(...tail calls...)
 	test/test_with_xml.lua:17: in main chunk
 	[C]: in ?
-# Ran 2 tests in 0.031 seconds, 0 successes, 2 failures
+# Ran 2 tests in 0.000 seconds, 0 successes, 2 failures

@@ -1,5 +1,5 @@
 1..108
-# Started on 01/27/15 23:51:00
+# Started on 01/27/15 23:59:30
 # Starting class: TestLuaUnitAssertions
 ok     1	TestLuaUnitAssertions.test_assertAlmostEquals
 ok     2	TestLuaUnitAssertions.test_assertEquals
@@ -115,4 +115,4 @@ ok     106	TestLuaUnitUtilities.test_xmlCDataEscape
 ok     107	TestLuaUnitUtilities.test_xmlEscape
 # Starting class: TestMock
 ok     108	TestMock.testMock
-# Ran 108 tests in 0.031 seconds, 108 successes, 0 failures
+# Ran 108 tests in 0.016 seconds, 108 successes, 0 failures
