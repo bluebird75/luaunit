@@ -1485,8 +1485,6 @@ TestLuaUnitExecution = {} --class
         assertEquals( myExecutedTests[1], 'setUp' )   
         assertEquals( myExecutedTests[2], 'tearDown')
         assertEquals( #myExecutedTests, 2)
-
-        -- XXX check content of failure in test result
     end
 
     function TestLuaUnitExecution:testWithSetupTeardownErrors5()
@@ -1506,8 +1504,6 @@ TestLuaUnitExecution = {} --class
         assertEquals( myExecutedTests[2], 'test1' )   
         assertEquals( myExecutedTests[3], 'tearDown')
         assertEquals( #myExecutedTests, 3)
-
-        -- XXX check content of failure in test result
     end
 
     function TestLuaUnitExecution:testOutputInterface()
@@ -1690,8 +1686,39 @@ TestLuaUnitResults = {} -- class
         assertIsString( runner.result.tests[3].execStatus.stackTrace )
     end
 
--- TODO
--- check that in-test execution correclty sets currentTest
+    function TestLuaUnitResults:test_resultsWhileTestInProgress()
+        local runner = LuaUnit:new()
+        local MyMocker = {}
+        MyMocker.new = function()
+            local t = Mock:new()
+            t.startTest = function(self, testName ) 
+                if self.result.currentNode.number == 1 then
+                    assertEquals( self.result.currentNode.number, 1 )
+                    assertEquals( self.result.currentNode.testName, 'MyTestWithFailures.testOk' )
+                    assertEquals( self.result.currentNode.className, 'MyTestWithFailures' )
+                    assertEquals( self.result.currentNode.execStatus.status, ExecStatus.PASS )
+                elseif self.result.currentNode.number == 2 then
+                    assertEquals( self.result.currentNode.number, 2 )
+                    assertEquals( self.result.currentNode.testName, 'MyTestWithFailures.testWithFailure1' )
+                    assertEquals( self.result.currentNode.className, 'MyTestWithFailures' )
+                    assertEquals( self.result.currentNode.execStatus.status, ExecStatus.PASS )
+                end
+            end
+            t.endTest = function(self, status)
+                if self.result.currentNode.number == 1 then
+                    assertEquals( self.result.currentNode.execStatus.status, ExecStatus.PASS )
+                elseif self.result.currentNode.number == 2 then
+                    assertEquals( self.result.currentNode.execStatus.status, ExecStatus.FAIL )
+                end
+            end
+            return t
+        end
+        runner.outputType = MyMocker
+        runner:runSuite( 'MyTestWithFailures' )
+        m = runner.output
 
+        assertEquals( m.calls[1][1], 'startSuite' )
+        assertEquals(#m.calls[1], 2 )
+    end
 
 -- To execute me , use: lua run_unit_tests.lua
