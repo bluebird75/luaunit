@@ -140,6 +140,10 @@ function adjustFile( fileOut, fileIn, pattern, mayBeAbsent )
     end
 
     if dest == nil then
+        if mayBeAbsent == true then
+            -- capture but nothing to adjust, just return
+            return
+        end
         error('No line in file '..fileOut..' matching pattern '..pattern )
     end
 
@@ -403,43 +407,67 @@ function testTestXmlQuiet()
     end
 end
 
-filesToGenerate = {
+filesToGenerateExampleXml = {
     { 'example_with_luaunit.lua', '', '--output junit --name test/ref/exampleXmlDefault.xml', 'test/ref/exampleXmlDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output junit --name test/ref/exampleXmlQuiet.xml', 'test/ref/exampleXmlQuiet.txt' },
     { 'example_with_luaunit.lua', '--verbose', '--output junit --name test/ref/exampleXmlVerbose.xml', 'test/ref/exampleXmlVerbose.txt' },
+}
 
+filesToGenerateExampleTap = {
     { 'example_with_luaunit.lua', '', '--output tap', 'test/ref/exampleTapDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output tap', 'test/ref/exampleTapQuiet.txt' },
     { 'example_with_luaunit.lua', '--verbose', '--output tap', 'test/ref/exampleTapVerbose.txt' },
+}
 
+filesToGenerateExampleText = {
     { 'example_with_luaunit.lua', '', '--output text', 'test/ref/exampleTextDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output text', 'test/ref/exampleTextQuiet.txt' },
     { 'example_with_luaunit.lua', '--verbose', '--output text', 'test/ref/exampleTextVerbose.txt' },
+}
 
+filesToGenerateExampleNil = {
     { 'example_with_luaunit.lua', '', '--output nil', 'test/ref/exampleNilDefault.txt' },
+}
 
+filesToGenerateUnitXml = {
     { 'run_unit_tests.lua', '', '--output junit --name test/ref/unitTestsXmlDefault.xml', 'test/ref/unitTestsXmlDefault.txt' },
     { 'run_unit_tests.lua', '--quiet', '--output junit --name test/ref/unitTestsXmlQuiet.xml', 'test/ref/unitTestsXmlQuiet.txt' },
     { 'run_unit_tests.lua', '--verbose', '--output junit --name test/ref/unitTestsXmlVerbose.xml', 'test/ref/unitTestsXmlVerbose.txt' },
+}
 
+filesToGenerateUnitTap = {
     { 'run_unit_tests.lua', '', '--output tap', 'test/ref/unitTestsTapDefault.txt' },
     { 'run_unit_tests.lua', '--quiet', '--output tap', 'test/ref/unitTestsTapQuiet.txt' },
     { 'run_unit_tests.lua', '--verbose', '--output tap', 'test/ref/unitTestsTapVerbose.txt' },
+}
 
+filesToGenerateUnitText = {
     { 'run_unit_tests.lua', '', '--output text', 'test/ref/unitTestsTextDefault.txt' },
     { 'run_unit_tests.lua', '--quiet', '--output text', 'test/ref/unitTestsTextQuiet.txt' },
     { 'run_unit_tests.lua', '--verbose', '--output text', 'test/ref/unitTestsTextVerbose.txt' },
 }
 
+filesToGenerateTestXml = {}
 if _VERSION == 'Lua 5.1' then
-    table.insert( filesToGenerate, { 'test/test_with_xml.lua', '', '--output junit --name test/ref/testWithXmlDefault51.xml', 'test/ref/testWithXmlDefault51.txt' } )
-    table.insert( filesToGenerate, { 'test/test_with_xml.lua', '--verbose', '--output junit --name test/ref/testWithXmlVerbose51.xml', 'test/ref/testWithXmlVerbose51.txt' } )
-    table.insert( filesToGenerate, { 'test/test_with_xml.lua', '--quiet', '--output junit --name test/ref/testWithXmlQuiet51.xml', 'test/ref/testWithXmlQuiet51.txt' } )
+    table.insert( filesToGenerateTestXml, { 'test/test_with_xml.lua', '', '--output junit --name test/ref/testWithXmlDefault51.xml', 'test/ref/testWithXmlDefault51.txt' } )
+    table.insert( filesToGenerateTestXml, { 'test/test_with_xml.lua', '--verbose', '--output junit --name test/ref/testWithXmlVerbose51.xml', 'test/ref/testWithXmlVerbose51.txt' } )
+    table.insert( filesToGenerateTestXml, { 'test/test_with_xml.lua', '--quiet', '--output junit --name test/ref/testWithXmlQuiet51.xml', 'test/ref/testWithXmlQuiet51.txt' } )
 else
-    table.insert( filesToGenerate, { 'test/test_with_xml.lua', '', '--output junit --name test/ref/testWithXmlDefault.xml', 'test/ref/testWithXmlDefault.txt' } )
-    table.insert( filesToGenerate, { 'test/test_with_xml.lua', '--verbose', '--output junit --name test/ref/testWithXmlVerbose.xml', 'test/ref/testWithXmlVerbose.txt' } )
-    table.insert( filesToGenerate, { 'test/test_with_xml.lua', '--quiet', '--output junit --name test/ref/testWithXmlQuiet.xml', 'test/ref/testWithXmlQuiet.txt' } )
+    table.insert( filesToGenerateTestXml, { 'test/test_with_xml.lua', '', '--output junit --name test/ref/testWithXmlDefault.xml', 'test/ref/testWithXmlDefault.txt' } )
+    table.insert( filesToGenerateTestXml, { 'test/test_with_xml.lua', '--verbose', '--output junit --name test/ref/testWithXmlVerbose.xml', 'test/ref/testWithXmlVerbose.txt' } )
+    table.insert( filesToGenerateTestXml, { 'test/test_with_xml.lua', '--quiet', '--output junit --name test/ref/testWithXmlQuiet.xml', 'test/ref/testWithXmlQuiet.txt' } )
 end
+
+filesSetIndex = {
+    UnitText=filesToGenerateUnitText,
+    UnitTap=filesToGenerateUnitTap,
+    UnitXml=filesToGenerateUnitXml,
+    ExampleNil=filesToGenerateExampleNil,
+    ExampleText=filesToGenerateExampleText,
+    ExampleTap=filesToGenerateExampleTap,
+    ExampleXml=filesToGenerateExampleXml,
+    TestXml=filesToGenerateTestXml,
+}
 
 function updateRefFiles( filesToGenerate )
     local ret
@@ -460,13 +488,26 @@ end
 
 function main()
     if arg[1] == '--update' then
-        updateRefFiles( filesToGenerate )
-        --[[
-        for i,v in ipairs(arg) do
-            if v == '--update' then continue end
-            -- according to content of key, generate specific set of reference file
+        if #arg == 1 then
+            -- generate all files
+            -- print('Generating all files' )
+            for k,v in filesSetIndex do 
+                -- print('Generating '..v )
+                updateRefFiles( v )
+            end
+        else
+            -- generate subset of files
+            local i=2
+            while i <=  #arg do
+                fileSet = filesSetIndex[ arg[i] ]
+                if fileSet == nil then
+                    error('Unable to generate files for target '..arg[i] )
+                end
+                -- print('Generating '..arg[i])
+                updateRefFiles( fileSet )
+                i = i + 1
+            end
         end
-        ]]
         os.exit(0)
     end
 
