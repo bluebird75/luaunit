@@ -491,7 +491,7 @@ function main()
         if #arg == 1 then
             -- generate all files
             -- print('Generating all files' )
-            for k,v in filesSetIndex do 
+            for k,v in pairs(filesSetIndex) do 
                 -- print('Generating '..v )
                 updateRefFiles( v )
             end
