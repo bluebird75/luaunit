@@ -1280,15 +1280,48 @@ LuaUnit_MT = { __index = LuaUnit }
 
     --------------[[ Output methods ]]-------------------------
 
+    ExecStatus = { -- class
+        __class__ = 'ExecStatus'
+    }
+    ExecStatus_MT = { __index = ExecStatus }
+
+    function ExecStatus:new()
+        -- default is pass
+        local t = {}
+        t.status = self.PASS
+        t.msg = nil
+        t.stackTrace = nil
+        setmetatable( t, ExecStatus_MT )
+        return t
+    end
+
+    function ExecStatus:pass()
+        self.status = self.PASS
+        self.msg = nil
+        self.stackTrace = nil
+    end
+
+    function ExecStatus:fail(msg, stackTrace)
+        self.status = self.FAIL
+        self.msg = msg
+        self.stackTrace = stackTrace
+    end
+
+    -- values of status 
+    ExecStatus.PASS='PASS'
+    ExecStatus.FAIL='FAIL'
+
+
     NodeStatus = { -- class
         __class__ = 'NodeStatus',
         number = 0,
         testName = '',
         className = '',
+        execStatus = nil, -- will contain an instance of ExecStatus after proper test execution
 
         hasFailure = function(self)
             -- print('hasFailure: '..prettystr(self))
-            return (self.execStatus ~= nil) and (self.execStatus.status == STATUS_FAIL)
+            return (self.execStatus ~= nil) and (self.execStatus.status == ExecStatus.FAIL)
         end
     }
     NodeStatus_MT = { __index = NodeStatus }
@@ -1299,13 +1332,10 @@ LuaUnit_MT = { __index = LuaUnit }
         t.testName = testName
         t.className = className
         -- useless but we know it's the field we want to use
-        t.execStatus = { status=STATUS_PASS, stackTrace=nil, msg=nil }
+        t.execStatus = ExecStatus:new()
         setmetatable( t, NodeStatus_MT )
         return t
     end
-
-    STATUS_PASS='pass'
-    STATUS_FAIL='fail'
 
     function LuaUnit:startSuite(testCount, nonSelectedCount)
         self.result = {}
@@ -1348,13 +1378,9 @@ LuaUnit_MT = { __index = LuaUnit }
 
     function LuaUnit:addFailure( errorMsg, stackTrace )
         if self.result.currentNode.execStatus ~= nil and 
-            self.result.currentNode.execStatus.status == STATUS_PASS then
+            self.result.currentNode.execStatus.status == ExecStatus.PASS then
             self.result.failureCount = self.result.failureCount + 1
-            self.result.currentNode.execStatus = {
-                status = STATUS_FAIL,
-                msg = errorMsg,
-                stackTrace = stackTrace
-            }
+            self.result.currentNode.execStatus:fail( errorMsg, stackTrace )
         end
         self.output:addFailure( errorMsg, stackTrace )
     end

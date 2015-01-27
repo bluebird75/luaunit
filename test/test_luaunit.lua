@@ -1354,8 +1354,6 @@ TestLuaUnitExecution = {} --class
 
         ret = runner:runSuite( 'MyTestToto1' )
         assertEquals(ret, 0)
-
-        -- XXX check content of failure in test result
     end
 
     function TestLuaUnitExecution:testTestCountAndFailCount()
@@ -1408,8 +1406,6 @@ TestLuaUnitExecution = {} --class
         assertEquals( myExecutedTests[8], '2test1')
         assertEquals( myExecutedTests[9], '2tearDown')
         assertEquals( #myExecutedTests, 9)
-
-        -- XXX check content of failure in test result
     end
 
     function TestLuaUnitExecution:testWithSetupTeardownErrors1()
@@ -1627,25 +1623,48 @@ TestLuaUnitResults = {} -- class
         LuaUnit.isTestName = function( s ) return (string.sub(s,1,6) == 'MyTest') end
     end
 
+    function TestLuaUnitResults:test_execStatus()
+        es = ExecStatus:new()
+        assertEquals( es.status, ExecStatus.PASS )
+        assertNil( es.msg )
+        assertNil( es.stackTrace )
+
+        es:fail( 'msgToto', 'stackTraceToto' )
+        assertEquals( es.status, ExecStatus.FAIL )
+        assertEquals( es.msg, 'msgToto' )
+        assertEquals( es.stackTrace, 'stackTraceToto' )
+
+        es2 = ExecStatus:new()
+        assertEquals( es2.status, ExecStatus.PASS )
+        assertNil( es2.msg )
+        assertNil( es2.stackTrace )
+
+        es:pass()
+        assertEquals( es.status, ExecStatus.PASS )
+        assertNil( es.msg )
+        assertNil( es.stackTrace )
+
+    end
+
     function TestLuaUnitResults:test_runSuiteOk()
         local runner = LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByNames( { 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' } )
         assertEquals( #runner.result.tests, 7 )
         assertEquals( runner.result.tests[1], { 
-            testName="MyTestToto2.test1", number=1, className='MyTestToto2', execStatus={status=STATUS_PASS } } )
+            testName="MyTestToto2.test1", number=1, className='MyTestToto2', execStatus={status=ExecStatus.PASS } } )
         assertEquals( runner.result.tests[2], { 
-            testName="MyTestToto1.test1", number=2, className='MyTestToto1', execStatus={status=STATUS_PASS } } )
+            testName="MyTestToto1.test1", number=2, className='MyTestToto1', execStatus={status=ExecStatus.PASS } } )
         assertEquals( runner.result.tests[3], { 
-            testName="MyTestToto1.test2", number=3, className='MyTestToto1', execStatus={status=STATUS_PASS } } )
+            testName="MyTestToto1.test2", number=3, className='MyTestToto1', execStatus={status=ExecStatus.PASS } } )
         assertEquals( runner.result.tests[4], { 
-            testName="MyTestToto1.test3", number=4, className='MyTestToto1', execStatus={status=STATUS_PASS } } )
+            testName="MyTestToto1.test3", number=4, className='MyTestToto1', execStatus={status=ExecStatus.PASS } } )
         assertEquals( runner.result.tests[5], { 
-            testName="MyTestToto1.testa", number=5, className='MyTestToto1', execStatus={status=STATUS_PASS } } )
+            testName="MyTestToto1.testa", number=5, className='MyTestToto1', execStatus={status=ExecStatus.PASS } } )
         assertEquals( runner.result.tests[6], { 
-            testName="MyTestToto1.testb", number=6, className='MyTestToto1', execStatus={status=STATUS_PASS } } )
+            testName="MyTestToto1.testb", number=6, className='MyTestToto1', execStatus={status=ExecStatus.PASS } } )
         assertEquals( runner.result.tests[7], { 
-            testName="MyTestFunction", number=7, className='[TestFunctions]', execStatus={status=STATUS_PASS } } )
+            testName="MyTestFunction", number=7, className='[TestFunctions]', execStatus={status=ExecStatus.PASS } } )
     end
 
     function TestLuaUnitResults:test_runSuiteWithFailures()
@@ -1654,15 +1673,25 @@ TestLuaUnitResults = {} -- class
         runner:runSuite( 'MyTestWithFailures' )
 
         assertEquals( #runner.result.tests, 3 )
+
+        assertEquals( runner.result.tests[1], { 
+            testName="MyTestWithFailures.testOk", number=1, className='MyTestWithFailures', execStatus={status=ExecStatus.PASS } } )
+
         assertEquals( runner.result.tests[2].testName, 'MyTestWithFailures.testWithFailure1' )
         assertEquals( runner.result.tests[2].className, 'MyTestWithFailures' )
-        assertEquals( runner.result.tests[2].execStatus.status, STATUS_FAIL )
-        assertNotNil( runner.result.tests[2].execStatus.msg )
-        assertNotNil( runner.result.tests[2].execStatus.stackTrace )
+        assertEquals( runner.result.tests[2].execStatus.status, ExecStatus.FAIL )
+        assertIsString( runner.result.tests[2].execStatus.msg )
+        assertIsString( runner.result.tests[2].execStatus.stackTrace )
+
+        assertEquals( runner.result.tests[3].testName, 'MyTestWithFailures.testWithFailure2' )
+        assertEquals( runner.result.tests[3].className, 'MyTestWithFailures' )
+        assertEquals( runner.result.tests[3].execStatus.status, ExecStatus.FAIL )
+        assertIsString( runner.result.tests[3].execStatus.msg )
+        assertIsString( runner.result.tests[3].execStatus.stackTrace )
     end
 
--- TODO:
--- check that failure contain a stack trace and an error message
--- check the status of each test: success, failure
+-- TODO
+-- check that in-test execution correclty sets currentTest
+
 
 -- To execute me , use: lua run_unit_tests.lua
