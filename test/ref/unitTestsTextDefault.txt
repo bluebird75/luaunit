@@ -85,6 +85,12 @@ Started on 01/09/15 00:13:12
 >>> TestLuaUnitExecution.test_filterWithPattern
 >>> TestLuaUnitExecution.test_runSuiteByNames
 
+>>>>>>>>> TestLuaUnitResults
+>>> TestLuaUnitResults.test_execStatus
+>>> TestLuaUnitResults.test_resultsWhileTestInProgress
+>>> TestLuaUnitResults.test_runSuiteOk
+>>> TestLuaUnitResults.test_runSuiteWithFailures
+
 >>>>>>>>> TestLuaUnitUtilities
 >>> TestLuaUnitUtilities.test_IsClassMethod
 >>> TestLuaUnitUtilities.test_IsFunction
@@ -116,4 +122,4 @@ Started on 01/09/15 00:13:12
 >>> TestMock.testMock
 
 =========================================================
-Success: 100% - 104 / 104, executed in 0.016 seconds
+Success: 100% - 108 / 108, executed in 0.016 seconds

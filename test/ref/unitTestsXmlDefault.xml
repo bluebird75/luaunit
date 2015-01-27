@@ -241,6 +241,20 @@
             name="TestLuaUnitExecution.test_runSuiteByNames">
         </testcase>
     </testsuite>
+    <testsuite name="TestLuaUnitResults">
+        <testcase classname="TestLuaUnitResults"
+            name="TestLuaUnitResults.test_execStatus">
+        </testcase>
+        <testcase classname="TestLuaUnitResults"
+            name="TestLuaUnitResults.test_resultsWhileTestInProgress">
+        </testcase>
+        <testcase classname="TestLuaUnitResults"
+            name="TestLuaUnitResults.test_runSuiteOk">
+        </testcase>
+        <testcase classname="TestLuaUnitResults"
+            name="TestLuaUnitResults.test_runSuiteWithFailures">
+        </testcase>
+    </testsuite>
     <testsuite name="TestLuaUnitUtilities">
         <testcase classname="TestLuaUnitUtilities"
             name="TestLuaUnitUtilities.test_IsClassMethod">
