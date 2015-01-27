@@ -1377,7 +1377,7 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
     function LuaUnit:addFailure( errorMsg, stackTrace )
-        if self.result.currentNode.execStatus ~= nil and 
+        if self.result.currentNode.execStatus == nil or 
             self.result.currentNode.execStatus.status == ExecStatus.PASS then
             self.result.failureCount = self.result.failureCount + 1
             self.result.currentNode.execStatus:fail( errorMsg, stackTrace )
