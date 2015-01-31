@@ -1336,6 +1336,8 @@ LuaUnit_MT = { __index = LuaUnit }
         self.result.startIsodate = os.date('%Y-%m-%dT%H-%M-%S')
         self.result.patternFilter = self.patternFilter
         self.result.tests = {}
+        self.result.failures = {}
+
         self.outputType = self.outputType or TextOutput
         self.output = self.outputType:new()
         self.output.runner = self
@@ -1365,6 +1367,7 @@ LuaUnit_MT = { __index = LuaUnit }
         if self.result.currentNode.status == NodeStatus.PASS then
             self.result.failureCount = self.result.failureCount + 1
             self.result.currentNode:fail( errorMsg, stackTrace )
+            table.insert( self.result.failures, self.result.currentNode )
         end
         self.output:addFailure( errorMsg, stackTrace )
     end
