@@ -1,5 +1,5 @@
 1..15
-# Started on 01/31/15 22:22:13
+# Started on 02/01/15 00:00:55
 # Starting class: TestTiti
 TestTiti:setUp
 some stuff test 1
@@ -32,4 +32,4 @@ not ok 12	TestToto.test8b
 not ok 13	test1_withFailure
 not ok 14	test2_withFailure
 ok     15	test3
-# Ran 15 tests in 0.015 seconds, 3 successes, 12 failures
+# Ran 15 tests in 0.000 seconds, 3 successes, 12 failures

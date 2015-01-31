@@ -323,6 +323,9 @@
             name="TestLuaUnitUtilities.test_strSplitOneCharDelim">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
+            name="TestLuaUnitUtilities.test_stripStackTrace">
+        </testcase>
+        <testcase classname="TestLuaUnitUtilities"
             name="TestLuaUnitUtilities.test_table_keytostring">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"

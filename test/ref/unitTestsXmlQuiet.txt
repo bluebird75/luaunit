@@ -1,5 +1,5 @@
 # XML output to test/ref/unitTestsXmlQuiet.xml
-# Started on 01/31/15 22:22:14
+# Started on 02/01/15 00:00:56
 # Starting class: TestLuaUnitAssertions
 # Starting test: TestLuaUnitAssertions.test_assertAlmostEquals
 # Starting test: TestLuaUnitAssertions.test_assertEquals
@@ -110,9 +110,10 @@
 # Starting test: TestLuaUnitUtilities.test_strSplit3CharDelim
 # Starting test: TestLuaUnitUtilities.test_strSplitOnFailure
 # Starting test: TestLuaUnitUtilities.test_strSplitOneCharDelim
+# Starting test: TestLuaUnitUtilities.test_stripStackTrace
 # Starting test: TestLuaUnitUtilities.test_table_keytostring
 # Starting test: TestLuaUnitUtilities.test_xmlCDataEscape
 # Starting test: TestLuaUnitUtilities.test_xmlEscape
 # Starting class: TestMock
 # Starting test: TestMock.testMock
-# Ran 108 tests in 0.016 seconds, 108 successes, 0 failures
+# Ran 109 tests in 0.016 seconds, 109 successes, 0 failures

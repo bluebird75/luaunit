@@ -1,22 +1,12 @@
 # XML output to test/ref/exampleXmlQuiet.xml
-# Started on 01/31/15 22:22:13
+# Started on 02/01/15 00:00:55
 # Starting class: TestTiti
 # Starting test: TestTiti.test1_withFailure
 TestTiti:setUp
 some stuff test 1
 # Failure: example_with_luaunit.lua:99: expected: 2, actual: 1
 # stack traceback:
-	./luaunit.lua:473: in function 'assertEquals'
 	example_with_luaunit.lua:99: in function 'TestTiti.test1_withFailure'
-	./luaunit.lua:1435: in function <./luaunit.lua:1435>
-	[C]: in function 'xpcall'
-	./luaunit.lua:1435: in function 'protectedCall'
-	./luaunit.lua:1492: in function 'execOneFunction'
-	./luaunit.lua:1591: in function 'runSuiteByInstances'
-	./luaunit.lua:1644: in function 'runSuiteByNames'
-	./luaunit.lua:1720: in function 'runSuite'
-	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
 TestTiti:tearDown
 # Starting test: TestTiti.test2_withFailure
 TestTiti:setUp
@@ -24,17 +14,7 @@ some stuff test 2
 # Failure: example_with_luaunit.lua:108: expected: "bof"
 actual: "hop"
 # stack traceback:
-	./luaunit.lua:473: in function 'assertEquals'
 	example_with_luaunit.lua:108: in function 'TestTiti.test2_withFailure'
-	./luaunit.lua:1435: in function <./luaunit.lua:1435>
-	[C]: in function 'xpcall'
-	./luaunit.lua:1435: in function 'protectedCall'
-	./luaunit.lua:1492: in function 'execOneFunction'
-	./luaunit.lua:1591: in function 'runSuiteByInstances'
-	./luaunit.lua:1644: in function 'runSuiteByNames'
-	./luaunit.lua:1720: in function 'runSuite'
-	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
 TestTiti:tearDown
 # Starting test: TestTiti.test3
 TestTiti:setUp
@@ -45,149 +25,53 @@ TestTiti:tearDown
 some stuff test 1
 # Failure: example_with_luaunit.lua:19: expected: 2, actual: 1
 # stack traceback:
-	./luaunit.lua:473: in function 'assertEquals'
 	example_with_luaunit.lua:19: in function 'TestToto.test1_withFailure'
-	./luaunit.lua:1435: in function <./luaunit.lua:1435>
-	[C]: in function 'xpcall'
-	./luaunit.lua:1435: in function 'protectedCall'
-	./luaunit.lua:1492: in function 'execOneFunction'
-	./luaunit.lua:1591: in function 'runSuiteByInstances'
-	./luaunit.lua:1644: in function 'runSuiteByNames'
-	./luaunit.lua:1720: in function 'runSuite'
-	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
 # Starting test: TestToto.test2_withFailure
 some stuff test 2
 # Failure: example_with_luaunit.lua:28: expected: "bof"
 actual: "hop"
 # stack traceback:
-	./luaunit.lua:473: in function 'assertEquals'
 	example_with_luaunit.lua:28: in function 'TestToto.test2_withFailure'
-	./luaunit.lua:1435: in function <./luaunit.lua:1435>
-	[C]: in function 'xpcall'
-	./luaunit.lua:1435: in function 'protectedCall'
-	./luaunit.lua:1492: in function 'execOneFunction'
-	./luaunit.lua:1591: in function 'runSuiteByInstances'
-	./luaunit.lua:1644: in function 'runSuiteByNames'
-	./luaunit.lua:1720: in function 'runSuite'
-	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
 # Starting test: TestToto.test3
 some stuff test 3
 # Starting test: TestToto.test4
 some stuff test 4
 # Failure: example_with_luaunit.lua:41: Received the not expected value: 1
 # stack traceback:
-	./luaunit.lua:513: in function 'assertNotEquals'
 	example_with_luaunit.lua:41: in function 'TestToto.test4'
-	./luaunit.lua:1435: in function <./luaunit.lua:1435>
-	[C]: in function 'xpcall'
-	./luaunit.lua:1435: in function 'protectedCall'
-	./luaunit.lua:1492: in function 'execOneFunction'
-	./luaunit.lua:1591: in function 'runSuiteByInstances'
-	./luaunit.lua:1644: in function 'runSuiteByNames'
-	./luaunit.lua:1720: in function 'runSuite'
-	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
 # Starting test: TestToto.test5
 some stuff test 5
 # Failure: example_with_luaunit.lua:47: expected: false, actual: 1
 # stack traceback:
-	./luaunit.lua:449: in function 'assertFalse'
 	example_with_luaunit.lua:47: in function 'TestToto.test5'
-	./luaunit.lua:1435: in function <./luaunit.lua:1435>
-	[C]: in function 'xpcall'
-	./luaunit.lua:1435: in function 'protectedCall'
-	./luaunit.lua:1492: in function 'execOneFunction'
-	./luaunit.lua:1591: in function 'runSuiteByInstances'
-	./luaunit.lua:1644: in function 'runSuiteByNames'
-	./luaunit.lua:1720: in function 'runSuite'
-	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
 # Starting test: TestToto.test6
 some stuff test 6
 # Failure: example_with_luaunit.lua:52: expected: true, actual: false
 # stack traceback:
-	./luaunit.lua:443: in function 'assertTrue'
 	example_with_luaunit.lua:52: in function 'TestToto.test6'
-	./luaunit.lua:1435: in function <./luaunit.lua:1435>
-	[C]: in function 'xpcall'
-	./luaunit.lua:1435: in function 'protectedCall'
-	./luaunit.lua:1492: in function 'execOneFunction'
-	./luaunit.lua:1591: in function 'runSuiteByInstances'
-	./luaunit.lua:1644: in function 'runSuiteByNames'
-	./luaunit.lua:1720: in function 'runSuite'
-	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
 # Starting test: TestToto.test7
 # Failure: example_with_luaunit.lua:58: expected: {1, 2, three=3}
 actual: {1, 2}
 # stack traceback:
-	./luaunit.lua:468: in function 'assertEquals'
 	example_with_luaunit.lua:58: in function 'TestToto.test7'
-	./luaunit.lua:1435: in function <./luaunit.lua:1435>
-	[C]: in function 'xpcall'
-	./luaunit.lua:1435: in function 'protectedCall'
-	./luaunit.lua:1492: in function 'execOneFunction'
-	./luaunit.lua:1591: in function 'runSuiteByInstances'
-	./luaunit.lua:1644: in function 'runSuiteByNames'
-	./luaunit.lua:1720: in function 'runSuite'
-	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
 # Starting test: TestToto.test8a
 # Failure: example_with_luaunit.lua:76: Bouhouhoum error!
 # stack traceback:
 	example_with_luaunit.lua:76: in function 'funcWithError'
 	example_with_luaunit.lua:63: in function 'TestToto.test8a'
-	./luaunit.lua:1435: in function <./luaunit.lua:1435>
-	[C]: in function 'xpcall'
-	./luaunit.lua:1435: in function 'protectedCall'
-	./luaunit.lua:1492: in function 'execOneFunction'
-	./luaunit.lua:1591: in function 'runSuiteByInstances'
-	./luaunit.lua:1644: in function 'runSuiteByNames'
-	./luaunit.lua:1720: in function 'runSuite'
-	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
 # Starting test: TestToto.test8b
 # Failure: example_with_luaunit.lua:76: Bouhouhoum error!
 # stack traceback:
 	example_with_luaunit.lua:76: in function 'funcWithError'
 	example_with_luaunit.lua:72: in function 'funcWithFuncWithError'
 	example_with_luaunit.lua:68: in function 'TestToto.test8b'
-	./luaunit.lua:1435: in function <./luaunit.lua:1435>
-	[C]: in function 'xpcall'
-	./luaunit.lua:1435: in function 'protectedCall'
-	./luaunit.lua:1492: in function 'execOneFunction'
-	./luaunit.lua:1591: in function 'runSuiteByInstances'
-	./luaunit.lua:1644: in function 'runSuiteByNames'
-	./luaunit.lua:1720: in function 'runSuite'
-	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
 # Starting test: test1_withFailure
 # Failure: example_with_luaunit.lua:124: assertion failed!
 # stack traceback:
 	example_with_luaunit.lua:124: in function 'test1_withFailure'
-	./luaunit.lua:1437: in function <./luaunit.lua:1437>
-	[C]: in function 'xpcall'
-	./luaunit.lua:1437: in function 'protectedCall'
-	./luaunit.lua:1492: in function 'execOneFunction'
-	./luaunit.lua:1580: in function 'runSuiteByInstances'
-	./luaunit.lua:1644: in function 'runSuiteByNames'
-	./luaunit.lua:1720: in function 'runSuite'
-	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
 # Starting test: test2_withFailure
 # Failure: example_with_luaunit.lua:130: assertion failed!
 # stack traceback:
 	example_with_luaunit.lua:130: in function 'test2_withFailure'
-	./luaunit.lua:1437: in function <./luaunit.lua:1437>
-	[C]: in function 'xpcall'
-	./luaunit.lua:1437: in function 'protectedCall'
-	./luaunit.lua:1492: in function 'execOneFunction'
-	./luaunit.lua:1580: in function 'runSuiteByInstances'
-	./luaunit.lua:1644: in function 'runSuiteByNames'
-	./luaunit.lua:1720: in function 'runSuite'
-	example_with_luaunit.lua:140: in main chunk
-	[C]: in ?
 # Starting test: test3
 # Ran 15 tests in 0.000 seconds, 3 successes, 12 failures

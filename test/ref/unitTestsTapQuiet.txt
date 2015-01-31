@@ -1,5 +1,5 @@
-1..108
-# Started on 01/31/15 22:22:13
+1..109
+# Started on 02/01/15 00:00:55
 # Starting class: TestLuaUnitAssertions
 ok     1	TestLuaUnitAssertions.test_assertAlmostEquals
 ok     2	TestLuaUnitAssertions.test_assertEquals
@@ -110,9 +110,10 @@ ok     101	TestLuaUnitUtilities.test_strMatch
 ok     102	TestLuaUnitUtilities.test_strSplit3CharDelim
 ok     103	TestLuaUnitUtilities.test_strSplitOnFailure
 ok     104	TestLuaUnitUtilities.test_strSplitOneCharDelim
-ok     105	TestLuaUnitUtilities.test_table_keytostring
-ok     106	TestLuaUnitUtilities.test_xmlCDataEscape
-ok     107	TestLuaUnitUtilities.test_xmlEscape
+ok     105	TestLuaUnitUtilities.test_stripStackTrace
+ok     106	TestLuaUnitUtilities.test_table_keytostring
+ok     107	TestLuaUnitUtilities.test_xmlCDataEscape
+ok     108	TestLuaUnitUtilities.test_xmlEscape
 # Starting class: TestMock
-ok     108	TestMock.testMock
-# Ran 108 tests in 0.016 seconds, 108 successes, 0 failures
+ok     109	TestMock.testMock
+# Ran 109 tests in 0.016 seconds, 109 successes, 0 failures
