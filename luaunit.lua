@@ -18,6 +18,9 @@ ORDER_ACTUAL_EXPECTED = true
 PRINT_TABLE_REF_IN_ERROR_MSG = false
 LINE_LENGTH=80
 
+-- set this to false to debug luaunit
+STRIP_LUAUNIT_FROM_STACKTRACE=true
+
 VERBOSITY_DEFAULT = 10
 VERBOSITY_LOW     = 1
 VERBOSITY_QUIET   = 0
@@ -219,6 +222,93 @@ function xmlCDataEscape( s )
     return s
 end
 
+local patternLuaunitTrace='(%.[/\\]luaunit%.lua:%d+: .*)'
+function isLuaunitInternalLine( s )
+    -- return true if line of stack trace comes from inside luaunit
+    -- print( 'Matching for luaunit: '..s )
+    matchStart, matchEnd, capture = string.find( s, patternLuaunitTrace )
+    if matchStart then
+        -- print('Match luaunit line')
+        return true
+    end
+    return false
+end
+
+function stripLuaunitTrace( stackTrace )
+    --[[
+    -- Example of  a traceback:
+    <<stack traceback:
+        example_with_luaunit.lua:130: in function 'test2_withFailure'
+        ./luaunit.lua:1449: in function <./luaunit.lua:1449>
+        [C]: in function 'xpcall'
+        ./luaunit.lua:1449: in function 'protectedCall'
+        ./luaunit.lua:1508: in function 'execOneFunction'
+        ./luaunit.lua:1596: in function 'runSuiteByInstances'
+        ./luaunit.lua:1660: in function 'runSuiteByNames'
+        ./luaunit.lua:1736: in function 'runSuite'
+        example_with_luaunit.lua:140: in main chunk
+        [C]: in ?>>
+
+        Other example:
+    <<stack traceback:
+        ./luaunit.lua:545: in function 'assertEquals'
+        example_with_luaunit.lua:58: in function 'TestToto.test7'
+        ./luaunit.lua:1517: in function <./luaunit.lua:1517>
+        [C]: in function 'xpcall'
+        ./luaunit.lua:1517: in function 'protectedCall'
+        ./luaunit.lua:1578: in function 'execOneFunction'
+        ./luaunit.lua:1677: in function 'runSuiteByInstances'
+        ./luaunit.lua:1730: in function 'runSuiteByNames'
+        ./luaunit.lua:1806: in function 'runSuite'
+        example_with_luaunit.lua:140: in main chunk
+        [C]: in ?>>
+
+    -- first line is "stack traceback": KEEP
+    -- next line may be luaunit line: REMOVE
+    -- next lines are call in the program under testOk: REMOVE
+    -- next lines are calls from luaunit to call the program under test: KEEP
+
+    -- Strategy:
+    -- keep first line
+    -- remove lines that are part of luaunit
+    -- kepp lines until we hit a luaunit line
+    ]]
+
+    -- print( '<<'..stackTrace..'>>' )
+
+    local t, ret
+    t = strsplit( '\n', stackTrace )
+    -- print( prettystr(t) )
+
+    local idx=2
+
+    -- remove lines that are still part of luaunit
+    while idx <= #t do
+        if isLuaunitInternalLine( t[idx] ) then
+            -- print('Removing : '..t[idx] )
+            table.remove(t, idx)
+        else
+            break
+        end
+    end
+
+    -- keep lines until we hit luaunit again
+    while (idx <= #t) and (not isLuaunitInternalLine(t[idx])) do
+        -- print('Keeping : '..t[idx] )
+        idx = idx+1
+    end
+
+    -- remove remaining luaunit lines
+    while idx <= #t do
+        -- print('Removing : '..t[idx] )
+        table.remove(t, idx)
+    end
+
+    -- print( prettystr(t) )
+    ret = table.concat( t, '\n')
+    return ret
+
+end
 
 
 function table.keytostring(k)
@@ -1427,7 +1517,9 @@ LuaUnit_MT = { __index = LuaUnit }
     SPLITTER = '\n>----------<\n'
 
     function LuaUnit:protectedCall( classInstance , methodInstance, prettyFuncName)
-        -- if classInstance is nil, this is just a function run
+        -- if classInstance is nil, this is just a function call
+        -- else, it's method of a class being called.
+
         local function err_handler(e)
             return debug.traceback(e..SPLITTER, 3)
         end
@@ -1449,6 +1541,10 @@ LuaUnit_MT = { __index = LuaUnit }
         if methodName then
             -- we do have the real method name, improve the stack trace
             stackTrace = string.gsub( stackTrace, "in function 'methodInstance'", "in function '"..prettyFuncName.."'")
+        end
+
+        if STRIP_LUAUNIT_FROM_STACKTRACE then
+            stackTrace = stripLuaunitTrace( stackTrace )
         end
 
         return ok, errMsg, stackTrace

@@ -460,6 +460,27 @@ TestLuaUnitUtilities = {} --class
         assertEquals( hasNewLine('ab\nc'), true )
     end
 
+    function TestLuaUnitUtilities:test_stripStackTrace()
+        local realStackTrace=[[stack traceback:
+        example_with_luaunit.lua:130: in function 'test2_withFailure'
+        ./luaunit.lua:1449: in function <./luaunit.lua:1449>
+        [C]: in function 'xpcall'
+        ./luaunit.lua:1449: in function 'protectedCall'
+        ./luaunit.lua:1508: in function 'execOneFunction'
+        ./luaunit.lua:1596: in function 'runSuiteByInstances'
+        ./luaunit.lua:1660: in function 'runSuiteByNames'
+        ./luaunit.lua:1736: in function 'runSuite'
+        example_with_luaunit.lua:140: in main chunk
+        [C]: in ?]]
+
+        local strippedStackTrace=stripLuaunitTrace( realStackTrace )
+        -- print( strippedStackTrace )
+
+        local expectedStackTrace=[[stack traceback:
+        example_with_luaunit.lua:130: in function 'test2_withFailure']]
+
+        assertEquals( strippedStackTrace, expectedStackTrace )
+    end
 ------------------------------------------------------------------
 --
 --                  Assertion Tests              
@@ -1424,8 +1445,6 @@ TestLuaUnitExecution = {} --class
         assertEquals( myExecutedTests[1], 'setUp' )   
         assertEquals( myExecutedTests[2], 'tearDown')
         assertEquals( #myExecutedTests, 2)
-
-        -- XXX check content of failure in test result
     end
 
     function TestLuaUnitExecution:testWithSetupTeardownErrors2()
@@ -1445,8 +1464,6 @@ TestLuaUnitExecution = {} --class
         assertEquals( myExecutedTests[2], 'test1' )   
         assertEquals( myExecutedTests[3], 'tearDown')
         assertEquals( #myExecutedTests, 3)
-
-        -- XXX check content of failure in test result
     end
 
     function TestLuaUnitExecution:testWithSetupTeardownErrors3()
@@ -1465,8 +1482,6 @@ TestLuaUnitExecution = {} --class
         assertEquals( myExecutedTests[1], 'setUp' )   
         assertEquals( myExecutedTests[2], 'tearDown')
         assertEquals( #myExecutedTests, 2)
-
-        -- XXX check content of failure in test result
     end
 
     function TestLuaUnitExecution:testWithSetupTeardownErrors4()
