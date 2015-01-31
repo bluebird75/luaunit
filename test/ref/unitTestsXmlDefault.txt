@@ -1,5 +1,5 @@
 # XML output to test/ref/unitTestsXmlDefault.xml
-# Started on 01/27/15 23:59:30
+# Started on 01/31/15 22:22:14
 # Starting class: TestLuaUnitAssertions
 # Starting test: TestLuaUnitAssertions.test_assertAlmostEquals
 # Starting test: TestLuaUnitAssertions.test_assertEquals
@@ -83,7 +83,7 @@
 # Starting test: TestLuaUnitExecution.test_filterWithPattern
 # Starting test: TestLuaUnitExecution.test_runSuiteByNames
 # Starting class: TestLuaUnitResults
-# Starting test: TestLuaUnitResults.test_execStatus
+# Starting test: TestLuaUnitResults.test_nodeStatus
 # Starting test: TestLuaUnitResults.test_resultsWhileTestInProgress
 # Starting test: TestLuaUnitResults.test_runSuiteOk
 # Starting test: TestLuaUnitResults.test_runSuiteWithFailures

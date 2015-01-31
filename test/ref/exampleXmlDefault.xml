@@ -6,13 +6,13 @@
                 <![CDATA[stack traceback:
 	./luaunit.lua:473: in function 'assertEquals'
 	example_with_luaunit.lua:99: in function 'TestTiti.test1_withFailure'
-	./luaunit.lua:1451: in function <./luaunit.lua:1451>
+	./luaunit.lua:1435: in function <./luaunit.lua:1435>
 	[C]: in function 'xpcall'
-	./luaunit.lua:1451: in function 'protectedCall'
-	./luaunit.lua:1508: in function 'execOneFunction'
-	./luaunit.lua:1607: in function 'runSuiteByInstances'
-	./luaunit.lua:1660: in function 'runSuiteByNames'
-	./luaunit.lua:1736: in function 'runSuite'
+	./luaunit.lua:1435: in function 'protectedCall'
+	./luaunit.lua:1492: in function 'execOneFunction'
+	./luaunit.lua:1591: in function 'runSuiteByInstances'
+	./luaunit.lua:1644: in function 'runSuiteByNames'
+	./luaunit.lua:1720: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
 	[C]: in ?]]></failure>
         </testcase>
@@ -23,13 +23,13 @@ actual: &quot;hop&quot;">
                 <![CDATA[stack traceback:
 	./luaunit.lua:473: in function 'assertEquals'
 	example_with_luaunit.lua:108: in function 'TestTiti.test2_withFailure'
-	./luaunit.lua:1451: in function <./luaunit.lua:1451>
+	./luaunit.lua:1435: in function <./luaunit.lua:1435>
 	[C]: in function 'xpcall'
-	./luaunit.lua:1451: in function 'protectedCall'
-	./luaunit.lua:1508: in function 'execOneFunction'
-	./luaunit.lua:1607: in function 'runSuiteByInstances'
-	./luaunit.lua:1660: in function 'runSuiteByNames'
-	./luaunit.lua:1736: in function 'runSuite'
+	./luaunit.lua:1435: in function 'protectedCall'
+	./luaunit.lua:1492: in function 'execOneFunction'
+	./luaunit.lua:1591: in function 'runSuiteByInstances'
+	./luaunit.lua:1644: in function 'runSuiteByNames'
+	./luaunit.lua:1720: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
 	[C]: in ?]]></failure>
         </testcase>
@@ -44,13 +44,13 @@ actual: &quot;hop&quot;">
                 <![CDATA[stack traceback:
 	./luaunit.lua:473: in function 'assertEquals'
 	example_with_luaunit.lua:19: in function 'TestToto.test1_withFailure'
-	./luaunit.lua:1451: in function <./luaunit.lua:1451>
+	./luaunit.lua:1435: in function <./luaunit.lua:1435>
 	[C]: in function 'xpcall'
-	./luaunit.lua:1451: in function 'protectedCall'
-	./luaunit.lua:1508: in function 'execOneFunction'
-	./luaunit.lua:1607: in function 'runSuiteByInstances'
-	./luaunit.lua:1660: in function 'runSuiteByNames'
-	./luaunit.lua:1736: in function 'runSuite'
+	./luaunit.lua:1435: in function 'protectedCall'
+	./luaunit.lua:1492: in function 'execOneFunction'
+	./luaunit.lua:1591: in function 'runSuiteByInstances'
+	./luaunit.lua:1644: in function 'runSuiteByNames'
+	./luaunit.lua:1720: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
 	[C]: in ?]]></failure>
         </testcase>
@@ -61,13 +61,13 @@ actual: &quot;hop&quot;">
                 <![CDATA[stack traceback:
 	./luaunit.lua:473: in function 'assertEquals'
 	example_with_luaunit.lua:28: in function 'TestToto.test2_withFailure'
-	./luaunit.lua:1451: in function <./luaunit.lua:1451>
+	./luaunit.lua:1435: in function <./luaunit.lua:1435>
 	[C]: in function 'xpcall'
-	./luaunit.lua:1451: in function 'protectedCall'
-	./luaunit.lua:1508: in function 'execOneFunction'
-	./luaunit.lua:1607: in function 'runSuiteByInstances'
-	./luaunit.lua:1660: in function 'runSuiteByNames'
-	./luaunit.lua:1736: in function 'runSuite'
+	./luaunit.lua:1435: in function 'protectedCall'
+	./luaunit.lua:1492: in function 'execOneFunction'
+	./luaunit.lua:1591: in function 'runSuiteByInstances'
+	./luaunit.lua:1644: in function 'runSuiteByNames'
+	./luaunit.lua:1720: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
 	[C]: in ?]]></failure>
         </testcase>
@@ -80,13 +80,13 @@ actual: &quot;hop&quot;">
                 <![CDATA[stack traceback:
 	./luaunit.lua:513: in function 'assertNotEquals'
 	example_with_luaunit.lua:41: in function 'TestToto.test4'
-	./luaunit.lua:1451: in function <./luaunit.lua:1451>
+	./luaunit.lua:1435: in function <./luaunit.lua:1435>
 	[C]: in function 'xpcall'
-	./luaunit.lua:1451: in function 'protectedCall'
-	./luaunit.lua:1508: in function 'execOneFunction'
-	./luaunit.lua:1607: in function 'runSuiteByInstances'
-	./luaunit.lua:1660: in function 'runSuiteByNames'
-	./luaunit.lua:1736: in function 'runSuite'
+	./luaunit.lua:1435: in function 'protectedCall'
+	./luaunit.lua:1492: in function 'execOneFunction'
+	./luaunit.lua:1591: in function 'runSuiteByInstances'
+	./luaunit.lua:1644: in function 'runSuiteByNames'
+	./luaunit.lua:1720: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
 	[C]: in ?]]></failure>
         </testcase>
@@ -96,13 +96,13 @@ actual: &quot;hop&quot;">
                 <![CDATA[stack traceback:
 	./luaunit.lua:449: in function 'assertFalse'
 	example_with_luaunit.lua:47: in function 'TestToto.test5'
-	./luaunit.lua:1451: in function <./luaunit.lua:1451>
+	./luaunit.lua:1435: in function <./luaunit.lua:1435>
 	[C]: in function 'xpcall'
-	./luaunit.lua:1451: in function 'protectedCall'
-	./luaunit.lua:1508: in function 'execOneFunction'
-	./luaunit.lua:1607: in function 'runSuiteByInstances'
-	./luaunit.lua:1660: in function 'runSuiteByNames'
-	./luaunit.lua:1736: in function 'runSuite'
+	./luaunit.lua:1435: in function 'protectedCall'
+	./luaunit.lua:1492: in function 'execOneFunction'
+	./luaunit.lua:1591: in function 'runSuiteByInstances'
+	./luaunit.lua:1644: in function 'runSuiteByNames'
+	./luaunit.lua:1720: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
 	[C]: in ?]]></failure>
         </testcase>
@@ -112,13 +112,13 @@ actual: &quot;hop&quot;">
                 <![CDATA[stack traceback:
 	./luaunit.lua:443: in function 'assertTrue'
 	example_with_luaunit.lua:52: in function 'TestToto.test6'
-	./luaunit.lua:1451: in function <./luaunit.lua:1451>
+	./luaunit.lua:1435: in function <./luaunit.lua:1435>
 	[C]: in function 'xpcall'
-	./luaunit.lua:1451: in function 'protectedCall'
-	./luaunit.lua:1508: in function 'execOneFunction'
-	./luaunit.lua:1607: in function 'runSuiteByInstances'
-	./luaunit.lua:1660: in function 'runSuiteByNames'
-	./luaunit.lua:1736: in function 'runSuite'
+	./luaunit.lua:1435: in function 'protectedCall'
+	./luaunit.lua:1492: in function 'execOneFunction'
+	./luaunit.lua:1591: in function 'runSuiteByInstances'
+	./luaunit.lua:1644: in function 'runSuiteByNames'
+	./luaunit.lua:1720: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
 	[C]: in ?]]></failure>
         </testcase>
@@ -129,13 +129,13 @@ actual: {1, 2}">
                 <![CDATA[stack traceback:
 	./luaunit.lua:468: in function 'assertEquals'
 	example_with_luaunit.lua:58: in function 'TestToto.test7'
-	./luaunit.lua:1451: in function <./luaunit.lua:1451>
+	./luaunit.lua:1435: in function <./luaunit.lua:1435>
 	[C]: in function 'xpcall'
-	./luaunit.lua:1451: in function 'protectedCall'
-	./luaunit.lua:1508: in function 'execOneFunction'
-	./luaunit.lua:1607: in function 'runSuiteByInstances'
-	./luaunit.lua:1660: in function 'runSuiteByNames'
-	./luaunit.lua:1736: in function 'runSuite'
+	./luaunit.lua:1435: in function 'protectedCall'
+	./luaunit.lua:1492: in function 'execOneFunction'
+	./luaunit.lua:1591: in function 'runSuiteByInstances'
+	./luaunit.lua:1644: in function 'runSuiteByNames'
+	./luaunit.lua:1720: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
 	[C]: in ?]]></failure>
         </testcase>
@@ -145,13 +145,13 @@ actual: {1, 2}">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:76: in function 'funcWithError'
 	example_with_luaunit.lua:63: in function 'TestToto.test8a'
-	./luaunit.lua:1451: in function <./luaunit.lua:1451>
+	./luaunit.lua:1435: in function <./luaunit.lua:1435>
 	[C]: in function 'xpcall'
-	./luaunit.lua:1451: in function 'protectedCall'
-	./luaunit.lua:1508: in function 'execOneFunction'
-	./luaunit.lua:1607: in function 'runSuiteByInstances'
-	./luaunit.lua:1660: in function 'runSuiteByNames'
-	./luaunit.lua:1736: in function 'runSuite'
+	./luaunit.lua:1435: in function 'protectedCall'
+	./luaunit.lua:1492: in function 'execOneFunction'
+	./luaunit.lua:1591: in function 'runSuiteByInstances'
+	./luaunit.lua:1644: in function 'runSuiteByNames'
+	./luaunit.lua:1720: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
 	[C]: in ?]]></failure>
         </testcase>
@@ -162,13 +162,13 @@ actual: {1, 2}">
 	example_with_luaunit.lua:76: in function 'funcWithError'
 	example_with_luaunit.lua:72: in function 'funcWithFuncWithError'
 	example_with_luaunit.lua:68: in function 'TestToto.test8b'
-	./luaunit.lua:1451: in function <./luaunit.lua:1451>
+	./luaunit.lua:1435: in function <./luaunit.lua:1435>
 	[C]: in function 'xpcall'
-	./luaunit.lua:1451: in function 'protectedCall'
-	./luaunit.lua:1508: in function 'execOneFunction'
-	./luaunit.lua:1607: in function 'runSuiteByInstances'
-	./luaunit.lua:1660: in function 'runSuiteByNames'
-	./luaunit.lua:1736: in function 'runSuite'
+	./luaunit.lua:1435: in function 'protectedCall'
+	./luaunit.lua:1492: in function 'execOneFunction'
+	./luaunit.lua:1591: in function 'runSuiteByInstances'
+	./luaunit.lua:1644: in function 'runSuiteByNames'
+	./luaunit.lua:1720: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
 	[C]: in ?]]></failure>
         </testcase>
@@ -179,13 +179,13 @@ actual: {1, 2}">
             <failure type="example_with_luaunit.lua:124: assertion failed!">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:124: in function 'test1_withFailure'
-	./luaunit.lua:1453: in function <./luaunit.lua:1453>
+	./luaunit.lua:1437: in function <./luaunit.lua:1437>
 	[C]: in function 'xpcall'
-	./luaunit.lua:1453: in function 'protectedCall'
-	./luaunit.lua:1508: in function 'execOneFunction'
-	./luaunit.lua:1596: in function 'runSuiteByInstances'
-	./luaunit.lua:1660: in function 'runSuiteByNames'
-	./luaunit.lua:1736: in function 'runSuite'
+	./luaunit.lua:1437: in function 'protectedCall'
+	./luaunit.lua:1492: in function 'execOneFunction'
+	./luaunit.lua:1580: in function 'runSuiteByInstances'
+	./luaunit.lua:1644: in function 'runSuiteByNames'
+	./luaunit.lua:1720: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
 	[C]: in ?]]></failure>
         </testcase>
@@ -194,13 +194,13 @@ actual: {1, 2}">
             <failure type="example_with_luaunit.lua:130: assertion failed!">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:130: in function 'test2_withFailure'
-	./luaunit.lua:1453: in function <./luaunit.lua:1453>
+	./luaunit.lua:1437: in function <./luaunit.lua:1437>
 	[C]: in function 'xpcall'
-	./luaunit.lua:1453: in function 'protectedCall'
-	./luaunit.lua:1508: in function 'execOneFunction'
-	./luaunit.lua:1596: in function 'runSuiteByInstances'
-	./luaunit.lua:1660: in function 'runSuiteByNames'
-	./luaunit.lua:1736: in function 'runSuite'
+	./luaunit.lua:1437: in function 'protectedCall'
+	./luaunit.lua:1492: in function 'execOneFunction'
+	./luaunit.lua:1580: in function 'runSuiteByInstances'
+	./luaunit.lua:1644: in function 'runSuiteByNames'
+	./luaunit.lua:1720: in function 'runSuite'
 	example_with_luaunit.lua:140: in main chunk
 	[C]: in ?]]></failure>
         </testcase>
