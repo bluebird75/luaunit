@@ -172,7 +172,7 @@ function check_tap_output( fileToRun, options, output, refOutput, refExitCode )
         adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)', true )
     end
     -- Windows/Linux compatibility
-    adjustFile( output, refOutput,'(%.[/\\]luaunit%.lua:%d+:)', true)
+    -- adjustFile( output, refOutput,'(%.[/\\]luaunit%.lua:%d+:)', true)
 
     ret = osExec( string.format([[diff -NPw -u  -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output ) )
     if not ret then
