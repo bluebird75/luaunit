@@ -222,7 +222,7 @@ function xmlCDataEscape( s )
     return s
 end
 
-local patternLuaunitTrace='(%.[/\\]luaunit%.lua:%d+: .*)'
+local patternLuaunitTrace='(.*[/\\]luaunit%.lua:%d+: .*)'
 function isLuaunitInternalLine( s )
     -- return true if line of stack trace comes from inside luaunit
     -- print( 'Matching for luaunit: '..s )
@@ -262,6 +262,19 @@ function stripLuaunitTrace( stackTrace )
         ./luaunit.lua:1806: in function 'runSuite'
         example_with_luaunit.lua:140: in main chunk
         [C]: in ?>>
+
+    <<stack traceback:
+        luaunit2/example_with_luaunit.lua:124: in function 'test1_withFailure'
+        luaunit2/luaunit.lua:1532: in function <luaunit2/luaunit.lua:1532>
+        [C]: in function 'xpcall'
+        luaunit2/luaunit.lua:1532: in function 'protectedCall'
+        luaunit2/luaunit.lua:1591: in function 'execOneFunction'
+        luaunit2/luaunit.lua:1679: in function 'runSuiteByInstances'
+        luaunit2/luaunit.lua:1743: in function 'runSuiteByNames'
+        luaunit2/luaunit.lua:1819: in function 'runSuite'
+        luaunit2/example_with_luaunit.lua:140: in main chunk
+        [C]: in ?>>
+
 
     -- first line is "stack traceback": KEEP
     -- next line may be luaunit line: REMOVE

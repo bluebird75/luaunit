@@ -473,13 +473,51 @@ TestLuaUnitUtilities = {} --class
         example_with_luaunit.lua:140: in main chunk
         [C]: in ?]]
 
+
+        local realStackTrace2=[[stack traceback:
+        ./luaunit.lua:545: in function 'assertEquals'
+        example_with_luaunit.lua:58: in function 'TestToto.test7'
+        ./luaunit.lua:1517: in function <./luaunit.lua:1517>
+        [C]: in function 'xpcall'
+        ./luaunit.lua:1517: in function 'protectedCall'
+        ./luaunit.lua:1578: in function 'execOneFunction'
+        ./luaunit.lua:1677: in function 'runSuiteByInstances'
+        ./luaunit.lua:1730: in function 'runSuiteByNames'
+        ./luaunit.lua:1806: in function 'runSuite'
+        example_with_luaunit.lua:140: in main chunk
+        [C]: in ?]]
+
+        local realStackTrace3 = [[stack traceback:
+        luaunit2/example_with_luaunit.lua:124: in function 'test1_withFailure'
+        luaunit2/luaunit.lua:1532: in function <luaunit2/luaunit.lua:1532>
+        [C]: in function 'xpcall'
+        luaunit2/luaunit.lua:1532: in function 'protectedCall'
+        luaunit2/luaunit.lua:1591: in function 'execOneFunction'
+        luaunit2/luaunit.lua:1679: in function 'runSuiteByInstances'
+        luaunit2/luaunit.lua:1743: in function 'runSuiteByNames'
+        luaunit2/luaunit.lua:1819: in function 'runSuite'
+        luaunit2/example_with_luaunit.lua:140: in main chunk
+        [C]: in ?]]
+
+
         local strippedStackTrace=stripLuaunitTrace( realStackTrace )
         -- print( strippedStackTrace )
 
         local expectedStackTrace=[[stack traceback:
         example_with_luaunit.lua:130: in function 'test2_withFailure']]
-
         assertEquals( strippedStackTrace, expectedStackTrace )
+
+        strippedStackTrace=stripLuaunitTrace( realStackTrace2 )
+        expectedStackTrace=[[stack traceback:
+        example_with_luaunit.lua:58: in function 'TestToto.test7']]
+        assertEquals( strippedStackTrace, expectedStackTrace )
+
+        strippedStackTrace=stripLuaunitTrace( realStackTrace3 )
+        expectedStackTrace=[[stack traceback:
+        luaunit2/example_with_luaunit.lua:124: in function 'test1_withFailure']]
+        assertEquals( strippedStackTrace, expectedStackTrace )
+
+
     end
 ------------------------------------------------------------------
 --
