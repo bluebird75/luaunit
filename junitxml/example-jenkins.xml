@@ -1,0 +1,29 @@
+<testsuites  
+    name="suite1" time="33.17" tests="21" failures="22" disabled="6" errors="3">
+    <testsuite name="testsuite1" tests="???"
+        failures="0" disabled="0" errors="0" time="33.17" skipped="0" timestamp="2015-01-01T12:33:00" hostname="localhost" id="???" package="???">
+        <properties>
+            <property name="prop1" value="value1"/>
+        </properties>
+        <testcase name="toto"
+            classname="titi" time="33.17" status="???" assertions="???">
+            <!-- Optional -->
+            <skipped>bla bla</skipped>
+            <failure
+                type="typeOfFailure" message="failureMsg">
+                Detailed failure content
+            </failure>
+        </testcase>
+        <testcase name="toto"
+            classname="titi" time="33.17" status="???" assertions="???">
+            <!-- Optional -->
+            <error
+                type="typeOfError" message="errorMsg">
+                Detailed error content
+            </error>
+        </testcase>
+        <system-out>bla bla output bla bla</system-out>
+        <system-err>bla bla error bla bla</system-err>
+    </testsuite>
+    <!-- more testsuites -->
+</testsuites>

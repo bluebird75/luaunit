@@ -1,0 +1,56 @@
+?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" skipped="0" tests="1" time="0.045" failures="0" name="com.atlassian.bamboo.labels.LabelManagerImplTest">
+  <properties>
+    <property value="Java(TM) 2 Runtime Environment, Standard Edition" name="java.runtime.name"/>
+    <property value="/usr/java/jdk1.5.0_07/jre/lib/i386" name="sun.boot.library.path"/>
+    <property value="1.5.0_07-b03" name="java.vm.version"/>
+    <property value="Sun Microsystems Inc." name="java.vm.vendor"/>
+    <property value="http://java.sun.com/" name="java.vendor.url"/>
+    <property value=":" name="path.separator"/>
+    <property value="Java HotSpot(TM) Client VM" name="java.vm.name"/>
+    <property value="sun.io" name="file.encoding.pkg"/>
+    <property value="US" name="user.country"/>
+    <property value="unknown" name="sun.os.patch.level"/>
+    <property value="Java Virtual Machine Specification" name="java.vm.specification.name"/>
+    <property value="/opt/bamboo-data/bamboohome/xml-data/build-dir/BAM-MAIN" name="user.dir"/>
+    <property value="1.5.0_07-b03" name="java.runtime.version"/>
+    <property value="sun.awt.X11GraphicsEnvironment" name="java.awt.graphicsenv"/>
+    <property value="/opt/bamboo-data/bamboohome/xml-data/build-dir/BAM-MAIN/bamboo-core" name="basedir"/>
+    <property value="/usr/java/jdk1.5.0_07/jre/lib/endorsed" name="java.endorsed.dirs"/>
+    <property value="i386" name="os.arch"/>
+    <property value="/tmp" name="java.io.tmpdir"/>
+    <property value="Sun Microsystems Inc." name="java.vm.specification.vendor"/>
+    <property value="Linux" name="os.name"/>
+    <property value="/opt/java/tools/maven2/bin/m2.conf" name="classworlds.conf"/>
+    <property value="ISO-8859-1" name="sun.jnu.encoding"/>
+    <property value="/usr/java/jdk1.5.0_07/jre/lib/i386.." name="java.library.path"/>
+    <property value="Java Platform API Specification" name="java.specification.name"/>
+    <property value="49.0" name="java.class.version"/>
+    <property value="HotSpot Client Compiler" name="sun.management.compiler"/>
+    <property value="2.6.15-1.1833_FC4smp" name="os.version"/>
+    <property value="/home/bamboo" name="user.home"/>
+    <property value="Australia/Sydney" name="user.timezone"/>
+    <property value="sun.print.PSPrinterJob" name="java.awt.printerjob"/>
+    <property value="ISO-8859-1" name="file.encoding"/>
+    <property value="1.5" name="java.specification.version"/>
+    <property value="bamboo" name="user.name"/>
+    <property value="/opt/java/tools/maven2/boot/classworlds-1.1.jar" name="java.class.path"/>
+    <property value="1.0" name="java.vm.specification.version"/>
+    <property value="32" name="sun.arch.data.model"/>
+    <property value="/usr/java/jdk1.5.0_07/jre" name="java.home"/>
+    <property value="Sun Microsystems Inc." name="java.specification.vendor"/>
+    <property value="en" name="user.language"/>
+    <property value="mixed mode, sharing" name="java.vm.info"/>
+    <property value="1.5.0_07" name="java.version"/>
+    <property value="/usr/java/jdk1.5.0_07/jre/lib/ext" name="java.ext.dirs"/>
+    <property value="Sun Microsystems Inc." name="java.vendor"/>
+    <property value="/opt/java/tools/maven2" name="maven.home"/>
+    <property value="/home/bamboo/.m2/repository" name="localRepository"/>
+    <property value="/" name="file.separator"/>
+    <property value="http://java.sun.com/cgi-bin/bugreport.cgi" name="java.vendor.url.bug"/>
+    <property value="little" name="sun.cpu.endian"/>
+    <property value="UnicodeLittle" name="sun.io.unicode.encoding"/>
+    <property value="" name="sun.cpu.isalist"/>
+  </properties>
+  <testcase time="0.045" name="testBAM1436"/>
+</testsuite>
