@@ -997,6 +997,7 @@ JUnitOutput_MT = { __index = JUnitOutput }
         end
         print('# XML output to '..self.fname)
         print('# Started on '..self.result.startDate)
+        self.fd:write('<?xml version="1.0" encoding="UTF-8" ?>\n')
         self.fd:write('<testsuites>\n')
     end
     function JUnitOutput:startClass(className) 
@@ -1551,7 +1552,7 @@ LuaUnit_MT = { __index = LuaUnit }
         t = strsplit( SPLITTER, fullErrMsg )
         errMsg = t[1]
         stackTrace = string.sub(t[2],2)
-        if methodName then
+        if prettyFuncName then
             -- we do have the real method name, improve the stack trace
             stackTrace = string.gsub( stackTrace, "in function 'methodInstance'", "in function '"..prettyFuncName.."'")
         end

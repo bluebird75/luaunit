@@ -249,13 +249,29 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
 
 
     if HAS_XMLLINT then
-        ret = osExec( string.format('xmllint %s > %s', xmlOutput, xmlLintOutput ) )
+        -- General xmllint validation
+        ret = osExec( string.format('xmllint --noout %s > %s', xmlOutput, xmlLintOutput ) )
         if ret then
             -- report(string.format('XMLLint validation ok: file %s', xmlLintOutput) )
         else
             error(string.format('XMLLint reported errors : file %s', xmlLintOutput) )
             retcode = retcode + 1
         end
+
+        -- Validation against apache junit schema
+        --[[
+        ret = osExec( string.format('xmllint --noout --schema junitxml/junit-apache-ant.xsd %s > %s', xmlOutput, xmlLintOutput ) )
+        if ret then
+            -- report(string.format('XMLLint validation ok: file %s', xmlLintOutput) )
+        else
+            error(string.format('XMLLint reported errors against apache schema: file %s', xmlLintOutput) )
+            retcode = retcode + 1
+        end
+        ]]
+
+
+        -- Validation against jenkins/hudson schema
+
     end
 
     -- ignore change in line numbers for luaunit
