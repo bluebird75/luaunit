@@ -1,5 +1,5 @@
 # XML output to test/ref/testWithXmlVerbose51.xml
-# Started on 02/01/15 00:00:55
+# Started on 02/05/15 23:20:24
 # Starting class: TestFailuresWithXml
 # Starting test: TestFailuresWithXml.test_failure_with_cdata_xml
 # Failure: test/test_with_xml.lua:13: expected: "got it"
@@ -11,4 +11,4 @@ actual: "cdata does not like ]]>"
 actual: '<toto>ti"ti</toto>'
 # stack traceback:
 	test/test_with_xml.lua:9: in function 'TestFailuresWithXml.test_failure_with_simple_xml'
-# Ran 2 tests in 0.015 seconds, 0 successes, 2 failures
+# Ran 2 tests in 0.000 seconds, 0 successes, 2 failures

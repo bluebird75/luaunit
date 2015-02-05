@@ -245,6 +245,7 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
     adjustFile( xmlOutput, refXmlOutput, '.*<testsuite.*(timestamp=".-").*')
     -- For Lua 5.1 / 5.2 compatibility
+    adjustFile( xmlOutput, refXmlOutput, '.*<property name="Lua Version" value="(Lua 5..)"/>')
     adjustFile( output, refOutput, '(.+%[C%]: i?n? ?%?)', true )
     adjustFile( xmlOutput, refXmlOutput, '(.+%[C%]: i?n? ?%?.*)', true )
 
