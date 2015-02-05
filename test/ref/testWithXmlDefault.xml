@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="TestFailuresWithXml">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="2" timestamp="2015-02-05T23:00:17">
         <testcase classname="TestFailuresWithXml"
             name="TestFailuresWithXml.test_failure_with_cdata_xml">
             <failure type="test/test_with_xml.lua:13: expected: &quot;got it&quot;

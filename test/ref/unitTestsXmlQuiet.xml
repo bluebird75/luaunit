@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="TestLuaUnitAssertions">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="109" timestamp="2015-02-05T23:00:16">
         <testcase classname="TestLuaUnitAssertions"
             name="TestLuaUnitAssertions.test_assertAlmostEquals">
         </testcase>
@@ -97,8 +97,6 @@
         <testcase classname="TestLuaUnitAssertions"
             name="TestLuaUnitAssertions.test_assertTrue">
         </testcase>
-    </testsuite>
-    <testsuite name="TestLuaUnitAssertionsError">
         <testcase classname="TestLuaUnitAssertionsError"
             name="TestLuaUnitAssertionsError.test_assertError">
         </testcase>
@@ -111,8 +109,6 @@
         <testcase classname="TestLuaUnitAssertionsError"
             name="TestLuaUnitAssertionsError.test_assertErrorMsgMatches">
         </testcase>
-    </testsuite>
-    <testsuite name="TestLuaUnitErrorMsg">
         <testcase classname="TestLuaUnitErrorMsg"
             name="TestLuaUnitErrorMsg.test_assertAlmostEqualsMsg">
         </testcase>
@@ -194,8 +190,6 @@
         <testcase classname="TestLuaUnitErrorMsg"
             name="TestLuaUnitErrorMsg.test_printTableWithRef">
         </testcase>
-    </testsuite>
-    <testsuite name="TestLuaUnitExecution">
         <testcase classname="TestLuaUnitExecution"
             name="TestLuaUnitExecution.testOutputInterface">
         </testcase>
@@ -241,8 +235,6 @@
         <testcase classname="TestLuaUnitExecution"
             name="TestLuaUnitExecution.test_runSuiteByNames">
         </testcase>
-    </testsuite>
-    <testsuite name="TestLuaUnitResults">
         <testcase classname="TestLuaUnitResults"
             name="TestLuaUnitResults.test_nodeStatus">
         </testcase>
@@ -255,8 +247,6 @@
         <testcase classname="TestLuaUnitResults"
             name="TestLuaUnitResults.test_runSuiteWithFailures">
         </testcase>
-    </testsuite>
-    <testsuite name="TestLuaUnitUtilities">
         <testcase classname="TestLuaUnitUtilities"
             name="TestLuaUnitUtilities.test_IsClassMethod">
         </testcase>
@@ -335,8 +325,6 @@
         <testcase classname="TestLuaUnitUtilities"
             name="TestLuaUnitUtilities.test_xmlEscape">
         </testcase>
-    </testsuite>
-    <testsuite name="TestMock">
         <testcase classname="TestMock"
             name="TestMock.testMock">
         </testcase>

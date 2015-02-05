@@ -999,12 +999,14 @@ JUnitOutput_MT = { __index = JUnitOutput }
         print('# Started on '..self.result.startDate)
         self.fd:write('<?xml version="1.0" encoding="UTF-8" ?>\n')
         self.fd:write('<testsuites>\n')
+        self.fd:write(string.format(
+            '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s">\n', 
+            self.result.testCount, self.result.startIsodate ))
     end
     function JUnitOutput:startClass(className) 
         if className ~= '[TestFunctions]' then
             print('# Starting class: '..className)
         end
-        self.fd:write('    <testsuite name="' .. className .. '">\n')
     end
     function JUnitOutput:startTest(testName)
         print('# Starting test: '..testName)
@@ -1023,7 +1025,6 @@ JUnitOutput_MT = { __index = JUnitOutput }
     end
 
     function JUnitOutput:endClass()
-        self.fd:write('    </testsuite>\n')
     end
 
     function JUnitOutput:endSuite()
@@ -1034,6 +1035,7 @@ JUnitOutput_MT = { __index = JUnitOutput }
             table.insert(t, string.format(", %d non selected tests", self.result.nonSelectedCount ) )
         end
         print( table.concat(t) )
+        self.fd:write('    </testsuite>\n')
         self.fd:write('</testsuites>\n') 
         self.fd:close()
         return self.result.failureCount
@@ -1437,7 +1439,7 @@ LuaUnit_MT = { __index = LuaUnit }
         self.result.suiteStarted = true
         self.result.startTime = os.clock()
         self.result.startDate = os.date()
-        self.result.startIsodate = os.date('%Y-%m-%dT%H-%M-%S')
+        self.result.startIsodate = os.date('%Y-%m-%dT%H:%M:%S')
         self.result.patternFilter = self.patternFilter
         self.result.tests = {}
         self.result.failures = {}

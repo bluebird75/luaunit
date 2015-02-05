@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="TestTiti">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="15" timestamp="2015-02-05T23:00:17">
         <testcase classname="TestTiti"
             name="TestTiti.test1_withFailure">
             <failure type="example_with_luaunit.lua:99: expected: 2, actual: 1">
@@ -17,8 +17,6 @@ actual: &quot;hop&quot;">
         <testcase classname="TestTiti"
             name="TestTiti.test3">
         </testcase>
-    </testsuite>
-    <testsuite name="TestToto">
         <testcase classname="TestToto"
             name="TestToto.test1_withFailure">
             <failure type="example_with_luaunit.lua:19: expected: 2, actual: 1">
@@ -75,8 +73,6 @@ actual: {1, 2}">
 	example_with_luaunit.lua:72: in function 'funcWithFuncWithError'
 	example_with_luaunit.lua:68: in function 'TestToto.test8b']]></failure>
         </testcase>
-    </testsuite>
-    <testsuite name="[TestFunctions]">
         <testcase classname="[TestFunctions]"
             name="test1_withFailure">
             <failure type="example_with_luaunit.lua:124: assertion failed!">
