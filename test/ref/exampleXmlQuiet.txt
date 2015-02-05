@@ -1,5 +1,5 @@
 # XML output to test/ref/exampleXmlQuiet.xml
-# Started on 02/05/15 23:16:52
+# Started on 02/05/15 23:22:52
 # Starting class: TestTiti
 # Starting test: TestTiti.test1_withFailure
 TestTiti:setUp
@@ -74,4 +74,4 @@ actual: {1, 2}
 # stack traceback:
 	example_with_luaunit.lua:130: in function 'test2_withFailure'
 # Starting test: test3
-# Ran 15 tests in 0.000 seconds, 3 successes, 12 failures
+# Ran 15 tests in 0.015 seconds, 3 successes, 12 failures

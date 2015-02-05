@@ -1,336 +1,336 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="109" timestamp="2015-02-05T23:16:52" time="0">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="109" timestamp="2015-02-05T23:22:52" time="0">
         <properties>
             <property name="Lua Version" value="Lua 5.2"/>
             <property name="LuaUnit Version" value="3.0"/>
         </properties>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertAlmostEquals">
+            name="TestLuaUnitAssertions.test_assertAlmostEquals" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertEquals">
+            name="TestLuaUnitAssertions.test_assertEquals" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertFalse">
+            name="TestLuaUnitAssertions.test_assertFalse" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertIs">
+            name="TestLuaUnitAssertions.test_assertIs" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertIsBoolean">
+            name="TestLuaUnitAssertions.test_assertIsBoolean" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertIsCoroutine">
+            name="TestLuaUnitAssertions.test_assertIsCoroutine" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertIsFunction">
+            name="TestLuaUnitAssertions.test_assertIsFunction" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertIsNil">
+            name="TestLuaUnitAssertions.test_assertIsNil" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertIsNumber">
+            name="TestLuaUnitAssertions.test_assertIsNumber" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertIsString">
+            name="TestLuaUnitAssertions.test_assertIsString" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertIsTable">
+            name="TestLuaUnitAssertions.test_assertIsTable" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertIsUserdata">
+            name="TestLuaUnitAssertions.test_assertIsUserdata" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertItemsEquals">
+            name="TestLuaUnitAssertions.test_assertItemsEquals" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertNil">
+            name="TestLuaUnitAssertions.test_assertNil" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertNotAlmostEquals">
+            name="TestLuaUnitAssertions.test_assertNotAlmostEquals" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertNotEquals">
+            name="TestLuaUnitAssertions.test_assertNotEquals" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertNotEqualsDifferentTypes2">
+            name="TestLuaUnitAssertions.test_assertNotEqualsDifferentTypes2" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertNotIs">
+            name="TestLuaUnitAssertions.test_assertNotIs" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertNotNil">
+            name="TestLuaUnitAssertions.test_assertNotNil" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertNotStrContains">
+            name="TestLuaUnitAssertions.test_assertNotStrContains" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertNotStrIContains">
+            name="TestLuaUnitAssertions.test_assertNotStrIContains" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertStrContains">
+            name="TestLuaUnitAssertions.test_assertStrContains" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertStrIContains">
+            name="TestLuaUnitAssertions.test_assertStrIContains" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertStrMatches">
+            name="TestLuaUnitAssertions.test_assertStrMatches" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertTableAdditions">
+            name="TestLuaUnitAssertions.test_assertTableAdditions" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertTableLev2">
+            name="TestLuaUnitAssertions.test_assertTableLev2" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertTableList">
+            name="TestLuaUnitAssertions.test_assertTableList" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertTableNil">
+            name="TestLuaUnitAssertions.test_assertTableNil" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertTableNilFront">
+            name="TestLuaUnitAssertions.test_assertTableNilFront" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertTableNum">
+            name="TestLuaUnitAssertions.test_assertTableNum" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertTableStr">
+            name="TestLuaUnitAssertions.test_assertTableStr" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertions"
-            name="TestLuaUnitAssertions.test_assertTrue">
+            name="TestLuaUnitAssertions.test_assertTrue" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertionsError"
-            name="TestLuaUnitAssertionsError.test_assertError">
+            name="TestLuaUnitAssertionsError.test_assertError" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertionsError"
-            name="TestLuaUnitAssertionsError.test_assertErrorMsgContains">
+            name="TestLuaUnitAssertionsError.test_assertErrorMsgContains" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertionsError"
-            name="TestLuaUnitAssertionsError.test_assertErrorMsgEquals">
+            name="TestLuaUnitAssertionsError.test_assertErrorMsgEquals" time="0">
         </testcase>
         <testcase classname="TestLuaUnitAssertionsError"
-            name="TestLuaUnitAssertionsError.test_assertErrorMsgMatches">
+            name="TestLuaUnitAssertionsError.test_assertErrorMsgMatches" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertAlmostEqualsMsg">
+            name="TestLuaUnitErrorMsg.test_assertAlmostEqualsMsg" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertAlmostEqualsOrderReversedMsg">
+            name="TestLuaUnitErrorMsg.test_assertAlmostEqualsOrderReversedMsg" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertEqualsMsg">
+            name="TestLuaUnitErrorMsg.test_assertEqualsMsg" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertEqualsOrderReversedMsg">
+            name="TestLuaUnitErrorMsg.test_assertEqualsOrderReversedMsg" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertError">
+            name="TestLuaUnitErrorMsg.test_assertError" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertErrorMsg">
+            name="TestLuaUnitErrorMsg.test_assertErrorMsg" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertIs">
+            name="TestLuaUnitErrorMsg.test_assertIs" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertIsBoolean">
+            name="TestLuaUnitErrorMsg.test_assertIsBoolean" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertIsCoroutine">
+            name="TestLuaUnitErrorMsg.test_assertIsCoroutine" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertIsFunction">
+            name="TestLuaUnitErrorMsg.test_assertIsFunction" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertIsNumber">
+            name="TestLuaUnitErrorMsg.test_assertIsNumber" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertIsString">
+            name="TestLuaUnitErrorMsg.test_assertIsString" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertIsTable">
+            name="TestLuaUnitErrorMsg.test_assertIsTable" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertIsUserdata">
+            name="TestLuaUnitErrorMsg.test_assertIsUserdata" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertItemsEquals">
+            name="TestLuaUnitErrorMsg.test_assertItemsEquals" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertNil">
+            name="TestLuaUnitErrorMsg.test_assertNil" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertNotAlmostEqualsMsg">
+            name="TestLuaUnitErrorMsg.test_assertNotAlmostEqualsMsg" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertNotEqualsMsg">
+            name="TestLuaUnitErrorMsg.test_assertNotEqualsMsg" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertNotEqualsOrderReversedMsg">
+            name="TestLuaUnitErrorMsg.test_assertNotEqualsOrderReversedMsg" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertNotIs">
+            name="TestLuaUnitErrorMsg.test_assertNotIs" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertNotStrContains">
+            name="TestLuaUnitErrorMsg.test_assertNotStrContains" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertNotStrIContains">
+            name="TestLuaUnitErrorMsg.test_assertNotStrIContains" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertStrContains">
+            name="TestLuaUnitErrorMsg.test_assertStrContains" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertStrIContains">
+            name="TestLuaUnitErrorMsg.test_assertStrIContains" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertStrMatches">
+            name="TestLuaUnitErrorMsg.test_assertStrMatches" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_assertTrueFalse">
+            name="TestLuaUnitErrorMsg.test_assertTrueFalse" time="0">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg"
-            name="TestLuaUnitErrorMsg.test_printTableWithRef">
+            name="TestLuaUnitErrorMsg.test_printTableWithRef" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.testOutputInterface">
+            name="TestLuaUnitExecution.testOutputInterface" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.testRunReturnsNumberOfFailures">
+            name="TestLuaUnitExecution.testRunReturnsNumberOfFailures" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.testRunSetupAndTeardown">
+            name="TestLuaUnitExecution.testRunSetupAndTeardown" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.testRunSomeTestByGlobalInstance">
+            name="TestLuaUnitExecution.testRunSomeTestByGlobalInstance" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.testRunSomeTestByLocalInstance">
+            name="TestLuaUnitExecution.testRunSomeTestByLocalInstance" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.testTestCountAndFailCount">
+            name="TestLuaUnitExecution.testTestCountAndFailCount" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.testWithSetupTeardownErrors1">
+            name="TestLuaUnitExecution.testWithSetupTeardownErrors1" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.testWithSetupTeardownErrors2">
+            name="TestLuaUnitExecution.testWithSetupTeardownErrors2" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.testWithSetupTeardownErrors3">
+            name="TestLuaUnitExecution.testWithSetupTeardownErrors3" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.testWithSetupTeardownErrors4">
+            name="TestLuaUnitExecution.testWithSetupTeardownErrors4" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.testWithSetupTeardownErrors5">
+            name="TestLuaUnitExecution.testWithSetupTeardownErrors5" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.test_MethodsAreExecutedInRightOrder">
+            name="TestLuaUnitExecution.test_MethodsAreExecutedInRightOrder" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.test_collectTests">
+            name="TestLuaUnitExecution.test_collectTests" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.test_filterWithPattern">
+            name="TestLuaUnitExecution.test_filterWithPattern" time="0">
         </testcase>
         <testcase classname="TestLuaUnitExecution"
-            name="TestLuaUnitExecution.test_runSuiteByNames">
+            name="TestLuaUnitExecution.test_runSuiteByNames" time="0">
         </testcase>
         <testcase classname="TestLuaUnitResults"
-            name="TestLuaUnitResults.test_nodeStatus">
+            name="TestLuaUnitResults.test_nodeStatus" time="0">
         </testcase>
         <testcase classname="TestLuaUnitResults"
-            name="TestLuaUnitResults.test_resultsWhileTestInProgress">
+            name="TestLuaUnitResults.test_resultsWhileTestInProgress" time="0">
         </testcase>
         <testcase classname="TestLuaUnitResults"
-            name="TestLuaUnitResults.test_runSuiteOk">
+            name="TestLuaUnitResults.test_runSuiteOk" time="0">
         </testcase>
         <testcase classname="TestLuaUnitResults"
-            name="TestLuaUnitResults.test_runSuiteWithFailures">
+            name="TestLuaUnitResults.test_runSuiteWithFailures" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_IsClassMethod">
+            name="TestLuaUnitUtilities.test_IsClassMethod" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_IsFunction">
+            name="TestLuaUnitUtilities.test_IsFunction" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_applyPatternFilter">
+            name="TestLuaUnitUtilities.test_applyPatternFilter" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_expandClasses">
+            name="TestLuaUnitUtilities.test_expandClasses" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_expandOneClass">
+            name="TestLuaUnitUtilities.test_expandOneClass" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_genSortedIndex">
+            name="TestLuaUnitUtilities.test_genSortedIndex" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_hasNewline">
+            name="TestLuaUnitUtilities.test_hasNewline" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_includePattern">
+            name="TestLuaUnitUtilities.test_includePattern" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_isTestName">
+            name="TestLuaUnitUtilities.test_isTestName" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_parseCmdLine">
+            name="TestLuaUnitUtilities.test_parseCmdLine" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_prefixString">
+            name="TestLuaUnitUtilities.test_prefixString" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_prettstrTableRecursion">
+            name="TestLuaUnitUtilities.test_prettstrTableRecursion" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_prettystr">
+            name="TestLuaUnitUtilities.test_prettystr" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_prettystr_adv_tables">
+            name="TestLuaUnitUtilities.test_prettystr_adv_tables" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_sortedNextReturnsSortedKeyValues">
+            name="TestLuaUnitUtilities.test_sortedNextReturnsSortedKeyValues" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_sortedNextWorksOnTwoTables">
+            name="TestLuaUnitUtilities.test_sortedNextWorksOnTwoTables" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_sortedNextWorksTwiceOnTable">
+            name="TestLuaUnitUtilities.test_sortedNextWorksTwiceOnTable" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_splitClassMethod">
+            name="TestLuaUnitUtilities.test_splitClassMethod" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_strMatch">
+            name="TestLuaUnitUtilities.test_strMatch" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_strSplit3CharDelim">
+            name="TestLuaUnitUtilities.test_strSplit3CharDelim" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_strSplitOnFailure">
+            name="TestLuaUnitUtilities.test_strSplitOnFailure" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_strSplitOneCharDelim">
+            name="TestLuaUnitUtilities.test_strSplitOneCharDelim" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_stripStackTrace">
+            name="TestLuaUnitUtilities.test_stripStackTrace" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_table_keytostring">
+            name="TestLuaUnitUtilities.test_table_keytostring" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_xmlCDataEscape">
+            name="TestLuaUnitUtilities.test_xmlCDataEscape" time="0">
         </testcase>
         <testcase classname="TestLuaUnitUtilities"
-            name="TestLuaUnitUtilities.test_xmlEscape">
+            name="TestLuaUnitUtilities.test_xmlEscape" time="0">
         </testcase>
         <testcase classname="TestMock"
-            name="TestMock.testMock">
+            name="TestMock.testMock" time="0">
         </testcase>
     </testsuite>
 </testsuites>

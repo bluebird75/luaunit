@@ -1,76 +1,76 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="15" timestamp="2015-02-05T23:16:52" time="0">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="15" timestamp="2015-02-05T23:22:52" time="0">
         <properties>
             <property name="Lua Version" value="Lua 5.2"/>
             <property name="LuaUnit Version" value="3.0"/>
         </properties>
         <testcase classname="TestTiti"
-            name="TestTiti.test1_withFailure">
+            name="TestTiti.test1_withFailure" time="0">
             <failure type="example_with_luaunit.lua:99: expected: 2, actual: 1">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:99: in function 'TestTiti.test1_withFailure']]></failure>
         </testcase>
         <testcase classname="TestTiti"
-            name="TestTiti.test2_withFailure">
+            name="TestTiti.test2_withFailure" time="0">
             <failure type="example_with_luaunit.lua:108: expected: &quot;bof&quot;
 actual: &quot;hop&quot;">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:108: in function 'TestTiti.test2_withFailure']]></failure>
         </testcase>
         <testcase classname="TestTiti"
-            name="TestTiti.test3">
+            name="TestTiti.test3" time="0">
         </testcase>
         <testcase classname="TestToto"
-            name="TestToto.test1_withFailure">
+            name="TestToto.test1_withFailure" time="0">
             <failure type="example_with_luaunit.lua:19: expected: 2, actual: 1">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:19: in function 'TestToto.test1_withFailure']]></failure>
         </testcase>
         <testcase classname="TestToto"
-            name="TestToto.test2_withFailure">
+            name="TestToto.test2_withFailure" time="0">
             <failure type="example_with_luaunit.lua:28: expected: &quot;bof&quot;
 actual: &quot;hop&quot;">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:28: in function 'TestToto.test2_withFailure']]></failure>
         </testcase>
         <testcase classname="TestToto"
-            name="TestToto.test3">
+            name="TestToto.test3" time="0">
         </testcase>
         <testcase classname="TestToto"
-            name="TestToto.test4">
+            name="TestToto.test4" time="0">
             <failure type="example_with_luaunit.lua:41: Received the not expected value: 1">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:41: in function 'TestToto.test4']]></failure>
         </testcase>
         <testcase classname="TestToto"
-            name="TestToto.test5">
+            name="TestToto.test5" time="0">
             <failure type="example_with_luaunit.lua:47: expected: false, actual: 1">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:47: in function 'TestToto.test5']]></failure>
         </testcase>
         <testcase classname="TestToto"
-            name="TestToto.test6">
+            name="TestToto.test6" time="0">
             <failure type="example_with_luaunit.lua:52: expected: true, actual: false">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:52: in function 'TestToto.test6']]></failure>
         </testcase>
         <testcase classname="TestToto"
-            name="TestToto.test7">
+            name="TestToto.test7" time="0">
             <failure type="example_with_luaunit.lua:58: expected: {1, 2, three=3}
 actual: {1, 2}">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:58: in function 'TestToto.test7']]></failure>
         </testcase>
         <testcase classname="TestToto"
-            name="TestToto.test8a">
+            name="TestToto.test8a" time="0">
             <failure type="example_with_luaunit.lua:76: Bouhouhoum error!">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:76: in function 'funcWithError'
 	example_with_luaunit.lua:63: in function 'TestToto.test8a']]></failure>
         </testcase>
         <testcase classname="TestToto"
-            name="TestToto.test8b">
+            name="TestToto.test8b" time="0">
             <failure type="example_with_luaunit.lua:76: Bouhouhoum error!">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:76: in function 'funcWithError'
@@ -78,19 +78,19 @@ actual: {1, 2}">
 	example_with_luaunit.lua:68: in function 'TestToto.test8b']]></failure>
         </testcase>
         <testcase classname="[TestFunctions]"
-            name="test1_withFailure">
+            name="test1_withFailure" time="0">
             <failure type="example_with_luaunit.lua:124: assertion failed!">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:124: in function 'test1_withFailure']]></failure>
         </testcase>
         <testcase classname="[TestFunctions]"
-            name="test2_withFailure">
+            name="test2_withFailure" time="0">
             <failure type="example_with_luaunit.lua:130: assertion failed!">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:130: in function 'test2_withFailure']]></failure>
         </testcase>
         <testcase classname="[TestFunctions]"
-            name="test3">
+            name="test3" time="0">
         </testcase>
     </testsuite>
 </testsuites>
