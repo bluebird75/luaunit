@@ -1000,8 +1000,12 @@ JUnitOutput_MT = { __index = JUnitOutput }
         self.fd:write('<?xml version="1.0" encoding="UTF-8" ?>\n')
         self.fd:write('<testsuites>\n')
         self.fd:write(string.format(
-            '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s">\n', 
+            '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s" time="0">\n', 
             self.result.testCount, self.result.startIsodate ))
+        self.fd:write("        <properties>\n")
+        self.fd:write(string.format('            <property name="Lua Version" value="%s"/>\n', _VERSION ) )
+        self.fd:write(string.format('            <property name="LuaUnit Version" value="%s"/>\n', VERSION) )
+        self.fd:write("        </properties>\n")
     end
     function JUnitOutput:startClass(className) 
         if className ~= '[TestFunctions]' then

@@ -1,5 +1,5 @@
 # XML output to test/ref/unitTestsXmlVerbose.xml
-# Started on 02/05/15 23:00:17
+# Started on 02/05/15 23:16:52
 # Starting class: TestLuaUnitAssertions
 # Starting test: TestLuaUnitAssertions.test_assertAlmostEquals
 # Starting test: TestLuaUnitAssertions.test_assertEquals
