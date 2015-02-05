@@ -261,15 +261,13 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
         end
 
         -- Validation against apache junit schema
-        --[[
-        ret = osExec( string.format('xmllint --noout --schema junitxml/junit-apache-ant.xsd %s > %s', xmlOutput, xmlLintOutput ) )
+        ret = osExec( string.format('xmllint --noout --schema junitxml/junit-apache-ant.xsd %s 2> %s', xmlOutput, xmlLintOutput ) )
         if ret then
             -- report(string.format('XMLLint validation ok: file %s', xmlLintOutput) )
         else
             error(string.format('XMLLint reported errors against apache schema: file %s', xmlLintOutput) )
             retcode = retcode + 1
         end
-        ]]
 
 
         -- Validation against jenkins/hudson schema
