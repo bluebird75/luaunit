@@ -1000,7 +1000,7 @@ JUnitOutput_MT = { __index = JUnitOutput }
         self.fd:write('<?xml version="1.0" encoding="UTF-8" ?>\n')
         self.fd:write('<testsuites>\n')
         self.fd:write(string.format(
-            '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s" time="0">\n', 
+            '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s" time="0" errors="0" failures="0">\n', 
             self.result.testCount, self.result.startIsodate ))
         self.fd:write("        <properties>\n")
         self.fd:write(string.format('            <property name="Lua Version" value="%s"/>\n', _VERSION ) )
@@ -1039,6 +1039,11 @@ JUnitOutput_MT = { __index = JUnitOutput }
             table.insert(t, string.format(", %d non selected tests", self.result.nonSelectedCount ) )
         end
         print( table.concat(t) )
+
+        -- Needed to validate junit ant xsd but really not useful in general:
+        self.fd:write('    <system-out/>\n')
+        self.fd:write('    <system-err/>\n')
+        
         self.fd:write('    </testsuite>\n')
         self.fd:write('</testsuites>\n') 
         self.fd:close()
