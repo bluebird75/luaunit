@@ -985,6 +985,8 @@ JUnitOutput_MT = { __index = JUnitOutput }
         return t
     end
     function JUnitOutput:startSuite()
+
+        -- open xml file early to deal with errors
         if self.fname == nil then
             error('With Junit, an output filename must be supplied with --name!')
         end
@@ -995,17 +997,9 @@ JUnitOutput_MT = { __index = JUnitOutput }
         if self.fd == nil then
             error("Could not open file for writing: "..self.fname)
         end
+
         print('# XML output to '..self.fname)
         print('# Started on '..self.result.startDate)
-        self.fd:write('<?xml version="1.0" encoding="UTF-8" ?>\n')
-        self.fd:write('<testsuites>\n')
-        self.fd:write(string.format(
-            '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s" time="0" errors="0" failures="0">\n', 
-            self.result.testCount, self.result.startIsodate ))
-        self.fd:write("        <properties>\n")
-        self.fd:write(string.format('            <property name="Lua Version" value="%s"/>\n', _VERSION ) )
-        self.fd:write(string.format('            <property name="LuaUnit Version" value="%s"/>\n', VERSION) )
-        self.fd:write("        </properties>\n")
     end
     function JUnitOutput:startClass(className) 
         if className ~= '[TestFunctions]' then
@@ -1014,18 +1008,14 @@ JUnitOutput_MT = { __index = JUnitOutput }
     end
     function JUnitOutput:startTest(testName)
         print('# Starting test: '..testName)
-        self.fd:write('        <testcase classname="' .. self.result.currentNode.className .. '"\n            name="'.. testName .. '" time="0">\n')
     end
 
     function JUnitOutput:addFailure( errorMsg, stackTrace )
         print('# Failure: '..errorMsg)
         print('# '..stackTrace)
-        self.fd:write('            <failure type="' ..xmlEscape(errorMsg) .. '">\n')  
-        self.fd:write('                <![CDATA[' ..xmlCDataEscape(stackTrace) .. ']]></failure>\n')
     end
 
     function JUnitOutput:endTest(testHasFailure)
-        self.fd:write('        </testcase>\n')
     end
 
     function JUnitOutput:endClass()
@@ -1040,10 +1030,35 @@ JUnitOutput_MT = { __index = JUnitOutput }
         end
         print( table.concat(t) )
 
-        -- Needed to validate junit ant xsd but really not useful in general:
+        -- XML file writing
+        self.fd:write('<?xml version="1.0" encoding="UTF-8" ?>\n')
+        self.fd:write('<testsuites>\n')
+        -- XXX please include correct number of failures and errors and time
+        self.fd:write(string.format(
+            '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s" time="0" errors="0" failures="0">\n', 
+            self.result.testCount, self.result.startIsodate ))
+        self.fd:write("        <properties>\n")
+        self.fd:write(string.format('            <property name="Lua Version" value="%s"/>\n', _VERSION ) )
+        self.fd:write(string.format('            <property name="LuaUnit Version" value="%s"/>\n', VERSION) )
+        -- XXX please include system name and version if possible
+        self.fd:write("        </properties>\n")
+
+        -- XXX add all tests
+        for i,node in ipairs(self.result.tests) do
+            -- XXX please use real time here !
+            self.fd:write('        <testcase classname="' .. node.className .. '"\n            name="'.. node.testName .. '" time="0">\n')
+            if node.status ~= NodeStatus.PASS then
+                self.fd:write('            <failure type="' ..xmlEscape(node.msg) .. '">\n')  
+                self.fd:write('                <![CDATA[' ..xmlCDataEscape(node.stackTrace) .. ']]></failure>\n')
+            end
+            self.fd:write('        </testcase>\n')
+
+        end
+
+        -- Next to lines are Needed to validate junit ANT xsd but really not useful in general:
         self.fd:write('    <system-out/>\n')
         self.fd:write('    <system-err/>\n')
-        
+
         self.fd:write('    </testsuite>\n')
         self.fd:write('</testsuites>\n') 
         self.fd:close()
@@ -1398,10 +1413,6 @@ LuaUnit_MT = { __index = LuaUnit }
 
     NodeStatus = { -- class
         __class__ = 'NodeStatus',
-        number = 0,
-        testName = '',
-        className = '',
-
     }
     NodeStatus_MT = { __index = NodeStatus }
 
