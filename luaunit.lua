@@ -1012,7 +1012,7 @@ JUnitOutput_MT = { __index = JUnitOutput }
 
     function JUnitOutput:addFailure( errorMsg, stackTrace )
         print('# Failure: '..errorMsg)
-        print('# '..stackTrace)
+        -- print('# '..stackTrace)
     end
 
     function JUnitOutput:endTest(testHasFailure)
