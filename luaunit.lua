@@ -1043,7 +1043,8 @@ JUnitOutput_MT = { __index = JUnitOutput }
         self.fd:write("        </properties>\n")
 
         for i,node in ipairs(self.result.tests) do
-            self.fd:write('        <testcase classname="' .. node.className .. '"\n            name="'.. node.testName .. '" time="0">\n')
+            self.fd:write(string.format('        <testcase classname="%s" name="%s" time="%0.3f">\n', 
+                node.className, node.testName, node.duration ) )
             if node.status ~= NodeStatus.PASS then
                 self.fd:write('            <failure type="' ..xmlEscape(node.msg) .. '">\n')  
                 self.fd:write('                <![CDATA[' ..xmlCDataEscape(node.stackTrace) .. ']]></failure>\n')
