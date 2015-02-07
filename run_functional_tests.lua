@@ -278,8 +278,14 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
             retcode = retcode + 1
         end
 
-
         -- Validation against jenkins/hudson schema
+        ret = osExec( string.format('xmllint --noout --schema junitxml/junit-jenkins.xsd %s 2> %s', xmlOutput, xmlLintOutput ) )
+        if ret then
+            -- report(string.format('XMLLint validation ok: file %s', xmlLintOutput) )
+        else
+            error(string.format('XMLLint reported errors against apache schema: file %s', xmlLintOutput) )
+            retcode = retcode + 1
+        end
 
     end
 
