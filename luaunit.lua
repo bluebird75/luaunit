@@ -1042,9 +1042,7 @@ JUnitOutput_MT = { __index = JUnitOutput }
         -- XXX please include system name and version if possible
         self.fd:write("        </properties>\n")
 
-        -- XXX add all tests
         for i,node in ipairs(self.result.tests) do
-            -- XXX please use real time here !
             self.fd:write('        <testcase classname="' .. node.className .. '"\n            name="'.. node.testName .. '" time="0">\n')
             if node.status ~= NodeStatus.PASS then
                 self.fd:write('            <failure type="' ..xmlEscape(node.msg) .. '">\n')  
@@ -1484,6 +1482,7 @@ LuaUnit_MT = { __index = LuaUnit }
             testName,
             self.result.currentClassName
         )
+        self.result.currentNode.startTime = os.clock()
         table.insert( self.result.tests, self.result.currentNode )
         self.output:startTest( testName )
     end
@@ -1500,6 +1499,8 @@ LuaUnit_MT = { __index = LuaUnit }
     function LuaUnit:endTest()
         -- print( 'endTEst() '..prettystr(self.result.currentNode))
         -- print( 'endTEst() '..prettystr(self.result.currentNode:hasFailure()))
+        self.result.currentNode.duration = os.clock() - self.result.currentNode.startTime 
+        self.result.currentNode.startTime = nil
         self.output:endTest( self.result.currentNode:hasFailure() )
         self.result.currentNode = nil
     end

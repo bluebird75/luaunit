@@ -1701,20 +1701,42 @@ TestLuaUnitResults = {} -- class
         runner:runSuiteByNames( { 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' } )
         assertEquals( #runner.result.tests, 7 )
         assertEquals( #runner.result.failures, 0 )
-        assertEquals( runner.result.tests[1], { 
-            testName="MyTestToto2.test1", number=1, className='MyTestToto2', status=NodeStatus.PASS } )
-        assertEquals( runner.result.tests[2], { 
-            testName="MyTestToto1.test1", number=2, className='MyTestToto1', status=NodeStatus.PASS } )
-        assertEquals( runner.result.tests[3], { 
-            testName="MyTestToto1.test2", number=3, className='MyTestToto1', status=NodeStatus.PASS } )
-        assertEquals( runner.result.tests[4], { 
-            testName="MyTestToto1.test3", number=4, className='MyTestToto1', status=NodeStatus.PASS } )
-        assertEquals( runner.result.tests[5], { 
-            testName="MyTestToto1.testa", number=5, className='MyTestToto1', status=NodeStatus.PASS } )
-        assertEquals( runner.result.tests[6], { 
-            testName="MyTestToto1.testb", number=6, className='MyTestToto1', status=NodeStatus.PASS } )
-        assertEquals( runner.result.tests[7], { 
-            testName="MyTestFunction", number=7, className='[TestFunctions]', status=NodeStatus.PASS } )
+
+        assertEquals( runner.result.tests[1].testName,"MyTestToto2.test1" )
+        assertEquals( runner.result.tests[1].number, 1 )
+        assertEquals( runner.result.tests[1].className, 'MyTestToto2' )
+        assertEquals( runner.result.tests[1].status,NodeStatus.PASS )
+
+        assertEquals( runner.result.tests[2].testName,"MyTestToto1.test1" )
+        assertEquals( runner.result.tests[2].number, 2 )
+        assertEquals( runner.result.tests[2].className, 'MyTestToto1' )
+        assertEquals( runner.result.tests[2].status,NodeStatus.PASS )
+
+        assertEquals( runner.result.tests[3].testName,"MyTestToto1.test2" )
+        assertEquals( runner.result.tests[3].number, 3 )
+        assertEquals( runner.result.tests[3].className, 'MyTestToto1' )
+        assertEquals( runner.result.tests[3].status,NodeStatus.PASS )
+
+        assertEquals( runner.result.tests[4].testName,"MyTestToto1.test3" )
+        assertEquals( runner.result.tests[4].number, 4 )
+        assertEquals( runner.result.tests[4].className, 'MyTestToto1' )
+        assertEquals( runner.result.tests[4].status,NodeStatus.PASS )
+
+        assertEquals( runner.result.tests[5].testName,"MyTestToto1.testa" )
+        assertEquals( runner.result.tests[5].number, 5 )
+        assertEquals( runner.result.tests[5].className, 'MyTestToto1' )
+        assertEquals( runner.result.tests[5].status,NodeStatus.PASS )
+
+        assertEquals( runner.result.tests[6].testName,"MyTestToto1.testb" )
+        assertEquals( runner.result.tests[6].number, 6 )
+        assertEquals( runner.result.tests[6].className, 'MyTestToto1' )
+        assertEquals( runner.result.tests[6].status,NodeStatus.PASS )
+
+        assertEquals( runner.result.tests[7].testName,"MyTestFunction" )
+        assertEquals( runner.result.tests[7].number, 7)
+        assertEquals( runner.result.tests[7].className, '[TestFunctions]' )
+        assertEquals( runner.result.tests[7].status, NodeStatus.PASS )
+
     end
 
     function TestLuaUnitResults:test_runSuiteWithFailures()
@@ -1725,8 +1747,13 @@ TestLuaUnitResults = {} -- class
         assertEquals( #runner.result.tests, 3 )
         assertEquals( #runner.result.failures, 2 )
 
-        assertEquals( runner.result.tests[1], { 
-            testName="MyTestWithFailures.testOk", number=1, className='MyTestWithFailures', status=NodeStatus.PASS } )
+        assertEquals( runner.result.tests[1].number, 1 )
+        assertEquals( runner.result.tests[1].testName, "MyTestWithFailures.testOk" )
+        assertEquals( runner.result.tests[1].className, 'MyTestWithFailures' )
+        assertEquals( runner.result.tests[1].status, NodeStatus.PASS )
+        assertIsNumber( runner.result.tests[1].duration )
+        assertIsNil( runner.result.tests[1].msg )
+        assertIsNil( runner.result.tests[1].stackTrace )
 
         assertEquals( runner.result.tests[2].testName, 'MyTestWithFailures.testWithFailure1' )
         assertEquals( runner.result.tests[2].className, 'MyTestWithFailures' )
