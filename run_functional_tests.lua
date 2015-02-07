@@ -92,7 +92,7 @@ do
     os.remove(xmllint_output_fname)
 end
 
-function adjustFile( fileOut, fileIn, pattern, mayBeAbsent )
+function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
     --[[ Adjust the content of fileOut by copying lines matching pattern from fileIn
 
     fileIn lines are read and the first line matching pattern is analysed. The first pattern
@@ -122,7 +122,9 @@ function adjustFile( fileOut, fileIn, pattern, mayBeAbsent )
         error('No line in file '..fileIn..' matching pattern "'..pattern..'"')
     end
 
-    -- print('Captured in source: '.. source )
+    if verbose then
+        print('Captured in source: '.. source )
+    end
 
     local dest = nil
     local linesOut = {}
@@ -130,11 +132,15 @@ function adjustFile( fileOut, fileIn, pattern, mayBeAbsent )
         local idxStart, idxEnd, capture = string.find( line, pattern )
         if idxStart ~= nil then
             dest = capture
-            -- print('Modifying line: '..line )
+            if verbose then
+                print('Modifying line: '..line )
+            end
             line = string_sub(line, dest, source)
             -- line = line:sub(1,idxStart-1)..source..line:sub(idxEnd+1)
             -- string.gsub( line, dest, source )
-            -- print('Result: '..line )
+            if verbose then
+                print('Result: '..line )
+            end
         end
         table.insert( linesOut, line )
     end
@@ -244,6 +250,9 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
     adjustFile( xmlOutput, refXmlOutput, '.*<testsuite.*(timestamp=".-" time=".-").*')
+    -- neutralize all testcase time values in ref xml output
+    adjustFile( refXmlOutput, refXmlOutput, '.*<testcase .*(time=".-").*' )
+    adjustFile( xmlOutput, refXmlOutput, '.*<testcase .*(time=".-").*' )
     -- For Lua 5.1 / 5.2 compatibility
     adjustFile( xmlOutput, refXmlOutput, '.*<property name="Lua Version" value="(Lua 5..)"/>')
     adjustFile( output, refOutput, '(.+%[C%]: i?n? ?%?)', true )
