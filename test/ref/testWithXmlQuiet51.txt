@@ -1,5 +1,5 @@
 # XML output to test/ref/testWithXmlQuiet51.xml
-# Started on 02/07/15 15:30:36
+# Started on 02/07/15 15:39:40
 # Starting class: TestFailuresWithXml
 # Starting test: TestFailuresWithXml.test_failure_with_cdata_xml
 # Failure: test/test_with_xml.lua:13: expected: "got it"
@@ -7,4 +7,5 @@ actual: "cdata does not like ]]>"
 # Starting test: TestFailuresWithXml.test_failure_with_simple_xml
 # Failure: test/test_with_xml.lua:9: expected: "got it"
 actual: '<toto>ti"ti</toto>'
-# Ran 2 tests in 0.000 seconds, 0 successes, 2 failures
+# Starting test: TestThatLastsALongTime
+# Ran 3 tests in 1.110 seconds, 1 successes, 2 failures

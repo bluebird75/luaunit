@@ -1,5 +1,5 @@
 # XML output to test/ref/exampleXmlDefault.xml
-# Started on 02/07/15 15:30:07
+# Started on 02/07/15 15:37:53
 # Starting class: TestTiti
 # Starting test: TestTiti.test1_withFailure
 TestTiti:setUp
