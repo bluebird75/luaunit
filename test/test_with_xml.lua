@@ -13,5 +13,11 @@ TestFailuresWithXml = {} --class
         assertEquals( 'cdata does not like ]]>', 'got it' )
     end
 
+function TestThatLastsALongTime()
+	local start = os.clock()
+	while os.clock() - start < 1.1 do
+	end
+end
+
 LuaUnit.verbosity = 2
 os.exit( LuaUnit.run() )
