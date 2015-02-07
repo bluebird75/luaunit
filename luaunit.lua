@@ -29,6 +29,8 @@ VERBOSITY_VERBOSE = 20
 -- we need to keep a copy of the script args before it is overriden
 cmdline_argv = arg
 
+local IS_UNIX = ( package.config:sub(1,1) == '/' )
+
 USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
 Options:
   -h, --help:             Print this help
@@ -1039,6 +1041,7 @@ JUnitOutput_MT = { __index = JUnitOutput }
         self.fd:write("        <properties>\n")
         self.fd:write(string.format('            <property name="Lua Version" value="%s"/>\n', _VERSION ) )
         self.fd:write(string.format('            <property name="LuaUnit Version" value="%s"/>\n', VERSION) )
+        self.fd:write(string.format('            <property name="Unix-like" value="%s"/>\n', tostring(IS_UNIX) ) )
         -- XXX please include system name and version if possible
         self.fd:write("        </properties>\n")
 
