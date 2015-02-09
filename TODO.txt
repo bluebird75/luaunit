@@ -5,24 +5,25 @@ TODO v3.1:
 - mention that general error are correctly handled by luaunit as failures
 - in rst, check how to document properly optional parameters
 - doc: move description of table printing to an annex
-- XML: report system information
+- improve default output to make it closer to python
+- report test duration everywhere
+- less global space pollution
 
 TODO Future:
 ============
-- compatibility with LuaUnit v2.0 of rjbcomputing
-- provide a luarock package. See: https://rocks.moonscript.org/modules/rjpcomputing/luaunit
+- allow to skip tests
+- make a difference between errors and failures
 - randomized testing
+- provide a luarock package. See: https://rocks.moonscript.org/modules/rjpcomputing/luaunit
+- compatibility with LuaUnit v2.0 of rjbcomputing
 - coloured output
 - global setup / teardown
 - class setup / teardown
-- distinguish errors and failures
-- add date and duration to tap output, junit output
-- validate test output (TAP, ...) with functional tests
-- validate well-formed XML with a DTD
+- add date and duration to tap output
 - better error messages for table assertions:
 	+ expected length of X, got Y
 	+ keys differing in table 1 and 2
-- allow to skip tests
+- XML: report system information
 
 Nice to have: 
 ============
@@ -31,6 +32,8 @@ Nice to have:
 
 Done since 3.0:
 ===============
+x validate well-formed XML with a DTD
+x validate test output (TAP, ...) with functional tests
 x test failures, verify that output is correct
 x improve testresult: contain the list of tests, with status of each test
 x strip luaunit stack more intelligently: exclude content of luaunit
