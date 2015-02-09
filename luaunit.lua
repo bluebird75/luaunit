@@ -966,8 +966,7 @@ TapOutput_MT = { __index = TapOutput }
 --                     class JUnitOutput
 ----------------------------------------------------------------
 
--- For more junit format information, check: 
--- https://svn.jenkins-ci.org/trunk/hudson/dtkit/dtkit-format/dtkit-junit-model/src/main/resources/com/thalesgroup/dtkit/junit/model/xsd/junit-4.xsd
+-- See directory junitxml for more information about the junit format
 JUnitOutput = { -- class
     __class__ = 'JUnitOutput',
     runner = nil,
@@ -1069,6 +1068,58 @@ JUnitOutput_MT = { __index = JUnitOutput }
 ----------------------------------------------------------------
 --                     class TextOutput
 ----------------------------------------------------------------
+
+--[[
+
+-- Python Non verbose:
+
+For each test: . or F or E
+
+If some failed tests:
+    ==============
+    ERROR / FAILURE: TestName (testfile.testclass)
+    ---------
+    Stack trace
+
+
+then --------------
+then "Ran x tests in 0.000s"
+then OK or FAILED (failures=1, error=1)
+
+-- Python Verbose:
+testname (filename.classname) ... ok
+testname (filename.classname) ... FAIL
+testname (filename.classname) ... ERROR
+
+then --------------
+then "Ran x tests in 0.000s"
+then OK or FAILED (failures=1, error=1)
+
+-- Ruby:
+Started
+ .
+ Finished in 0.002695 seconds.
+ 
+ 1 tests, 2 assertions, 0 failures, 0 errors
+
+-- Ruby:
+>> ruby tc_simple_number2.rb
+Loaded suite tc_simple_number2
+Started
+F..
+Finished in 0.038617 seconds.
+ 
+  1) Failure:
+test_failure(TestSimpleNumber) [tc_simple_number2.rb:16]:
+Adding doesn't work.
+<3> expected but was
+<4>.
+ 
+3 tests, 4 assertions, 1 failures, 0 errors
+
+-- 
+
+]]
 
 TextOutput = { __class__ = 'TextOutput' }
 TextOutput_MT = { -- class
