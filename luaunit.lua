@@ -9,27 +9,27 @@ License: BSD License, see LICENSE.txt
 Version: 3.0
 ]]--
 
-VERSION='3.0'
+local VERSION='3.0'
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
 assertEquals( expected, actual ).
 ]]--
-ORDER_ACTUAL_EXPECTED = true
-PRINT_TABLE_REF_IN_ERROR_MSG = false
-LINE_LENGTH=80
+local ORDER_ACTUAL_EXPECTED = true
+local PRINT_TABLE_REF_IN_ERROR_MSG = false
+local LINE_LENGTH=80
 
 -- set this to false to debug luaunit
-STRIP_LUAUNIT_FROM_STACKTRACE=true
+local STRIP_LUAUNIT_FROM_STACKTRACE=true
 
-VERBOSITY_DEFAULT = 10
-VERBOSITY_LOW     = 1
-VERBOSITY_QUIET   = 0
-VERBOSITY_VERBOSE = 20 
+local VERBOSITY_DEFAULT = 10
+local VERBOSITY_LOW     = 1
+local VERBOSITY_QUIET   = 0
+local VERBOSITY_VERBOSE = 20 
 
 -- we need to keep a copy of the script args before it is overriden
-cmdline_argv = arg
+local cmdline_argv = arg
 
-USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
+local USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
 Options:
   -h, --help:             Print this help
   --version:              Print version information
@@ -51,7 +51,7 @@ Options:
 --
 ----------------------------------------------------------------
 
-function __genSortedIndex( t )
+local function __genSortedIndex( t )
     local sortedIndexStr = {}
     local sortedIndexInt = {}
     local sortedIndex = {}
@@ -79,9 +79,9 @@ end
 --    t a table on which we iterate
 --    sortedNextCache[ t ].idx is the sorted index of the table
 --    sortedNextCache[ t ].lastIdx is the last index used in the sorted index
-sortedNextCache = {}
+local sortedNextCache = {}
 
-function sortedNext(t, state)
+local function sortedNext(t, state)
     -- Equivalent of the next() function of table iteration, but returns the
     -- keys in the alphabetic order. We use a temporary sorted key table that
     -- is stored in a global variable. We also store the last index
@@ -99,7 +99,7 @@ function sortedNext(t, state)
     end
 
     -- normally, the previous index in the orderedTable is there:
-    lastIndex = sortedNextCache[ t ].lastIdx
+    local lastIndex = sortedNextCache[ t ].lastIdx
     if sortedNextCache[t].idx[lastIndex] == state then
         key = sortedNextCache[t].idx[lastIndex+1]
         sortedNextCache[ t ].lastIdx = lastIndex+1
@@ -124,14 +124,14 @@ function sortedNext(t, state)
     return
 end
 
-function sortedPairs(t)
+local function sortedPairs(t)
     -- Equivalent of the pairs() function on tables. Allows to iterate
     -- in sorted order. This works only if the key types are all the same
     -- and support comparison
     return sortedNext, t, nil
 end
 
-function strsplit(delimiter, text)
+local function strsplit(delimiter, text)
 -- Split text into a list consisting of the strings in text,
 -- separated by strings matching delimiter (which may be a pattern). 
 -- example: strsplit(",%s*", "Anna, Bob, Charlie,Dolores")
@@ -153,12 +153,12 @@ function strsplit(delimiter, text)
     return list
 end
 
-function hasNewLine( s )
+local function hasNewLine( s )
     -- return true if s has a newline
     return (string.find(s, '\n', 1, true) ~= nil)
 end
 
-function prefixString( prefix, s )
+local function prefixString( prefix, s )
     -- Prefix all the lines of s with prefix
     local t, s2
     t = strsplit('\n', s)
@@ -166,7 +166,7 @@ function prefixString( prefix, s )
     return s2
 end
 
-function strMatch(s, pattern, start, final )
+local function strMatch(s, pattern, start, final )
     -- return true if s matches completely the pattern from index start to index end
     -- return false in every other cases
     -- if start is nil, matches from the beginning of the string
@@ -179,7 +179,7 @@ function strMatch(s, pattern, start, final )
         final = string.len(s)
     end
 
-    foundStart, foundEnd = string.find(s, pattern, start, false)
+    local foundStart, foundEnd = string.find(s, pattern, start, false)
     if not foundStart then
         -- no match
         return false
@@ -192,7 +192,7 @@ function strMatch(s, pattern, start, final )
     return false
 end
 
-function xmlEscape( s )
+local function xmlEscape( s )
     -- Return s escaped for XML attributes
     -- escapes table:
     -- "   &quot;
@@ -215,18 +215,18 @@ function xmlEscape( s )
     return s
 end
 
-function xmlCDataEscape( s )
+local function xmlCDataEscape( s )
     -- Return s escaped for CData section
     -- escapes: "]]>" 
-    s = string.gsub( s, ']]>', ']]&gt;' )
+    local s = string.gsub( s, ']]>', ']]&gt;' )
     return s
 end
 
 local patternLuaunitTrace='(.*[/\\]luaunit%.lua:%d+: .*)'
-function isLuaunitInternalLine( s )
+local function isLuaunitInternalLine( s )
     -- return true if line of stack trace comes from inside luaunit
     -- print( 'Matching for luaunit: '..s )
-    matchStart, matchEnd, capture = string.find( s, patternLuaunitTrace )
+    local matchStart, matchEnd, capture = string.find( s, patternLuaunitTrace )
     if matchStart then
         -- print('Match luaunit line')
         return true
@@ -234,7 +234,7 @@ function isLuaunitInternalLine( s )
     return false
 end
 
-function stripLuaunitTrace( stackTrace )
+local function stripLuaunitTrace( stackTrace )
     --[[
     -- Example of  a traceback:
     <<stack traceback:
@@ -397,15 +397,15 @@ function table.tostring( tbl, indentLevel, printTableRefs, recursionTable )
     return result_str
 end
 
-function prettystr( v, keeponeline )
+local function prettystr( v, keeponeline )
     --[[ Better string conversion, to display nice variable content:
     For strings, if keeponeline is set to true, string is displayed on one line, with visible \n
     * string are enclosed with " by default, or with ' if string contains a "
     * if table is a class, display class name
     * tables are expanded
     ]]--
-    recursionTable = {}
-    s = prettystr_sub(v, 1, keeponeline, PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
+    local recursionTable = {}
+    local s = prettystr_sub(v, 1, keeponeline, PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
     if recursionTable['recursionDetected'] == true and PRINT_TABLE_REF_IN_ERROR_MSG == false then
         -- some table contain recursive references, 
         -- so we must recompute the value by including all table references
@@ -416,7 +416,7 @@ function prettystr( v, keeponeline )
     return s
 end
 
-function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
+local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
     if "string" == type( v ) then
         if keeponeline then
             v = string.gsub( v, "\n", "\\n" )
@@ -439,7 +439,7 @@ function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTab
     return tostring(v)
 end
 
-function _table_contains(t, element)
+local function _table_contains(t, element)
     if t then
         for _, value in pairs(t) do
             if type(value) == type(element) then
@@ -461,7 +461,7 @@ function _table_contains(t, element)
     return false
 end
 
-function _is_table_items_equals(actual, expected )
+local function _is_table_items_equals(actual, expected )
     if (type(actual) == 'table') and (type(expected) == 'table') then
         for k,v in pairs(actual) do
             if not _table_contains(expected, v) then
@@ -482,7 +482,7 @@ function _is_table_items_equals(actual, expected )
     return false
 end
 
-function _is_table_equals(actual, expected)
+local function _is_table_equals(actual, expected)
     if (type(actual) == 'table') and (type(expected) == 'table') then
         if (#actual ~= #expected) then
             return false
@@ -513,13 +513,13 @@ end
 --
 ----------------------------------------------------------------
 
-function errorMsgEquality(actual, expected)
+local function errorMsgEquality(actual, expected)
     local errorMsg
     if not ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
-    expectedStr = prettystr(expected)
-    actualStr = prettystr(actual)
+    local expectedStr = prettystr(expected)
+    local actualStr = prettystr(actual)
     if type(expected) == 'string' or type(expected) == 'table' then
         if hasNewLine( expectedStr..actualStr ) then
             expectedStr = '\n'..expectedStr
@@ -533,7 +533,7 @@ function errorMsgEquality(actual, expected)
     return errorMsg
 end
 
-function assertError(f, ...)
+local function assertError(f, ...)
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( f, ... )
@@ -541,31 +541,31 @@ function assertError(f, ...)
     error( "Expected an error when calling function but no error generated", 2 )
 end
 
-function assertTrue(value)
+local function assertTrue(value)
     if not value then
         error("expected: true, actual: " ..prettystr(value), 2)
     end
 end
 
-function assertFalse(value)
+local function assertFalse(value)
     if value then
         error("expected: false, actual: " ..prettystr(value), 2)
     end
 end
 
-function assertNil(value)
+local function assertNil(value)
     if value ~= nil then
         error("expected: nil, actual: " ..prettystr(value), 2)
     end
 end
 
-function assertNotNil(value)
+local function assertNotNil(value)
     if value == nil then
         error("expected non nil value, received nil", 2)
     end
 end
 
-function assertEquals(actual, expected)
+local function assertEquals(actual, expected)
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
             error( errorMsgEquality(actual, expected), 2 )
@@ -577,7 +577,7 @@ function assertEquals(actual, expected)
     end
 end
 
-function assertAlmostEquals( actual, expected, margin )
+local function assertAlmostEquals( actual, expected, margin )
     -- check that two floats are close by margin
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error('assertAlmostEquals: must supply only number arguments.\nArguments supplied: '..actual..', '..expected..', '..margin, 2)
@@ -592,13 +592,13 @@ function assertAlmostEquals( actual, expected, margin )
 
     -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
     -- which by default does not work. We need to give margin a small boost
-    realmargin = margin + 0.00000000001
+    local realmargin = margin + 0.00000000001
     if math.abs(expected - actual) > realmargin then
         error( 'Values are not almost equal\nExpected: '..expected..' with margin of '..margin..', received: '..actual, 2)
     end
 end
 
-function assertNotEquals(actual, expected)
+local function assertNotEquals(actual, expected)
     if type(actual) ~= type(expected) then
         return
     end
@@ -617,7 +617,7 @@ function assertNotEquals(actual, expected)
     end
 end
 
-function assertNotAlmostEquals( actual, expected, margin )
+local function assertNotAlmostEquals( actual, expected, margin )
     -- check that two floats are not close by margin
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error('assertNotAlmostEquals: must supply only number arguments.\nArguments supplied: '..actual..', '..expected..', '..margin, 2)
@@ -632,16 +632,17 @@ function assertNotAlmostEquals( actual, expected, margin )
     
     -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
     -- which by default does not work. We need to give margin a small boost
-    realmargin = margin + 0.00000000001
+    local realmargin = margin + 0.00000000001
     if math.abs(expected - actual) <= realmargin then
         error( 'Values are almost equal\nExpected: '..expected..' with a difference above margin of '..margin..', received: '..actual, 2)
     end
 end
 
-function assertStrContains( str, sub, useRe )
+local function assertStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    noUseRe = not useRe
+    local subType
+    local noUseRe = not useRe
     if string.find(str, sub, 1, noUseRe) == nil then
         if noUseRe then
             subType = 'substring'
@@ -658,7 +659,7 @@ function assertStrContains( str, sub, useRe )
     end
 end
 
-function assertStrIContains( str, sub )
+local function assertStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     local lstr, lsub, subPretty, strPretty
@@ -675,10 +676,11 @@ function assertStrIContains( str, sub )
     end
 end
     
-function assertNotStrContains( str, sub, useRe )
+local function assertNotStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    noUseRe = not useRe
+    local substrType
+    local noUseRe = not useRe
     if string.find(str, sub, 1, noUseRe) ~= nil then
         local substrType
         if noUseRe then
@@ -696,7 +698,7 @@ function assertNotStrContains( str, sub, useRe )
     end
 end
 
-function assertNotStrIContains( str, sub )
+local function assertNotStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     local lstr, lsub
@@ -713,7 +715,7 @@ function assertNotStrIContains( str, sub )
     end
 end
 
-function assertStrMatches( str, pattern, start, final )
+local function assertStrMatches( str, pattern, start, final )
     -- Verify a full match for the string
     -- for a partial match, simply use assertStrContains with useRe set to true
     if not strMatch( str, pattern, start, final ) then
@@ -727,7 +729,7 @@ function assertStrMatches( str, pattern, start, final )
     end
 end
 
-function assertErrorMsgEquals( expectedMsg, func, ... )
+local function assertErrorMsgEquals( expectedMsg, func, ... )
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
@@ -743,7 +745,7 @@ function assertErrorMsgEquals( expectedMsg, func, ... )
     end
 end
 
-function assertErrorMsgContains( partialMsg, func, ... )
+local function assertErrorMsgContains( partialMsg, func, ... )
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
@@ -761,7 +763,7 @@ function assertErrorMsgContains( partialMsg, func, ... )
     end
 end
 
-function assertErrorMsgMatches( expectedMsg, func, ... )
+local function assertErrorMsgMatches( expectedMsg, func, ... )
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
@@ -777,7 +779,7 @@ function assertErrorMsgMatches( expectedMsg, func, ... )
     end
 end
 
-function errorMsgTypeMismatch( expectedType, actual )
+local function errorMsgTypeMismatch( expectedType, actual )
     local actualStr = prettystr(actual)
     if hasNewLine(actualStr) then
         actualStr =  '\n'..actualStr
@@ -785,57 +787,57 @@ function errorMsgTypeMismatch( expectedType, actual )
     return "Expected: a "..expectedType..' value, actual: type '..type(actual)..', value '..actualStr
 end
 
-function assertIsNumber(value)
+local function assertIsNumber(value)
     if type(value) ~= 'number' then
         error( errorMsgTypeMismatch( 'number', value ), 2 )
     end
 end
 
-function assertIsString(value)
+local function assertIsString(value)
     if type(value) ~= "string" then
         error( errorMsgTypeMismatch( 'string', value ), 2 )
     end
 end
 
-function assertIsTable(value)
+local function assertIsTable(value)
     if type(value) ~= 'table' then
         error( errorMsgTypeMismatch( 'table', value ), 2 )
     end
 end
 
-function assertIsBoolean(value)
+local function assertIsBoolean(value)
     if type(value) ~= 'boolean' then
         error( errorMsgTypeMismatch( 'boolean', value ), 2 )
     end
 end
 
-function assertIsNil(value)
+local function assertIsNil(value)
     if type(value) ~= "nil" then
         error( errorMsgTypeMismatch( 'nil', value ), 2 )
     end
 end
 
-function assertIsFunction(value)
+local function assertIsFunction(value)
     if type(value) ~= 'function' then
         error( errorMsgTypeMismatch( 'function', value ), 2 )
     end
 end
 
-function assertIsUserdata(value)
+local function assertIsUserdata(value)
     if type(value) ~= 'userdata' then
         error( errorMsgTypeMismatch( 'userdata', value ), 2 )
     end
 end
 
-function assertIsCoroutine(value)
+local function assertIsCoroutine(value)
     if type(value) ~= 'thread' then
         error( errorMsgTypeMismatch( 'thread', value ), 2 )
     end
 end
 
-assertIsThread = assertIsCoroutine
+local assertIsThread = assertIsCoroutine
 
-function assertIs(actual, expected)
+local function assertIs(actual, expected)
     if not ORDER_ACTUAL_EXPECTED then
         actual, expected = expected, actual
     end
@@ -852,7 +854,7 @@ function assertIs(actual, expected)
     end
 end
 
-function assertNotIs(actual, expected)
+local function assertNotIs(actual, expected)
     if not ORDER_ACTUAL_EXPECTED then
         actual, expected = expected, actual
     end
@@ -865,7 +867,7 @@ function assertNotIs(actual, expected)
     end
 end
 
-function assertItemsEquals(actual, expected)
+local function assertItemsEquals(actual, expected)
     -- checks that the items of table expected
     -- are contained in table actual. Warning, this function
     -- is at least O(n^2)
@@ -904,12 +906,12 @@ assert_not_is = assertNotIs
 --                     class TapOutput
 ----------------------------------------------------------------
 
-TapOutput = { -- class
+local TapOutput = { -- class
     __class__ = 'TapOutput',
     runner = nil,
     result = nil,
 }
-TapOutput_MT = { __index = TapOutput }
+local TapOutput_MT = { __index = TapOutput }
 
     -- For a good reference for TAP format, check: http://testanything.org/tap-specification.html
 
@@ -949,7 +951,7 @@ TapOutput_MT = { __index = TapOutput }
     function TapOutput:endClass() end
 
     function TapOutput:endSuite()
-        t = {}
+        local t = {}
         table.insert(t, string.format('# Ran %d tests in %0.3f seconds, %d successes, %d failures',
             self.result.testCount, self.result.duration, self.result.testCount-self.result.failureCount, self.result.failureCount ) )
         if self.result.nonSelectedCount > 0 then
@@ -967,12 +969,12 @@ TapOutput_MT = { __index = TapOutput }
 ----------------------------------------------------------------
 
 -- See directory junitxml for more information about the junit format
-JUnitOutput = { -- class
+local JUnitOutput = { -- class
     __class__ = 'JUnitOutput',
     runner = nil,
     result = nil,
 }
-JUnitOutput_MT = { __index = JUnitOutput }
+local JUnitOutput_MT = { __index = JUnitOutput }
 
     function JUnitOutput:new()
         local t = {}
@@ -1021,7 +1023,7 @@ JUnitOutput_MT = { __index = JUnitOutput }
     end
 
     function JUnitOutput:endSuite()
-        t = {}
+        local t = {}
         table.insert(t, string.format('# Ran %d tests in %0.3f seconds, %d successes, %d failures',
             self.result.testCount, self.result.duration, self.result.testCount-self.result.failureCount, self.result.failureCount ) )
         if self.result.nonSelectedCount > 0 then
@@ -1121,8 +1123,8 @@ Adding doesn't work.
 
 ]]
 
-TextOutput = { __class__ = 'TextOutput' }
-TextOutput_MT = { -- class
+local TextOutput = { __class__ = 'TextOutput' }
+local TextOutput_MT = { -- class
     __index = TextOutput
 }
 
@@ -1226,15 +1228,15 @@ TextOutput_MT = { -- class
 --                     class NilOutput
 ----------------------------------------------------------------
 
-function nopCallable() 
+local function nopCallable() 
     --print(42) 
     return nopCallable
 end
 
-NilOutput = {
+local NilOutput = {
     __class__ = 'NilOuptut',    
 }
-NilOutput_MT = {
+local NilOutput_MT = {
     __index = nopCallable,
 }
 function NilOutput:new()
@@ -1250,12 +1252,12 @@ end
 --
 ----------------------------------------------------------------
 
-LuaUnit = {
+local LuaUnit = {
     outputType = TextOutput,
     verbosity = VERBOSITY_DEFAULT,
     __class__ = 'LuaUnit'
 }
-LuaUnit_MT = { __index = LuaUnit }
+local LuaUnit_MT = { __index = LuaUnit }
 
     function LuaUnit:new()
         local t = {}
@@ -1279,7 +1281,7 @@ LuaUnit_MT = { __index = LuaUnit }
         -- return a pair className, methodName for a name in the form class:method
         -- return nil if not a class + method name
         -- name is class + method
-        local hasMethod
+        local hasMethod, methodName, className
         hasMethod = string.find(someName, '.', nil, true )
         if not hasMethod then return nil end
         methodName = string.sub(someName, hasMethod+1)
@@ -1309,7 +1311,7 @@ LuaUnit_MT = { __index = LuaUnit }
         -- return a list of all test names in the global namespace
         -- that match LuaUnit.isTestName
 
-        testNames = {}
+        local testNames = {}
         for k, v in pairs(_G) do 
             if LuaUnit.isTestName( k ) then
                 table.insert( testNames , k )
@@ -1460,10 +1462,10 @@ LuaUnit_MT = { __index = LuaUnit }
     --------------[[ Output methods ]]-------------------------
 
 
-    NodeStatus = { -- class
+    local NodeStatus = { -- class
         __class__ = 'NodeStatus',
     }
-    NodeStatus_MT = { __index = NodeStatus }
+    local NodeStatus_MT = { __index = NodeStatus }
 
     -- values of status 
     NodeStatus.PASS='PASS'
@@ -1602,7 +1604,7 @@ LuaUnit_MT = { __index = LuaUnit }
 
     --------------[[ Runner ]]-----------------
 
-    SPLITTER = '\n>----------<\n'
+    local SPLITTER = '\n>----------<\n'
 
     function LuaUnit:protectedCall( classInstance , methodInstance, prettyFuncName)
         -- if classInstance is nil, this is just a function call
@@ -1612,7 +1614,7 @@ LuaUnit_MT = { __index = LuaUnit }
             return debug.traceback(e..SPLITTER, 3)
         end
 
-        local ok=true, fullErrMsg, stackTrace, errMsg
+        local ok=true, fullErrMsg, stackTrace, errMsg, t
         if classInstance then
             -- stupid Lua < 5.2 does not allow xpcall with arguments so let's use a workaround
             ok, fullErrMsg = xpcall( function () methodInstance(classInstance) end, err_handler )
@@ -1755,6 +1757,7 @@ LuaUnit_MT = { __index = LuaUnit }
         --   * { class name, class instance }
         --   * { class.method name, class instance }
 
+        local expandedList, filteredList, filteredOutList, className, methodName, methodInstance
         expandedList = self.expandClasses( listOfNameAndInst )
 
         filteredList, filteredOutList = self.applyPatternFilter( self.patternFilter, expandedList )
@@ -1762,7 +1765,7 @@ LuaUnit_MT = { __index = LuaUnit }
         self:startSuite( #filteredList, #filteredOutList )
 
         for i,v in ipairs( filteredList ) do
-            name, instance = v[1], v[2]
+            local name, instance = v[1], v[2]
             if LuaUnit.isFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
             else 
@@ -1770,7 +1773,7 @@ LuaUnit_MT = { __index = LuaUnit }
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 else
                     assert( LuaUnit.isClassMethod( name ) )
-                    className, instanceName = LuaUnit.splitClassMethod( name )
+                    className, methodName = LuaUnit.splitClassMethod( name )
                     methodInstance = instance[methodName]
                     if methodInstance == nil then
                         error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
@@ -1790,7 +1793,8 @@ LuaUnit_MT = { __index = LuaUnit }
     function LuaUnit:runSuiteByNames( listOfName )
         -- Run an explicit list of test names
 
-        listOfNameAndInst = {}
+        local  className, methodName, instanceName, instance, methodInstance
+        local listOfNameAndInst = {}
 
         for i,name in ipairs( listOfName ) do
             if LuaUnit.isClassMethod( name ) then
@@ -1910,3 +1914,41 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
 -- class LuaUnit
+
+local MODULE = {
+    LuaUnit = LuaUnit,
+    assertError=assertError,
+    assertTrue=assertTrue,
+    assertFalse=assertFalse,
+    assertNil=assertNil,
+   assertNotNil=assertNotNil,
+    assertEquals=assertEquals,
+    assertAlmostEquals=assertAlmostEquals,
+    assertNotEquals=assertNotEquals,
+    assertNotAlmostEquals=assertNotAlmostEquals,
+    assertStrContains=assertStrContains,
+    assertStrIContains=assertStrIContains,
+    assertNotStrContains=assertNotStrContains,
+    assertNotStrIContains=assertNotStrIContains,
+    assertStrMatches=assertStrMatches,
+    assertErrorMsgEquals=assertErrorMsgEquals,
+    assertErrorMsgContains=assertErrorMsgContains,
+    assertErrorMsgMatches=assertErrorMsgMatches,
+    assertIsNumber=assertIsNumber,
+    assertIsString=assertIsString,
+    assertIsTable=assertIsTable,
+    assertIsBoolean=assertIsBoolean,
+    assertIsNil=assertIsNil,
+    assertIsFunction=assertIsFunction,
+    assertIsUserdata=assertIsUserdata,
+    assertIsCoroutine=assertIsCoroutine,
+    assertIs=assertIs,
+    assertNotIs=assertNotIs,
+    assertItemsEquals=assertItemsEquals,
+
+    -- private functions for testing
+    private = {
+    }
+}
+
+return MODULE
