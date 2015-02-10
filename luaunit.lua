@@ -11,17 +11,17 @@ Version: 3.0
 
 local M={}
 
-VERSION='3.0'
+M.VERSION='3.0'
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
 assertEquals( expected, actual ).
 ]]--
-ORDER_ACTUAL_EXPECTED = true
-PRINT_TABLE_REF_IN_ERROR_MSG = false
-LINE_LENGTH=80
+M.ORDER_ACTUAL_EXPECTED = true
+M.PRINT_TABLE_REF_IN_ERROR_MSG = false
+M.LINE_LENGTH=80
 
 -- set this to false to debug luaunit
-STRIP_LUAUNIT_FROM_STACKTRACE=true
+local STRIP_LUAUNIT_FROM_STACKTRACE=true
 
 VERBOSITY_DEFAULT = 10
 VERBOSITY_LOW     = 1
@@ -337,7 +337,7 @@ function table.keytostring(k)
 end
 
 function table.tostring( tbl, indentLevel, printTableRefs, recursionTable )
-    printTableRefs = printTableRefs or PRINT_TABLE_REF_IN_ERROR_MSG
+    printTableRefs = printTableRefs or M.PRINT_TABLE_REF_IN_ERROR_MSG
     recursionTable = recursionTable or {}
     recursionTable[tbl] = true
 
@@ -379,13 +379,13 @@ function table.tostring( tbl, indentLevel, printTableRefs, recursionTable )
     for k, v in ipairs( result ) do
         l = string.len( v )
         totalLength = totalLength + l
-        if l > LINE_LENGTH-1 then
+        if l > M.LINE_LENGTH-1 then
             dispOnMultLines = true
         end
     end
     -- adjust with length of separator
     totalLength = totalLength + SEP_LENGTH * math.max( 0, #result-1) + 2 -- two items need 1 sep, thee items two seps + len of '{}'
-    if totalLength > LINE_LENGTH-1 then
+    if totalLength > M.LINE_LENGTH-1 then
         dispOnMultLines = true
     end
 
@@ -407,8 +407,8 @@ function prettystr( v, keeponeline )
     * tables are expanded
     ]]--
     recursionTable = {}
-    s = prettystr_sub(v, 1, keeponeline, PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
-    if recursionTable['recursionDetected'] == true and PRINT_TABLE_REF_IN_ERROR_MSG == false then
+    s = prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
+    if recursionTable['recursionDetected'] == true and M.PRINT_TABLE_REF_IN_ERROR_MSG == false then
         -- some table contain recursive references, 
         -- so we must recompute the value by including all table references
         -- else the result looks like crap
@@ -517,7 +517,7 @@ end
 
 function errorMsgEquality(actual, expected)
     local errorMsg
-    if not ORDER_ACTUAL_EXPECTED then
+    if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
     expectedStr = prettystr(expected)
@@ -588,7 +588,7 @@ function assertAlmostEquals( actual, expected, margin )
         error( 'assertAlmostEquals: margin must be positive, current value is '..margin, 2)
     end
 
-    if not ORDER_ACTUAL_EXPECTED then
+    if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
 
@@ -628,7 +628,7 @@ function assertNotAlmostEquals( actual, expected, margin )
         error( 'assertNotAlmostEquals: margin must be positive, current value is '..margin, 2)
     end
 
-    if not ORDER_ACTUAL_EXPECTED then
+    if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
     
@@ -838,7 +838,7 @@ end
 assertIsThread = assertIsCoroutine
 
 function assertIs(actual, expected)
-    if not ORDER_ACTUAL_EXPECTED then
+    if not M.ORDER_ACTUAL_EXPECTED then
         actual, expected = expected, actual
     end
     if actual ~= expected then
@@ -855,7 +855,7 @@ function assertIs(actual, expected)
 end
 
 function assertNotIs(actual, expected)
-    if not ORDER_ACTUAL_EXPECTED then
+    if not M.ORDER_ACTUAL_EXPECTED then
         actual, expected = expected, actual
     end
     if actual == expected then
@@ -1362,7 +1362,7 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
     function LuaUnit.version()
-        print('LuaUnit v'..VERSION..' by Philippe Fremy <phil@freehackers.org>')
+        print('LuaUnit v'..M.VERSION..' by Philippe Fremy <phil@freehackers.org>')
         os.exit(0)
     end
 

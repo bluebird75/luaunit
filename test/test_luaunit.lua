@@ -6,7 +6,7 @@ License: BSD License, see LICENSE.txt
 
 -- This is a bit tricky since the test uses the features that it tests.
 
-require('luaunit')
+lu = require('luaunit')
 
 Mock = {
     __class__ = 'Mock',
@@ -1113,13 +1113,13 @@ TestLuaUnitErrorMsg = {} --class
     TestLuaUnitErrorMsg.__class__ = 'TestLuaUnitErrorMsg'
 
     function TestLuaUnitErrorMsg:setUp()
-        self.old_ORDER_ACTUAL_EXPECTED = ORDER_ACTUAL_EXPECTED
-        self.old_PRINT_TABLE_REF_IN_ERROR_MSG = PRINT_TABLE_REF_IN_ERROR_MSG
+        self.old_ORDER_ACTUAL_EXPECTED = lu.ORDER_ACTUAL_EXPECTED
+        self.old_PRINT_TABLE_REF_IN_ERROR_MSG = lu.PRINT_TABLE_REF_IN_ERROR_MSG
     end
 
     function TestLuaUnitErrorMsg:tearDown()
-        ORDER_ACTUAL_EXPECTED = self.old_ORDER_ACTUAL_EXPECTED
-        PRINT_TABLE_REF_IN_ERROR_MSG = self.old_PRINT_TABLE_REF_IN_ERROR_MSG
+        lu.ORDER_ACTUAL_EXPECTED = self.old_ORDER_ACTUAL_EXPECTED
+        lu.PRINT_TABLE_REF_IN_ERROR_MSG = self.old_PRINT_TABLE_REF_IN_ERROR_MSG
     end
 
     function TestLuaUnitErrorMsg:test_assertEqualsMsg()
@@ -1134,7 +1134,7 @@ TestLuaUnitErrorMsg = {} --class
     end 
 
     function TestLuaUnitErrorMsg:test_assertEqualsOrderReversedMsg()
-        ORDER_ACTUAL_EXPECTED = false
+        lu.ORDER_ACTUAL_EXPECTED = false
         assertErrorMsgEquals( 'expected: 1, actual: 2', assertEquals, 1, 2  )
         assertErrorMsgEquals( 'expected: "act"\nactual: "exp"', assertEquals, 'act', 'exp' )
     end 
@@ -1144,7 +1144,7 @@ TestLuaUnitErrorMsg = {} --class
     end
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsOrderReversedMsg()
-        ORDER_ACTUAL_EXPECTED = false
+        lu.ORDER_ACTUAL_EXPECTED = false
         assertErrorMsgEquals('Values are not almost equal\nExpected: 2 with margin of 0.1, received: 1', assertAlmostEquals, 2, 1, 0.1 )
     end
 
@@ -1153,7 +1153,7 @@ TestLuaUnitErrorMsg = {} --class
     end
 
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
-        ORDER_ACTUAL_EXPECTED = false
+        lu.ORDER_ACTUAL_EXPECTED = false
         assertErrorMsgEquals('Values are almost equal\nExpected: 1.1 with a difference above margin of 0.2, received: 1', assertNotAlmostEquals, 1.1, 1, 0.2 )
     end
 
@@ -1164,7 +1164,7 @@ TestLuaUnitErrorMsg = {} --class
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotEqualsOrderReversedMsg()
-        ORDER_ACTUAL_EXPECTED = false
+        lu.ORDER_ACTUAL_EXPECTED = false
         assertErrorMsgEquals( 'Received the not expected value: 1', assertNotEquals, 1, 1  )
     end 
 
@@ -1255,7 +1255,7 @@ TestLuaUnitErrorMsg = {} --class
 
     function TestLuaUnitErrorMsg:test_assertIs()
         assertErrorMsgEquals( 'Expected object and actual object are not the same\nExpected: 1, actual: 2', assertIs, 2, 1 )
-        ORDER_ACTUAL_EXPECTED = false
+        lu.ORDER_ACTUAL_EXPECTED = false
         assertErrorMsgEquals( 'Expected object and actual object are not the same\nExpected: 2, actual: 1', assertIs, 2, 1 )
     end 
 
@@ -1284,7 +1284,7 @@ TestLuaUnitErrorMsg = {} --class
     end 
 
     function TestLuaUnitErrorMsg:test_printTableWithRef()
-        PRINT_TABLE_REF_IN_ERROR_MSG = true
+        lu.PRINT_TABLE_REF_IN_ERROR_MSG = true
         assertErrorMsgMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2}', assertNotEquals, {1,2}, {1,2} )
         -- trigger multiline prettystr
         assertErrorMsgMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2, 3, 4}', assertNotEquals, {1,2,3,4}, {1,2,3,4} )
