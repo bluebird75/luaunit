@@ -1436,14 +1436,15 @@ local LuaUnit_MT = { __index = LuaUnit }
     --------------[[ Output methods ]]-------------------------
 
 
-    NodeStatus = { -- class
+    local NodeStatus = { -- class
         __class__ = 'NodeStatus',
         number = 0,
         testName = '',
         className = '',
 
     }
-    NodeStatus_MT = { __index = NodeStatus }
+    M.NodeStatus = NodeStatus
+    local NodeStatus_MT = { __index = NodeStatus }
 
     -- values of status 
     NodeStatus.PASS='PASS'

@@ -1673,23 +1673,23 @@ TestLuaUnitResults = {} -- class
     end
 
     function TestLuaUnitResults:test_nodeStatus()
-        es = NodeStatus:new()
-        assertEquals( es.status, NodeStatus.PASS )
+        es = lu.NodeStatus:new()
+        assertEquals( es.status, lu.NodeStatus.PASS )
         assertNil( es.msg )
         assertNil( es.stackTrace )
 
         es:fail( 'msgToto', 'stackTraceToto' )
-        assertEquals( es.status, NodeStatus.FAIL )
+        assertEquals( es.status, lu.NodeStatus.FAIL )
         assertEquals( es.msg, 'msgToto' )
         assertEquals( es.stackTrace, 'stackTraceToto' )
 
-        es2 = NodeStatus:new()
-        assertEquals( es2.status, NodeStatus.PASS )
+        es2 = lu.NodeStatus:new()
+        assertEquals( es2.status, lu.NodeStatus.PASS )
         assertNil( es2.msg )
         assertNil( es2.stackTrace )
 
         es:pass()
-        assertEquals( es.status, NodeStatus.PASS )
+        assertEquals( es.status, lu.NodeStatus.PASS )
         assertNil( es.msg )
         assertNil( es.stackTrace )
 
@@ -1702,19 +1702,19 @@ TestLuaUnitResults = {} -- class
         assertEquals( #runner.result.tests, 7 )
         assertEquals( #runner.result.failures, 0 )
         assertEquals( runner.result.tests[1], { 
-            testName="MyTestToto2.test1", number=1, className='MyTestToto2', status=NodeStatus.PASS } )
+            testName="MyTestToto2.test1", number=1, className='MyTestToto2', status=lu.NodeStatus.PASS } )
         assertEquals( runner.result.tests[2], { 
-            testName="MyTestToto1.test1", number=2, className='MyTestToto1', status=NodeStatus.PASS } )
+            testName="MyTestToto1.test1", number=2, className='MyTestToto1', status=lu.NodeStatus.PASS } )
         assertEquals( runner.result.tests[3], { 
-            testName="MyTestToto1.test2", number=3, className='MyTestToto1', status=NodeStatus.PASS } )
+            testName="MyTestToto1.test2", number=3, className='MyTestToto1', status=lu.NodeStatus.PASS } )
         assertEquals( runner.result.tests[4], { 
-            testName="MyTestToto1.test3", number=4, className='MyTestToto1', status=NodeStatus.PASS } )
+            testName="MyTestToto1.test3", number=4, className='MyTestToto1', status=lu.NodeStatus.PASS } )
         assertEquals( runner.result.tests[5], { 
-            testName="MyTestToto1.testa", number=5, className='MyTestToto1', status=NodeStatus.PASS } )
+            testName="MyTestToto1.testa", number=5, className='MyTestToto1', status=lu.NodeStatus.PASS } )
         assertEquals( runner.result.tests[6], { 
-            testName="MyTestToto1.testb", number=6, className='MyTestToto1', status=NodeStatus.PASS } )
+            testName="MyTestToto1.testb", number=6, className='MyTestToto1', status=lu.NodeStatus.PASS } )
         assertEquals( runner.result.tests[7], { 
-            testName="MyTestFunction", number=7, className='[TestFunctions]', status=NodeStatus.PASS } )
+            testName="MyTestFunction", number=7, className='[TestFunctions]', status=lu.NodeStatus.PASS } )
     end
 
     function TestLuaUnitResults:test_runSuiteWithFailures()
@@ -1726,29 +1726,29 @@ TestLuaUnitResults = {} -- class
         assertEquals( #runner.result.failures, 2 )
 
         assertEquals( runner.result.tests[1], { 
-            testName="MyTestWithFailures.testOk", number=1, className='MyTestWithFailures', status=NodeStatus.PASS } )
+            testName="MyTestWithFailures.testOk", number=1, className='MyTestWithFailures', status=lu.NodeStatus.PASS } )
 
         assertEquals( runner.result.tests[2].testName, 'MyTestWithFailures.testWithFailure1' )
         assertEquals( runner.result.tests[2].className, 'MyTestWithFailures' )
-        assertEquals( runner.result.tests[2].status, NodeStatus.FAIL )
+        assertEquals( runner.result.tests[2].status, lu.NodeStatus.FAIL )
         assertIsString( runner.result.tests[2].msg )
         assertIsString( runner.result.tests[2].stackTrace )
 
         assertEquals( runner.result.tests[3].testName, 'MyTestWithFailures.testWithFailure2' )
         assertEquals( runner.result.tests[3].className, 'MyTestWithFailures' )
-        assertEquals( runner.result.tests[3].status, NodeStatus.FAIL )
+        assertEquals( runner.result.tests[3].status, lu.NodeStatus.FAIL )
         assertIsString( runner.result.tests[3].msg )
         assertIsString( runner.result.tests[3].stackTrace )
 
         assertEquals( runner.result.failures[1].testName, 'MyTestWithFailures.testWithFailure1' )
         assertEquals( runner.result.failures[1].className, 'MyTestWithFailures' )
-        assertEquals( runner.result.failures[1].status, NodeStatus.FAIL )
+        assertEquals( runner.result.failures[1].status, lu.NodeStatus.FAIL )
         assertIsString( runner.result.failures[1].msg )
         assertIsString( runner.result.failures[1].stackTrace )
 
         assertEquals( runner.result.failures[2].testName, 'MyTestWithFailures.testWithFailure2' )
         assertEquals( runner.result.failures[2].className, 'MyTestWithFailures' )
-        assertEquals( runner.result.failures[2].status, NodeStatus.FAIL )
+        assertEquals( runner.result.failures[2].status, lu.NodeStatus.FAIL )
         assertIsString( runner.result.failures[2].msg )
         assertIsString( runner.result.failures[2].stackTrace )
     end
@@ -1763,19 +1763,19 @@ TestLuaUnitResults = {} -- class
                     assertEquals( self.result.currentNode.number, 1 )
                     assertEquals( self.result.currentNode.testName, 'MyTestWithFailures.testOk' )
                     assertEquals( self.result.currentNode.className, 'MyTestWithFailures' )
-                    assertEquals( self.result.currentNode.status, NodeStatus.PASS )
+                    assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
                 elseif self.result.currentNode.number == 2 then
                     assertEquals( self.result.currentNode.number, 2 )
                     assertEquals( self.result.currentNode.testName, 'MyTestWithFailures.testWithFailure1' )
                     assertEquals( self.result.currentNode.className, 'MyTestWithFailures' )
-                    assertEquals( self.result.currentNode.status, NodeStatus.PASS )
+                    assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
                 end
             end
             t.endTest = function(self, status)
                 if self.result.currentNode.number == 1 then
-                    assertEquals( self.result.currentNode.status, NodeStatus.PASS )
+                    assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
                 elseif self.result.currentNode.number == 2 then
-                    assertEquals( self.result.currentNode.status, NodeStatus.FAIL )
+                    assertEquals( self.result.currentNode.status, lu.NodeStatus.FAIL )
                 end
             end
             return t
