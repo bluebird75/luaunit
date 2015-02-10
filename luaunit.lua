@@ -108,7 +108,7 @@ local function sortedNext(t, state)
     end
 
     -- normally, the previous index in the orderedTable is there:
-    lastIndex = sortedNextCache[ t ].lastIdx
+    local lastIndex = sortedNextCache[ t ].lastIdx
     if sortedNextCache[t].idx[lastIndex] == state then
         key = sortedNextCache[t].idx[lastIndex+1]
         sortedNextCache[ t ].lastIdx = lastIndex+1
@@ -192,7 +192,7 @@ local function strMatch(s, pattern, start, final )
         final = string.len(s)
     end
 
-    foundStart, foundEnd = string.find(s, pattern, start, false)
+    local foundStart, foundEnd = string.find(s, pattern, start, false)
     if not foundStart then
         -- no match
         return false
@@ -233,7 +233,7 @@ M.private.xmlEscape = xmlEscape
 local function xmlCDataEscape( s )
     -- Return s escaped for CData section
     -- escapes: "]]>" 
-    s = string.gsub( s, ']]>', ']]&gt;' )
+    local s = string.gsub( s, ']]>', ']]&gt;' )
     return s
 end
 M.private.xmlCDataEscape = xmlCDataEscape
@@ -242,7 +242,7 @@ local patternLuaunitTrace='(.*[/\\]luaunit%.lua:%d+: .*)'
 local function isLuaunitInternalLine( s )
     -- return true if line of stack trace comes from inside luaunit
     -- print( 'Matching for luaunit: '..s )
-    matchStart, matchEnd, capture = string.find( s, patternLuaunitTrace )
+    local matchStart, matchEnd, capture = string.find( s, patternLuaunitTrace )
     if matchStart then
         -- print('Match luaunit line')
         return true
@@ -421,8 +421,8 @@ local function prettystr( v, keeponeline )
     * if table is a class, display class name
     * tables are expanded
     ]]--
-    recursionTable = {}
-    s = M.private.prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
+    local recursionTable = {}
+    local s = M.private.prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
     if recursionTable['recursionDetected'] == true and M.PRINT_TABLE_REF_IN_ERROR_MSG == false then
         -- some table contain recursive references, 
         -- so we must recompute the value by including all table references
@@ -538,8 +538,8 @@ local function errorMsgEquality(actual, expected)
     if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
-    expectedStr = prettystr(expected)
-    actualStr = prettystr(actual)
+    local expectedStr = prettystr(expected)
+    local actualStr = prettystr(actual)
     if type(expected) == 'string' or type(expected) == 'table' then
         if hasNewLine( expectedStr..actualStr ) then
             expectedStr = '\n'..expectedStr
@@ -612,7 +612,7 @@ function M.assertAlmostEquals( actual, expected, margin )
 
     -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
     -- which by default does not work. We need to give margin a small boost
-    realmargin = margin + 0.00000000001
+    local realmargin = margin + 0.00000000001
     if math.abs(expected - actual) > realmargin then
         error( 'Values are not almost equal\nExpected: '..expected..' with margin of '..margin..', received: '..actual, 2)
     end
@@ -652,7 +652,7 @@ function M.assertNotAlmostEquals( actual, expected, margin )
     
     -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
     -- which by default does not work. We need to give margin a small boost
-    realmargin = margin + 0.00000000001
+    local realmargin = margin + 0.00000000001
     if math.abs(expected - actual) <= realmargin then
         error( 'Values are almost equal\nExpected: '..expected..' with a difference above margin of '..margin..', received: '..actual, 2)
     end
@@ -661,7 +661,8 @@ end
 function M.assertStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    noUseRe = not useRe
+    local subType
+    local noUseRe = not useRe
     if string.find(str, sub, 1, noUseRe) == nil then
         if noUseRe then
             subType = 'substring'
@@ -698,7 +699,8 @@ end
 function M.assertNotStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    noUseRe = not useRe
+    local substrType
+    local noUseRe = not useRe
     if string.find(str, sub, 1, noUseRe) ~= nil then
         local substrType
         if noUseRe then
@@ -1001,7 +1003,7 @@ local TapOutput_MT = { __index = TapOutput }
     function TapOutput:endClass() end
 
     function TapOutput:endSuite()
-        t = {}
+        local t = {}
         table.insert(t, string.format('# Ran %d tests in %0.3f seconds, %d successes, %d failures',
             self.result.testCount, self.result.duration, self.result.testCount-self.result.failureCount, self.result.failureCount ) )
         if self.result.nonSelectedCount > 0 then
@@ -1018,8 +1020,7 @@ local TapOutput_MT = { __index = TapOutput }
 --                     class JUnitOutput
 ----------------------------------------------------------------
 
--- For more junit format information, check: 
--- https://svn.jenkins-ci.org/trunk/hudson/dtkit/dtkit-format/dtkit-junit-model/src/main/resources/com/thalesgroup/dtkit/junit/model/xsd/junit-4.xsd
+-- See directory junitxml for more information about the junit format
 local JUnitOutput = { -- class
     __class__ = 'JUnitOutput',
     runner = nil,
@@ -1037,6 +1038,8 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         return t
     end
     function JUnitOutput:startSuite()
+
+        -- open xml file early to deal with errors
         if self.fname == nil then
             error('With Junit, an output filename must be supplied with --name!')
         end
@@ -1047,6 +1050,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         if self.fd == nil then
             error("Could not open file for writing: "..self.fname)
         end
+
         print('# XML output to '..self.fname)
         print('# Started on '..self.result.startDate)
         self.fd:write('<testsuites>\n')
@@ -1078,7 +1082,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
     end
 
     function JUnitOutput:endSuite()
-        t = {}
+        local t = {}
         table.insert(t, string.format('# Ran %d tests in %0.3f seconds, %d successes, %d failures',
             self.result.testCount, self.result.duration, self.result.testCount-self.result.failureCount, self.result.failureCount ) )
         if self.result.nonSelectedCount > 0 then
@@ -1255,7 +1259,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         -- return a pair className, methodName for a name in the form class:method
         -- return nil if not a class + method name
         -- name is class + method
-        local hasMethod
+        local hasMethod, methodName, className
         hasMethod = string.find(someName, '.', nil, true )
         if not hasMethod then return nil end
         methodName = string.sub(someName, hasMethod+1)
@@ -1285,7 +1289,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         -- return a list of all test names in the global namespace
         -- that match LuaUnit.isTestName
 
-        testNames = {}
+        local testNames = {}
         for k, v in pairs(_G) do 
             if LuaUnit.isTestName( k ) then
                 table.insert( testNames , k )
@@ -1580,7 +1584,7 @@ local LuaUnit_MT = { __index = LuaUnit }
 
     --------------[[ Runner ]]-----------------
 
-    SPLITTER = '\n>----------<\n'
+    local SPLITTER = '\n>----------<\n'
 
     function LuaUnit:protectedCall( classInstance , methodInstance, prettyFuncName)
         -- if classInstance is nil, this is just a function call
@@ -1590,7 +1594,7 @@ local LuaUnit_MT = { __index = LuaUnit }
             return debug.traceback(e..SPLITTER, 3)
         end
 
-        local ok=true, fullErrMsg, stackTrace, errMsg
+        local ok=true, fullErrMsg, stackTrace, errMsg, t
         if classInstance then
             -- stupid Lua < 5.2 does not allow xpcall with arguments so let's use a workaround
             ok, fullErrMsg = xpcall( function () methodInstance(classInstance) end, err_handler )
@@ -1604,7 +1608,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         t = strsplit( SPLITTER, fullErrMsg )
         errMsg = t[1]
         stackTrace = string.sub(t[2],2)
-        if methodName then
+        if prettyFuncName then
             -- we do have the real method name, improve the stack trace
             stackTrace = string.gsub( stackTrace, "in function 'methodInstance'", "in function '"..prettyFuncName.."'")
         end
@@ -1694,7 +1698,7 @@ local LuaUnit_MT = { __index = LuaUnit }
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 end
                 if LuaUnit.isClassMethod( name ) then
-                    className, instanceName = LuaUnit.splitClassMethod( name )
+                    className, methodName = LuaUnit.splitClassMethod( name )
                     methodInstance = instance[methodName]
                     if methodInstance == nil then
                         error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
@@ -1733,6 +1737,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         --   * { class name, class instance }
         --   * { class.method name, class instance }
 
+        local expandedList, filteredList, filteredOutList, className, methodName, methodInstance
         expandedList = self.expandClasses( listOfNameAndInst )
 
         filteredList, filteredOutList = self.applyPatternFilter( self.patternFilter, expandedList )
@@ -1740,7 +1745,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self:startSuite( #filteredList, #filteredOutList )
 
         for i,v in ipairs( filteredList ) do
-            name, instance = v[1], v[2]
+            local name, instance = v[1], v[2]
             if LuaUnit.isFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
             else 
@@ -1748,7 +1753,7 @@ local LuaUnit_MT = { __index = LuaUnit }
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 else
                     assert( LuaUnit.isClassMethod( name ) )
-                    className, instanceName = LuaUnit.splitClassMethod( name )
+                    className, methodName = LuaUnit.splitClassMethod( name )
                     methodInstance = instance[methodName]
                     if methodInstance == nil then
                         error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
@@ -1768,11 +1773,12 @@ local LuaUnit_MT = { __index = LuaUnit }
     function LuaUnit:runSuiteByNames( listOfName )
         -- Run an explicit list of test names
 
-        listOfNameAndInst = {}
+        local  className, methodName, instanceName, instance, methodInstance
+        local listOfNameAndInst = {}
 
         for i,name in ipairs( listOfName ) do
             if LuaUnit.isClassMethod( name ) then
-                className, methodName = LuaUnit.splitClassMethod( name )
+                className, methodName = LuaUnit.    splitClassMethod( name )
                 instanceName = className
                 instance = _G[instanceName]
 

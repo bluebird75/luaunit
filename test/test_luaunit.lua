@@ -165,7 +165,8 @@ TestLuaUnitUtilities = {} --class
     d:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:528: in main chunk
     [C]: in ?
 ]]
-        t = lu.private.strsplit( SPLITTER, s1..SPLITTER..s2)
+        local SPLITTER = '\n>----------<\n'
+        local t = lu.private.strsplit( SPLITTER, s1..SPLITTER..s2)
         assertEquals( t[1], s1)
         assertEquals( t[2], s2)
         assertEquals( #t, 2 )
