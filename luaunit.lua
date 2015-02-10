@@ -561,31 +561,31 @@ function M.assertError(f, ...)
     error( "Expected an error when calling function but no error generated", 2 )
 end
 
-function assertTrue(value)
+function M.assertTrue(value)
     if not value then
         error("expected: true, actual: " ..prettystr(value), 2)
     end
 end
 
-function assertFalse(value)
+function M.assertFalse(value)
     if value then
         error("expected: false, actual: " ..prettystr(value), 2)
     end
 end
 
-function assertNil(value)
+function M.assertNil(value)
     if value ~= nil then
         error("expected: nil, actual: " ..prettystr(value), 2)
     end
 end
 
-function assertNotNil(value)
+function M.assertNotNil(value)
     if value == nil then
         error("expected non nil value, received nil", 2)
     end
 end
 
-function assertEquals(actual, expected)
+function M.assertEquals(actual, expected)
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
             error( errorMsgEquality(actual, expected), 2 )
@@ -597,7 +597,7 @@ function assertEquals(actual, expected)
     end
 end
 
-function assertAlmostEquals( actual, expected, margin )
+function M.assertAlmostEquals( actual, expected, margin )
     -- check that two floats are close by margin
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error('assertAlmostEquals: must supply only number arguments.\nArguments supplied: '..actual..', '..expected..', '..margin, 2)
@@ -618,7 +618,7 @@ function assertAlmostEquals( actual, expected, margin )
     end
 end
 
-function assertNotEquals(actual, expected)
+function M.assertNotEquals(actual, expected)
     if type(actual) ~= type(expected) then
         return
     end
@@ -637,7 +637,7 @@ function assertNotEquals(actual, expected)
     end
 end
 
-function assertNotAlmostEquals( actual, expected, margin )
+function M.assertNotAlmostEquals( actual, expected, margin )
     -- check that two floats are not close by margin
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error('assertNotAlmostEquals: must supply only number arguments.\nArguments supplied: '..actual..', '..expected..', '..margin, 2)
@@ -658,7 +658,7 @@ function assertNotAlmostEquals( actual, expected, margin )
     end
 end
 
-function assertStrContains( str, sub, useRe )
+function M.assertStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     noUseRe = not useRe
@@ -678,7 +678,7 @@ function assertStrContains( str, sub, useRe )
     end
 end
 
-function assertStrIContains( str, sub )
+function M.assertStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     local lstr, lsub, subPretty, strPretty
@@ -695,7 +695,7 @@ function assertStrIContains( str, sub )
     end
 end
     
-function assertNotStrContains( str, sub, useRe )
+function M.assertNotStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     noUseRe = not useRe
@@ -716,7 +716,7 @@ function assertNotStrContains( str, sub, useRe )
     end
 end
 
-function assertNotStrIContains( str, sub )
+function M.assertNotStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     local lstr, lsub
@@ -733,7 +733,7 @@ function assertNotStrIContains( str, sub )
     end
 end
 
-function assertStrMatches( str, pattern, start, final )
+function M.assertStrMatches( str, pattern, start, final )
     -- Verify a full match for the string
     -- for a partial match, simply use assertStrContains with useRe set to true
     if not strMatch( str, pattern, start, final ) then
@@ -747,7 +747,7 @@ function assertStrMatches( str, pattern, start, final )
     end
 end
 
-function assertErrorMsgEquals( expectedMsg, func, ... )
+function M.assertErrorMsgEquals( expectedMsg, func, ... )
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
@@ -763,7 +763,7 @@ function assertErrorMsgEquals( expectedMsg, func, ... )
     end
 end
 
-function assertErrorMsgContains( partialMsg, func, ... )
+function M.assertErrorMsgContains( partialMsg, func, ... )
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
@@ -781,7 +781,7 @@ function assertErrorMsgContains( partialMsg, func, ... )
     end
 end
 
-function assertErrorMsgMatches( expectedMsg, func, ... )
+function M.assertErrorMsgMatches( expectedMsg, func, ... )
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
@@ -797,7 +797,7 @@ function assertErrorMsgMatches( expectedMsg, func, ... )
     end
 end
 
-function errorMsgTypeMismatch( expectedType, actual )
+local function errorMsgTypeMismatch( expectedType, actual )
     local actualStr = prettystr(actual)
     if hasNewLine(actualStr) then
         actualStr =  '\n'..actualStr
@@ -805,57 +805,57 @@ function errorMsgTypeMismatch( expectedType, actual )
     return "Expected: a "..expectedType..' value, actual: type '..type(actual)..', value '..actualStr
 end
 
-function assertIsNumber(value)
+function M.assertIsNumber(value)
     if type(value) ~= 'number' then
         error( errorMsgTypeMismatch( 'number', value ), 2 )
     end
 end
 
-function assertIsString(value)
+function M.assertIsString(value)
     if type(value) ~= "string" then
         error( errorMsgTypeMismatch( 'string', value ), 2 )
     end
 end
 
-function assertIsTable(value)
+function M.assertIsTable(value)
     if type(value) ~= 'table' then
         error( errorMsgTypeMismatch( 'table', value ), 2 )
     end
 end
 
-function assertIsBoolean(value)
+function M.assertIsBoolean(value)
     if type(value) ~= 'boolean' then
         error( errorMsgTypeMismatch( 'boolean', value ), 2 )
     end
 end
 
-function assertIsNil(value)
+function M.assertIsNil(value)
     if type(value) ~= "nil" then
         error( errorMsgTypeMismatch( 'nil', value ), 2 )
     end
 end
 
-function assertIsFunction(value)
+function M.assertIsFunction(value)
     if type(value) ~= 'function' then
         error( errorMsgTypeMismatch( 'function', value ), 2 )
     end
 end
 
-function assertIsUserdata(value)
+function M.assertIsUserdata(value)
     if type(value) ~= 'userdata' then
         error( errorMsgTypeMismatch( 'userdata', value ), 2 )
     end
 end
 
-function assertIsCoroutine(value)
+function M.assertIsCoroutine(value)
     if type(value) ~= 'thread' then
         error( errorMsgTypeMismatch( 'thread', value ), 2 )
     end
 end
 
-assertIsThread = assertIsCoroutine
+M.assertIsThread = M.assertIsCoroutine
 
-function assertIs(actual, expected)
+function M.assertIs(actual, expected)
     if not M.ORDER_ACTUAL_EXPECTED then
         actual, expected = expected, actual
     end
@@ -872,7 +872,7 @@ function assertIs(actual, expected)
     end
 end
 
-function assertNotIs(actual, expected)
+function M.assertNotIs(actual, expected)
     if not M.ORDER_ACTUAL_EXPECTED then
         actual, expected = expected, actual
     end
@@ -885,7 +885,7 @@ function assertNotIs(actual, expected)
     end
 end
 
-function assertItemsEquals(actual, expected)
+function M.assertItemsEquals(actual, expected)
     -- checks that the items of table expected
     -- are contained in table actual. Warning, this function
     -- is at least O(n^2)
@@ -916,7 +916,34 @@ assert_not_is = assertNotIs
 
 
 if EXPORT_ASSERT_TO_GLOBALS then
-    assertError = M.assertError
+    assertError            = M.assertError
+    assertTrue             = M.assertTrue
+    assertFalse            = M.assertFalse
+    assertNil              = M.assertNil
+    assertNotNil           = M.assertNotNil
+    assertEquals           = M.assertEquals
+    assertAlmostEquals     = M.assertAlmostEquals
+    assertNotEquals        = M.assertNotEquals
+    assertNotAlmostEquals  = M.assertNotAlmostEquals
+    assertStrContains      = M.assertStrContains
+    assertStrIContains     = M.assertStrIContains
+    assertNotStrContains   = M.assertNotStrContains
+    assertNotStrIContains  = M.assertNotStrIContains
+    assertStrMatches       = M.assertStrMatches
+    assertErrorMsgEquals   = M.assertErrorMsgEquals
+    assertErrorMsgContains = M.assertErrorMsgContains
+    assertErrorMsgMatches  = M.assertErrorMsgMatches
+    assertIsNumber         = M.assertIsNumber
+    assertIsString         = M.assertIsString
+    assertIsTable          = M.assertIsTable
+    assertIsBoolean        = M.assertIsBoolean
+    assertIsNil            = M.assertIsNil
+    assertIsFunction       = M.assertIsFunction
+    assertIsUserdata       = M.assertIsUserdata
+    assertIsCoroutine      = M.assertIsCoroutine
+    assertIs               = M.assertIs
+    assertNotIs            = M.assertNotIs
+    assertItemsEquals      = M.assertItemsEquals
 end
 
 ----------------------------------------------------------------
