@@ -9,6 +9,8 @@ License: BSD License, see LICENSE.txt
 Version: 3.0
 ]]--
 
+local M={}
+
 VERSION='3.0'
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
@@ -1835,3 +1837,5 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
 -- class LuaUnit
+
+return M
