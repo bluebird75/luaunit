@@ -1,5 +1,5 @@
 # XML output to test/ref/exampleXmlQuiet.xml
-# Started on 02/07/15 22:13:44
+# Started on 02/10/15 22:39:41
 # Starting class: TestTiti
 # Starting test: TestTiti.test1_withFailure
 TestTiti:setUp
@@ -47,4 +47,4 @@ actual: {1, 2}
 # Starting test: test2_withFailure
 # Failure: example_with_luaunit.lua:130: assertion failed!
 # Starting test: test3
-# Ran 15 tests in 0.000 seconds, 3 successes, 12 failures
+# Ran 15 tests in 0.016 seconds, 3 successes, 12 failures

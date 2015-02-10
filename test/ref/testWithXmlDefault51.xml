@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="3" timestamp="2015-02-07T22:15:13" time="1.109" errors="0" failures="2">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="3" timestamp="2015-02-10T22:40:11" time="1.125" errors="0" failures="2">
         <properties>
             <property name="Lua Version" value="Lua 5.1"/>
             <property name="LuaUnit Version" value="3.0"/>
-            <property name="Unix-like" value="false"/>
         </properties>
         <testcase classname="TestFailuresWithXml" name="TestFailuresWithXml.test_failure_with_cdata_xml" time="0.000">
             <failure type="test/test_with_xml.lua:13: expected: &quot;got it&quot;
@@ -18,7 +17,7 @@ actual: &apos;&lt;toto&gt;ti&quot;ti&lt;/toto&gt;&apos;">
                 <![CDATA[stack traceback:
 	test/test_with_xml.lua:9: in function 'TestFailuresWithXml.test_failure_with_simple_xml']]></failure>
         </testcase>
-        <testcase classname="[TestFunctions]" name="TestThatLastsALongTime" time="1.109">
+        <testcase classname="[TestFunctions]" name="TestThatLastsALongTime" time="0.000">
         </testcase>
     <system-out/>
     <system-err/>

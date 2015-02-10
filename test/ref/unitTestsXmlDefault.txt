@@ -1,5 +1,5 @@
 # XML output to test/ref/unitTestsXmlDefault.xml
-# Started on 02/07/15 22:13:44
+# Started on 02/10/15 22:39:41
 # Starting class: TestLuaUnitAssertions
 # Starting test: TestLuaUnitAssertions.test_assertAlmostEquals
 # Starting test: TestLuaUnitAssertions.test_assertEquals

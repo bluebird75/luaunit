@@ -1,5 +1,5 @@
 # XML output to test/ref/exampleXmlVerbose.xml
-# Started on 02/07/15 22:13:44
+# Started on 02/10/15 22:39:41
 # Starting class: TestTiti
 # Starting test: TestTiti.test1_withFailure
 TestTiti:setUp
