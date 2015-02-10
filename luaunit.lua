@@ -161,10 +161,11 @@ local function strsplit(delimiter, text)
 end
 M.private.strsplit = strsplit
 
-function hasNewLine( s )
+local function hasNewLine( s )
     -- return true if s has a newline
     return (string.find(s, '\n', 1, true) ~= nil)
 end
+M.private.hasNewLine = hasNewLine
 
 function prefixString( prefix, s )
     -- Prefix all the lines of s with prefix

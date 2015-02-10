@@ -455,9 +455,9 @@ TestLuaUnitUtilities = {} --class
     end
 
     function TestLuaUnitUtilities:test_hasNewline()
-        assertEquals( hasNewLine(''), false )
-        assertEquals( hasNewLine('abc'), false )
-        assertEquals( hasNewLine('ab\nc'), true )
+        assertEquals( lu.private.hasNewLine(''), false )
+        assertEquals( lu.private.hasNewLine('abc'), false )
+        assertEquals( lu.private.hasNewLine('ab\nc'), true )
     end
 
     function TestLuaUnitUtilities:test_stripStackTrace()
