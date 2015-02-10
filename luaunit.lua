@@ -956,12 +956,12 @@ end
 --                     class TapOutput
 ----------------------------------------------------------------
 
-TapOutput = { -- class
+local TapOutput = { -- class
     __class__ = 'TapOutput',
     runner = nil,
     result = nil,
 }
-TapOutput_MT = { __index = TapOutput }
+local TapOutput_MT = { __index = TapOutput }
 
     -- For a good reference for TAP format, check: http://testanything.org/tap-specification.html
 
@@ -1020,12 +1020,12 @@ TapOutput_MT = { __index = TapOutput }
 
 -- For more junit format information, check: 
 -- https://svn.jenkins-ci.org/trunk/hudson/dtkit/dtkit-format/dtkit-junit-model/src/main/resources/com/thalesgroup/dtkit/junit/model/xsd/junit-4.xsd
-JUnitOutput = { -- class
+local JUnitOutput = { -- class
     __class__ = 'JUnitOutput',
     runner = nil,
     result = nil,
 }
-JUnitOutput_MT = { __index = JUnitOutput }
+local JUnitOutput_MT = { __index = JUnitOutput }
 
     function JUnitOutput:new()
         local t = {}
@@ -1097,8 +1097,8 @@ JUnitOutput_MT = { __index = JUnitOutput }
 --                     class TextOutput
 ----------------------------------------------------------------
 
-TextOutput = { __class__ = 'TextOutput' }
-TextOutput_MT = { -- class
+local TextOutput = { __class__ = 'TextOutput' }
+local TextOutput_MT = { -- class
     __index = TextOutput
 }
 
@@ -1202,15 +1202,15 @@ TextOutput_MT = { -- class
 --                     class NilOutput
 ----------------------------------------------------------------
 
-function nopCallable() 
+local function nopCallable() 
     --print(42) 
     return nopCallable
 end
 
-NilOutput = {
+local NilOutput = {
     __class__ = 'NilOuptut',    
 }
-NilOutput_MT = {
+local NilOutput_MT = {
     __index = nopCallable,
 }
 function NilOutput:new()
@@ -1231,7 +1231,7 @@ LuaUnit = {
     verbosity = M.VERBOSITY_DEFAULT,
     __class__ = 'LuaUnit'
 }
-LuaUnit_MT = { __index = LuaUnit }
+local LuaUnit_MT = { __index = LuaUnit }
 
     function LuaUnit:new()
         local t = {}
