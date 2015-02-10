@@ -455,7 +455,7 @@ local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recurs
 end
 M.private.prettystr_sub = prettystr_sub
 
-function _table_contains(t, element)
+local function _table_contains(t, element)
     if t then
         for _, value in pairs(t) do
             if type(value) == type(element) then
@@ -463,7 +463,7 @@ function _table_contains(t, element)
                     -- if we wanted recursive items content comparison, we could use
                     -- _is_table_items_equals(v, expected) but one level of just comparing
                     -- items is sufficient
-                    if _is_table_equals( value, element ) then
+                    if M.private._is_table_equals( value, element ) then
                         return true
                     end
                 else
@@ -477,7 +477,7 @@ function _table_contains(t, element)
     return false
 end
 
-function _is_table_items_equals(actual, expected )
+local function _is_table_items_equals(actual, expected )
     if (type(actual) == 'table') and (type(expected) == 'table') then
         for k,v in pairs(actual) do
             if not _table_contains(expected, v) then
@@ -498,7 +498,7 @@ function _is_table_items_equals(actual, expected )
     return false
 end
 
-function _is_table_equals(actual, expected)
+local function _is_table_equals(actual, expected)
     if (type(actual) == 'table') and (type(expected) == 'table') then
         if (#actual ~= #expected) then
             return false
@@ -522,6 +522,7 @@ function _is_table_equals(actual, expected)
     end
     return false
 end
+M.private._is_table_equals = _is_table_equals
 
 ----------------------------------------------------------------
 --
@@ -529,7 +530,7 @@ end
 --
 ----------------------------------------------------------------
 
-function errorMsgEquality(actual, expected)
+local function errorMsgEquality(actual, expected)
     local errorMsg
     if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
@@ -549,13 +550,14 @@ function errorMsgEquality(actual, expected)
     return errorMsg
 end
 
-function assertError(f, ...)
+function M.assertError(f, ...)
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( f, ... )
     if not no_error then return end 
     error( "Expected an error when calling function but no error generated", 2 )
 end
+assertError = M.assertError
 
 function assertTrue(value)
     if not value then
