@@ -31,7 +31,7 @@ M.VERBOSITY_VERBOSE = 20
 -- we need to keep a copy of the script args before it is overriden
 cmdline_argv = arg
 
-USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
+M.USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
 Options:
   -h, --help:             Print this help
   --version:              Print version information
@@ -1357,7 +1357,7 @@ LuaUnit_MT = { __index = LuaUnit }
     end
 
     function LuaUnit.help()
-        print(USAGE)
+        print(M.USAGE)
         os.exit(0)
     end
 
@@ -1791,7 +1791,7 @@ LuaUnit_MT = { __index = LuaUnit }
             error_msg = val
             print(error_msg)
             print()
-            print(USAGE)
+            print(M.USAGE)
             os.exit(-1)
         end 
 
@@ -1812,7 +1812,7 @@ LuaUnit_MT = { __index = LuaUnit }
                 error_msg = val
                 print(error_msg)
                 print()
-                print(USAGE)
+                print(M.USAGE)
                 os.exit(-1)
             end 
         end
