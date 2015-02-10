@@ -131,14 +131,14 @@ local function sortedNext(t, state)
 end
 M.private.sortedNext = sortedNext
 
-function sortedPairs(t)
+local function sortedPairs(t)
     -- Equivalent of the pairs() function on tables. Allows to iterate
     -- in sorted order. This works only if the key types are all the same
     -- and support comparison
     return sortedNext, t, nil
 end
 
-function strsplit(delimiter, text)
+local function strsplit(delimiter, text)
 -- Split text into a list consisting of the strings in text,
 -- separated by strings matching delimiter (which may be a pattern). 
 -- example: strsplit(",%s*", "Anna, Bob, Charlie,Dolores")
@@ -159,6 +159,7 @@ function strsplit(delimiter, text)
     end
     return list
 end
+M.private.strsplit = strsplit
 
 function hasNewLine( s )
     -- return true if s has a newline

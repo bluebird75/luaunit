@@ -132,7 +132,7 @@ TestLuaUnitUtilities = {} --class
     end
 
     function TestLuaUnitUtilities:test_strSplitOneCharDelim()
-        t = strsplit( '\n', '1\n22\n333\n' )
+        t = lu.private.strsplit( '\n', '1\n22\n333\n' )
         assertEquals( t[1], '1')
         assertEquals( t[2], '22')
         assertEquals( t[3], '333')
@@ -141,7 +141,7 @@ TestLuaUnitUtilities = {} --class
     end
 
     function TestLuaUnitUtilities:test_strSplit3CharDelim()
-        t = strsplit( '2\n3', '1\n22\n332\n3' )
+        t = lu.private.strsplit( '2\n3', '1\n22\n332\n3' )
         assertEquals( t[1], '1\n2')
         assertEquals( t[2], '3')
         assertEquals( t[3], '')
@@ -165,7 +165,7 @@ TestLuaUnitUtilities = {} --class
     d:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:528: in main chunk
     [C]: in ?
 ]]
-        t = strsplit( SPLITTER, s1..SPLITTER..s2)
+        t = lu.private.strsplit( SPLITTER, s1..SPLITTER..s2)
         assertEquals( t[1], s1)
         assertEquals( t[2], s2)
         assertEquals( #t, 2 )
