@@ -31,6 +31,9 @@ M.VERBOSITY_LOW     = 1
 M.VERBOSITY_QUIET   = 0
 M.VERBOSITY_VERBOSE = 20 
 
+-- set EXPORT_ASSERT_TO_GLOBALS to have all asserts visible as global values
+EXPORT_ASSERT_TO_GLOBALS = true
+
 -- we need to keep a copy of the script args before it is overriden
 local cmdline_argv = arg
 
@@ -557,7 +560,6 @@ function M.assertError(f, ...)
     if not no_error then return end 
     error( "Expected an error when calling function but no error generated", 2 )
 end
-assertError = M.assertError
 
 function assertTrue(value)
     if not value then
@@ -911,6 +913,11 @@ assert_is_nil = assertIsNil
 assert_is_function = assertIsFunction
 assert_is = assertIs
 assert_not_is = assertNotIs
+
+
+if EXPORT_ASSERT_TO_GLOBALS then
+    assertError = M.assertError
+end
 
 ----------------------------------------------------------------
 --
