@@ -9,22 +9,24 @@ License: BSD License, see LICENSE.txt
 Version: 3.0
 ]]--
 
-local VERSION='3.0'
+local M={}
+
+M.VERSION='3.0'
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
 assertEquals( expected, actual ).
 ]]--
-local ORDER_ACTUAL_EXPECTED = true
-local PRINT_TABLE_REF_IN_ERROR_MSG = false
-local LINE_LENGTH=80
+M.ORDER_ACTUAL_EXPECTED = true
+M.PRINT_TABLE_REF_IN_ERROR_MSG = false
+M.LINE_LENGTH=80
 
 -- set this to false to debug luaunit
-local STRIP_LUAUNIT_FROM_STACKTRACE=true
+M.STRIP_LUAUNIT_FROM_STACKTRACE=true
 
-local VERBOSITY_DEFAULT = 10
-local VERBOSITY_LOW     = 1
-local VERBOSITY_QUIET   = 0
-local VERBOSITY_VERBOSE = 20 
+M.VERBOSITY_DEFAULT = 10
+M.VERBOSITY_LOW     = 1
+M.VERBOSITY_QUIET   = 0
+M.VERBOSITY_VERBOSE = 20 
 
 -- we need to keep a copy of the script args before it is overriden
 local cmdline_argv = arg
@@ -335,7 +337,7 @@ function table.keytostring(k)
 end
 
 function table.tostring( tbl, indentLevel, printTableRefs, recursionTable )
-    printTableRefs = printTableRefs or PRINT_TABLE_REF_IN_ERROR_MSG
+    printTableRefs = printTableRefs or M.PRINT_TABLE_REF_IN_ERROR_MSG
     recursionTable = recursionTable or {}
     recursionTable[tbl] = true
 
@@ -377,13 +379,13 @@ function table.tostring( tbl, indentLevel, printTableRefs, recursionTable )
     for k, v in ipairs( result ) do
         l = string.len( v )
         totalLength = totalLength + l
-        if l > LINE_LENGTH-1 then
+        if l > M.LINE_LENGTH-1 then
             dispOnMultLines = true
         end
     end
     -- adjust with length of separator
     totalLength = totalLength + SEP_LENGTH * math.max( 0, #result-1) + 2 -- two items need 1 sep, thee items two seps + len of '{}'
-    if totalLength > LINE_LENGTH-1 then
+    if totalLength > M.LINE_LENGTH-1 then
         dispOnMultLines = true
     end
 
@@ -405,8 +407,8 @@ local function prettystr( v, keeponeline )
     * tables are expanded
     ]]--
     local recursionTable = {}
-    local s = prettystr_sub(v, 1, keeponeline, PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
-    if recursionTable['recursionDetected'] == true and PRINT_TABLE_REF_IN_ERROR_MSG == false then
+    local s = prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
+    if recursionTable['recursionDetected'] == true and M.PRINT_TABLE_REF_IN_ERROR_MSG == false then
         -- some table contain recursive references, 
         -- so we must recompute the value by including all table references
         -- else the result looks like crap
@@ -437,6 +439,31 @@ local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recurs
         return table.tostring(v, indentLevel, printTableRefs, recursionTable)
     end
     return tostring(v)
+end
+
+local function _is_table_equals(actual, expected)
+    if (type(actual) == 'table') and (type(expected) == 'table') then
+        if (#actual ~= #expected) then
+            return false
+        end
+        local k,v
+        for k,v in pairs(actual) do
+            if not _is_table_equals(v, expected[k]) then
+                return false
+            end
+        end
+        for k,v in pairs(expected) do
+            if not _is_table_equals(v, actual[k]) then
+                return false
+            end
+        end
+        return true
+    elseif type(actual) ~= type(expected) then
+        return false
+    elseif actual == expected then
+        return true
+    end
+    return false
 end
 
 local function _table_contains(t, element)
@@ -482,31 +509,6 @@ local function _is_table_items_equals(actual, expected )
     return false
 end
 
-local function _is_table_equals(actual, expected)
-    if (type(actual) == 'table') and (type(expected) == 'table') then
-        if (#actual ~= #expected) then
-            return false
-        end
-        local k,v
-        for k,v in pairs(actual) do
-            if not _is_table_equals(v, expected[k]) then
-                return false
-            end
-        end
-        for k,v in pairs(expected) do
-            if not _is_table_equals(v, actual[k]) then
-                return false
-            end
-        end
-        return true
-    elseif type(actual) ~= type(expected) then
-        return false
-    elseif actual == expected then
-        return true
-    end
-    return false
-end
-
 ----------------------------------------------------------------
 --
 --                     assertions
@@ -515,7 +517,7 @@ end
 
 local function errorMsgEquality(actual, expected)
     local errorMsg
-    if not ORDER_ACTUAL_EXPECTED then
+    if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
     local expectedStr = prettystr(expected)
@@ -533,7 +535,7 @@ local function errorMsgEquality(actual, expected)
     return errorMsg
 end
 
-local function assertError(f, ...)
+function M.assertError(f, ...)
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( f, ... )
@@ -541,31 +543,31 @@ local function assertError(f, ...)
     error( "Expected an error when calling function but no error generated", 2 )
 end
 
-local function assertTrue(value)
+function M.assertTrue(value)
     if not value then
         error("expected: true, actual: " ..prettystr(value), 2)
     end
 end
 
-local function assertFalse(value)
+function M.assertFalse(value)
     if value then
         error("expected: false, actual: " ..prettystr(value), 2)
     end
 end
 
-local function assertNil(value)
+function M.assertNil(value)
     if value ~= nil then
         error("expected: nil, actual: " ..prettystr(value), 2)
     end
 end
 
-local function assertNotNil(value)
+function M.assertNotNil(value)
     if value == nil then
         error("expected non nil value, received nil", 2)
     end
 end
 
-local function assertEquals(actual, expected)
+function M.assertEquals(actual, expected)
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
             error( errorMsgEquality(actual, expected), 2 )
@@ -577,7 +579,7 @@ local function assertEquals(actual, expected)
     end
 end
 
-local function assertAlmostEquals( actual, expected, margin )
+function M.assertAlmostEquals( actual, expected, margin )
     -- check that two floats are close by margin
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error('assertAlmostEquals: must supply only number arguments.\nArguments supplied: '..actual..', '..expected..', '..margin, 2)
@@ -586,7 +588,7 @@ local function assertAlmostEquals( actual, expected, margin )
         error( 'assertAlmostEquals: margin must be positive, current value is '..margin, 2)
     end
 
-    if not ORDER_ACTUAL_EXPECTED then
+    if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
 
@@ -598,7 +600,7 @@ local function assertAlmostEquals( actual, expected, margin )
     end
 end
 
-local function assertNotEquals(actual, expected)
+function M.assertNotEquals(actual, expected)
     if type(actual) ~= type(expected) then
         return
     end
@@ -617,7 +619,7 @@ local function assertNotEquals(actual, expected)
     end
 end
 
-local function assertNotAlmostEquals( actual, expected, margin )
+function M.assertNotAlmostEquals( actual, expected, margin )
     -- check that two floats are not close by margin
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error('assertNotAlmostEquals: must supply only number arguments.\nArguments supplied: '..actual..', '..expected..', '..margin, 2)
@@ -626,7 +628,7 @@ local function assertNotAlmostEquals( actual, expected, margin )
         error( 'assertNotAlmostEquals: margin must be positive, current value is '..margin, 2)
     end
 
-    if not ORDER_ACTUAL_EXPECTED then
+    if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
     
@@ -638,7 +640,7 @@ local function assertNotAlmostEquals( actual, expected, margin )
     end
 end
 
-local function assertStrContains( str, sub, useRe )
+function M.assertStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     local subType
@@ -659,7 +661,7 @@ local function assertStrContains( str, sub, useRe )
     end
 end
 
-local function assertStrIContains( str, sub )
+function M.assertStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     local lstr, lsub, subPretty, strPretty
@@ -676,7 +678,7 @@ local function assertStrIContains( str, sub )
     end
 end
     
-local function assertNotStrContains( str, sub, useRe )
+function M.assertNotStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     local substrType
@@ -698,7 +700,7 @@ local function assertNotStrContains( str, sub, useRe )
     end
 end
 
-local function assertNotStrIContains( str, sub )
+function M.assertNotStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     local lstr, lsub
@@ -715,7 +717,7 @@ local function assertNotStrIContains( str, sub )
     end
 end
 
-local function assertStrMatches( str, pattern, start, final )
+function M.assertStrMatches( str, pattern, start, final )
     -- Verify a full match for the string
     -- for a partial match, simply use assertStrContains with useRe set to true
     if not strMatch( str, pattern, start, final ) then
@@ -729,7 +731,7 @@ local function assertStrMatches( str, pattern, start, final )
     end
 end
 
-local function assertErrorMsgEquals( expectedMsg, func, ... )
+function M.assertErrorMsgEquals( expectedMsg, func, ... )
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
@@ -745,7 +747,7 @@ local function assertErrorMsgEquals( expectedMsg, func, ... )
     end
 end
 
-local function assertErrorMsgContains( partialMsg, func, ... )
+function M.assertErrorMsgContains( partialMsg, func, ... )
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
@@ -763,7 +765,7 @@ local function assertErrorMsgContains( partialMsg, func, ... )
     end
 end
 
-local function assertErrorMsgMatches( expectedMsg, func, ... )
+function M.assertErrorMsgMatches( expectedMsg, func, ... )
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
@@ -787,49 +789,49 @@ local function errorMsgTypeMismatch( expectedType, actual )
     return "Expected: a "..expectedType..' value, actual: type '..type(actual)..', value '..actualStr
 end
 
-local function assertIsNumber(value)
+function M.assertIsNumber(value)
     if type(value) ~= 'number' then
         error( errorMsgTypeMismatch( 'number', value ), 2 )
     end
 end
 
-local function assertIsString(value)
+function M.assertIsString(value)
     if type(value) ~= "string" then
         error( errorMsgTypeMismatch( 'string', value ), 2 )
     end
 end
 
-local function assertIsTable(value)
+function M.assertIsTable(value)
     if type(value) ~= 'table' then
         error( errorMsgTypeMismatch( 'table', value ), 2 )
     end
 end
 
-local function assertIsBoolean(value)
+function M.assertIsBoolean(value)
     if type(value) ~= 'boolean' then
         error( errorMsgTypeMismatch( 'boolean', value ), 2 )
     end
 end
 
-local function assertIsNil(value)
+function M.assertIsNil(value)
     if type(value) ~= "nil" then
         error( errorMsgTypeMismatch( 'nil', value ), 2 )
     end
 end
 
-local function assertIsFunction(value)
+function M.assertIsFunction(value)
     if type(value) ~= 'function' then
         error( errorMsgTypeMismatch( 'function', value ), 2 )
     end
 end
 
-local function assertIsUserdata(value)
+function M.assertIsUserdata(value)
     if type(value) ~= 'userdata' then
         error( errorMsgTypeMismatch( 'userdata', value ), 2 )
     end
 end
 
-local function assertIsCoroutine(value)
+function M.assertIsCoroutine(value)
     if type(value) ~= 'thread' then
         error( errorMsgTypeMismatch( 'thread', value ), 2 )
     end
@@ -837,8 +839,8 @@ end
 
 local assertIsThread = assertIsCoroutine
 
-local function assertIs(actual, expected)
-    if not ORDER_ACTUAL_EXPECTED then
+function M.assertIs(actual, expected)
+    if not M.ORDER_ACTUAL_EXPECTED then
         actual, expected = expected, actual
     end
     if actual ~= expected then
@@ -854,8 +856,8 @@ local function assertIs(actual, expected)
     end
 end
 
-local function assertNotIs(actual, expected)
-    if not ORDER_ACTUAL_EXPECTED then
+function M.assertNotIs(actual, expected)
+    if not M.ORDER_ACTUAL_EXPECTED then
         actual, expected = expected, actual
     end
     if actual == expected then
@@ -867,7 +869,7 @@ local function assertNotIs(actual, expected)
     end
 end
 
-local function assertItemsEquals(actual, expected)
+function M.assertItemsEquals(actual, expected)
     -- checks that the items of table expected
     -- are contained in table actual. Warning, this function
     -- is at least O(n^2)
@@ -917,7 +919,7 @@ local TapOutput_MT = { __index = TapOutput }
 
     function TapOutput:new()
         local t = {}
-        t.verbosity = VERBOSITY_LOW
+        t.verbosity = M.VERBOSITY_LOW
         setmetatable( t, TapOutput_MT )
         return t
     end
@@ -934,10 +936,10 @@ local TapOutput_MT = { __index = TapOutput }
 
     function TapOutput:addFailure( errorMsg, stackTrace )
         print(string.format("not ok %d\t%s", self.result.currentTestNumber, self.result.currentNode.testName ))
-        if self.verbosity > VERBOSITY_LOW then
+        if self.verbosity > M.VERBOSITY_LOW then
            print( prefixString( '    ', errorMsg ) )
         end
-        if self.verbosity > VERBOSITY_DEFAULT then
+        if self.verbosity > M.VERBOSITY_DEFAULT then
            print( prefixString( '    ', stackTrace ) )
         end
     end
@@ -979,7 +981,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
     function JUnitOutput:new()
         local t = {}
         t.testList = {}
-        t.verbosity = VERBOSITY_LOW
+        t.verbosity = M.VERBOSITY_LOW
         t.fd = nil
         t.fname = nil
         setmetatable( t, JUnitOutput_MT )
@@ -1133,25 +1135,25 @@ local TextOutput_MT = { -- class
         t.runner = nil
         t.result = nil
         t.errorList ={}
-        t.verbosity = VERBOSITY_DEFAULT
+        t.verbosity = M.VERBOSITY_DEFAULT
         setmetatable( t, TextOutput_MT )
         return t
     end
 
     function TextOutput:startSuite()
-        if self.verbosity > VERBOSITY_QUIET then
+        if self.verbosity > M.VERBOSITY_QUIET then
             print( 'Started on '.. self.result.startDate )
         end
     end
 
     function TextOutput:startClass(className)
-        if self.verbosity > VERBOSITY_LOW then
+        if self.verbosity > M.VERBOSITY_LOW then
             print( '>>>>>>>>> '.. self.result.currentClassName )
         end
     end
 
     function TextOutput:startTest(testName)
-        if self.verbosity > VERBOSITY_LOW then 
+        if self.verbosity > M.VERBOSITY_LOW then 
             print( ">>> ".. self.result.currentNode.testName ) 
         end 
     end 
@@ -1161,7 +1163,7 @@ local TextOutput_MT = { -- class
         if self.verbosity == 0 then
             io.stdout:write("F") 
         end
-        if self.verbosity > VERBOSITY_LOW then
+        if self.verbosity > M.VERBOSITY_LOW then
             print( errorMsg )
             print( 'Failed' )
         end
@@ -1169,7 +1171,7 @@ local TextOutput_MT = { -- class
 
     function TextOutput:endTest(testHasFailure)
         if not testHasFailure then
-            if self.verbosity > VERBOSITY_LOW then
+            if self.verbosity > M.VERBOSITY_LOW then
                 --print ("Ok" )
             else 
                 io.stdout:write(".")
@@ -1178,7 +1180,7 @@ local TextOutput_MT = { -- class
     end
 
     function TextOutput:endClass()
-        if self.verbosity > VERBOSITY_LOW then
+        if self.verbosity > M.VERBOSITY_LOW then
            print()
         end
     end
@@ -1187,7 +1189,7 @@ local TextOutput_MT = { -- class
         testName, errorMsg, stackTrace = unpack( failure )
         print(">>> "..testName.." failed")
         print( errorMsg )
-        if self.verbosity > VERBOSITY_LOW then
+        if self.verbosity > M.VERBOSITY_LOW then
             print( stackTrace )
         end
     end
@@ -1203,7 +1205,7 @@ local TextOutput_MT = { -- class
     end
 
     function TextOutput:endSuite()
-        if self.verbosity <= VERBOSITY_LOW then
+        if self.verbosity <= M.VERBOSITY_LOW then
             print()
         else
             print("=========================================================")
@@ -1252,14 +1254,14 @@ end
 --
 ----------------------------------------------------------------
 
-local LuaUnit = {
+M.LuaUnit = {
     outputType = TextOutput,
-    verbosity = VERBOSITY_DEFAULT,
+    verbosity = M.VERBOSITY_DEFAULT,
     __class__ = 'LuaUnit'
 }
-local LuaUnit_MT = { __index = LuaUnit }
+local LuaUnit_MT = { __index = M.LuaUnit }
 
-    function LuaUnit:new()
+    function M.LuaUnit.new(self)
         local t = {}
         setmetatable( t, LuaUnit_MT )
         return t
@@ -1267,17 +1269,17 @@ local LuaUnit_MT = { __index = LuaUnit }
 
     -----------------[[ Utility methods ]]---------------------
 
-    function LuaUnit.isFunction(aObject) 
+    function M.LuaUnit.isFunction(aObject) 
         -- return true if aObject is a function
         return 'function' == type(aObject)
     end
 
-    function LuaUnit.isClassMethod(aName)
+    function M.LuaUnit.isClassMethod(aName)
         -- return true if aName contains a class + a method name in the form class:method
         return not not string.find(aName, '.', nil, true )
     end
 
-    function LuaUnit.splitClassMethod(someName)
+    function M.LuaUnit.splitClassMethod(someName)
         -- return a pair className, methodName for a name in the form class:method
         -- return nil if not a class + method name
         -- name is class + method
@@ -1289,7 +1291,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         return className, methodName
     end
 
-    function LuaUnit.isMethodTestName( s )
+    function M.LuaUnit.isMethodTestName( s )
         -- return true is the name matches the name of a test method
         -- default rule is that is starts with 'Test' or with 'test'
         if string.sub(s,1,4):lower() == 'test' then 
@@ -1298,7 +1300,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         return false
     end
 
-    function LuaUnit.isTestName( s )
+    function M.LuaUnit.isTestName( s )
         -- return true is the name matches the name of a test
         -- default rule is that is starts with 'Test' or with 'test'
         if string.sub(s,1,4):lower() == 'test' then 
@@ -1307,7 +1309,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         return false
     end
 
-    function LuaUnit.collectTests()
+    function M.LuaUnit.collectTests()
         -- return a list of all test names in the global namespace
         -- that match LuaUnit.isTestName
 
@@ -1321,7 +1323,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         return testNames 
     end
 
-    function LuaUnit.parseCmdLine( cmdLine )
+    function M.LuaUnit.parseCmdLine( cmdLine )
         -- parse the command line 
         -- Supported command line parameters:
         -- --verbose, -v: increase verbosity
@@ -1332,7 +1334,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         -- [testnames, ...]: run selected test names
         --
         -- Returnsa table with the following fields:
-        -- verbosity: nil, VERBOSITY_DEFAULT, VERBOSITY_QUIET, VERBOSITY_VERBOSE
+        -- verbosity: nil, VERBOSITY_DEFAULT, M.VERBOSITY_QUIET, M.VERBOSITY_VERBOSE
         -- output: nil, 'tap', 'junit', 'text', 'nil'
         -- testNames: nil or a list of test names to run
         -- pattern: nil or a list of patterns
@@ -1357,11 +1359,11 @@ local LuaUnit_MT = { __index = LuaUnit }
                 return
             end
             if option == '--verbose' or option == '-v' then
-                result['verbosity'] = VERBOSITY_VERBOSE
+                result['verbosity'] = M.VERBOSITY_VERBOSE
                 return
             end
             if option == '--quiet' or option == '-q' then
-                result['verbosity'] = VERBOSITY_QUIET
+                result['verbosity'] = M.VERBOSITY_QUIET
                 return
             end
             if option == '--output' or option == '-o' then
@@ -1432,17 +1434,17 @@ local LuaUnit_MT = { __index = LuaUnit }
         return result
     end
 
-    function LuaUnit.help()
+    function M.LuaUnit.help()
         print(USAGE)
         os.exit(0)
     end
 
-    function LuaUnit.version()
+    function M.LuaUnit.version()
         print('LuaUnit v'..VERSION..' by Philippe Fremy <phil@freehackers.org>')
         os.exit(0)
     end
 
-    function LuaUnit.patternInclude( patternFilter, expr )
+    function M.LuaUnit.patternInclude( patternFilter, expr )
         -- check if any of patternFilter is contained in expr. If so, return true.
         -- return false if None of the patterns are contained in expr
         -- if patternFilter is nil, return true (no filtering)
@@ -1499,7 +1501,7 @@ local LuaUnit_MT = { __index = LuaUnit }
             return (self.status ~= NodeStatus.PASS)
     end
 
-    function LuaUnit:startSuite(testCount, nonSelectedCount)
+    function M.LuaUnit:startSuite(testCount, nonSelectedCount)
         self.result = {}
         self.result.failureCount = 0
         self.result.testCount = testCount
@@ -1524,12 +1526,12 @@ local LuaUnit_MT = { __index = LuaUnit }
         self.output:startSuite()
     end
 
-    function LuaUnit:startClass( className )
+    function M.LuaUnit:startClass( className )
         self.result.currentClassName = className
         self.output:startClass( className )
     end
 
-    function LuaUnit:startTest( testName  )
+    function M.LuaUnit:startTest( testName  )
         self.result.currentTestNumber = self.result.currentTestNumber + 1
         self.result.currentNode = NodeStatus:new(
             self.result.currentTestNumber,
@@ -1541,7 +1543,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self.output:startTest( testName )
     end
 
-    function LuaUnit:addFailure( errorMsg, stackTrace )
+    function M.LuaUnit:addFailure( errorMsg, stackTrace )
         if self.result.currentNode.status == NodeStatus.PASS then
             self.result.failureCount = self.result.failureCount + 1
             self.result.currentNode:fail( errorMsg, stackTrace )
@@ -1550,7 +1552,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self.output:addFailure( errorMsg, stackTrace )
     end
 
-    function LuaUnit:endTest()
+    function M.LuaUnit:endTest()
         -- print( 'endTEst() '..prettystr(self.result.currentNode))
         -- print( 'endTEst() '..prettystr(self.result.currentNode:hasFailure()))
         self.result.currentNode.duration = os.clock() - self.result.currentNode.startTime 
@@ -1559,11 +1561,11 @@ local LuaUnit_MT = { __index = LuaUnit }
         self.result.currentNode = nil
     end
 
-    function LuaUnit:endClass()
+    function M.LuaUnit:endClass()
         self.output:endClass()
     end
 
-    function LuaUnit:endSuite()
+    function M.LuaUnit:endSuite()
         if self.result.suiteStarted == false then
             error('LuaUnit:endSuite() -- suite was already ended' )
         end
@@ -1572,7 +1574,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self.output:endSuite()
     end
 
-    function LuaUnit:setOutputType(outputType)
+    function M.LuaUnit:setOutputType(outputType)
         -- default to text
         -- tap produces results according to TAP format
         if outputType:upper() == "NIL" then
@@ -1594,11 +1596,11 @@ local LuaUnit_MT = { __index = LuaUnit }
         error( 'No such format: '..outputType,2)
     end
 
-    function LuaUnit:setVerbosity( verbosity )
+    function M.LuaUnit:setVerbosity( verbosity )
         self.verbosity = verbosity
     end
 
-    function LuaUnit:setFname( fname )
+    function M.LuaUnit:setFname( fname )
         self.fname = fname
     end
 
@@ -1606,7 +1608,7 @@ local LuaUnit_MT = { __index = LuaUnit }
 
     local SPLITTER = '\n>----------<\n'
 
-    function LuaUnit:protectedCall( classInstance , methodInstance, prettyFuncName)
+    function M.LuaUnit:protectedCall( classInstance , methodInstance, prettyFuncName)
         -- if classInstance is nil, this is just a function call
         -- else, it's method of a class being called.
 
@@ -1633,7 +1635,7 @@ local LuaUnit_MT = { __index = LuaUnit }
             stackTrace = string.gsub( stackTrace, "in function 'methodInstance'", "in function '"..prettyFuncName.."'")
         end
 
-        if STRIP_LUAUNIT_FROM_STACKTRACE then
+        if M.STRIP_LUAUNIT_FROM_STACKTRACE then
             stackTrace = stripLuaunitTrace( stackTrace )
         end
 
@@ -1641,7 +1643,7 @@ local LuaUnit_MT = { __index = LuaUnit }
     end
 
 
-    function LuaUnit:execOneFunction(className, methodName, classInstance, methodInstance)
+    function M.LuaUnit:execOneFunction(className, methodName, classInstance, methodInstance)
         -- When executing a test function, className and classInstance must be nil
         -- When executing a class method, all parameters must be set
 
@@ -1695,7 +1697,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self:endTest()
     end
 
-    function LuaUnit.expandOneClass( result, className, classInstance )
+    function M.LuaUnit.expandOneClass( result, className, classInstance )
         -- add all test methods of classInstance to result
         for methodName, methodInstance in sortedPairs(classInstance) do
             if LuaUnit.isFunction(methodInstance) and LuaUnit.isMethodTestName( methodName ) then
@@ -1704,7 +1706,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         end
     end
 
-    function LuaUnit.expandClasses( listOfNameAndInst )
+    function M.LuaUnit.expandClasses( listOfNameAndInst )
         -- expand all classes (proveded as {className, classInstance}) to a list of {className.methodName, classInstance}
         -- functions and methods remain untouched
         local result = {}
@@ -1733,7 +1735,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         return result
     end
 
-    function LuaUnit.applyPatternFilter( patternFilter, listOfNameAndInst )
+    function M.LuaUnit.applyPatternFilter( patternFilter, listOfNameAndInst )
         local included = {}
         local excluded = {}
 
@@ -1750,7 +1752,7 @@ local LuaUnit_MT = { __index = LuaUnit }
 
     end
 
-    function LuaUnit:runSuiteByInstances( listOfNameAndInst )
+    function M.LuaUnit:runSuiteByInstances( listOfNameAndInst )
         -- Run an explicit list of tests. All test instances and names must be supplied.
         -- each test must be one of:
         --   * { function name, function instance }
@@ -1790,7 +1792,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self:endSuite()
     end
 
-    function LuaUnit:runSuiteByNames( listOfName )
+    function M.LuaUnit:runSuiteByNames( listOfName )
         -- Run an explicit list of test names
 
         local  className, methodName, instanceName, instance, methodInstance
@@ -1835,7 +1837,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self:runSuiteByInstances( listOfNameAndInst )
     end
 
-    function LuaUnit.run(...)
+    function M.LuaUnit.run(...)
         -- Run some specific test classes.
         -- If no arguments are passed, run the class names specified on the
         -- command line. If no class name is specified on the command line
@@ -1844,11 +1846,11 @@ local LuaUnit_MT = { __index = LuaUnit }
         -- If arguments are passed, they must be strings of the class names 
         -- that you want to run or generic command line arguments (-o, -p, -v, ...)
 
-        local runner = LuaUnit.new()
+        local runner = M.LuaUnit.new()
         return runner:runSuite(...)
     end
 
-    function LuaUnit:runSuite( ... )
+    function M.LuaUnit:runSuite( ... )
 
         local args={...};
         if args[1] ~= nil and type(args[1]) == 'table' and args[1].__class__ == 'LuaUnit' then
@@ -1863,7 +1865,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         end
 
         local no_error, error_msg, options, val
-        no_error, val = pcall( LuaUnit.parseCmdLine, args )
+        no_error, val = pcall( M.LuaUnit.parseCmdLine, args )
         if not no_error then 
             error_msg = val
             print(error_msg)
@@ -1905,7 +1907,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         testNames = options['testNames']
 
         if testNames == nil then
-            testNames = LuaUnit.collectTests()
+            testNames = M.LuaUnit.collectTests()
         end
 
         self:runSuiteByNames( testNames )
@@ -1915,40 +1917,4 @@ local LuaUnit_MT = { __index = LuaUnit }
 
 -- class LuaUnit
 
-local MODULE = {
-    LuaUnit = LuaUnit,
-    assertError=assertError,
-    assertTrue=assertTrue,
-    assertFalse=assertFalse,
-    assertNil=assertNil,
-   assertNotNil=assertNotNil,
-    assertEquals=assertEquals,
-    assertAlmostEquals=assertAlmostEquals,
-    assertNotEquals=assertNotEquals,
-    assertNotAlmostEquals=assertNotAlmostEquals,
-    assertStrContains=assertStrContains,
-    assertStrIContains=assertStrIContains,
-    assertNotStrContains=assertNotStrContains,
-    assertNotStrIContains=assertNotStrIContains,
-    assertStrMatches=assertStrMatches,
-    assertErrorMsgEquals=assertErrorMsgEquals,
-    assertErrorMsgContains=assertErrorMsgContains,
-    assertErrorMsgMatches=assertErrorMsgMatches,
-    assertIsNumber=assertIsNumber,
-    assertIsString=assertIsString,
-    assertIsTable=assertIsTable,
-    assertIsBoolean=assertIsBoolean,
-    assertIsNil=assertIsNil,
-    assertIsFunction=assertIsFunction,
-    assertIsUserdata=assertIsUserdata,
-    assertIsCoroutine=assertIsCoroutine,
-    assertIs=assertIs,
-    assertNotIs=assertNotIs,
-    assertItemsEquals=assertItemsEquals,
-
-    -- private functions for testing
-    private = {
-    }
-}
-
-return MODULE
+return M
