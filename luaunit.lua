@@ -32,7 +32,7 @@ M.VERBOSITY_QUIET   = 0
 M.VERBOSITY_VERBOSE = 20 
 
 -- we need to keep a copy of the script args before it is overriden
-cmdline_argv = arg
+local cmdline_argv = arg
 
 M.USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
 Options:
@@ -87,7 +87,7 @@ M.private.__genSortedIndex = __genSortedIndex
 --    sortedNextCache[ t ].lastIdx is the last index used in the sorted index
 local sortedNextCache = {}
 
-function sortedNext(t, state)
+local function sortedNext(t, state)
     -- Equivalent of the next() function of table iteration, but returns the
     -- keys in the alphabetic order. We use a temporary sorted key table that
     -- is stored in a global variable. We also store the last index
@@ -129,6 +129,7 @@ function sortedNext(t, state)
     sortedNextCache[t] = nil
     return
 end
+M.private.sortedNext = sortedNext
 
 function sortedPairs(t)
     -- Equivalent of the pairs() function on tables. Allows to iterate

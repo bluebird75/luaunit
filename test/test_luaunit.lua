@@ -83,16 +83,16 @@ TestLuaUnitUtilities = {} --class
         t1['ccc'] = 'def'
         t1['bbb'] = 'cba'
 
-        k, v = sortedNext( t1, nil )
+        k, v = lu.private.sortedNext( t1, nil )
         assertEquals( k, 'aaa' )
         assertEquals( v, 'abc' )
-        k, v = sortedNext( t1, k )
+        k, v = lu.private.sortedNext( t1, k )
         assertEquals( k, 'bbb' )
         assertEquals( v, 'cba' )
-        k, v = sortedNext( t1, k )
+        k, v = lu.private.sortedNext( t1, k )
         assertEquals( k, 'ccc' )
         assertEquals( v, 'def' )
-        k, v = sortedNext( t1, k )
+        k, v = lu.private.sortedNext( t1, k )
         assertEquals( k, nil )
         assertEquals( v, nil )
     end
@@ -103,9 +103,9 @@ TestLuaUnitUtilities = {} --class
         t1['ccc'] = 'def'
         t1['bbb'] = 'cba'
 
-        k, v = sortedNext( t1, nil )
-        k, v = sortedNext( t1, k )
-        k, v = sortedNext( t1, nil )
+        k, v = lu.private.sortedNext( t1, nil )
+        k, v = lu.private.sortedNext( t1, k )
+        k, v = lu.private.sortedNext( t1, nil )
         assertEquals( k, 'aaa' )
         assertEquals( v, 'abc' )
     end
@@ -114,19 +114,19 @@ TestLuaUnitUtilities = {} --class
         t1 = { aaa = 'abc', ccc = 'def' }
         t2 = { ['3'] = '33', ['1'] = '11' }
 
-        k, v = sortedNext( t1, nil )
+        k, v = lu.private.sortedNext( t1, nil )
         assertEquals( k, 'aaa' )
         assertEquals( v, 'abc' )
 
-        k, v = sortedNext( t2, nil )
+        k, v = lu.private.sortedNext( t2, nil )
         assertEquals( k, '1' )
         assertEquals( v, '11' )
 
-        k, v = sortedNext( t1, 'aaa' )
+        k, v = lu.private.sortedNext( t1, 'aaa' )
         assertEquals( k, 'ccc' )
         assertEquals( v, 'def' )
 
-        k, v = sortedNext( t2, '1' )
+        k, v = lu.private.sortedNext( t2, '1' )
         assertEquals( k, '3' )
         assertEquals( v, '33' )
     end
