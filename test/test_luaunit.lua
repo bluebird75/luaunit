@@ -335,11 +335,11 @@ TestLuaUnitUtilities = {} --class
         assertEquals( LuaUnit.parseCmdLine( { 'someTest', 'someOtherTest' } ), { testNames={'someTest', 'someOtherTest'} } )
 
         -- verbosity
-        assertEquals( LuaUnit.parseCmdLine( { '--verbose' } ), { verbosity=VERBOSITY_VERBOSE } )
-        assertEquals( LuaUnit.parseCmdLine( { '-v' } ), { verbosity=VERBOSITY_VERBOSE } )
-        assertEquals( LuaUnit.parseCmdLine( { '--quiet' } ), { verbosity=VERBOSITY_QUIET } )
-        assertEquals( LuaUnit.parseCmdLine( { '-q' } ), { verbosity=VERBOSITY_QUIET } )
-        assertEquals( LuaUnit.parseCmdLine( { '-v', '-q' } ), { verbosity=VERBOSITY_QUIET } )
+        assertEquals( LuaUnit.parseCmdLine( { '--verbose' } ), { verbosity=lu.VERBOSITY_VERBOSE } )
+        assertEquals( LuaUnit.parseCmdLine( { '-v' } ), { verbosity=lu.VERBOSITY_VERBOSE } )
+        assertEquals( LuaUnit.parseCmdLine( { '--quiet' } ), { verbosity=lu.VERBOSITY_QUIET } )
+        assertEquals( LuaUnit.parseCmdLine( { '-q' } ), { verbosity=lu.VERBOSITY_QUIET } )
+        assertEquals( LuaUnit.parseCmdLine( { '-v', '-q' } ), { verbosity=lu.VERBOSITY_QUIET } )
 
         --output
         assertEquals( LuaUnit.parseCmdLine( { '--output', 'toto' } ), { output='toto'} )
@@ -359,7 +359,7 @@ TestLuaUnitUtilities = {} --class
 
         --megamix
         assertEquals( LuaUnit.parseCmdLine( { '-p', 'toto', 'titi', '-v', 'tata', '-o', 'tintin', '-p', 'tutu', 'prout', '-n', 'toto.xml' } ), 
-            { pattern={'toto', 'tutu'}, verbosity=VERBOSITY_VERBOSE, output='tintin', testNames={'titi', 'tata', 'prout'}, fname='toto.xml' } )
+            { pattern={'toto', 'tutu'}, verbosity=lu.VERBOSITY_VERBOSE, output='tintin', testNames={'titi', 'tata', 'prout'}, fname='toto.xml' } )
 
         assertErrorMsgContains( 'option: -x', LuaUnit.parseCmdLine, { '-x', } )
     end

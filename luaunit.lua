@@ -23,10 +23,10 @@ M.LINE_LENGTH=80
 -- set this to false to debug luaunit
 local STRIP_LUAUNIT_FROM_STACKTRACE=true
 
-VERBOSITY_DEFAULT = 10
-VERBOSITY_LOW     = 1
-VERBOSITY_QUIET   = 0
-VERBOSITY_VERBOSE = 20 
+M.VERBOSITY_DEFAULT = 10
+M.VERBOSITY_LOW     = 1
+M.VERBOSITY_QUIET   = 0
+M.VERBOSITY_VERBOSE = 20 
 
 -- we need to keep a copy of the script args before it is overriden
 cmdline_argv = arg
@@ -917,7 +917,7 @@ TapOutput_MT = { __index = TapOutput }
 
     function TapOutput:new()
         local t = {}
-        t.verbosity = VERBOSITY_LOW
+        t.verbosity = M.VERBOSITY_LOW
         setmetatable( t, TapOutput_MT )
         return t
     end
@@ -934,10 +934,10 @@ TapOutput_MT = { __index = TapOutput }
 
     function TapOutput:addFailure( errorMsg, stackTrace )
         print(string.format("not ok %d\t%s", self.result.currentTestNumber, self.result.currentNode.testName ))
-        if self.verbosity > VERBOSITY_LOW then
+        if self.verbosity > M.VERBOSITY_LOW then
            print( prefixString( '    ', errorMsg ) )
         end
-        if self.verbosity > VERBOSITY_DEFAULT then
+        if self.verbosity > M.VERBOSITY_DEFAULT then
            print( prefixString( '    ', stackTrace ) )
         end
     end
@@ -980,7 +980,7 @@ JUnitOutput_MT = { __index = JUnitOutput }
     function JUnitOutput:new()
         local t = {}
         t.testList = {}
-        t.verbosity = VERBOSITY_LOW
+        t.verbosity = M.VERBOSITY_LOW
         t.fd = nil
         t.fname = nil
         setmetatable( t, JUnitOutput_MT )
@@ -1057,25 +1057,25 @@ TextOutput_MT = { -- class
         t.runner = nil
         t.result = nil
         t.errorList ={}
-        t.verbosity = VERBOSITY_DEFAULT
+        t.verbosity = M.VERBOSITY_DEFAULT
         setmetatable( t, TextOutput_MT )
         return t
     end
 
     function TextOutput:startSuite()
-        if self.verbosity > VERBOSITY_QUIET then
+        if self.verbosity > M.VERBOSITY_QUIET then
             print( 'Started on '.. self.result.startDate )
         end
     end
 
     function TextOutput:startClass(className)
-        if self.verbosity > VERBOSITY_LOW then
+        if self.verbosity > M.VERBOSITY_LOW then
             print( '>>>>>>>>> '.. self.result.currentClassName )
         end
     end
 
     function TextOutput:startTest(testName)
-        if self.verbosity > VERBOSITY_LOW then 
+        if self.verbosity > M.VERBOSITY_LOW then 
             print( ">>> ".. self.result.currentNode.testName ) 
         end 
     end 
@@ -1085,7 +1085,7 @@ TextOutput_MT = { -- class
         if self.verbosity == 0 then
             io.stdout:write("F") 
         end
-        if self.verbosity > VERBOSITY_LOW then
+        if self.verbosity > M.VERBOSITY_LOW then
             print( errorMsg )
             print( 'Failed' )
         end
@@ -1093,7 +1093,7 @@ TextOutput_MT = { -- class
 
     function TextOutput:endTest(testHasFailure)
         if not testHasFailure then
-            if self.verbosity > VERBOSITY_LOW then
+            if self.verbosity > M.VERBOSITY_LOW then
                 --print ("Ok" )
             else 
                 io.stdout:write(".")
@@ -1102,7 +1102,7 @@ TextOutput_MT = { -- class
     end
 
     function TextOutput:endClass()
-        if self.verbosity > VERBOSITY_LOW then
+        if self.verbosity > M.VERBOSITY_LOW then
            print()
         end
     end
@@ -1111,7 +1111,7 @@ TextOutput_MT = { -- class
         testName, errorMsg, stackTrace = unpack( failure )
         print(">>> "..testName.." failed")
         print( errorMsg )
-        if self.verbosity > VERBOSITY_LOW then
+        if self.verbosity > M.VERBOSITY_LOW then
             print( stackTrace )
         end
     end
@@ -1127,7 +1127,7 @@ TextOutput_MT = { -- class
     end
 
     function TextOutput:endSuite()
-        if self.verbosity <= VERBOSITY_LOW then
+        if self.verbosity <= M.VERBOSITY_LOW then
             print()
         else
             print("=========================================================")
@@ -1178,7 +1178,7 @@ end
 
 LuaUnit = {
     outputType = TextOutput,
-    verbosity = VERBOSITY_DEFAULT,
+    verbosity = M.VERBOSITY_DEFAULT,
     __class__ = 'LuaUnit'
 }
 LuaUnit_MT = { __index = LuaUnit }
@@ -1256,7 +1256,7 @@ LuaUnit_MT = { __index = LuaUnit }
         -- [testnames, ...]: run selected test names
         --
         -- Returnsa table with the following fields:
-        -- verbosity: nil, VERBOSITY_DEFAULT, VERBOSITY_QUIET, VERBOSITY_VERBOSE
+        -- verbosity: nil, M.VERBOSITY_DEFAULT, M.VERBOSITY_QUIET, M.VERBOSITY_VERBOSE
         -- output: nil, 'tap', 'junit', 'text', 'nil'
         -- testNames: nil or a list of test names to run
         -- pattern: nil or a list of patterns
@@ -1281,11 +1281,11 @@ LuaUnit_MT = { __index = LuaUnit }
                 return
             end
             if option == '--verbose' or option == '-v' then
-                result['verbosity'] = VERBOSITY_VERBOSE
+                result['verbosity'] = M.VERBOSITY_VERBOSE
                 return
             end
             if option == '--quiet' or option == '-q' then
-                result['verbosity'] = VERBOSITY_QUIET
+                result['verbosity'] = M.VERBOSITY_QUIET
                 return
             end
             if option == '--output' or option == '-o' then
