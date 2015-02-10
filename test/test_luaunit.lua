@@ -172,7 +172,7 @@ TestLuaUnitUtilities = {} --class
     end
 
     function TestLuaUnitUtilities:test_prefixString()
-        assertEquals( prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
+        assertEquals( lu.private.prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
 
 
@@ -183,23 +183,23 @@ TestLuaUnitUtilities = {} --class
     end
 
     function TestLuaUnitUtilities:test_prettystr()
-        assertEquals( prettystr( 1 ), "1" )
-        assertEquals( prettystr( 1.1 ), "1.1" )
-        assertEquals( prettystr( 'abc' ), '"abc"' )
-        assertEquals( prettystr( 'ab\ncd' ), '"ab\ncd"' )
-        assertEquals( prettystr( 'ab\ncd', true ), '"ab\\ncd"' )
-        assertEquals( prettystr( 'ab"cd' ), "'ab\"cd'" )
-        assertEquals( prettystr( "ab'cd" ), '"ab\'cd"' )
-        assertStrContains( prettystr( {1,2,3} ), "{1, 2, 3}" )
-        assertStrContains( prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
+        assertEquals( lu.private.prettystr( 1 ), "1" )
+        assertEquals( lu.private.prettystr( 1.1 ), "1.1" )
+        assertEquals( lu.private.prettystr( 'abc' ), '"abc"' )
+        assertEquals( lu.private.prettystr( 'ab\ncd' ), '"ab\ncd"' )
+        assertEquals( lu.private.prettystr( 'ab\ncd', true ), '"ab\\ncd"' )
+        assertEquals( lu.private.prettystr( 'ab"cd' ), "'ab\"cd'" )
+        assertEquals( lu.private.prettystr( "ab'cd" ), '"ab\'cd"' )
+        assertStrContains( lu.private.prettystr( {1,2,3} ), "{1, 2, 3}" )
+        assertStrContains( lu.private.prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
         local t1 = {1,2,3,4,5,6}
-        assertEquals(prettystr(t1), "{1, 2, 3, 4, 5, 6}" )
+        assertEquals(lu.private.prettystr(t1), "{1, 2, 3, 4, 5, 6}" )
 
         local t2 = {'aaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbb', 'ccccccccccccccccc', 'ddddddddddddd', 'eeeeeeeeeeeeeeeeee', 'ffffffffffffffff', 'ggggggggggg', 'hhhhhhhhhhhhhh'}
-        assertEquals(prettystr(t2), table.concat( {
+        assertEquals(lu.private.prettystr(t2), table.concat( {
             '{',
             '    "aaaaaaaaaaaaaaaaa",',
             '    "bbbbbbbbbbbbbbbbbbbb",',
@@ -213,7 +213,7 @@ TestLuaUnitUtilities = {} --class
         } , '\n' ) )
 
         local t2bis = { 1,2,3,'12345678901234567890123456789012345678901234567890123456789012345678901234567890', 4,5,6 }
-        assertEquals(prettystr(t2bis), [[{
+        assertEquals(lu.private.prettystr(t2bis), [[{
     1,
     2,
     3,
@@ -225,7 +225,7 @@ TestLuaUnitUtilities = {} --class
 
         local t3 = { l1a = { l2a = { l3a='012345678901234567890123456789012345678901234567890123456789' }, 
         l2b='bbb' }, l1b = 4}
-        assertEquals(prettystr(t3), [[{
+        assertEquals(lu.private.prettystr(t3), [[{
     l1a={
         l2a={l3a="012345678901234567890123456789012345678901234567890123456789"},
         l2b="bbb"
@@ -234,10 +234,10 @@ TestLuaUnitUtilities = {} --class
 }]] )
 
         local t4 = { a=1, b=2, c=3 }
-        assertEquals(prettystr(t4), '{a=1, b=2, c=3}' )
+        assertEquals(lu.private.prettystr(t4), '{a=1, b=2, c=3}' )
 
         local t5 = { t1, t2, t3 }
-        assertEquals( prettystr(t5), [[{
+        assertEquals( lu.private.prettystr(t5), [[{
     {1, 2, 3, 4, 5, 6},
     {
         "aaaaaaaaaaaaaaaaa",
@@ -259,7 +259,7 @@ TestLuaUnitUtilities = {} --class
 }]] )
 
         local t6 = { t1=t1, t2=t2, t3=t3, t4=t4 }
-        assertEquals(prettystr(t6),[[{
+        assertEquals(lu.private.prettystr(t6),[[{
     t1={1, 2, 3, 4, 5, 6},
     t2={
         "aaaaaaaaaaaaaaaaa",
@@ -285,15 +285,15 @@ TestLuaUnitUtilities = {} --class
     function TestLuaUnitUtilities:test_prettstrTableRecursion()
         local t = {}
         t.__index = t
-        assertStrMatches(prettystr(t), "<table: 0?x?[%x]+> {__index=<table: 0?x?[%x]+>}")
+        assertStrMatches(lu.private.prettystr(t), "<table: 0?x?[%x]+> {__index=<table: 0?x?[%x]+>}")
 
         local t1 = {}
         local t2 = {}
         t1.t2 = t2
         t2.t1 = t1
         local t3 = { t1 = t1, t2 = t2 }
-        assertStrMatches(prettystr(t1), "<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}}")
-        assertStrMatches(prettystr(t3), [[<table: 0?x?[%x]+> {
+        assertStrMatches(lu.private.prettystr(t1), "<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}}")
+        assertStrMatches(lu.private.prettystr(t3), [[<table: 0?x?[%x]+> {
     t1=<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}},
     t2=<table: 0?x?[%x]+>
 }]])
@@ -301,7 +301,7 @@ TestLuaUnitUtilities = {} --class
         local t4 = {1,2}
         local t5 = {3,4,t4}
         t4[3] = t5
-        assertStrMatches(prettystr(t5), "<table: 0?x?[%x]+> {3, 4, <table: 0?x?[%x]+> {1, 2, <table: 0?x?[%x]+>}}")
+        assertStrMatches(lu.private.prettystr(t5), "<table: 0?x?[%x]+> {3, 4, <table: 0?x?[%x]+> {1, 2, <table: 0?x?[%x]+>}}")
     end
 
     function TestLuaUnitUtilities:test_IsFunction()
@@ -390,16 +390,16 @@ TestLuaUnitUtilities = {} --class
     end
 
     function TestLuaUnitUtilities:test_strMatch()
-        assertEquals( strMatch('toto', 't.t.'), true )
-        assertEquals( strMatch('toto', 't.t.', 1, 4), true )
-        assertEquals( strMatch('toto', 't.t.', 2, 5), false )
-        assertEquals( strMatch('toto', '.t.t.'), false )
-        assertEquals( strMatch('ototo', 't.t.'), false )
-        assertEquals( strMatch('totot', 't.t.'), false )
-        assertEquals( strMatch('ototot', 't.t.'), false )
-        assertEquals( strMatch('ototot', 't.t.',2,3), false )
-        assertEquals( strMatch('ototot', 't.t.',2,5), true  )
-        assertEquals( strMatch('ototot', 't.t.',2,6), false )
+        assertEquals( lu.private.strMatch('toto', 't.t.'), true )
+        assertEquals( lu.private.strMatch('toto', 't.t.', 1, 4), true )
+        assertEquals( lu.private.strMatch('toto', 't.t.', 2, 5), false )
+        assertEquals( lu.private.strMatch('toto', '.t.t.'), false )
+        assertEquals( lu.private.strMatch('ototo', 't.t.'), false )
+        assertEquals( lu.private.strMatch('totot', 't.t.'), false )
+        assertEquals( lu.private.strMatch('ototot', 't.t.'), false )
+        assertEquals( lu.private.strMatch('ototot', 't.t.',2,3), false )
+        assertEquals( lu.private.strMatch('ototot', 't.t.',2,5), true  )
+        assertEquals( lu.private.strMatch('ototot', 't.t.',2,6), false )
     end
 
     function TestLuaUnitUtilities:test_expandOneClass()
@@ -440,18 +440,18 @@ TestLuaUnitUtilities = {} --class
     end
 
     function TestLuaUnitUtilities:test_xmlEscape()
-        assertEquals( xmlEscape( 'abc' ), 'abc' )
-        assertEquals( xmlEscape( 'a"bc' ), 'a&quot;bc' )
-        assertEquals( xmlEscape( "a'bc" ), 'a&apos;bc' )
-        assertEquals( xmlEscape( "a<b&c>" ), 'a&lt;b&amp;c&gt;' )
+        assertEquals( lu.private.xmlEscape( 'abc' ), 'abc' )
+        assertEquals( lu.private.xmlEscape( 'a"bc' ), 'a&quot;bc' )
+        assertEquals( lu.private.xmlEscape( "a'bc" ), 'a&apos;bc' )
+        assertEquals( lu.private.xmlEscape( "a<b&c>" ), 'a&lt;b&amp;c&gt;' )
     end
 
     function TestLuaUnitUtilities:test_xmlCDataEscape()
-        assertEquals( xmlCDataEscape( 'abc' ), 'abc' )
-        assertEquals( xmlCDataEscape( 'a"bc' ), 'a"bc' )
-        assertEquals( xmlCDataEscape( "a'bc" ), "a'bc" )
-        assertEquals( xmlCDataEscape( "a<b&c>" ), 'a<b&c>' )
-        assertEquals( xmlCDataEscape( "a<b]]>--" ), 'a<b]]&gt;--' )
+        assertEquals( lu.private.xmlCDataEscape( 'abc' ), 'abc' )
+        assertEquals( lu.private.xmlCDataEscape( 'a"bc' ), 'a"bc' )
+        assertEquals( lu.private.xmlCDataEscape( "a'bc" ), "a'bc" )
+        assertEquals( lu.private.xmlCDataEscape( "a<b&c>" ), 'a<b&c>' )
+        assertEquals( lu.private.xmlCDataEscape( "a<b]]>--" ), 'a<b]]&gt;--' )
     end
 
     function TestLuaUnitUtilities:test_hasNewline()
@@ -500,19 +500,19 @@ TestLuaUnitUtilities = {} --class
         [C]: in ?]]
 
 
-        local strippedStackTrace=stripLuaunitTrace( realStackTrace )
+        local strippedStackTrace=lu.private.stripLuaunitTrace( realStackTrace )
         -- print( strippedStackTrace )
 
         local expectedStackTrace=[[stack traceback:
         example_with_luaunit.lua:130: in function 'test2_withFailure']]
         assertEquals( strippedStackTrace, expectedStackTrace )
 
-        strippedStackTrace=stripLuaunitTrace( realStackTrace2 )
+        strippedStackTrace=lu.private.stripLuaunitTrace( realStackTrace2 )
         expectedStackTrace=[[stack traceback:
         example_with_luaunit.lua:58: in function 'TestToto.test7']]
         assertEquals( strippedStackTrace, expectedStackTrace )
 
-        strippedStackTrace=stripLuaunitTrace( realStackTrace3 )
+        strippedStackTrace=lu.private.stripLuaunitTrace( realStackTrace3 )
         expectedStackTrace=[[stack traceback:
         luaunit2/example_with_luaunit.lua:124: in function 'test1_withFailure']]
         assertEquals( strippedStackTrace, expectedStackTrace )

@@ -167,15 +167,16 @@ local function hasNewLine( s )
 end
 M.private.hasNewLine = hasNewLine
 
-function prefixString( prefix, s )
+local function prefixString( prefix, s )
     -- Prefix all the lines of s with prefix
     local t, s2
     t = strsplit('\n', s)
     s2 = prefix..table.concat(t, '\n'..prefix)
     return s2
 end
+M.private.prefixString = prefixString
 
-function strMatch(s, pattern, start, final )
+local function strMatch(s, pattern, start, final )
     -- return true if s matches completely the pattern from index start to index end
     -- return false in every other cases
     -- if start is nil, matches from the beginning of the string
@@ -200,8 +201,9 @@ function strMatch(s, pattern, start, final )
 
     return false
 end
+M.private.strMatch = strMatch
 
-function xmlEscape( s )
+local function xmlEscape( s )
     -- Return s escaped for XML attributes
     -- escapes table:
     -- "   &quot;
@@ -223,16 +225,18 @@ function xmlEscape( s )
 
     return s
 end
+M.private.xmlEscape = xmlEscape
 
-function xmlCDataEscape( s )
+local function xmlCDataEscape( s )
     -- Return s escaped for CData section
     -- escapes: "]]>" 
     s = string.gsub( s, ']]>', ']]&gt;' )
     return s
 end
+M.private.xmlCDataEscape = xmlCDataEscape
 
 local patternLuaunitTrace='(.*[/\\]luaunit%.lua:%d+: .*)'
-function isLuaunitInternalLine( s )
+local function isLuaunitInternalLine( s )
     -- return true if line of stack trace comes from inside luaunit
     -- print( 'Matching for luaunit: '..s )
     matchStart, matchEnd, capture = string.find( s, patternLuaunitTrace )
@@ -243,7 +247,7 @@ function isLuaunitInternalLine( s )
     return false
 end
 
-function stripLuaunitTrace( stackTrace )
+local function stripLuaunitTrace( stackTrace )
     --[[
     -- Example of  a traceback:
     <<stack traceback:
@@ -331,6 +335,7 @@ function stripLuaunitTrace( stackTrace )
     return ret
 
 end
+M.private.stripLuaunitTrace = stripLuaunitTrace
 
 
 function table.keytostring(k)
@@ -339,7 +344,7 @@ function table.keytostring(k)
     if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
         return k
     else
-        return prettystr(k)
+        return M.private.prettystr(k)
     end
 end
 
@@ -357,7 +362,7 @@ function table.tostring( tbl, indentLevel, printTableRefs, recursionTable )
             recursionTable['recursionDetected'] = true
             table.insert( result, "<"..tostring(v)..">" )
         else
-            table.insert( result, prettystr_sub( v, indentLevel+1, false, printTableRefs, recursionTable ) )
+            table.insert( result, M.private.prettystr_sub( v, indentLevel+1, false, printTableRefs, recursionTable ) )
         end
 
         done[ k ] = true
@@ -371,7 +376,7 @@ function table.tostring( tbl, indentLevel, printTableRefs, recursionTable )
                 table.insert( result, table.keytostring( k ) .. "=" .. "<"..tostring(v)..">" )
             else
                 table.insert( result,
-                    table.keytostring( k ) .. "=" .. prettystr_sub( v, indentLevel+1, true, printTableRefs, recursionTable ) )
+                    table.keytostring( k ) .. "=" .. M.private.prettystr_sub( v, indentLevel+1, true, printTableRefs, recursionTable ) )
             end
         end
     end
@@ -406,7 +411,7 @@ function table.tostring( tbl, indentLevel, printTableRefs, recursionTable )
     return result_str
 end
 
-function prettystr( v, keeponeline )
+local function prettystr( v, keeponeline )
     --[[ Better string conversion, to display nice variable content:
     For strings, if keeponeline is set to true, string is displayed on one line, with visible \n
     * string are enclosed with " by default, or with ' if string contains a "
@@ -414,18 +419,19 @@ function prettystr( v, keeponeline )
     * tables are expanded
     ]]--
     recursionTable = {}
-    s = prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
+    s = M.private.prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
     if recursionTable['recursionDetected'] == true and M.PRINT_TABLE_REF_IN_ERROR_MSG == false then
         -- some table contain recursive references, 
         -- so we must recompute the value by including all table references
         -- else the result looks like crap
         recursionTable = {}
-        s = prettystr_sub(v, 1, keeponeline, true, recursionTable)
+        s = M.private.prettystr_sub(v, 1, keeponeline, true, recursionTable)
     end
     return s
 end
+M.private.prettystr = prettystr
 
-function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
+local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
     if "string" == type( v ) then
         if keeponeline then
             v = string.gsub( v, "\n", "\\n" )
@@ -447,6 +453,7 @@ function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTab
     end
     return tostring(v)
 end
+M.private.prettystr_sub = prettystr_sub
 
 function _table_contains(t, element)
     if t then
