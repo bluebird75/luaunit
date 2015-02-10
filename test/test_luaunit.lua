@@ -72,9 +72,9 @@ TestLuaUnitUtilities = {} --class
 
 
     function TestLuaUnitUtilities:test_genSortedIndex()
-        assertEquals( __genSortedIndex( { 2, 5, 7} ), {1,2,3} )
-        assertEquals( __genSortedIndex( { a='1', h='2', c='3' } ), {'a', 'c', 'h'} )
-        assertEquals( __genSortedIndex( { 1, 'z', a='1', h='2', c='3' } ), { 1, 2, 'a', 'c', 'h' } )
+        assertEquals( lu.private.__genSortedIndex( { 2, 5, 7} ), {1,2,3} )
+        assertEquals( lu.private.__genSortedIndex( { a='1', h='2', c='3' } ), {'a', 'c', 'h'} )
+        assertEquals( lu.private.__genSortedIndex( { 1, 'z', a='1', h='2', c='3' } ), { 1, 2, 'a', 'c', 'h' } )
     end
 
     function TestLuaUnitUtilities:test_sortedNextReturnsSortedKeyValues()

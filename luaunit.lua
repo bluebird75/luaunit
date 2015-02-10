@@ -11,6 +11,9 @@ Version: 3.0
 
 local M={}
 
+-- private exported functions (for testing)
+M.private = {}
+
 M.VERSION='3.0'
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
@@ -53,7 +56,7 @@ Options:
 --
 ----------------------------------------------------------------
 
-function __genSortedIndex( t )
+local function __genSortedIndex( t )
     local sortedIndexStr = {}
     local sortedIndexInt = {}
     local sortedIndex = {}
@@ -74,6 +77,7 @@ function __genSortedIndex( t )
     end
     return sortedIndex
 end
+M.private.__genSortedIndex = __genSortedIndex
 
 -- Contains the keys of the table being iterated, already sorted
 -- and the last index that has been iterated
@@ -81,7 +85,7 @@ end
 --    t a table on which we iterate
 --    sortedNextCache[ t ].idx is the sorted index of the table
 --    sortedNextCache[ t ].lastIdx is the last index used in the sorted index
-sortedNextCache = {}
+local sortedNextCache = {}
 
 function sortedNext(t, state)
     -- Equivalent of the next() function of table iteration, but returns the
