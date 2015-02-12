@@ -38,7 +38,6 @@ _ReSharper*/
 *.sublime-project
 *.lsln
 *.sublime-workspace
-junitxml
 doc/_build/
 junit_stdout.txt
 output_junit.xml

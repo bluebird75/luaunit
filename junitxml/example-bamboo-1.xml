@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" tests="3" time="0.391" failures="1"
+           name="com.atlassian.bamboo.repository.perforce.PerforceSyncCommandTest">
+    <properties>
+        <property value="Java(TM) 2 Runtime Environment, Standard Edition" name="java.runtime.name"/>
+        <property value="UnicodeBig" name="sun.io.unicode.encoding"/>
+    .............
+    </properties>
+    <testcase time="0.001" name="testGeneratesCorrectP4CommandLine"/>
+    <testcase time="0" name="testGettersReturnExpectedStuff"/>
+    <testcase time="0.164" name="testUsingPerforceWhenNoFilesHaveChanged">
+        <failure type="junit.framework.AssertionFailedError"
+                 message="Should not have any errors. [Perforce client error:,     Connect to server failed; ">
+            junit.framework.AssertionFailedError: Should not have any errors. [Perforce client error:, Connect to server
+            failed; check $P4PORT., TCP connect to keg failed., keg: host unknown.] expected:&lt;0&gt; but was:&lt;4&gt;
+            at junit.framework.Assert.fail(Assert.java:47)
+            at junit.framework.Assert.failNotEquals(Assert.java:282)
+            at junit.framework.Assert.assertEquals(Assert.java:64)
+            at junit.framework.Assert.assertEquals(Assert.java:201)
+            at  com.atlassian.bamboo.repository.perforce.PerforceSyncCommandTest.testUsingPerforceWhenNoFilesHaveChanged(PerforceSyncCommandTest.java:60)
+            at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+            at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+            at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+            at java.lang.reflect.Method.invoke(Method.java:585)
+            at junit.framework.TestCase.runTest(TestCase.java:154)
+            at junit.framework.TestCase.runBare(TestCase.java:127)
+            at junit.framework.TestResult$1.protect(TestResult.java:106)
+            at junit.framework.TestResult.runProtected(TestResult.java:124)
+            at junit.framework.TestResult.run(TestResult.java:109)
+            at junit.framework.TestCase.run(TestCase.java:118)
+            at junit.framework.TestSuite.runTest(TestSuite.java:208)
+            at junit.framework.TestSuite.run(TestSuite.java:203)
+            at sun.reflect.GeneratedMethodAccessor17.invoke(Unknown Source)
+            at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+            at java.lang.reflect.Method.invoke(Method.java:585)
+            at org.apache.maven.surefire.battery.JUnitBattery.executeJUnit(JUnitBattery.java:242)
+            at org.apache.maven.surefire.battery.JUnitBattery.execute(JUnitBattery.java:216)
+            at org.apache.maven.surefire.Surefire.executeBattery(Surefire.java:215)
+            at org.apache.maven.surefire.Surefire.run(Surefire.java:163)
+            at org.apache.maven.surefire.Surefire.run(Surefire.java:87)
+            at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+            at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+            at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+            at java.lang.reflect.Method.invoke(Method.java:585)
+            at org.apache.maven.surefire.SurefireBooter.runTestsInProcess(SurefireBooter.java:313)
+            at org.apache.maven.surefire.SurefireBooter.run(SurefireBooter.java:221)
+            at org.apache.maven.test.SurefirePlugin.execute(SurefirePlugin.java:371)
+            at org.apache.maven.plugin.DefaultPluginManager.executeMojo(DefaultPluginManager.java:412)
+            at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoals(DefaultLifecycleExecutor.java:534)
+            at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoalWithLifecycle(DefaultLifecycleExecutor.java:475)
+            at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoal(DefaultLifecycleExecutor.java:454)
+            at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoalAndHandleFailures(DefaultLifecycleExecutor.java:306)
+            at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeTaskSegments(DefaultLifecycleExecutor.java:273)
+            at org.apache.maven.lifecycle.DefaultLifecycleExecutor.execute(DefaultLifecycleExecutor.java:140)
+            at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:322)
+            at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:115)
+            at org.apache.maven.cli.MavenCli.main(MavenCli.java:256)
+            at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+            at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+            at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+            at java.lang.reflect.Method.invoke(Method.java:585)
+            at org.codehaus.classworlds.Launcher.launchEnhanced(Launcher.java:315)
+            at org.codehaus.classworlds.Launcher.launch(Launcher.java:255)
+            at org.codehaus.classworlds.Launcher.mainWithExitCode(Launcher.java:430)
+            at org.codehaus.classworlds.Launcher.main(Launcher.java:375)
+        </failure>
+        <system-out>
+            PerforceSyncCommand.command: /usr/local/bin/p4
+        </system-out>
+    </testcase>
+</testsuite>

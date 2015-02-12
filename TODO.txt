@@ -4,28 +4,26 @@ TODO v3.1:
 - check documentation link glitch to TAP 
 - mention that general error are correctly handled by luaunit as failures
 - in rst, check how to document properly optional parameters
-- fill extra junit test parameters (duration, ...)
 - doc: move description of table printing to an annex
+- improve default output to make it closer to python
+- report test duration everywhere
+- less global space pollution
 
 TODO Future:
 ============
-- compatibility with LuaUnit v2.0 of rjbcomputing
-- provide a luarock package. See: https://rocks.moonscript.org/modules/rjpcomputing/luaunit
-- improve junit output:
-	- make number of failures part of the xml <testsuites>
-	- display time to run tests
+- allow to skip tests
+- make a difference between errors and failures
 - randomized testing
+- provide a luarock package. See: https://rocks.moonscript.org/modules/rjpcomputing/luaunit
+- compatibility with LuaUnit v2.0 of rjbcomputing
 - coloured output
 - global setup / teardown
 - class setup / teardown
-- distinguish errors and failures
-- add date and duration to tap output, junit output
-- validate test output (TAP, ...) with functional tests
-- validate well-formed XML with a DTD
+- add date and duration to tap output
 - better error messages for table assertions:
 	+ expected length of X, got Y
 	+ keys differing in table 1 and 2
-- allow to skip tests
+- XML: report system information
 
 Nice to have: 
 ============
@@ -34,21 +32,27 @@ Nice to have:
 
 Done since 3.0:
 ===============
+x validate well-formed XML with a DTD
+x validate test output (TAP, ...) with functional tests
 x test failures, verify that output is correct
 x improve testresult: contain the list of tests, with status of each test
 x strip luaunit stack more intelligently: exclude content of luaunit
 x mention mailing-list in README.md
-x validate well-formed xml
 x mention version in documentation
 x mention mailing-list
 x mention the new global variable config for displaying table content
-x XML output:
-	+ tests to validate XML generation with data that contains XML already
-	+ move tests to tests
 x fix display of tables with recursive references
 x improve display of nested tables in error messages
 x improve display of multiline strings in error messages
-x fix junit output
+
+x Junit XML Ouptut:
+	x test and fix xml escaping
+	x validate xml with apache and jenkins schemas
+	+ xml format:
+		- add proper xml formatting header
+		- report number of failures within <testsuite> element
+		- report duration
+		- add properties describe the environment
 
 Done:
 ============

@@ -1,0 +1,16 @@
+Ant xml schema is much more restrictive than jenkins.
+
+Non allowed fields in ant, allowed in jenkins:
+
+testsuites:
+- apache ant forbids all attributes.
+
+testsuite:
+- apache ant forbids attributes: disabled, skipped
+- apache ant allows elements system-out and system-err, that are in testcase for jenkins
+
+testcase:
+- apache ant forbids attributes: assertions, status
+- apache ant forbids elements: skipped, system-out, system-err
+
+

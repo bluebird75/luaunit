@@ -1053,32 +1053,25 @@ local JUnitOutput_MT = { __index = JUnitOutput }
 
         print('# XML output to '..self.fname)
         print('# Started on '..self.result.startDate)
-        self.fd:write('<testsuites>\n')
     end
     function JUnitOutput:startClass(className) 
         if className ~= '[TestFunctions]' then
             print('# Starting class: '..className)
         end
-        self.fd:write('    <testsuite name="' .. className .. '">\n')
     end
     function JUnitOutput:startTest(testName)
         print('# Starting test: '..testName)
-        self.fd:write('        <testcase classname="' .. self.result.currentNode.className .. '"\n            name="'.. testName .. '">\n')
     end
 
     function JUnitOutput:addFailure( errorMsg, stackTrace )
         print('# Failure: '..errorMsg)
-        print('# '..stackTrace)
-        self.fd:write('            <failure type="' ..xmlEscape(errorMsg) .. '">\n')  
-        self.fd:write('                <![CDATA[' ..xmlCDataEscape(stackTrace) .. ']]></failure>\n')
+        -- print('# '..stackTrace)
     end
 
     function JUnitOutput:endTest(testHasFailure)
-        self.fd:write('        </testcase>\n')
     end
 
     function JUnitOutput:endClass()
-        self.fd:write('    </testsuite>\n')
     end
 
     function JUnitOutput:endSuite()
@@ -1089,6 +1082,35 @@ local JUnitOutput_MT = { __index = JUnitOutput }
             table.insert(t, string.format(", %d non selected tests", self.result.nonSelectedCount ) )
         end
         print( table.concat(t) )
+
+        -- XML file writing
+        self.fd:write('<?xml version="1.0" encoding="UTF-8" ?>\n')
+        self.fd:write('<testsuites>\n')
+        self.fd:write(string.format(
+            '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s" time="%0.3f" errors="0" failures="%d">\n', 
+            self.result.testCount, self.result.startIsodate, self.result.duration, self.result.failureCount ))
+        self.fd:write("        <properties>\n")
+        self.fd:write(string.format('            <property name="Lua Version" value="%s"/>\n', _VERSION ) )
+        self.fd:write(string.format('            <property name="LuaUnit Version" value="%s"/>\n', M.VERSION) )
+        -- XXX please include system name and version if possible
+        self.fd:write("        </properties>\n")
+
+        for i,node in ipairs(self.result.tests) do
+            self.fd:write(string.format('        <testcase classname="%s" name="%s" time="%0.3f">\n', 
+                node.className, node.testName, node.duration ) )
+            if node.status ~= M.NodeStatus.PASS then
+                self.fd:write('            <failure type="' ..xmlEscape(node.msg) .. '">\n')  
+                self.fd:write('                <![CDATA[' ..xmlCDataEscape(node.stackTrace) .. ']]></failure>\n')
+            end
+            self.fd:write('        </testcase>\n')
+
+        end
+
+        -- Next to lines are Needed to validate junit ANT xsd but really not useful in general:
+        self.fd:write('    <system-out/>\n')
+        self.fd:write('    <system-err/>\n')
+
+        self.fd:write('    </testsuite>\n')
         self.fd:write('</testsuites>\n') 
         self.fd:close()
         return self.result.failureCount
@@ -1100,6 +1122,58 @@ local JUnitOutput_MT = { __index = JUnitOutput }
 ----------------------------------------------------------------
 --                     class TextOutput
 ----------------------------------------------------------------
+
+--[[
+
+-- Python Non verbose:
+
+For each test: . or F or E
+
+If some failed tests:
+    ==============
+    ERROR / FAILURE: TestName (testfile.testclass)
+    ---------
+    Stack trace
+
+
+then --------------
+then "Ran x tests in 0.000s"
+then OK or FAILED (failures=1, error=1)
+
+-- Python Verbose:
+testname (filename.classname) ... ok
+testname (filename.classname) ... FAIL
+testname (filename.classname) ... ERROR
+
+then --------------
+then "Ran x tests in 0.000s"
+then OK or FAILED (failures=1, error=1)
+
+-- Ruby:
+Started
+ .
+ Finished in 0.002695 seconds.
+ 
+ 1 tests, 2 assertions, 0 failures, 0 errors
+
+-- Ruby:
+>> ruby tc_simple_number2.rb
+Loaded suite tc_simple_number2
+Started
+F..
+Finished in 0.038617 seconds.
+ 
+  1) Failure:
+test_failure(TestSimpleNumber) [tc_simple_number2.rb:16]:
+Adding doesn't work.
+<3> expected but was
+<4>.
+ 
+3 tests, 4 assertions, 1 failures, 0 errors
+
+-- 
+
+]]
 
 local TextOutput = { __class__ = 'TextOutput' }
 local TextOutput_MT = { -- class
@@ -1442,10 +1516,6 @@ local LuaUnit_MT = { __index = LuaUnit }
 
     local NodeStatus = { -- class
         __class__ = 'NodeStatus',
-        number = 0,
-        testName = '',
-        className = '',
-
     }
     M.NodeStatus = NodeStatus
     local NodeStatus_MT = { __index = NodeStatus }
@@ -1493,7 +1563,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self.result.suiteStarted = true
         self.result.startTime = os.clock()
         self.result.startDate = os.date()
-        self.result.startIsodate = os.date('%Y-%m-%dT%H-%M-%S')
+        self.result.startIsodate = os.date('%Y-%m-%dT%H:%M:%S')
         self.result.patternFilter = self.patternFilter
         self.result.tests = {}
         self.result.failures = {}
@@ -1519,6 +1589,7 @@ local LuaUnit_MT = { __index = LuaUnit }
             testName,
             self.result.currentClassName
         )
+        self.result.currentNode.startTime = os.clock()
         table.insert( self.result.tests, self.result.currentNode )
         self.output:startTest( testName )
     end
@@ -1535,6 +1606,8 @@ local LuaUnit_MT = { __index = LuaUnit }
     function LuaUnit:endTest()
         -- print( 'endTEst() '..prettystr(self.result.currentNode))
         -- print( 'endTEst() '..prettystr(self.result.currentNode:hasFailure()))
+        self.result.currentNode.duration = os.clock() - self.result.currentNode.startTime 
+        self.result.currentNode.startTime = nil
         self.output:endTest( self.result.currentNode:hasFailure() )
         self.result.currentNode = nil
     end
