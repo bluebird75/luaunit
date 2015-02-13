@@ -801,8 +801,8 @@ TestLuaUnitAssertions = {} --class
     end
 
     function TestLuaUnitAssertions:test_assertIsNumber()
-        assertIsNumber(1)
-        assertIsNumber(1.4)
+        lu.assertIsNumber(1)
+        lu.assertIsNumber(1.4)
         lu.assertError(assertIsNumber, "hi there!")
         lu.assertError(assertIsNumber, nil)
         lu.assertError(assertIsNumber, {})
@@ -815,7 +815,7 @@ TestLuaUnitAssertions = {} --class
     function TestLuaUnitAssertions:test_assertIsString()
         lu.assertError(assertIsString, 1)
         lu.assertError(assertIsString, 1.4)
-        assertIsString("hi there!")
+        lu.assertIsString("hi there!")
         lu.assertError(assertIsString, nil)
         lu.assertError(assertIsString, {})
         lu.assertError(assertIsString, {1,2,3})
@@ -829,9 +829,9 @@ TestLuaUnitAssertions = {} --class
         lu.assertError(assertIsTable, 1.4)
         lu.assertError(assertIsTable, "hi there!")
         lu.assertError(assertIsTable, nil)
-        assertIsTable({})
-        assertIsTable({1,2,3})
-        assertIsTable({1})
+        lu.assertIsTable({})
+        lu.assertIsTable({1,2,3})
+        lu.assertIsTable({1})
         lu.assertError(assertIsTable, true)
         lu.assertError(assertIsTable, coroutine.create( function(v) local y=v+1 end ) )
     end
@@ -845,15 +845,15 @@ TestLuaUnitAssertions = {} --class
         lu.assertError(assertIsBoolean, {1,2,3})
         lu.assertError(assertIsBoolean, {1})
         lu.assertError(assertIsBoolean, coroutine.create( function(v) local y=v+1 end ) )
-        assertIsBoolean(true)
-        assertIsBoolean(false)
+        lu.assertIsBoolean(true)
+        lu.assertIsBoolean(false)
     end
 
     function TestLuaUnitAssertions:test_assertIsNil()
         lu.assertError(assertIsNil, 1)
         lu.assertError(assertIsNil, 1.4)
         lu.assertError(assertIsNil, "hi there!")
-        assertIsNil(nil)
+        lu.assertIsNil(nil)
         lu.assertError(assertIsNil, {})
         lu.assertError(assertIsNil, {1,2,3})
         lu.assertError(assertIsNil, {1})
@@ -873,7 +873,7 @@ TestLuaUnitAssertions = {} --class
         lu.assertError(assertIsFunction, {1})
         lu.assertError(assertIsFunction, false)
         lu.assertError(assertIsFunction, coroutine.create( function(v) local y=v+1 end ) )
-        assertIsFunction(f)
+        lu.assertIsFunction(f)
     end
 
     function TestLuaUnitAssertions:test_assertIsCoroutine()
@@ -886,7 +886,7 @@ TestLuaUnitAssertions = {} --class
         lu.assertError(assertIsCoroutine, {1})
         lu.assertError(assertIsCoroutine, false)
         lu.assertError(assertIsCoroutine, function(v) local y=v+1 end )
-        assertIsCoroutine(coroutine.create( function(v) local y=v+1 end ) )
+        lu.assertIsCoroutine(coroutine.create( function(v) local y=v+1 end ) )
     end
 
     function TestLuaUnitAssertions:test_assertIsUserdata()
@@ -913,13 +913,13 @@ TestLuaUnitAssertions = {} --class
         local s2='toto'
         local s3='to'..'to'
 
-        assertIs(1,1)
-        assertIs(f,f)
-        assertIs('toto', 'toto')
-        assertIs(s1, s2)
-        assertIs(s1, s3)
-        assertIs(t1,t1)
-        assertIs(t4,t4)
+        lu.assertIs(1,1)
+        lu.assertIs(f,f)
+        lu.assertIs('toto', 'toto')
+        lu.assertIs(s1, s2)
+        lu.assertIs(s1, s3)
+        lu.assertIs(t1,t1)
+        lu.assertIs(t4,t4)
 
         lu.assertError(assertIs, 1, 2)
         lu.assertError(assertIs, 1.4, 1)
@@ -1220,44 +1220,44 @@ TestLuaUnitErrorMsg = {} --class
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsNumber()
-        lu.assertErrorMsgEquals( 'Expected: a number value, actual: type string, value "abc"', assertIsNumber, 'abc' )
-        lu.assertErrorMsgEquals( 'Expected: a number value, actual: type nil, value nil', assertIsNumber, nil )
+        lu.assertErrorMsgEquals( 'Expected: a number value, actual: type string, value "abc"', lu.assertIsNumber, 'abc' )
+        lu.assertErrorMsgEquals( 'Expected: a number value, actual: type nil, value nil', lu.assertIsNumber, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsString()
-        lu.assertErrorMsgEquals( 'Expected: a string value, actual: type number, value 1.2', assertIsString, 1.2 )
-        lu.assertErrorMsgEquals( 'Expected: a string value, actual: type nil, value nil', assertIsString, nil )
+        lu.assertErrorMsgEquals( 'Expected: a string value, actual: type number, value 1.2', lu.assertIsString, 1.2 )
+        lu.assertErrorMsgEquals( 'Expected: a string value, actual: type nil, value nil', lu.assertIsString, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsTable()
-        lu.assertErrorMsgEquals( 'Expected: a table value, actual: type number, value 1.2', assertIsTable, 1.2 )
-        lu.assertErrorMsgEquals( 'Expected: a table value, actual: type nil, value nil', assertIsTable, nil )
+        lu.assertErrorMsgEquals( 'Expected: a table value, actual: type number, value 1.2', lu.assertIsTable, 1.2 )
+        lu.assertErrorMsgEquals( 'Expected: a table value, actual: type nil, value nil', lu.assertIsTable, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsBoolean()
-        lu.assertErrorMsgEquals( 'Expected: a boolean value, actual: type number, value 1.2', assertIsBoolean, 1.2 )
-        lu.assertErrorMsgEquals( 'Expected: a boolean value, actual: type nil, value nil', assertIsBoolean, nil )
+        lu.assertErrorMsgEquals( 'Expected: a boolean value, actual: type number, value 1.2', lu.assertIsBoolean, 1.2 )
+        lu.assertErrorMsgEquals( 'Expected: a boolean value, actual: type nil, value nil', lu.assertIsBoolean, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsFunction()
-        lu.assertErrorMsgEquals( 'Expected: a function value, actual: type number, value 1.2', assertIsFunction, 1.2 )
-        lu.assertErrorMsgEquals( 'Expected: a function value, actual: type nil, value nil', assertIsFunction, nil )
+        lu.assertErrorMsgEquals( 'Expected: a function value, actual: type number, value 1.2', lu.assertIsFunction, 1.2 )
+        lu.assertErrorMsgEquals( 'Expected: a function value, actual: type nil, value nil', lu.assertIsFunction, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsCoroutine()
-        lu.assertErrorMsgEquals( 'Expected: a thread value, actual: type number, value 1.2', assertIsCoroutine, 1.2 )
-        lu.assertErrorMsgEquals( 'Expected: a thread value, actual: type nil, value nil', assertIsCoroutine, nil )
+        lu.assertErrorMsgEquals( 'Expected: a thread value, actual: type number, value 1.2', lu.assertIsCoroutine, 1.2 )
+        lu.assertErrorMsgEquals( 'Expected: a thread value, actual: type nil, value nil', lu.assertIsCoroutine, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsUserdata()
-        lu.assertErrorMsgEquals( 'Expected: a userdata value, actual: type number, value 1.2', assertIsUserdata, 1.2 )
-        lu.assertErrorMsgEquals( 'Expected: a userdata value, actual: type nil, value nil', assertIsUserdata, nil )
+        lu.assertErrorMsgEquals( 'Expected: a userdata value, actual: type number, value 1.2', lu.assertIsUserdata, 1.2 )
+        lu.assertErrorMsgEquals( 'Expected: a userdata value, actual: type nil, value nil', lu.assertIsUserdata, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIs()
-        lu.assertErrorMsgEquals( 'Expected object and actual object are not the same\nExpected: 1, actual: 2', assertIs, 2, 1 )
+        lu.assertErrorMsgEquals( 'Expected object and actual object are not the same\nExpected: 1, actual: 2', lu.assertIs, 2, 1 )
         lu.ORDER_ACTUAL_EXPECTED = false
-        lu.assertErrorMsgEquals( 'Expected object and actual object are not the same\nExpected: 2, actual: 1', assertIs, 2, 1 )
+        lu.assertErrorMsgEquals( 'Expected object and actual object are not the same\nExpected: 2, actual: 1', lu.assertIs, 2, 1 )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIs()
@@ -1752,33 +1752,33 @@ TestLuaUnitResults = {} -- class
         lu.assertEquals( runner.result.tests[1].testName, "MyTestWithFailures.testOk" )
         lu.assertEquals( runner.result.tests[1].className, 'MyTestWithFailures' )
         lu.assertEquals( runner.result.tests[1].status, lu.NodeStatus.PASS )
-        assertIsNumber( runner.result.tests[1].duration )
-        assertIsNil( runner.result.tests[1].msg )
-        assertIsNil( runner.result.tests[1].stackTrace )
+        lu.assertIsNumber( runner.result.tests[1].duration )
+        lu.assertIsNil( runner.result.tests[1].msg )
+        lu.assertIsNil( runner.result.tests[1].stackTrace )
 
         lu.assertEquals( runner.result.tests[2].testName, 'MyTestWithFailures.testWithFailure1' )
         lu.assertEquals( runner.result.tests[2].className, 'MyTestWithFailures' )
         lu.assertEquals( runner.result.tests[2].status, lu.NodeStatus.FAIL )
-        assertIsString( runner.result.tests[2].msg )
-        assertIsString( runner.result.tests[2].stackTrace )
+        lu.assertIsString( runner.result.tests[2].msg )
+        lu.assertIsString( runner.result.tests[2].stackTrace )
 
         lu.assertEquals( runner.result.tests[3].testName, 'MyTestWithFailures.testWithFailure2' )
         lu.assertEquals( runner.result.tests[3].className, 'MyTestWithFailures' )
         lu.assertEquals( runner.result.tests[3].status, lu.NodeStatus.FAIL )
-        assertIsString( runner.result.tests[3].msg )
-        assertIsString( runner.result.tests[3].stackTrace )
+        lu.assertIsString( runner.result.tests[3].msg )
+        lu.assertIsString( runner.result.tests[3].stackTrace )
 
         lu.assertEquals( runner.result.failures[1].testName, 'MyTestWithFailures.testWithFailure1' )
         lu.assertEquals( runner.result.failures[1].className, 'MyTestWithFailures' )
         lu.assertEquals( runner.result.failures[1].status, lu.NodeStatus.FAIL )
-        assertIsString( runner.result.failures[1].msg )
-        assertIsString( runner.result.failures[1].stackTrace )
+        lu.assertIsString( runner.result.failures[1].msg )
+        lu.assertIsString( runner.result.failures[1].stackTrace )
 
         lu.assertEquals( runner.result.failures[2].testName, 'MyTestWithFailures.testWithFailure2' )
         lu.assertEquals( runner.result.failures[2].className, 'MyTestWithFailures' )
         lu.assertEquals( runner.result.failures[2].status, lu.NodeStatus.FAIL )
-        assertIsString( runner.result.failures[2].msg )
-        assertIsString( runner.result.failures[2].stackTrace )
+        lu.assertIsString( runner.result.failures[2].msg )
+        lu.assertIsString( runner.result.failures[2].stackTrace )
     end
 
     function TestLuaUnitResults:test_resultsWhileTestInProgress()
