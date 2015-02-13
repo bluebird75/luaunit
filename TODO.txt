@@ -24,6 +24,7 @@ TODO Future:
 	+ expected length of X, got Y
 	+ keys differing in table 1 and 2
 - XML: report system information
+- check that no globals were added by executing a test
 
 Nice to have: 
 ============
