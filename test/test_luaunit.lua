@@ -345,24 +345,24 @@ TestLuaUnitUtilities = {} --class
         --output
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--output', 'toto' } ), { output='toto'} )
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-o', 'toto' } ), { output='toto'} )
-        assertErrorMsgContains( 'Missing argument after -o', lu.LuaUnit.parseCmdLine, { '-o', } )
+        lu.assertErrorMsgContains( 'Missing argument after -o', lu.LuaUnit.parseCmdLine, { '-o', } )
 
         --name
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--name', 'toto' } ), { fname='toto'} )
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-n', 'toto' } ), { fname='toto'} )
-        assertErrorMsgContains( 'Missing argument after -n', lu.LuaUnit.parseCmdLine, { '-n', } )
+        lu.assertErrorMsgContains( 'Missing argument after -n', lu.LuaUnit.parseCmdLine, { '-n', } )
 
         --patterns
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--pattern', 'toto' } ), { pattern={'toto'} } )
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'toto' } ), { pattern={'toto'} } )
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'titi', '-p', 'toto' } ), { pattern={'titi', 'toto'} } )
-        assertErrorMsgContains( 'Missing argument after -p', lu.LuaUnit.parseCmdLine, { '-p', } )
+        lu.assertErrorMsgContains( 'Missing argument after -p', lu.LuaUnit.parseCmdLine, { '-p', } )
 
         --megamix
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'toto', 'titi', '-v', 'tata', '-o', 'tintin', '-p', 'tutu', 'prout', '-n', 'toto.xml' } ), 
             { pattern={'toto', 'tutu'}, verbosity=lu.VERBOSITY_VERBOSE, output='tintin', testNames={'titi', 'tata', 'prout'}, fname='toto.xml' } )
 
-        assertErrorMsgContains( 'option: -x', lu.LuaUnit.parseCmdLine, { '-x', } )
+        lu.assertErrorMsgContains( 'option: -x', lu.LuaUnit.parseCmdLine, { '-x', } )
     end
 
     function TestLuaUnitUtilities:test_includePattern()
@@ -546,25 +546,25 @@ TestLuaUnitAssertions = {} --class
         lu.assertEquals( {one=1,two={1,{2,nil}},three=3}, {two={1,{2,nil}},three=3,one=1})
         lu.assertEquals( {nil}, {nil} )
 
-        assertError( lu.assertEquals, 1, 2)
-        assertError( lu.assertEquals, 1, "abc" )
-        assertError( lu.assertEquals, 0, nil )
-        assertError( lu.assertEquals, false, nil )
-        assertError( lu.assertEquals, true, 1 )
-        assertError( lu.assertEquals, f, 1 )
-        assertError( lu.assertEquals, f, g )
-        assertError( lu.assertEquals, {1,2,3}, {2,1,3} )
-        assertError( lu.assertEquals, {1,2,3}, nil )
-        assertError( lu.assertEquals, {1,2,3}, 1 )
-        assertError( lu.assertEquals, {1,2,3}, true )
-        assertError( lu.assertEquals, {1,2,3}, {one=1,two=2,three=3} )
-        assertError( lu.assertEquals, {1,2,3}, {one=1,two=2,three=3,four=4} )
-        assertError( lu.assertEquals, {one=1,two=2,three=3}, {2,1,3} )
-        assertError( lu.assertEquals, {one=1,two=2,three=3}, nil )
-        assertError( lu.assertEquals, {one=1,two=2,three=3}, 1 )
-        assertError( lu.assertEquals, {one=1,two=2,three=3}, true )
-        assertError( lu.assertEquals, {one=1,two=2,three=3}, {1,2,3} )
-        assertError( lu.assertEquals, {one=1,two={1,2},three=3}, {two={2,1},three=3,one=1})
+        lu.assertError( lu.assertEquals, 1, 2)
+        lu.assertError( lu.assertEquals, 1, "abc" )
+        lu.assertError( lu.assertEquals, 0, nil )
+        lu.assertError( lu.assertEquals, false, nil )
+        lu.assertError( lu.assertEquals, true, 1 )
+        lu.assertError( lu.assertEquals, f, 1 )
+        lu.assertError( lu.assertEquals, f, g )
+        lu.assertError( lu.assertEquals, {1,2,3}, {2,1,3} )
+        lu.assertError( lu.assertEquals, {1,2,3}, nil )
+        lu.assertError( lu.assertEquals, {1,2,3}, 1 )
+        lu.assertError( lu.assertEquals, {1,2,3}, true )
+        lu.assertError( lu.assertEquals, {1,2,3}, {one=1,two=2,three=3} )
+        lu.assertError( lu.assertEquals, {1,2,3}, {one=1,two=2,three=3,four=4} )
+        lu.assertError( lu.assertEquals, {one=1,two=2,three=3}, {2,1,3} )
+        lu.assertError( lu.assertEquals, {one=1,two=2,three=3}, nil )
+        lu.assertError( lu.assertEquals, {one=1,two=2,three=3}, 1 )
+        lu.assertError( lu.assertEquals, {one=1,two=2,three=3}, true )
+        lu.assertError( lu.assertEquals, {one=1,two=2,three=3}, {1,2,3} )
+        lu.assertError( lu.assertEquals, {one=1,two={1,2},three=3}, {two={2,1},three=3,one=1})
     end
 
     function TestLuaUnitAssertions:test_assertAlmostEquals()
@@ -578,12 +578,12 @@ TestLuaUnitAssertions = {} --class
         assertAlmostEquals( -1, -1.1, 0.1 )
         assertAlmostEquals( 0.1, -0.1, 0.2 )
 
-        assertError( assertAlmostEquals, 1, 1.11, 0.1 )
-        assertError( assertAlmostEquals, -1, -1.11, 0.1 )
-        assertError( assertAlmostEquals, -1, 1, nil )
-        assertError( assertAlmostEquals, -1, nil, 0 )
-        assertError( assertAlmostEquals, 1, 1.1, 0 )
-        assertError( assertAlmostEquals, 1, 1.1, -0.1 )
+        lu.assertError( assertAlmostEquals, 1, 1.11, 0.1 )
+        lu.assertError( assertAlmostEquals, -1, -1.11, 0.1 )
+        lu.assertError( assertAlmostEquals, -1, 1, nil )
+        lu.assertError( assertAlmostEquals, -1, nil, 0 )
+        lu.assertError( assertAlmostEquals, 1, 1.1, 0 )
+        lu.assertError( assertAlmostEquals, 1, 1.1, -0.1 )
     end
 
     function TestLuaUnitAssertions:test_assertNotEquals()
@@ -603,12 +603,12 @@ TestLuaUnitAssertions = {} --class
         assertNotEquals( {one=1,two=2,three=3}, true )
         assertNotEquals( {one=1,two={1,2},three=3}, {two={2,1},three=3,one=1} )
 
-        assertError( assertNotEquals, 1, 1)
-        assertError( assertNotEquals, "abc", "abc" )
-        assertError( assertNotEquals, nil, nil )
-        assertError( assertNotEquals, true, true )
-        assertError( assertNotEquals, f, f)
-        assertError( assertNotEquals, {one=1,two={1,{2,nil}},three=3}, {two={1,{2,nil}},three=3,one=1})
+        lu.assertError( assertNotEquals, 1, 1)
+        lu.assertError( assertNotEquals, "abc", "abc" )
+        lu.assertError( assertNotEquals, nil, nil )
+        lu.assertError( assertNotEquals, true, true )
+        lu.assertError( assertNotEquals, f, f)
+        lu.assertError( assertNotEquals, {one=1,two={1,{2,nil}},three=3}, {two={1,{2,nil}},three=3,one=1})
     end
 
     function TestLuaUnitAssertions:test_assertNotAlmostEquals()
@@ -622,12 +622,12 @@ TestLuaUnitAssertions = {} --class
         assertNotAlmostEquals( -1, -1.1, 0.09 )
         assertNotAlmostEquals( 0.1, -0.1, 0.11 )
 
-        assertError( assertNotAlmostEquals, 1, 1.11, 0.2 )
-        assertError( assertNotAlmostEquals, -1, -1.11, 0.2 )
-        assertError( assertNotAlmostEquals, -1, 1, nil )
-        assertError( assertNotAlmostEquals, -1, nil, 0 )
-        assertError( assertNotAlmostEquals, 1, 1.1, 0 )
-        assertError( assertNotAlmostEquals, 1, 1.1, -0.1 )
+        lu.assertError( assertNotAlmostEquals, 1, 1.11, 0.2 )
+        lu.assertError( assertNotAlmostEquals, -1, -1.11, 0.2 )
+        lu.assertError( assertNotAlmostEquals, -1, 1, nil )
+        lu.assertError( assertNotAlmostEquals, -1, nil, 0 )
+        lu.assertError( assertNotAlmostEquals, 1, 1.1, 0 )
+        lu.assertError( assertNotAlmostEquals, 1, 1.1, -0.1 )
     end
 
     function TestLuaUnitAssertions:test_assertNotEqualsDifferentTypes2()
@@ -636,12 +636,12 @@ TestLuaUnitAssertions = {} --class
 
     function TestLuaUnitAssertions:test_assertTrue()
         assertTrue(true)
-        assertError( assertTrue, false)
+        lu.assertError( assertTrue, false)
         assertTrue(0)
         assertTrue(1)
         assertTrue("")
         assertTrue("abc")
-        assertError( assertTrue, nil )
+        lu.assertError( assertTrue, nil )
         assertTrue( function() return true end )
         assertTrue( {} )
         assertTrue( { 1 } )
@@ -649,30 +649,30 @@ TestLuaUnitAssertions = {} --class
 
     function TestLuaUnitAssertions:test_assertFalse()
         assertFalse(false)
-        assertError( assertFalse, true)
+        lu.assertError( assertFalse, true)
         assertFalse( nil )
-        assertError( assertFalse, 0 )
-        assertError( assertFalse, 1 )
-        assertError( assertFalse, "" )
-        assertError( assertFalse, "abc" )
-        assertError( assertFalse, function() return true end )
-        assertError( assertFalse, {} )
-        assertError( assertFalse, { 1 } )
+        lu.assertError( assertFalse, 0 )
+        lu.assertError( assertFalse, 1 )
+        lu.assertError( assertFalse, "" )
+        lu.assertError( assertFalse, "abc" )
+        lu.assertError( assertFalse, function() return true end )
+        lu.assertError( assertFalse, {} )
+        lu.assertError( assertFalse, { 1 } )
     end
 
     function TestLuaUnitAssertions:test_assertNil()
         assertNil(nil)
-        assertError( assertTrue, false)
-        assertError( assertNil, 0)
-        assertError( assertNil, "")
-        assertError( assertNil, "abc")
-        assertError( assertNil,  function() return true end )
-        assertError( assertNil,  {} )
-        assertError( assertNil,  { 1 } )
+        lu.assertError( assertTrue, false)
+        lu.assertError( assertNil, 0)
+        lu.assertError( assertNil, "")
+        lu.assertError( assertNil, "abc")
+        lu.assertError( assertNil,  function() return true end )
+        lu.assertError( assertNil,  {} )
+        lu.assertError( assertNil,  { 1 } )
     end
 
     function TestLuaUnitAssertions:test_assertNotNil()
-        assertError( assertNotNil, nil)
+        lu.assertError( assertNotNil, nil)
         assertNotNil( false )
         assertNotNil( 0 )
         assertNotNil( "" )
@@ -687,78 +687,78 @@ TestLuaUnitAssertions = {} --class
         assertStrContains( 'abcdef', 'bcd' )
         assertStrContains( 'abcdef', 'abcdef' )
         assertStrContains( 'abc0', 0 )
-        assertError( assertStrContains, 'ABCDEF', 'abc' )
-        assertError( assertStrContains, '', 'abc' )
+        lu.assertError( assertStrContains, 'ABCDEF', 'abc' )
+        lu.assertError( assertStrContains, '', 'abc' )
         assertStrContains( 'abcdef', '' )
-        assertError( assertStrContains, 'abcdef', 'abcx' )
-        assertError( assertStrContains, 'abcdef', 'abcdefg' )
-        assertError( assertStrContains, 'abcdef', 0 ) 
-        assertError( assertStrContains, 'abcdef', {} ) 
-        assertError( assertStrContains, 'abcdef', nil ) 
+        lu.assertError( assertStrContains, 'abcdef', 'abcx' )
+        lu.assertError( assertStrContains, 'abcdef', 'abcdefg' )
+        lu.assertError( assertStrContains, 'abcdef', 0 ) 
+        lu.assertError( assertStrContains, 'abcdef', {} ) 
+        lu.assertError( assertStrContains, 'abcdef', nil ) 
 
         assertStrContains( 'abcdef', 'abc', false )
         assertStrContains( 'abcdef', 'abc', true )
         assertStrContains( 'abcdef', 'a.c', true )
 
-        assertError( assertStrContains, 'abcdef', '.abc', true )
+        lu.assertError( assertStrContains, 'abcdef', '.abc', true )
     end
 
     function TestLuaUnitAssertions:test_assertStrIContains()
         assertStrIContains( 'ABcdEF', 'aBc' )
         assertStrIContains( 'abCDef', 'bcd' )
         assertStrIContains( 'abcdef', 'abcDef' )
-        assertError( assertStrIContains, '', 'aBc' )
+        lu.assertError( assertStrIContains, '', 'aBc' )
         assertStrIContains( 'abcDef', '' )
-        assertError( assertStrIContains, 'abcdef', 'abcx' )
-        assertError( assertStrIContains, 'abcdef', 'abcdefg' )
+        lu.assertError( assertStrIContains, 'abcdef', 'abcx' )
+        lu.assertError( assertStrIContains, 'abcdef', 'abcdefg' )
     end
 
     function TestLuaUnitAssertions:test_assertNotStrContains()
-        assertError( assertNotStrContains, 'abcdef', 'abc' )
-        assertError( assertNotStrContains, 'abcdef', 'bcd' )
-        assertError( assertNotStrContains, 'abcdef', 'abcdef' )
+        lu.assertError( assertNotStrContains, 'abcdef', 'abc' )
+        lu.assertError( assertNotStrContains, 'abcdef', 'bcd' )
+        lu.assertError( assertNotStrContains, 'abcdef', 'abcdef' )
         assertNotStrContains( '', 'abc' )
-        assertError( assertNotStrContains, 'abcdef', '' )
-        assertError( assertNotStrContains, 'abc0', 0 )
+        lu.assertError( assertNotStrContains, 'abcdef', '' )
+        lu.assertError( assertNotStrContains, 'abc0', 0 )
         assertNotStrContains( 'abcdef', 'abcx' )
         assertNotStrContains( 'abcdef', 'abcdefg' )
-        assertError( assertNotStrContains, 'abcdef', {} ) 
-        assertError( assertNotStrContains, 'abcdef', nil ) 
+        lu.assertError( assertNotStrContains, 'abcdef', {} ) 
+        lu.assertError( assertNotStrContains, 'abcdef', nil ) 
 
-        assertError( assertNotStrContains, 'abcdef', 'abc', false )
-        assertError( assertNotStrContains, 'abcdef', 'a.c', true )
+        lu.assertError( assertNotStrContains, 'abcdef', 'abc', false )
+        lu.assertError( assertNotStrContains, 'abcdef', 'a.c', true )
         assertNotStrContains( 'abcdef', 'a.cx', true )
     end
 
     function TestLuaUnitAssertions:test_assertNotStrIContains()
-        assertError( assertNotStrIContains, 'aBcdef', 'abc' )
-        assertError( assertNotStrIContains, 'abcdef', 'aBc' )
-        assertError( assertNotStrIContains, 'abcdef', 'bcd' )
-        assertError( assertNotStrIContains, 'abcdef', 'abcdef' )
+        lu.assertError( assertNotStrIContains, 'aBcdef', 'abc' )
+        lu.assertError( assertNotStrIContains, 'abcdef', 'aBc' )
+        lu.assertError( assertNotStrIContains, 'abcdef', 'bcd' )
+        lu.assertError( assertNotStrIContains, 'abcdef', 'abcdef' )
         assertNotStrIContains( '', 'abc' )
-        assertError( assertNotStrIContains, 'abcdef', '' )
-        assertError( assertNotStrIContains, 'abc0', 0 )
+        lu.assertError( assertNotStrIContains, 'abcdef', '' )
+        lu.assertError( assertNotStrIContains, 'abc0', 0 )
         assertNotStrIContains( 'abcdef', 'abcx' )
         assertNotStrIContains( 'abcdef', 'abcdefg' )
-        assertError( assertNotStrIContains, 'abcdef', {} ) 
-        assertError( assertNotStrIContains, 'abcdef', nil ) 
+        lu.assertError( assertNotStrIContains, 'abcdef', {} ) 
+        lu.assertError( assertNotStrIContains, 'abcdef', nil ) 
     end
 
     function TestLuaUnitAssertions:test_assertStrMatches()
         assertStrMatches( 'abcdef', 'abcdef' )
         assertStrMatches( 'abcdef', '..cde.' )
-        assertError( assertStrMatches, 'abcdef', '..def')
-        assertError( assertStrMatches, 'abCDEf', '..cde.')
+        lu.assertError( assertStrMatches, 'abcdef', '..def')
+        lu.assertError( assertStrMatches, 'abCDEf', '..cde.')
         assertStrMatches( 'abcdef', 'bcdef', 2 )
         assertStrMatches( 'abcdef', 'bcde', 2, 5 )
         assertStrMatches( 'abcdef', 'b..e', 2, 5 )
         assertStrMatches( 'abcdef', 'ab..e', nil, 5 )
-        assertError( assertStrMatches, 'abcdef', '' )
-        assertError( assertStrMatches, '', 'abcdef' )
+        lu.assertError( assertStrMatches, 'abcdef', '' )
+        lu.assertError( assertStrMatches, '', 'abcdef' )
 
-        assertError( assertStrMatches, 'abcdef', 0 ) 
-        assertError( assertStrMatches, 'abcdef', {} ) 
-        assertError( assertStrMatches, 'abcdef', nil ) 
+        lu.assertError( assertStrMatches, 'abcdef', 0 ) 
+        lu.assertError( assertStrMatches, 'abcdef', {} ) 
+        lu.assertError( assertStrMatches, 'abcdef', nil ) 
     end
 
     function TestLuaUnitAssertions:test_assertItemsEquals()
@@ -770,15 +770,15 @@ TestLuaUnitAssertions = {} --class
         assertItemsEquals({one=1,two=2,three=3}, {a=1,b=2,c=3})
         assertItemsEquals({1,2,three=3}, {3,1,two=2})
 
-        assertError(assertItemsEquals, {1}, {})
-        assertError(assertItemsEquals, nil, {1,2,3})
-        assertError(assertItemsEquals, {1,2,3}, nil)
-        assertError(assertItemsEquals, {1,2,3,4}, {3,1,2})
-        assertError(assertItemsEquals, {1,2,3}, {3,1,2,4})
-        assertError(assertItemsEquals, {one=1,two=2,three=3,four=4}, {a=1,b=2,c=3})
-        assertError(assertItemsEquals, {one=1,two=2,three=3}, {a=1,b=2,c=3,d=4})
-        assertError(assertItemsEquals, {1,2,three=3}, {3,4,a=1,b=2})
-        assertError(assertItemsEquals, {1,2,three=3,four=4}, {3,a=1,b=2})
+        lu.assertError(assertItemsEquals, {1}, {})
+        lu.assertError(assertItemsEquals, nil, {1,2,3})
+        lu.assertError(assertItemsEquals, {1,2,3}, nil)
+        lu.assertError(assertItemsEquals, {1,2,3,4}, {3,1,2})
+        lu.assertError(assertItemsEquals, {1,2,3}, {3,1,2,4})
+        lu.assertError(assertItemsEquals, {one=1,two=2,three=3,four=4}, {a=1,b=2,c=3})
+        lu.assertError(assertItemsEquals, {one=1,two=2,three=3}, {a=1,b=2,c=3,d=4})
+        lu.assertError(assertItemsEquals, {1,2,three=3}, {3,4,a=1,b=2})
+        lu.assertError(assertItemsEquals, {1,2,three=3,four=4}, {3,a=1,b=2})
 
         assertItemsEquals({one=1,two={1,2},three=3}, {one={1,2},two=1,three=3})
         assertItemsEquals({one=1,
@@ -788,118 +788,118 @@ TestLuaUnitAssertions = {} --class
                          one=1,
                          three=3})
         -- itemsEquals is not recursive:
-        assertError( assertItemsEquals,{1,{2,1},3}, {3,1,{1,2}})
-        assertError( assertItemsEquals,{one=1,two={1,2},three=3}, {one={2,1},two=1,three=3})
-        assertError( assertItemsEquals,{one=1,two={1,{3,2,one=1}},three=3}, {two={{3,one=1,2},1},one=1,three=3})
-        assertError( assertItemsEquals,{one=1,two={1,{3,2,one=1}},three=3}, {two={{3,2,one=1},1},one=1,three=3})
+        lu.assertError( assertItemsEquals,{1,{2,1},3}, {3,1,{1,2}})
+        lu.assertError( assertItemsEquals,{one=1,two={1,2},three=3}, {one={2,1},two=1,three=3})
+        lu.assertError( assertItemsEquals,{one=1,two={1,{3,2,one=1}},three=3}, {two={{3,one=1,2},1},one=1,three=3})
+        lu.assertError( assertItemsEquals,{one=1,two={1,{3,2,one=1}},three=3}, {two={{3,2,one=1},1},one=1,three=3})
 
-        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three=2})
-        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,four=4})
-        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,'three'})
-        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,nil})
-        assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1})
+        lu.assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three=2})
+        lu.assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,four=4})
+        lu.assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,'three'})
+        lu.assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,nil})
+        lu.assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1})
     end
 
     function TestLuaUnitAssertions:test_assertIsNumber()
         assertIsNumber(1)
         assertIsNumber(1.4)
-        assertError(assertIsNumber, "hi there!")
-        assertError(assertIsNumber, nil)
-        assertError(assertIsNumber, {})
-        assertError(assertIsNumber, {1,2,3})
-        assertError(assertIsNumber, {1})
-        assertError(assertIsNumber, coroutine.create( function(v) local y=v+1 end ) )
-        assertError(assertIsTable, true)
+        lu.assertError(assertIsNumber, "hi there!")
+        lu.assertError(assertIsNumber, nil)
+        lu.assertError(assertIsNumber, {})
+        lu.assertError(assertIsNumber, {1,2,3})
+        lu.assertError(assertIsNumber, {1})
+        lu.assertError(assertIsNumber, coroutine.create( function(v) local y=v+1 end ) )
+        lu.assertError(assertIsTable, true)
     end
 
     function TestLuaUnitAssertions:test_assertIsString()
-        assertError(assertIsString, 1)
-        assertError(assertIsString, 1.4)
+        lu.assertError(assertIsString, 1)
+        lu.assertError(assertIsString, 1.4)
         assertIsString("hi there!")
-        assertError(assertIsString, nil)
-        assertError(assertIsString, {})
-        assertError(assertIsString, {1,2,3})
-        assertError(assertIsString, {1})
-        assertError(assertIsString, coroutine.create( function(v) local y=v+1 end ) )
-        assertError(assertIsTable, true)
+        lu.assertError(assertIsString, nil)
+        lu.assertError(assertIsString, {})
+        lu.assertError(assertIsString, {1,2,3})
+        lu.assertError(assertIsString, {1})
+        lu.assertError(assertIsString, coroutine.create( function(v) local y=v+1 end ) )
+        lu.assertError(assertIsTable, true)
     end
 
     function TestLuaUnitAssertions:test_assertIsTable()
-        assertError(assertIsTable, 1)
-        assertError(assertIsTable, 1.4)
-        assertError(assertIsTable, "hi there!")
-        assertError(assertIsTable, nil)
+        lu.assertError(assertIsTable, 1)
+        lu.assertError(assertIsTable, 1.4)
+        lu.assertError(assertIsTable, "hi there!")
+        lu.assertError(assertIsTable, nil)
         assertIsTable({})
         assertIsTable({1,2,3})
         assertIsTable({1})
-        assertError(assertIsTable, true)
-        assertError(assertIsTable, coroutine.create( function(v) local y=v+1 end ) )
+        lu.assertError(assertIsTable, true)
+        lu.assertError(assertIsTable, coroutine.create( function(v) local y=v+1 end ) )
     end
 
     function TestLuaUnitAssertions:test_assertIsBoolean()
-        assertError(assertIsBoolean, 1)
-        assertError(assertIsBoolean, 1.4)
-        assertError(assertIsBoolean, "hi there!")
-        assertError(assertIsBoolean, nil)
-        assertError(assertIsBoolean, {})
-        assertError(assertIsBoolean, {1,2,3})
-        assertError(assertIsBoolean, {1})
-        assertError(assertIsBoolean, coroutine.create( function(v) local y=v+1 end ) )
+        lu.assertError(assertIsBoolean, 1)
+        lu.assertError(assertIsBoolean, 1.4)
+        lu.assertError(assertIsBoolean, "hi there!")
+        lu.assertError(assertIsBoolean, nil)
+        lu.assertError(assertIsBoolean, {})
+        lu.assertError(assertIsBoolean, {1,2,3})
+        lu.assertError(assertIsBoolean, {1})
+        lu.assertError(assertIsBoolean, coroutine.create( function(v) local y=v+1 end ) )
         assertIsBoolean(true)
         assertIsBoolean(false)
     end
 
     function TestLuaUnitAssertions:test_assertIsNil()
-        assertError(assertIsNil, 1)
-        assertError(assertIsNil, 1.4)
-        assertError(assertIsNil, "hi there!")
+        lu.assertError(assertIsNil, 1)
+        lu.assertError(assertIsNil, 1.4)
+        lu.assertError(assertIsNil, "hi there!")
         assertIsNil(nil)
-        assertError(assertIsNil, {})
-        assertError(assertIsNil, {1,2,3})
-        assertError(assertIsNil, {1})
-        assertError(assertIsNil, false)
-        assertError(assertIsNil, coroutine.create( function(v) local y=v+1 end ) )
+        lu.assertError(assertIsNil, {})
+        lu.assertError(assertIsNil, {1,2,3})
+        lu.assertError(assertIsNil, {1})
+        lu.assertError(assertIsNil, false)
+        lu.assertError(assertIsNil, coroutine.create( function(v) local y=v+1 end ) )
     end
 
     function TestLuaUnitAssertions:test_assertIsFunction()
         f = function() return true end
 
-        assertError(assertIsFunction, 1)
-        assertError(assertIsFunction, 1.4)
-        assertError(assertIsFunction, "hi there!")
-        assertError(assertIsFunction, nil)
-        assertError(assertIsFunction, {})
-        assertError(assertIsFunction, {1,2,3})
-        assertError(assertIsFunction, {1})
-        assertError(assertIsFunction, false)
-        assertError(assertIsFunction, coroutine.create( function(v) local y=v+1 end ) )
+        lu.assertError(assertIsFunction, 1)
+        lu.assertError(assertIsFunction, 1.4)
+        lu.assertError(assertIsFunction, "hi there!")
+        lu.assertError(assertIsFunction, nil)
+        lu.assertError(assertIsFunction, {})
+        lu.assertError(assertIsFunction, {1,2,3})
+        lu.assertError(assertIsFunction, {1})
+        lu.assertError(assertIsFunction, false)
+        lu.assertError(assertIsFunction, coroutine.create( function(v) local y=v+1 end ) )
         assertIsFunction(f)
     end
 
     function TestLuaUnitAssertions:test_assertIsCoroutine()
-        assertError(assertIsCoroutine, 1)
-        assertError(assertIsCoroutine, 1.4)
-        assertError(assertIsCoroutine, "hi there!")
-        assertError(assertIsCoroutine, nil)
-        assertError(assertIsCoroutine, {})
-        assertError(assertIsCoroutine, {1,2,3})
-        assertError(assertIsCoroutine, {1})
-        assertError(assertIsCoroutine, false)
-        assertError(assertIsCoroutine, function(v) local y=v+1 end )
+        lu.assertError(assertIsCoroutine, 1)
+        lu.assertError(assertIsCoroutine, 1.4)
+        lu.assertError(assertIsCoroutine, "hi there!")
+        lu.assertError(assertIsCoroutine, nil)
+        lu.assertError(assertIsCoroutine, {})
+        lu.assertError(assertIsCoroutine, {1,2,3})
+        lu.assertError(assertIsCoroutine, {1})
+        lu.assertError(assertIsCoroutine, false)
+        lu.assertError(assertIsCoroutine, function(v) local y=v+1 end )
         assertIsCoroutine(coroutine.create( function(v) local y=v+1 end ) )
     end
 
     function TestLuaUnitAssertions:test_assertIsUserdata()
-        assertError(assertIsUserdata, 1)
-        assertError(assertIsUserdata, 1.4)
-        assertError(assertIsUserdata, "hi there!")
-        assertError(assertIsUserdata, nil)
-        assertError(assertIsUserdata, {})
-        assertError(assertIsUserdata, {1,2,3})
-        assertError(assertIsUserdata, {1})
-        assertError(assertIsUserdata, false)
-        assertError(assertIsUserdata, function(v) local y=v+1 end )
-        assertError(assertIsUserdata, coroutine.create( function(v) local y=v+1 end ) )
+        lu.assertError(assertIsUserdata, 1)
+        lu.assertError(assertIsUserdata, 1.4)
+        lu.assertError(assertIsUserdata, "hi there!")
+        lu.assertError(assertIsUserdata, nil)
+        lu.assertError(assertIsUserdata, {})
+        lu.assertError(assertIsUserdata, {1,2,3})
+        lu.assertError(assertIsUserdata, {1})
+        lu.assertError(assertIsUserdata, false)
+        lu.assertError(assertIsUserdata, function(v) local y=v+1 end )
+        lu.assertError(assertIsUserdata, coroutine.create( function(v) local y=v+1 end ) )
     end
 
     function TestLuaUnitAssertions:test_assertIs()
@@ -921,14 +921,14 @@ TestLuaUnitAssertions = {} --class
         assertIs(t1,t1)
         assertIs(t4,t4)
 
-        assertError(assertIs, 1, 2)
-        assertError(assertIs, 1.4, 1)
-        assertError(assertIs, "hi there!", "hola")
-        assertError(assertIs, nil, 1)
-        assertError(assertIs, {}, {})
-        assertError(assertIs, {1,2,3}, f)
-        assertError(assertIs, f, g)
-        assertError(assertIs, t2,t3 )
+        lu.assertError(assertIs, 1, 2)
+        lu.assertError(assertIs, 1.4, 1)
+        lu.assertError(assertIs, "hi there!", "hola")
+        lu.assertError(assertIs, nil, 1)
+        lu.assertError(assertIs, {}, {})
+        lu.assertError(assertIs, {1,2,3}, f)
+        lu.assertError(assertIs, f, g)
+        lu.assertError(assertIs, t2,t3 )
     end
 
     function TestLuaUnitAssertions:test_assertNotIs()
@@ -941,12 +941,12 @@ TestLuaUnitAssertions = {} --class
         local s1='toto'
         local s2='toto'
 
-        assertError( assertNotIs, 1,1 )
-        assertError( assertNotIs, f,f )
-        assertError( assertNotIs, t1,t1 )
-        assertError( assertNotIs, t4,t4)
-        assertError( assertNotIs, s1,s2 )
-        assertError( assertNotIs, 'toto', 'toto' )
+        lu.assertError( assertNotIs, 1,1 )
+        lu.assertError( assertNotIs, f,f )
+        lu.assertError( assertNotIs, t1,t1 )
+        lu.assertError( assertNotIs, t4,t4)
+        lu.assertError( assertNotIs, s1,s2 )
+        lu.assertError( assertNotIs, 'toto', 'toto' )
 
         assertNotIs(1, 2)
         assertNotIs(1.4, 1)
@@ -1056,12 +1056,12 @@ TestLuaUnitAssertionsError = {}
         has_error = not pcall( self.f, x )
         lu.assertEquals( has_error, false )
 
-        -- assertError is happy with f_with_error
-        assertError( self.f_with_error, x )
+        -- lu.assertError is happy with f_with_error
+        lu.assertError( self.f_with_error, x )
 
-        -- assertError is unhappy with f
-        has_error = not pcall( assertError, self.f, x )
-        assertError( has_error, true )
+        -- lu.assertError is unhappy with f
+        has_error = not pcall( lu.assertError, self.f, x )
+        lu.assertError( has_error, true )
 
         -- multiple arguments
         local function f_with_multi_arguments(a,b,c)
@@ -1069,39 +1069,39 @@ TestLuaUnitAssertionsError = {}
             error("three arguments not equal")
         end
 
-        assertError( f_with_multi_arguments, 1, 1, 3 )
-        assertError( f_with_multi_arguments, 1, 3, 1 )
-        assertError( f_with_multi_arguments, 3, 1, 1 )
+        lu.assertError( f_with_multi_arguments, 1, 1, 3 )
+        lu.assertError( f_with_multi_arguments, 1, 3, 1 )
+        lu.assertError( f_with_multi_arguments, 3, 1, 1 )
 
-        has_error = not pcall( assertError, f_with_multi_arguments, 1, 1, 1 )
+        has_error = not pcall( lu.assertError, f_with_multi_arguments, 1, 1, 1 )
         lu.assertEquals( has_error, true )
     end
 
     function TestLuaUnitAssertionsError:test_assertErrorMsgContains()
         local x = 1
-        assertError( assertErrorMsgContains, 'toto', self.f, x )
-        assertErrorMsgContains( 'is an err', self.f_with_error, x )
-        assertErrorMsgContains( 'This is an error', self.f_with_error, x )
-        assertError( assertErrorMsgContains, ' This is an error', self.f_with_error, x )
-        assertError( assertErrorMsgContains, 'This .. an error', self.f_with_error, x )
+        lu.assertError( lu.assertErrorMsgContains, 'toto', self.f, x )
+        lu.assertErrorMsgContains( 'is an err', self.f_with_error, x )
+        lu.assertErrorMsgContains( 'This is an error', self.f_with_error, x )
+        lu.assertError( lu.assertErrorMsgContains, ' This is an error', self.f_with_error, x )
+        lu.assertError( lu.assertErrorMsgContains, 'This .. an error', self.f_with_error, x )
     end
 
     function TestLuaUnitAssertionsError:test_assertErrorMsgEquals()
         local x = 1
-        assertError( assertErrorMsgEquals, 'toto', self.f, x )
-        assertError( assertErrorMsgEquals, 'is an err', self.f_with_error, x )
-        assertErrorMsgEquals( 'This is an error', self.f_with_error, x )
-        assertError( assertErrorMsgEquals, ' This is an error', self.f_with_error, x )
-        assertError( assertErrorMsgEquals, 'This .. an error', self.f_with_error, x )
+        lu.assertError( lu.assertErrorMsgEquals, 'toto', self.f, x )
+        lu.assertError( lu.assertErrorMsgEquals, 'is an err', self.f_with_error, x )
+        lu.assertErrorMsgEquals( 'This is an error', self.f_with_error, x )
+        lu.assertError( lu.assertErrorMsgEquals, ' This is an error', self.f_with_error, x )
+        lu.assertError( lu.assertErrorMsgEquals, 'This .. an error', self.f_with_error, x )
     end
 
     function TestLuaUnitAssertionsError:test_assertErrorMsgMatches()
         local x = 1
-        assertError( assertErrorMsgMatches, 'toto', self.f, x )
-        assertError( assertErrorMsgMatches, 'is an err', self.f_with_error, x )
-        assertErrorMsgMatches( 'This is an error', self.f_with_error, x )
-        assertErrorMsgMatches( 'This is .. error', self.f_with_error, x )
-        assertError( assertErrorMsgMatches, ' This is an error', self.f_with_error, x )
+        lu.assertError( lu.assertErrorMsgMatches, 'toto', self.f, x )
+        lu.assertError( lu.assertErrorMsgMatches, 'is an err', self.f_with_error, x )
+        lu.assertErrorMsgMatches( 'This is an error', self.f_with_error, x )
+        lu.assertErrorMsgMatches( 'This is .. error', self.f_with_error, x )
+        lu.assertError( lu.assertErrorMsgMatches, ' This is an error', self.f_with_error, x )
     end
 
 ------------------------------------------------------------------
@@ -1124,179 +1124,179 @@ TestLuaUnitErrorMsg = {} --class
     end
 
     function TestLuaUnitErrorMsg:test_assertEqualsMsg()
-        assertErrorMsgEquals( 'expected: 2, actual: 1', lu.assertEquals, 1, 2  )
-        assertErrorMsgEquals( 'expected: "exp"\nactual: "act"', lu.assertEquals, 'act', 'exp' )
-        assertErrorMsgEquals( 'expected: \n"exp\npxe"\nactual: \n"act\ntca"', lu.assertEquals, 'act\ntca', 'exp\npxe' )
-        assertErrorMsgEquals( 'expected: true, actual: false', lu.assertEquals, false, true )
-        assertErrorMsgEquals( 'expected: 1.2, actual: 1', lu.assertEquals, 1.0, 1.2)
-        assertErrorMsgMatches( 'expected: {1, 2, 3}\nactual: {3, 2, 1}', lu.assertEquals, {3,2,1}, {1,2,3} )
-        assertErrorMsgMatches( 'expected: {one=1, two=2}\nactual: {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
-        assertErrorMsgEquals( 'expected: 2, actual: nil', lu.assertEquals, nil, 2 )
+        lu.assertErrorMsgEquals( 'expected: 2, actual: 1', lu.assertEquals, 1, 2  )
+        lu.assertErrorMsgEquals( 'expected: "exp"\nactual: "act"', lu.assertEquals, 'act', 'exp' )
+        lu.assertErrorMsgEquals( 'expected: \n"exp\npxe"\nactual: \n"act\ntca"', lu.assertEquals, 'act\ntca', 'exp\npxe' )
+        lu.assertErrorMsgEquals( 'expected: true, actual: false', lu.assertEquals, false, true )
+        lu.assertErrorMsgEquals( 'expected: 1.2, actual: 1', lu.assertEquals, 1.0, 1.2)
+        lu.assertErrorMsgMatches( 'expected: {1, 2, 3}\nactual: {3, 2, 1}', lu.assertEquals, {3,2,1}, {1,2,3} )
+        lu.assertErrorMsgMatches( 'expected: {one=1, two=2}\nactual: {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
+        lu.assertErrorMsgEquals( 'expected: 2, actual: nil', lu.assertEquals, nil, 2 )
     end 
 
     function TestLuaUnitErrorMsg:test_assertEqualsOrderReversedMsg()
         lu.ORDER_ACTUAL_EXPECTED = false
-        assertErrorMsgEquals( 'expected: 1, actual: 2', lu.assertEquals, 1, 2  )
-        assertErrorMsgEquals( 'expected: "act"\nactual: "exp"', lu.assertEquals, 'act', 'exp' )
+        lu.assertErrorMsgEquals( 'expected: 1, actual: 2', lu.assertEquals, 1, 2  )
+        lu.assertErrorMsgEquals( 'expected: "act"\nactual: "exp"', lu.assertEquals, 'act', 'exp' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsMsg()
-        assertErrorMsgEquals('Values are not almost equal\nExpected: 1 with margin of 0.1, received: 2', assertAlmostEquals, 2, 1, 0.1 )
+        lu.assertErrorMsgEquals('Values are not almost equal\nExpected: 1 with margin of 0.1, received: 2', assertAlmostEquals, 2, 1, 0.1 )
     end
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsOrderReversedMsg()
         lu.ORDER_ACTUAL_EXPECTED = false
-        assertErrorMsgEquals('Values are not almost equal\nExpected: 2 with margin of 0.1, received: 1', assertAlmostEquals, 2, 1, 0.1 )
+        lu.assertErrorMsgEquals('Values are not almost equal\nExpected: 2 with margin of 0.1, received: 1', assertAlmostEquals, 2, 1, 0.1 )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
-        assertErrorMsgEquals('Values are almost equal\nExpected: 1 with a difference above margin of 0.2, received: 1.1', assertNotAlmostEquals, 1.1, 1, 0.2 )
+        lu.assertErrorMsgEquals('Values are almost equal\nExpected: 1 with a difference above margin of 0.2, received: 1.1', assertNotAlmostEquals, 1.1, 1, 0.2 )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
         lu.ORDER_ACTUAL_EXPECTED = false
-        assertErrorMsgEquals('Values are almost equal\nExpected: 1.1 with a difference above margin of 0.2, received: 1', assertNotAlmostEquals, 1.1, 1, 0.2 )
+        lu.assertErrorMsgEquals('Values are almost equal\nExpected: 1.1 with a difference above margin of 0.2, received: 1', assertNotAlmostEquals, 1.1, 1, 0.2 )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotEqualsMsg()
-        assertErrorMsgEquals( 'Received the not expected value: 1', assertNotEquals, 1, 1  )
-        assertErrorMsgMatches( 'Received the not expected value: {1, 2}', assertNotEquals, {1,2}, {1,2} )
-        assertErrorMsgEquals( 'Received the not expected value: nil', assertNotEquals, nil, nil )
+        lu.assertErrorMsgEquals( 'Received the not expected value: 1', assertNotEquals, 1, 1  )
+        lu.assertErrorMsgMatches( 'Received the not expected value: {1, 2}', assertNotEquals, {1,2}, {1,2} )
+        lu.assertErrorMsgEquals( 'Received the not expected value: nil', assertNotEquals, nil, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotEqualsOrderReversedMsg()
         lu.ORDER_ACTUAL_EXPECTED = false
-        assertErrorMsgEquals( 'Received the not expected value: 1', assertNotEquals, 1, 1  )
+        lu.assertErrorMsgEquals( 'Received the not expected value: 1', assertNotEquals, 1, 1  )
     end 
 
     function TestLuaUnitErrorMsg:test_assertTrueFalse()
-        assertErrorMsgEquals( 'expected: true, actual: false', assertTrue, false )
-        assertErrorMsgEquals( 'expected: true, actual: nil', assertTrue, nil )
-        assertErrorMsgEquals( 'expected: false, actual: true', assertFalse, true )
-        assertErrorMsgEquals( 'expected: false, actual: 0', assertFalse, 0)
-        assertErrorMsgMatches( 'expected: false, actual: {}', assertFalse, {})
-        assertErrorMsgEquals( 'expected: false, actual: "abc"', assertFalse, 'abc')
-        assertErrorMsgContains( 'expected: false, actual: function', assertFalse, function () end )
+        lu.assertErrorMsgEquals( 'expected: true, actual: false', assertTrue, false )
+        lu.assertErrorMsgEquals( 'expected: true, actual: nil', assertTrue, nil )
+        lu.assertErrorMsgEquals( 'expected: false, actual: true', assertFalse, true )
+        lu.assertErrorMsgEquals( 'expected: false, actual: 0', assertFalse, 0)
+        lu.assertErrorMsgMatches( 'expected: false, actual: {}', assertFalse, {})
+        lu.assertErrorMsgEquals( 'expected: false, actual: "abc"', assertFalse, 'abc')
+        lu.assertErrorMsgContains( 'expected: false, actual: function', assertFalse, function () end )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNil()
-        assertErrorMsgEquals( 'expected: nil, actual: false', assertNil, false )
-        assertErrorMsgEquals( 'expected non nil value, received nil', assertNotNil, nil )
+        lu.assertErrorMsgEquals( 'expected: nil, actual: false', assertNil, false )
+        lu.assertErrorMsgEquals( 'expected non nil value, received nil', assertNotNil, nil )
     end
 
     function TestLuaUnitErrorMsg:test_assertStrContains()
-        assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )
-        assertErrorMsgEquals( 'Error, substring "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc' )
-        assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx' )
+        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )
+        lu.assertErrorMsgEquals( 'Error, substring "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc' )
+        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx' )
 
-        assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx', false )
-        assertErrorMsgEquals( 'Error, substring "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc', false )
-        assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx', false )
+        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx', false )
+        lu.assertErrorMsgEquals( 'Error, substring "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc', false )
+        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx', false )
 
-        assertErrorMsgEquals( 'Error, regexp "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx', true )
-        assertErrorMsgEquals( 'Error, regexp "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc', true )
-        assertErrorMsgEquals( 'Error, regexp "xxx" was not found in string ""', assertStrContains, '', 'xxx', true )
+        lu.assertErrorMsgEquals( 'Error, regexp "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx', true )
+        lu.assertErrorMsgEquals( 'Error, regexp "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc', true )
+        lu.assertErrorMsgEquals( 'Error, regexp "xxx" was not found in string ""', assertStrContains, '', 'xxx', true )
 
     end 
 
     function TestLuaUnitErrorMsg:test_assertStrIContains()
-        assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )
-        assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx' )
+        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )
+        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotStrContains()
-        assertErrorMsgEquals( 'Error, substring "abc" was found in string "abcdef"', assertNotStrContains, 'abcdef', 'abc' )
-        assertErrorMsgEquals( 'Error, substring "abc" was found in string "abcdef"', assertNotStrContains, 'abcdef', 'abc', false )
-        assertErrorMsgEquals( 'Error, regexp "..." was found in string "abcdef"', assertNotStrContains, 'abcdef', '...', true)
+        lu.assertErrorMsgEquals( 'Error, substring "abc" was found in string "abcdef"', assertNotStrContains, 'abcdef', 'abc' )
+        lu.assertErrorMsgEquals( 'Error, substring "abc" was found in string "abcdef"', assertNotStrContains, 'abcdef', 'abc', false )
+        lu.assertErrorMsgEquals( 'Error, regexp "..." was found in string "abcdef"', assertNotStrContains, 'abcdef', '...', true)
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotStrIContains()
-        assertErrorMsgEquals( 'Error, substring "aBc" was found (case insensitively) in string "abcdef"', assertNotStrIContains, 'abcdef', 'aBc' )
-        assertErrorMsgEquals( 'Error, substring "abc" was found (case insensitively) in string "abcdef"', assertNotStrIContains, 'abcdef', 'abc' )
+        lu.assertErrorMsgEquals( 'Error, substring "aBc" was found (case insensitively) in string "abcdef"', assertNotStrIContains, 'abcdef', 'aBc' )
+        lu.assertErrorMsgEquals( 'Error, substring "abc" was found (case insensitively) in string "abcdef"', assertNotStrIContains, 'abcdef', 'abc' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertStrMatches()
-        assertErrorMsgEquals('Error, pattern "xxx" was not matched by string "abcdef"', assertStrMatches, 'abcdef', 'xxx' )
+        lu.assertErrorMsgEquals('Error, pattern "xxx" was not matched by string "abcdef"', assertStrMatches, 'abcdef', 'xxx' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsNumber()
-        assertErrorMsgEquals( 'Expected: a number value, actual: type string, value "abc"', assertIsNumber, 'abc' )
-        assertErrorMsgEquals( 'Expected: a number value, actual: type nil, value nil', assertIsNumber, nil )
+        lu.assertErrorMsgEquals( 'Expected: a number value, actual: type string, value "abc"', assertIsNumber, 'abc' )
+        lu.assertErrorMsgEquals( 'Expected: a number value, actual: type nil, value nil', assertIsNumber, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsString()
-        assertErrorMsgEquals( 'Expected: a string value, actual: type number, value 1.2', assertIsString, 1.2 )
-        assertErrorMsgEquals( 'Expected: a string value, actual: type nil, value nil', assertIsString, nil )
+        lu.assertErrorMsgEquals( 'Expected: a string value, actual: type number, value 1.2', assertIsString, 1.2 )
+        lu.assertErrorMsgEquals( 'Expected: a string value, actual: type nil, value nil', assertIsString, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsTable()
-        assertErrorMsgEquals( 'Expected: a table value, actual: type number, value 1.2', assertIsTable, 1.2 )
-        assertErrorMsgEquals( 'Expected: a table value, actual: type nil, value nil', assertIsTable, nil )
+        lu.assertErrorMsgEquals( 'Expected: a table value, actual: type number, value 1.2', assertIsTable, 1.2 )
+        lu.assertErrorMsgEquals( 'Expected: a table value, actual: type nil, value nil', assertIsTable, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsBoolean()
-        assertErrorMsgEquals( 'Expected: a boolean value, actual: type number, value 1.2', assertIsBoolean, 1.2 )
-        assertErrorMsgEquals( 'Expected: a boolean value, actual: type nil, value nil', assertIsBoolean, nil )
+        lu.assertErrorMsgEquals( 'Expected: a boolean value, actual: type number, value 1.2', assertIsBoolean, 1.2 )
+        lu.assertErrorMsgEquals( 'Expected: a boolean value, actual: type nil, value nil', assertIsBoolean, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsFunction()
-        assertErrorMsgEquals( 'Expected: a function value, actual: type number, value 1.2', assertIsFunction, 1.2 )
-        assertErrorMsgEquals( 'Expected: a function value, actual: type nil, value nil', assertIsFunction, nil )
+        lu.assertErrorMsgEquals( 'Expected: a function value, actual: type number, value 1.2', assertIsFunction, 1.2 )
+        lu.assertErrorMsgEquals( 'Expected: a function value, actual: type nil, value nil', assertIsFunction, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsCoroutine()
-        assertErrorMsgEquals( 'Expected: a thread value, actual: type number, value 1.2', assertIsCoroutine, 1.2 )
-        assertErrorMsgEquals( 'Expected: a thread value, actual: type nil, value nil', assertIsCoroutine, nil )
+        lu.assertErrorMsgEquals( 'Expected: a thread value, actual: type number, value 1.2', assertIsCoroutine, 1.2 )
+        lu.assertErrorMsgEquals( 'Expected: a thread value, actual: type nil, value nil', assertIsCoroutine, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsUserdata()
-        assertErrorMsgEquals( 'Expected: a userdata value, actual: type number, value 1.2', assertIsUserdata, 1.2 )
-        assertErrorMsgEquals( 'Expected: a userdata value, actual: type nil, value nil', assertIsUserdata, nil )
+        lu.assertErrorMsgEquals( 'Expected: a userdata value, actual: type number, value 1.2', assertIsUserdata, 1.2 )
+        lu.assertErrorMsgEquals( 'Expected: a userdata value, actual: type nil, value nil', assertIsUserdata, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIs()
-        assertErrorMsgEquals( 'Expected object and actual object are not the same\nExpected: 1, actual: 2', assertIs, 2, 1 )
+        lu.assertErrorMsgEquals( 'Expected object and actual object are not the same\nExpected: 1, actual: 2', assertIs, 2, 1 )
         lu.ORDER_ACTUAL_EXPECTED = false
-        assertErrorMsgEquals( 'Expected object and actual object are not the same\nExpected: 2, actual: 1', assertIs, 2, 1 )
+        lu.assertErrorMsgEquals( 'Expected object and actual object are not the same\nExpected: 2, actual: 1', assertIs, 2, 1 )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIs()
         local v = {1,2}
-        assertErrorMsgMatches( 'Expected object and actual object are the same object: {1, 2}', assertNotIs, v, v )
+        lu.assertErrorMsgMatches( 'Expected object and actual object are the same object: {1, 2}', assertNotIs, v, v )
     end 
 
     function TestLuaUnitErrorMsg:test_assertItemsEquals()
-        assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: {one=2, two=3}\nActual: {1, 2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
+        lu.assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: {one=2, two=3}\nActual: {1, 2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
     end 
 
     function TestLuaUnitErrorMsg:test_assertError()
-        assertErrorMsgEquals('Expected an error when calling function but no error generated' , assertError, function( v ) local y = v+1 end, 3 )
+        lu.assertErrorMsgEquals('Expected an error when calling function but no error generated' , lu.assertError, function( v ) local y = v+1 end, 3 )
     end 
 
     function TestLuaUnitErrorMsg:test_assertErrorMsg()
-        assertErrorMsgEquals('No error generated when calling function but expected error: "bla bla bla"' , assertErrorMsgEquals, 'bla bla bla', function( v ) local y = v+1 end, 3 )
-        assertErrorMsgEquals('No error generated when calling function but expected error containing: "bla bla bla"' , assertErrorMsgContains, 'bla bla bla', function( v ) local y = v+1 end, 3 )
-        assertErrorMsgEquals('No error generated when calling function but expected error matching: "bla bla bla"' , assertErrorMsgMatches, 'bla bla bla', function( v ) local y = v+1 end, 3 )
+        lu.assertErrorMsgEquals('No error generated when calling function but expected error: "bla bla bla"' , lu.assertErrorMsgEquals, 'bla bla bla', function( v ) local y = v+1 end, 3 )
+        lu.assertErrorMsgEquals('No error generated when calling function but expected error containing: "bla bla bla"' , lu.assertErrorMsgContains, 'bla bla bla', function( v ) local y = v+1 end, 3 )
+        lu.assertErrorMsgEquals('No error generated when calling function but expected error matching: "bla bla bla"' , lu.assertErrorMsgMatches, 'bla bla bla', function( v ) local y = v+1 end, 3 )
 
-        assertErrorMsgEquals('Exact error message expected: "bla bla bla"\nError message received: "toto xxx"\n' , assertErrorMsgEquals, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
-        assertErrorMsgEquals('Error message does not contain: "bla bla bla"\nError message received: "toto xxx"\n' , assertErrorMsgContains, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
-        assertErrorMsgEquals('Error message does not match: "bla bla bla"\nError message received: "toto xxx"\n' , assertErrorMsgMatches, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+        lu.assertErrorMsgEquals('Exact error message expected: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgEquals, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+        lu.assertErrorMsgEquals('Error message does not contain: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgContains, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+        lu.assertErrorMsgEquals('Error message does not match: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgMatches, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
 
     end 
 
     function TestLuaUnitErrorMsg:test_printTableWithRef()
         lu.PRINT_TABLE_REF_IN_ERROR_MSG = true
-        assertErrorMsgMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2}', assertNotEquals, {1,2}, {1,2} )
+        lu.assertErrorMsgMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2}', assertNotEquals, {1,2}, {1,2} )
         -- trigger multiline prettystr
-        assertErrorMsgMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2, 3, 4}', assertNotEquals, {1,2,3,4}, {1,2,3,4} )
-        assertErrorMsgMatches( 'expected: false, actual: <table: 0?x?[%x]+> {}', assertFalse, {})
+        lu.assertErrorMsgMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2, 3, 4}', assertNotEquals, {1,2,3,4}, {1,2,3,4} )
+        lu.assertErrorMsgMatches( 'expected: false, actual: <table: 0?x?[%x]+> {}', assertFalse, {})
         local v = {1,2}
-        assertErrorMsgMatches( 'Expected object and actual object are the same object: <table: 0?x?[%x]+> {1, 2}', assertNotIs, v, v )
-        assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: <table: 0?x?[%x]+> {one=2, two=3}\nActual: <table: 0?x?[%x]+> {1, 2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
-        assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', lu.assertEquals, {3,2,1}, {1,2,3} )
+        lu.assertErrorMsgMatches( 'Expected object and actual object are the same object: <table: 0?x?[%x]+> {1, 2}', assertNotIs, v, v )
+        lu.assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: <table: 0?x?[%x]+> {one=2, two=3}\nActual: <table: 0?x?[%x]+> {1, 2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
+        lu.assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', lu.assertEquals, {3,2,1}, {1,2,3} )
         -- trigger multiline prettystr
-        assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3, 4}\nactual: <table: 0?x?[%x]+> {3, 2, 1, 4}', lu.assertEquals, {3,2,1,4}, {1,2,3,4} )
-        assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {one=1, two=2}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
+        lu.assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3, 4}\nactual: <table: 0?x?[%x]+> {3, 2, 1, 4}', lu.assertEquals, {3,2,1,4}, {1,2,3,4} )
+        lu.assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {one=1, two=2}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
     end
 
 ------------------------------------------------------------------
@@ -1318,7 +1318,7 @@ MyTestToto2 = {} --class
 
 MyTestWithFailures = {} --class
     function MyTestWithFailures:testWithFailure1() lu.assertEquals(1, 2) end
-    function MyTestWithFailures:testWithFailure2() assertError( function() end ) end
+    function MyTestWithFailures:testWithFailure2() lu.assertError( function() end ) end
     function MyTestWithFailures:testOk() end
 
 MyTestOk = {} --class
