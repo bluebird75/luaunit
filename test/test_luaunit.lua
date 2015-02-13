@@ -635,40 +635,40 @@ TestLuaUnitAssertions = {} --class
     end
 
     function TestLuaUnitAssertions:test_assertTrue()
-        assertTrue(true)
-        lu.assertError( assertTrue, false)
-        assertTrue(0)
-        assertTrue(1)
-        assertTrue("")
-        assertTrue("abc")
-        lu.assertError( assertTrue, nil )
-        assertTrue( function() return true end )
-        assertTrue( {} )
-        assertTrue( { 1 } )
+        lu.assertTrue(true)
+        lu.assertError( lu.assertTrue, false)
+        lu.assertTrue(0)
+        lu.assertTrue(1)
+        lu.assertTrue("")
+        lu.assertTrue("abc")
+        lu.assertError( lu.assertTrue, nil )
+        lu.assertTrue( function() return true end )
+        lu.assertTrue( {} )
+        lu.assertTrue( { 1 } )
     end
 
     function TestLuaUnitAssertions:test_assertFalse()
-        assertFalse(false)
-        lu.assertError( assertFalse, true)
-        assertFalse( nil )
-        lu.assertError( assertFalse, 0 )
-        lu.assertError( assertFalse, 1 )
-        lu.assertError( assertFalse, "" )
-        lu.assertError( assertFalse, "abc" )
-        lu.assertError( assertFalse, function() return true end )
-        lu.assertError( assertFalse, {} )
-        lu.assertError( assertFalse, { 1 } )
+        lu.assertFalse(false)
+        lu.assertError( lu.assertFalse, true)
+        lu.assertFalse( nil )
+        lu.assertError( lu.assertFalse, 0 )
+        lu.assertError( lu.assertFalse, 1 )
+        lu.assertError( lu.assertFalse, "" )
+        lu.assertError( lu.assertFalse, "abc" )
+        lu.assertError( lu.assertFalse, function() return true end )
+        lu.assertError( lu.assertFalse, {} )
+        lu.assertError( lu.assertFalse, { 1 } )
     end
 
     function TestLuaUnitAssertions:test_assertNil()
-        assertNil(nil)
-        lu.assertError( assertTrue, false)
-        lu.assertError( assertNil, 0)
-        lu.assertError( assertNil, "")
-        lu.assertError( assertNil, "abc")
-        lu.assertError( assertNil,  function() return true end )
-        lu.assertError( assertNil,  {} )
-        lu.assertError( assertNil,  { 1 } )
+        lu.assertNil(nil)
+        lu.assertError( lu.assertTrue, false)
+        lu.assertError( lu.assertNil, 0)
+        lu.assertError( lu.assertNil, "")
+        lu.assertError( lu.assertNil, "abc")
+        lu.assertError( lu.assertNil,  function() return true end )
+        lu.assertError( lu.assertNil,  {} )
+        lu.assertError( lu.assertNil,  { 1 } )
     end
 
     function TestLuaUnitAssertions:test_assertNotNil()
@@ -1170,17 +1170,17 @@ TestLuaUnitErrorMsg = {} --class
     end 
 
     function TestLuaUnitErrorMsg:test_assertTrueFalse()
-        lu.assertErrorMsgEquals( 'expected: true, actual: false', assertTrue, false )
-        lu.assertErrorMsgEquals( 'expected: true, actual: nil', assertTrue, nil )
-        lu.assertErrorMsgEquals( 'expected: false, actual: true', assertFalse, true )
-        lu.assertErrorMsgEquals( 'expected: false, actual: 0', assertFalse, 0)
-        lu.assertErrorMsgMatches( 'expected: false, actual: {}', assertFalse, {})
-        lu.assertErrorMsgEquals( 'expected: false, actual: "abc"', assertFalse, 'abc')
-        lu.assertErrorMsgContains( 'expected: false, actual: function', assertFalse, function () end )
+        lu.assertErrorMsgEquals( 'expected: true, actual: false', lu.assertTrue, false )
+        lu.assertErrorMsgEquals( 'expected: true, actual: nil', lu.assertTrue, nil )
+        lu.assertErrorMsgEquals( 'expected: false, actual: true', lu.assertFalse, true )
+        lu.assertErrorMsgEquals( 'expected: false, actual: 0', lu.assertFalse, 0)
+        lu.assertErrorMsgMatches( 'expected: false, actual: {}', lu.assertFalse, {})
+        lu.assertErrorMsgEquals( 'expected: false, actual: "abc"', lu.assertFalse, 'abc')
+        lu.assertErrorMsgContains( 'expected: false, actual: function', lu.assertFalse, function () end )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNil()
-        lu.assertErrorMsgEquals( 'expected: nil, actual: false', assertNil, false )
+        lu.assertErrorMsgEquals( 'expected: nil, actual: false', lu.assertNil, false )
         lu.assertErrorMsgEquals( 'expected non nil value, received nil', lu.assertNotNil, nil )
     end
 
@@ -1289,7 +1289,7 @@ TestLuaUnitErrorMsg = {} --class
         lu.assertErrorMsgMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2}', lu.assertNotEquals, {1,2}, {1,2} )
         -- trigger multiline prettystr
         lu.assertErrorMsgMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2, 3, 4}', lu.assertNotEquals, {1,2,3,4}, {1,2,3,4} )
-        lu.assertErrorMsgMatches( 'expected: false, actual: <table: 0?x?[%x]+> {}', assertFalse, {})
+        lu.assertErrorMsgMatches( 'expected: false, actual: <table: 0?x?[%x]+> {}', lu.assertFalse, {})
         local v = {1,2}
         lu.assertErrorMsgMatches( 'Expected object and actual object are the same object: <table: 0?x?[%x]+> {1, 2}', lu.assertNotIs, v, v )
         lu.assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: <table: 0?x?[%x]+> {one=2, two=3}\nActual: <table: 0?x?[%x]+> {1, 2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
@@ -1676,8 +1676,8 @@ TestLuaUnitResults = {} -- class
     function TestLuaUnitResults:test_nodeStatus()
         es = lu.NodeStatus:new()
         lu.assertEquals( es.status, lu.NodeStatus.PASS )
-        assertNil( es.msg )
-        assertNil( es.stackTrace )
+        lu.assertNil( es.msg )
+        lu.assertNil( es.stackTrace )
 
         es:fail( 'msgToto', 'stackTraceToto' )
         lu.assertEquals( es.status, lu.NodeStatus.FAIL )
@@ -1686,13 +1686,13 @@ TestLuaUnitResults = {} -- class
 
         es2 = lu.NodeStatus:new()
         lu.assertEquals( es2.status, lu.NodeStatus.PASS )
-        assertNil( es2.msg )
-        assertNil( es2.stackTrace )
+        lu.assertNil( es2.msg )
+        lu.assertNil( es2.stackTrace )
 
         es:pass()
         lu.assertEquals( es.status, lu.NodeStatus.PASS )
-        assertNil( es.msg )
-        assertNil( es.stackTrace )
+        lu.assertNil( es.msg )
+        lu.assertNil( es.stackTrace )
 
     end
 
