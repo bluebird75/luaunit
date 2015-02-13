@@ -47,17 +47,17 @@ TestMock = {}
         m = Mock:new()
         m.titi( 42 )
         m.toto( 33, "abc", { 21} )
-        assertEquals(  m.calls[1][1], 'titi' )
-        assertEquals(  m.calls[1][2], 42 )
-        assertEquals( #m.calls[1], 2 )
+        lu.assertEquals(  m.calls[1][1], 'titi' )
+        lu.assertEquals(  m.calls[1][2], 42 )
+        lu.assertEquals( #m.calls[1], 2 )
 
-        assertEquals(  m.calls[2][1], 'toto' )
-        assertEquals(  m.calls[2][2], 33 )
-        assertEquals(  m.calls[2][3], 'abc' )
-        assertEquals(  m.calls[2][4][1], 21 )
-        assertEquals( #m.calls[2], 4 )
+        lu.assertEquals(  m.calls[2][1], 'toto' )
+        lu.assertEquals(  m.calls[2][2], 33 )
+        lu.assertEquals(  m.calls[2][3], 'abc' )
+        lu.assertEquals(  m.calls[2][4][1], 21 )
+        lu.assertEquals( #m.calls[2], 4 )
 
-        assertEquals( #m.calls, 2 )
+        lu.assertEquals( #m.calls, 2 )
     end
 
 ------------------------------------------------------------------
@@ -72,9 +72,9 @@ TestLuaUnitUtilities = {} --class
 
 
     function TestLuaUnitUtilities:test_genSortedIndex()
-        assertEquals( lu.private.__genSortedIndex( { 2, 5, 7} ), {1,2,3} )
-        assertEquals( lu.private.__genSortedIndex( { a='1', h='2', c='3' } ), {'a', 'c', 'h'} )
-        assertEquals( lu.private.__genSortedIndex( { 1, 'z', a='1', h='2', c='3' } ), { 1, 2, 'a', 'c', 'h' } )
+        lu.assertEquals( lu.private.__genSortedIndex( { 2, 5, 7} ), {1,2,3} )
+        lu.assertEquals( lu.private.__genSortedIndex( { a='1', h='2', c='3' } ), {'a', 'c', 'h'} )
+        lu.assertEquals( lu.private.__genSortedIndex( { 1, 'z', a='1', h='2', c='3' } ), { 1, 2, 'a', 'c', 'h' } )
     end
 
     function TestLuaUnitUtilities:test_sortedNextReturnsSortedKeyValues()
@@ -84,17 +84,17 @@ TestLuaUnitUtilities = {} --class
         t1['bbb'] = 'cba'
 
         k, v = lu.private.sortedNext( t1, nil )
-        assertEquals( k, 'aaa' )
-        assertEquals( v, 'abc' )
+        lu.assertEquals( k, 'aaa' )
+        lu.assertEquals( v, 'abc' )
         k, v = lu.private.sortedNext( t1, k )
-        assertEquals( k, 'bbb' )
-        assertEquals( v, 'cba' )
+        lu.assertEquals( k, 'bbb' )
+        lu.assertEquals( v, 'cba' )
         k, v = lu.private.sortedNext( t1, k )
-        assertEquals( k, 'ccc' )
-        assertEquals( v, 'def' )
+        lu.assertEquals( k, 'ccc' )
+        lu.assertEquals( v, 'def' )
         k, v = lu.private.sortedNext( t1, k )
-        assertEquals( k, nil )
-        assertEquals( v, nil )
+        lu.assertEquals( k, nil )
+        lu.assertEquals( v, nil )
     end
 
     function TestLuaUnitUtilities:test_sortedNextWorksTwiceOnTable()
@@ -106,8 +106,8 @@ TestLuaUnitUtilities = {} --class
         k, v = lu.private.sortedNext( t1, nil )
         k, v = lu.private.sortedNext( t1, k )
         k, v = lu.private.sortedNext( t1, nil )
-        assertEquals( k, 'aaa' )
-        assertEquals( v, 'abc' )
+        lu.assertEquals( k, 'aaa' )
+        lu.assertEquals( v, 'abc' )
     end
 
     function TestLuaUnitUtilities:test_sortedNextWorksOnTwoTables()
@@ -115,37 +115,37 @@ TestLuaUnitUtilities = {} --class
         t2 = { ['3'] = '33', ['1'] = '11' }
 
         k, v = lu.private.sortedNext( t1, nil )
-        assertEquals( k, 'aaa' )
-        assertEquals( v, 'abc' )
+        lu.assertEquals( k, 'aaa' )
+        lu.assertEquals( v, 'abc' )
 
         k, v = lu.private.sortedNext( t2, nil )
-        assertEquals( k, '1' )
-        assertEquals( v, '11' )
+        lu.assertEquals( k, '1' )
+        lu.assertEquals( v, '11' )
 
         k, v = lu.private.sortedNext( t1, 'aaa' )
-        assertEquals( k, 'ccc' )
-        assertEquals( v, 'def' )
+        lu.assertEquals( k, 'ccc' )
+        lu.assertEquals( v, 'def' )
 
         k, v = lu.private.sortedNext( t2, '1' )
-        assertEquals( k, '3' )
-        assertEquals( v, '33' )
+        lu.assertEquals( k, '3' )
+        lu.assertEquals( v, '33' )
     end
 
     function TestLuaUnitUtilities:test_strSplitOneCharDelim()
         t = lu.private.strsplit( '\n', '1\n22\n333\n' )
-        assertEquals( t[1], '1')
-        assertEquals( t[2], '22')
-        assertEquals( t[3], '333')
-        assertEquals( t[4], '')
-        assertEquals( #t, 4 )
+        lu.assertEquals( t[1], '1')
+        lu.assertEquals( t[2], '22')
+        lu.assertEquals( t[3], '333')
+        lu.assertEquals( t[4], '')
+        lu.assertEquals( #t, 4 )
     end
 
     function TestLuaUnitUtilities:test_strSplit3CharDelim()
         t = lu.private.strsplit( '2\n3', '1\n22\n332\n3' )
-        assertEquals( t[1], '1\n2')
-        assertEquals( t[2], '3')
-        assertEquals( t[3], '')
-        assertEquals( #t, 3 )
+        lu.assertEquals( t[1], '1\n2')
+        lu.assertEquals( t[2], '3')
+        lu.assertEquals( t[3], '')
+        lu.assertEquals( #t, 3 )
     end
 
     function TestLuaUnitUtilities:test_strSplitOnFailure()
@@ -153,7 +153,7 @@ TestLuaUnitUtilities = {} --class
         s2 = [[stack traceback:
     .\luaunit.lua:443: in function <.\luaunit.lua:442>
     [C]: in function 'error'
-    .\luaunit.lua:56: in function 'assertEquals'
+    .\luaunit.lua:56: in function 'lu.assertEquals'
     d:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:467: in function <d:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:466>
     [C]: in function 'xpcall'
     .\luaunit.lua:447: in function 'protectedCall'
@@ -167,40 +167,40 @@ TestLuaUnitUtilities = {} --class
 ]]
         local SPLITTER = '\n>----------<\n'
         local t = lu.private.strsplit( SPLITTER, s1..SPLITTER..s2)
-        assertEquals( t[1], s1)
-        assertEquals( t[2], s2)
-        assertEquals( #t, 2 )
+        lu.assertEquals( t[1], s1)
+        lu.assertEquals( t[2], s2)
+        lu.assertEquals( #t, 2 )
     end
 
     function TestLuaUnitUtilities:test_prefixString()
-        assertEquals( lu.private.prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
+        lu.assertEquals( lu.private.prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
 
 
     function TestLuaUnitUtilities:test_table_keytostring()
-        assertEquals( table.keytostring( 'a' ), 'a' )
-        assertEquals( table.keytostring( 'a0' ), 'a0' )
-        assertEquals( table.keytostring( 'a0!' ), '"a0!"' )
+        lu.assertEquals( table.keytostring( 'a' ), 'a' )
+        lu.assertEquals( table.keytostring( 'a0' ), 'a0' )
+        lu.assertEquals( table.keytostring( 'a0!' ), '"a0!"' )
     end
 
     function TestLuaUnitUtilities:test_prettystr()
-        assertEquals( lu.prettystr( 1 ), "1" )
-        assertEquals( lu.prettystr( 1.1 ), "1.1" )
-        assertEquals( lu.prettystr( 'abc' ), '"abc"' )
-        assertEquals( lu.prettystr( 'ab\ncd' ), '"ab\ncd"' )
-        assertEquals( lu.prettystr( 'ab\ncd', true ), '"ab\\ncd"' )
-        assertEquals( lu.prettystr( 'ab"cd' ), "'ab\"cd'" )
-        assertEquals( lu.prettystr( "ab'cd" ), '"ab\'cd"' )
+        lu.assertEquals( lu.prettystr( 1 ), "1" )
+        lu.assertEquals( lu.prettystr( 1.1 ), "1.1" )
+        lu.assertEquals( lu.prettystr( 'abc' ), '"abc"' )
+        lu.assertEquals( lu.prettystr( 'ab\ncd' ), '"ab\ncd"' )
+        lu.assertEquals( lu.prettystr( 'ab\ncd', true ), '"ab\\ncd"' )
+        lu.assertEquals( lu.prettystr( 'ab"cd' ), "'ab\"cd'" )
+        lu.assertEquals( lu.prettystr( "ab'cd" ), '"ab\'cd"' )
         assertStrContains( lu.prettystr( {1,2,3} ), "{1, 2, 3}" )
         assertStrContains( lu.prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
         local t1 = {1,2,3,4,5,6}
-        assertEquals(lu.prettystr(t1), "{1, 2, 3, 4, 5, 6}" )
+        lu.assertEquals(lu.prettystr(t1), "{1, 2, 3, 4, 5, 6}" )
 
         local t2 = {'aaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbb', 'ccccccccccccccccc', 'ddddddddddddd', 'eeeeeeeeeeeeeeeeee', 'ffffffffffffffff', 'ggggggggggg', 'hhhhhhhhhhhhhh'}
-        assertEquals(lu.prettystr(t2), table.concat( {
+        lu.assertEquals(lu.prettystr(t2), table.concat( {
             '{',
             '    "aaaaaaaaaaaaaaaaa",',
             '    "bbbbbbbbbbbbbbbbbbbb",',
@@ -214,7 +214,7 @@ TestLuaUnitUtilities = {} --class
         } , '\n' ) )
 
         local t2bis = { 1,2,3,'12345678901234567890123456789012345678901234567890123456789012345678901234567890', 4,5,6 }
-        assertEquals(lu.prettystr(t2bis), [[{
+        lu.assertEquals(lu.prettystr(t2bis), [[{
     1,
     2,
     3,
@@ -226,7 +226,7 @@ TestLuaUnitUtilities = {} --class
 
         local t3 = { l1a = { l2a = { l3a='012345678901234567890123456789012345678901234567890123456789' }, 
         l2b='bbb' }, l1b = 4}
-        assertEquals(lu.prettystr(t3), [[{
+        lu.assertEquals(lu.prettystr(t3), [[{
     l1a={
         l2a={l3a="012345678901234567890123456789012345678901234567890123456789"},
         l2b="bbb"
@@ -235,10 +235,10 @@ TestLuaUnitUtilities = {} --class
 }]] )
 
         local t4 = { a=1, b=2, c=3 }
-        assertEquals(lu.prettystr(t4), '{a=1, b=2, c=3}' )
+        lu.assertEquals(lu.prettystr(t4), '{a=1, b=2, c=3}' )
 
         local t5 = { t1, t2, t3 }
-        assertEquals( lu.prettystr(t5), [[{
+        lu.assertEquals( lu.prettystr(t5), [[{
     {1, 2, 3, 4, 5, 6},
     {
         "aaaaaaaaaaaaaaaaa",
@@ -260,7 +260,7 @@ TestLuaUnitUtilities = {} --class
 }]] )
 
         local t6 = { t1=t1, t2=t2, t3=t3, t4=t4 }
-        assertEquals(lu.prettystr(t6),[[{
+        lu.assertEquals(lu.prettystr(t6),[[{
     t1={1, 2, 3, 4, 5, 6},
     t2={
         "aaaaaaaaaaaaaaaaa",
@@ -306,111 +306,111 @@ TestLuaUnitUtilities = {} --class
     end
 
     function TestLuaUnitUtilities:test_IsFunction()
-        assertEquals( LuaUnit.isFunction( function (a,b) end ), true )
-        assertEquals( LuaUnit.isFunction( nil ), false )
+        lu.assertEquals( lu.LuaUnit.isFunction( function (a,b) end ), true )
+        lu.assertEquals( lu.LuaUnit.isFunction( nil ), false )
     end
 
     function TestLuaUnitUtilities:test_IsClassMethod()
-        assertEquals( LuaUnit.isClassMethod( 'toto' ), false )
-        assertEquals( LuaUnit.isClassMethod( 'toto.titi' ), true )
+        lu.assertEquals( lu.LuaUnit.isClassMethod( 'toto' ), false )
+        lu.assertEquals( lu.LuaUnit.isClassMethod( 'toto.titi' ), true )
     end
 
     function TestLuaUnitUtilities:test_splitClassMethod()
-        assertEquals( LuaUnit.splitClassMethod( 'toto' ), nil )
-        v1, v2 = LuaUnit.splitClassMethod( 'toto.titi' )
-        assertEquals( {v1, v2}, {'toto', 'titi'} )
+        lu.assertEquals( lu.LuaUnit.splitClassMethod( 'toto' ), nil )
+        v1, v2 = lu.LuaUnit.splitClassMethod( 'toto.titi' )
+        lu.assertEquals( {v1, v2}, {'toto', 'titi'} )
     end
 
     function TestLuaUnitUtilities:test_isTestName()
-        assertEquals( LuaUnit.isTestName( 'testToto' ), true )
-        assertEquals( LuaUnit.isTestName( 'TestToto' ), true )
-        assertEquals( LuaUnit.isTestName( 'TESTToto' ), true )
-        assertEquals( LuaUnit.isTestName( 'xTESTToto' ), false )
-        assertEquals( LuaUnit.isTestName( '' ), false )
+        lu.assertEquals( lu.LuaUnit.isTestName( 'testToto' ), true )
+        lu.assertEquals( lu.LuaUnit.isTestName( 'TestToto' ), true )
+        lu.assertEquals( lu.LuaUnit.isTestName( 'TESTToto' ), true )
+        lu.assertEquals( lu.LuaUnit.isTestName( 'xTESTToto' ), false )
+        lu.assertEquals( lu.LuaUnit.isTestName( '' ), false )
     end
 
     function TestLuaUnitUtilities:test_parseCmdLine()
         --test names
-        assertEquals( LuaUnit.parseCmdLine(), {} )
-        assertEquals( LuaUnit.parseCmdLine( { 'someTest' } ), { testNames={'someTest'} } )
-        assertEquals( LuaUnit.parseCmdLine( { 'someTest', 'someOtherTest' } ), { testNames={'someTest', 'someOtherTest'} } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine(), {} )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { 'someTest' } ), { testNames={'someTest'} } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { 'someTest', 'someOtherTest' } ), { testNames={'someTest', 'someOtherTest'} } )
 
         -- verbosity
-        assertEquals( LuaUnit.parseCmdLine( { '--verbose' } ), { verbosity=lu.VERBOSITY_VERBOSE } )
-        assertEquals( LuaUnit.parseCmdLine( { '-v' } ), { verbosity=lu.VERBOSITY_VERBOSE } )
-        assertEquals( LuaUnit.parseCmdLine( { '--quiet' } ), { verbosity=lu.VERBOSITY_QUIET } )
-        assertEquals( LuaUnit.parseCmdLine( { '-q' } ), { verbosity=lu.VERBOSITY_QUIET } )
-        assertEquals( LuaUnit.parseCmdLine( { '-v', '-q' } ), { verbosity=lu.VERBOSITY_QUIET } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--verbose' } ), { verbosity=lu.VERBOSITY_VERBOSE } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-v' } ), { verbosity=lu.VERBOSITY_VERBOSE } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--quiet' } ), { verbosity=lu.VERBOSITY_QUIET } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-q' } ), { verbosity=lu.VERBOSITY_QUIET } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-v', '-q' } ), { verbosity=lu.VERBOSITY_QUIET } )
 
         --output
-        assertEquals( LuaUnit.parseCmdLine( { '--output', 'toto' } ), { output='toto'} )
-        assertEquals( LuaUnit.parseCmdLine( { '-o', 'toto' } ), { output='toto'} )
-        assertErrorMsgContains( 'Missing argument after -o', LuaUnit.parseCmdLine, { '-o', } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--output', 'toto' } ), { output='toto'} )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-o', 'toto' } ), { output='toto'} )
+        assertErrorMsgContains( 'Missing argument after -o', lu.LuaUnit.parseCmdLine, { '-o', } )
 
         --name
-        assertEquals( LuaUnit.parseCmdLine( { '--name', 'toto' } ), { fname='toto'} )
-        assertEquals( LuaUnit.parseCmdLine( { '-n', 'toto' } ), { fname='toto'} )
-        assertErrorMsgContains( 'Missing argument after -n', LuaUnit.parseCmdLine, { '-n', } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--name', 'toto' } ), { fname='toto'} )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-n', 'toto' } ), { fname='toto'} )
+        assertErrorMsgContains( 'Missing argument after -n', lu.LuaUnit.parseCmdLine, { '-n', } )
 
         --patterns
-        assertEquals( LuaUnit.parseCmdLine( { '--pattern', 'toto' } ), { pattern={'toto'} } )
-        assertEquals( LuaUnit.parseCmdLine( { '-p', 'toto' } ), { pattern={'toto'} } )
-        assertEquals( LuaUnit.parseCmdLine( { '-p', 'titi', '-p', 'toto' } ), { pattern={'titi', 'toto'} } )
-        assertErrorMsgContains( 'Missing argument after -p', LuaUnit.parseCmdLine, { '-p', } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--pattern', 'toto' } ), { pattern={'toto'} } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'toto' } ), { pattern={'toto'} } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'titi', '-p', 'toto' } ), { pattern={'titi', 'toto'} } )
+        assertErrorMsgContains( 'Missing argument after -p', lu.LuaUnit.parseCmdLine, { '-p', } )
 
         --megamix
-        assertEquals( LuaUnit.parseCmdLine( { '-p', 'toto', 'titi', '-v', 'tata', '-o', 'tintin', '-p', 'tutu', 'prout', '-n', 'toto.xml' } ), 
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'toto', 'titi', '-v', 'tata', '-o', 'tintin', '-p', 'tutu', 'prout', '-n', 'toto.xml' } ), 
             { pattern={'toto', 'tutu'}, verbosity=lu.VERBOSITY_VERBOSE, output='tintin', testNames={'titi', 'tata', 'prout'}, fname='toto.xml' } )
 
-        assertErrorMsgContains( 'option: -x', LuaUnit.parseCmdLine, { '-x', } )
+        assertErrorMsgContains( 'option: -x', lu.LuaUnit.parseCmdLine, { '-x', } )
     end
 
     function TestLuaUnitUtilities:test_includePattern()
-        assertEquals( LuaUnit.patternInclude( nil, 'toto'), true )
-        assertEquals( LuaUnit.patternInclude( {}, 'toto'), false  )
-        assertEquals( LuaUnit.patternInclude( {'toto'}, 'toto'), true )
-        assertEquals( LuaUnit.patternInclude( {'toto'}, 'yyytotoxxx'), true )
-        assertEquals( LuaUnit.patternInclude( {'titi', 'toto'}, 'yyytotoxxx'), true )
-        assertEquals( LuaUnit.patternInclude( {'titi', 'to..'}, 'yyytoxxx'), true )
+        lu.assertEquals( lu.LuaUnit.patternInclude( nil, 'toto'), true )
+        lu.assertEquals( lu.LuaUnit.patternInclude( {}, 'toto'), false  )
+        lu.assertEquals( lu.LuaUnit.patternInclude( {'toto'}, 'toto'), true )
+        lu.assertEquals( lu.LuaUnit.patternInclude( {'toto'}, 'yyytotoxxx'), true )
+        lu.assertEquals( lu.LuaUnit.patternInclude( {'titi', 'toto'}, 'yyytotoxxx'), true )
+        lu.assertEquals( lu.LuaUnit.patternInclude( {'titi', 'to..'}, 'yyytoxxx'), true )
     end
 
     function TestLuaUnitUtilities:test_applyPatternFilter()
         myTestToto1Value = { 'MyTestToto1.test1', MyTestToto1 }
 
-        included, excluded = LuaUnit.applyPatternFilter( nil, { myTestToto1Value } )
-        assertEquals( excluded, {} )
-        assertEquals( included, { myTestToto1Value } )
+        included, excluded = lu.LuaUnit.applyPatternFilter( nil, { myTestToto1Value } )
+        lu.assertEquals( excluded, {} )
+        lu.assertEquals( included, { myTestToto1Value } )
 
-        included, excluded = LuaUnit.applyPatternFilter( {'T.to'}, { myTestToto1Value } )
-        assertEquals( excluded, {} )
-        assertEquals( included, { myTestToto1Value } )
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'T.to'}, { myTestToto1Value } )
+        lu.assertEquals( excluded, {} )
+        lu.assertEquals( included, { myTestToto1Value } )
 
-        included, excluded = LuaUnit.applyPatternFilter( {'T.ti'}, { myTestToto1Value } )
-        assertEquals( excluded, { myTestToto1Value } )
-        assertEquals( included, {} )
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'T.ti'}, { myTestToto1Value } )
+        lu.assertEquals( excluded, { myTestToto1Value } )
+        lu.assertEquals( included, {} )
     end
 
     function TestLuaUnitUtilities:test_strMatch()
-        assertEquals( lu.private.strMatch('toto', 't.t.'), true )
-        assertEquals( lu.private.strMatch('toto', 't.t.', 1, 4), true )
-        assertEquals( lu.private.strMatch('toto', 't.t.', 2, 5), false )
-        assertEquals( lu.private.strMatch('toto', '.t.t.'), false )
-        assertEquals( lu.private.strMatch('ototo', 't.t.'), false )
-        assertEquals( lu.private.strMatch('totot', 't.t.'), false )
-        assertEquals( lu.private.strMatch('ototot', 't.t.'), false )
-        assertEquals( lu.private.strMatch('ototot', 't.t.',2,3), false )
-        assertEquals( lu.private.strMatch('ototot', 't.t.',2,5), true  )
-        assertEquals( lu.private.strMatch('ototot', 't.t.',2,6), false )
+        lu.assertEquals( lu.private.strMatch('toto', 't.t.'), true )
+        lu.assertEquals( lu.private.strMatch('toto', 't.t.', 1, 4), true )
+        lu.assertEquals( lu.private.strMatch('toto', 't.t.', 2, 5), false )
+        lu.assertEquals( lu.private.strMatch('toto', '.t.t.'), false )
+        lu.assertEquals( lu.private.strMatch('ototo', 't.t.'), false )
+        lu.assertEquals( lu.private.strMatch('totot', 't.t.'), false )
+        lu.assertEquals( lu.private.strMatch('ototot', 't.t.'), false )
+        lu.assertEquals( lu.private.strMatch('ototot', 't.t.',2,3), false )
+        lu.assertEquals( lu.private.strMatch('ototot', 't.t.',2,5), true  )
+        lu.assertEquals( lu.private.strMatch('ototot', 't.t.',2,6), false )
     end
 
     function TestLuaUnitUtilities:test_expandOneClass()
         local result = {}
-        LuaUnit.expandOneClass( result, 'titi', {} )
-        assertEquals( result, {} )
+        lu.LuaUnit.expandOneClass( result, 'titi', {} )
+        lu.assertEquals( result, {} )
 
         result = {}
-        LuaUnit.expandOneClass( result, 'MyTestToto1', MyTestToto1 )
-        assertEquals( result, { 
+        lu.LuaUnit.expandOneClass( result, 'MyTestToto1', MyTestToto1 )
+        lu.assertEquals( result, { 
             {'MyTestToto1.test1', MyTestToto1 },
             {'MyTestToto1.test2', MyTestToto1 },
             {'MyTestToto1.test3', MyTestToto1 },
@@ -421,17 +421,17 @@ TestLuaUnitUtilities = {} --class
 
     function TestLuaUnitUtilities:test_expandClasses()
         local result = {}
-        result = LuaUnit.expandClasses( {} )
-        assertEquals( result, {} )
+        result = lu.LuaUnit.expandClasses( {} )
+        lu.assertEquals( result, {} )
 
-        result = LuaUnit.expandClasses( { { 'MyTestFunction', MyTestFunction } } )
-        assertEquals( result, { { 'MyTestFunction', MyTestFunction } } )
+        result = lu.LuaUnit.expandClasses( { { 'MyTestFunction', MyTestFunction } } )
+        lu.assertEquals( result, { { 'MyTestFunction', MyTestFunction } } )
 
-        result = LuaUnit.expandClasses( { { 'MyTestToto1.test1', MyTestToto1 } } )
-        assertEquals( result, { { 'MyTestToto1.test1', MyTestToto1 } } )
+        result = lu.LuaUnit.expandClasses( { { 'MyTestToto1.test1', MyTestToto1 } } )
+        lu.assertEquals( result, { { 'MyTestToto1.test1', MyTestToto1 } } )
 
-        result = LuaUnit.expandClasses( { { 'MyTestToto1', MyTestToto1 } } )
-        assertEquals( result, { 
+        result = lu.LuaUnit.expandClasses( { { 'MyTestToto1', MyTestToto1 } } )
+        lu.assertEquals( result, { 
             {'MyTestToto1.test1', MyTestToto1 },
             {'MyTestToto1.test2', MyTestToto1 },
             {'MyTestToto1.test3', MyTestToto1 },
@@ -441,24 +441,24 @@ TestLuaUnitUtilities = {} --class
     end
 
     function TestLuaUnitUtilities:test_xmlEscape()
-        assertEquals( lu.private.xmlEscape( 'abc' ), 'abc' )
-        assertEquals( lu.private.xmlEscape( 'a"bc' ), 'a&quot;bc' )
-        assertEquals( lu.private.xmlEscape( "a'bc" ), 'a&apos;bc' )
-        assertEquals( lu.private.xmlEscape( "a<b&c>" ), 'a&lt;b&amp;c&gt;' )
+        lu.assertEquals( lu.private.xmlEscape( 'abc' ), 'abc' )
+        lu.assertEquals( lu.private.xmlEscape( 'a"bc' ), 'a&quot;bc' )
+        lu.assertEquals( lu.private.xmlEscape( "a'bc" ), 'a&apos;bc' )
+        lu.assertEquals( lu.private.xmlEscape( "a<b&c>" ), 'a&lt;b&amp;c&gt;' )
     end
 
     function TestLuaUnitUtilities:test_xmlCDataEscape()
-        assertEquals( lu.private.xmlCDataEscape( 'abc' ), 'abc' )
-        assertEquals( lu.private.xmlCDataEscape( 'a"bc' ), 'a"bc' )
-        assertEquals( lu.private.xmlCDataEscape( "a'bc" ), "a'bc" )
-        assertEquals( lu.private.xmlCDataEscape( "a<b&c>" ), 'a<b&c>' )
-        assertEquals( lu.private.xmlCDataEscape( "a<b]]>--" ), 'a<b]]&gt;--' )
+        lu.assertEquals( lu.private.xmlCDataEscape( 'abc' ), 'abc' )
+        lu.assertEquals( lu.private.xmlCDataEscape( 'a"bc' ), 'a"bc' )
+        lu.assertEquals( lu.private.xmlCDataEscape( "a'bc" ), "a'bc" )
+        lu.assertEquals( lu.private.xmlCDataEscape( "a<b&c>" ), 'a<b&c>' )
+        lu.assertEquals( lu.private.xmlCDataEscape( "a<b]]>--" ), 'a<b]]&gt;--' )
     end
 
     function TestLuaUnitUtilities:test_hasNewline()
-        assertEquals( lu.private.hasNewLine(''), false )
-        assertEquals( lu.private.hasNewLine('abc'), false )
-        assertEquals( lu.private.hasNewLine('ab\nc'), true )
+        lu.assertEquals( lu.private.hasNewLine(''), false )
+        lu.assertEquals( lu.private.hasNewLine('abc'), false )
+        lu.assertEquals( lu.private.hasNewLine('ab\nc'), true )
     end
 
     function TestLuaUnitUtilities:test_stripStackTrace()
@@ -476,7 +476,7 @@ TestLuaUnitUtilities = {} --class
 
 
         local realStackTrace2=[[stack traceback:
-        ./luaunit.lua:545: in function 'assertEquals'
+        ./luaunit.lua:545: in function 'lu.assertEquals'
         example_with_luaunit.lua:58: in function 'TestToto.test7'
         ./luaunit.lua:1517: in function <./luaunit.lua:1517>
         [C]: in function 'xpcall'
@@ -506,17 +506,17 @@ TestLuaUnitUtilities = {} --class
 
         local expectedStackTrace=[[stack traceback:
         example_with_luaunit.lua:130: in function 'test2_withFailure']]
-        assertEquals( strippedStackTrace, expectedStackTrace )
+        lu.assertEquals( strippedStackTrace, expectedStackTrace )
 
         strippedStackTrace=lu.private.stripLuaunitTrace( realStackTrace2 )
         expectedStackTrace=[[stack traceback:
         example_with_luaunit.lua:58: in function 'TestToto.test7']]
-        assertEquals( strippedStackTrace, expectedStackTrace )
+        lu.assertEquals( strippedStackTrace, expectedStackTrace )
 
         strippedStackTrace=lu.private.stripLuaunitTrace( realStackTrace3 )
         expectedStackTrace=[[stack traceback:
         luaunit2/example_with_luaunit.lua:124: in function 'test1_withFailure']]
-        assertEquals( strippedStackTrace, expectedStackTrace )
+        lu.assertEquals( strippedStackTrace, expectedStackTrace )
 
 
     end
@@ -534,37 +534,37 @@ TestLuaUnitAssertions = {} --class
         f = function() return true end
         g = function() return true end
         
-        assertEquals( 1, 1 )
-        assertEquals( "abc", "abc" )
-        assertEquals( nil, nil )
-        assertEquals( true, true )
-        assertEquals( f, f)
-        assertEquals( {1,2,3}, {1,2,3})
-        assertEquals( {one=1,two=2,three=3}, {one=1,two=2,three=3})
-        assertEquals( {one=1,two=2,three=3}, {two=2,three=3,one=1})
-        assertEquals( {one=1,two={1,2},three=3}, {two={1,2},three=3,one=1})
-        assertEquals( {one=1,two={1,{2,nil}},three=3}, {two={1,{2,nil}},three=3,one=1})
-        assertEquals( {nil}, {nil} )
+        lu.assertEquals( 1, 1 )
+        lu.assertEquals( "abc", "abc" )
+        lu.assertEquals( nil, nil )
+        lu.assertEquals( true, true )
+        lu.assertEquals( f, f)
+        lu.assertEquals( {1,2,3}, {1,2,3})
+        lu.assertEquals( {one=1,two=2,three=3}, {one=1,two=2,three=3})
+        lu.assertEquals( {one=1,two=2,three=3}, {two=2,three=3,one=1})
+        lu.assertEquals( {one=1,two={1,2},three=3}, {two={1,2},three=3,one=1})
+        lu.assertEquals( {one=1,two={1,{2,nil}},three=3}, {two={1,{2,nil}},three=3,one=1})
+        lu.assertEquals( {nil}, {nil} )
 
-        assertError( assertEquals, 1, 2)
-        assertError( assertEquals, 1, "abc" )
-        assertError( assertEquals, 0, nil )
-        assertError( assertEquals, false, nil )
-        assertError( assertEquals, true, 1 )
-        assertError( assertEquals, f, 1 )
-        assertError( assertEquals, f, g )
-        assertError( assertEquals, {1,2,3}, {2,1,3} )
-        assertError( assertEquals, {1,2,3}, nil )
-        assertError( assertEquals, {1,2,3}, 1 )
-        assertError( assertEquals, {1,2,3}, true )
-        assertError( assertEquals, {1,2,3}, {one=1,two=2,three=3} )
-        assertError( assertEquals, {1,2,3}, {one=1,two=2,three=3,four=4} )
-        assertError( assertEquals, {one=1,two=2,three=3}, {2,1,3} )
-        assertError( assertEquals, {one=1,two=2,three=3}, nil )
-        assertError( assertEquals, {one=1,two=2,three=3}, 1 )
-        assertError( assertEquals, {one=1,two=2,three=3}, true )
-        assertError( assertEquals, {one=1,two=2,three=3}, {1,2,3} )
-        assertError( assertEquals, {one=1,two={1,2},three=3}, {two={2,1},three=3,one=1})
+        assertError( lu.assertEquals, 1, 2)
+        assertError( lu.assertEquals, 1, "abc" )
+        assertError( lu.assertEquals, 0, nil )
+        assertError( lu.assertEquals, false, nil )
+        assertError( lu.assertEquals, true, 1 )
+        assertError( lu.assertEquals, f, 1 )
+        assertError( lu.assertEquals, f, g )
+        assertError( lu.assertEquals, {1,2,3}, {2,1,3} )
+        assertError( lu.assertEquals, {1,2,3}, nil )
+        assertError( lu.assertEquals, {1,2,3}, 1 )
+        assertError( lu.assertEquals, {1,2,3}, true )
+        assertError( lu.assertEquals, {1,2,3}, {one=1,two=2,three=3} )
+        assertError( lu.assertEquals, {1,2,3}, {one=1,two=2,three=3,four=4} )
+        assertError( lu.assertEquals, {one=1,two=2,three=3}, {2,1,3} )
+        assertError( lu.assertEquals, {one=1,two=2,three=3}, nil )
+        assertError( lu.assertEquals, {one=1,two=2,three=3}, 1 )
+        assertError( lu.assertEquals, {one=1,two=2,three=3}, true )
+        assertError( lu.assertEquals, {one=1,two=2,three=3}, {1,2,3} )
+        assertError( lu.assertEquals, {one=1,two={1,2},three=3}, {two={2,1},three=3,one=1})
     end
 
     function TestLuaUnitAssertions:test_assertAlmostEquals()
@@ -959,39 +959,39 @@ TestLuaUnitAssertions = {} --class
     end
 
     function TestLuaUnitAssertions:test_assertTableNum()
-        assertEquals( 3, 3 )
+        lu.assertEquals( 3, 3 )
         assertNotEquals( 3, 4 )
-        assertEquals( {3}, {3} )
+        lu.assertEquals( {3}, {3} )
         assertNotEquals( {3}, 3 )
         assertNotEquals( {3}, {4} )
-        assertEquals( {x=1}, {x=1} )
+        lu.assertEquals( {x=1}, {x=1} )
         assertNotEquals( {x=1}, {x=2} )
         assertNotEquals( {x=1}, {y=1} )
     end
     function TestLuaUnitAssertions:test_assertTableStr()
-        assertEquals( '3', '3' )
+        lu.assertEquals( '3', '3' )
         assertNotEquals( '3', '4' )
-        assertEquals( {'3'}, {'3'} )
+        lu.assertEquals( {'3'}, {'3'} )
         assertNotEquals( {'3'}, '3' )
         assertNotEquals( {'3'}, {'4'} )
-        assertEquals( {x='1'}, {x='1'} )
+        lu.assertEquals( {x='1'}, {x='1'} )
         assertNotEquals( {x='1'}, {x='2'} )
         assertNotEquals( {x='1'}, {y='1'} )
     end
     function TestLuaUnitAssertions:test_assertTableLev2()
-        assertEquals( {x={'a'}}, {x={'a'}} )
+        lu.assertEquals( {x={'a'}}, {x={'a'}} )
         assertNotEquals( {x={'a'}}, {x={'b'}} )
         assertNotEquals( {x={'a'}}, {z={'a'}} )
-        assertEquals( {{x=1}}, {{x=1}} )
+        lu.assertEquals( {{x=1}}, {{x=1}} )
         assertNotEquals( {{x=1}}, {{y=1}} )
-        assertEquals( {{x='a'}}, {{x='a'}} )
+        lu.assertEquals( {{x='a'}}, {{x='a'}} )
         assertNotEquals( {{x='a'}}, {{x='b'}} )
     end
     function TestLuaUnitAssertions:test_assertTableList()
-        assertEquals( {3,4,5}, {3,4,5} )
+        lu.assertEquals( {3,4,5}, {3,4,5} )
         assertNotEquals( {3,4,5}, {3,4,6} )
         assertNotEquals( {3,4,5}, {3,5,4} )
-        assertEquals( {3,4,x=5}, {3,4,x=5} )
+        lu.assertEquals( {3,4,x=5}, {3,4,x=5} )
         assertNotEquals( {3,4,x=5}, {3,4,x=6} )
         assertNotEquals( {3,4,x=5}, {3,x=4,5} )
         assertNotEquals( {3,4,5}, {2,3,4,5} )
@@ -1000,34 +1000,34 @@ TestLuaUnitAssertions = {} --class
     end
 
     function TestLuaUnitAssertions:test_assertTableNil()
-        assertEquals( {3,4,5}, {3,4,5} )
+        lu.assertEquals( {3,4,5}, {3,4,5} )
         assertNotEquals( {3,4,5}, {nil,3,4,5} )
         assertNotEquals( {3,4,5}, {nil,4,5} )
-        assertEquals( {3,4,5}, {3,4,5,nil} ) -- lua quirk
+        lu.assertEquals( {3,4,5}, {3,4,5,nil} ) -- lua quirk
         assertNotEquals( {3,4,5}, {3,4,nil} )
         assertNotEquals( {3,4,5}, {3,nil,5} )
         assertNotEquals( {3,4,5}, {3,4,nil,5} )
     end
     
     function TestLuaUnitAssertions:test_assertTableNilFront()
-        assertEquals( {nil,4,5}, {nil,4,5} )
+        lu.assertEquals( {nil,4,5}, {nil,4,5} )
         assertNotEquals( {nil,4,5}, {nil,44,55} )
-        assertEquals( {nil,'4','5'}, {nil,'4','5'} )
+        lu.assertEquals( {nil,'4','5'}, {nil,'4','5'} )
         assertNotEquals( {nil,'4','5'}, {nil,'44','55'} )
-        assertEquals( {nil,{4,5}}, {nil,{4,5}} )
+        lu.assertEquals( {nil,{4,5}}, {nil,{4,5}} )
         assertNotEquals( {nil,{4,5}}, {nil,{44,55}} )
         assertNotEquals( {nil,{4}}, {nil,{44}} )
-        assertEquals( {nil,{x=4,5}}, {nil,{x=4,5}} )
-        assertEquals( {nil,{x=4,5}}, {nil,{5,x=4}} ) -- lua quirk
-        assertEquals( {nil,{x=4,y=5}}, {nil,{y=5,x=4}} ) -- lua quirk
+        lu.assertEquals( {nil,{x=4,5}}, {nil,{x=4,5}} )
+        lu.assertEquals( {nil,{x=4,5}}, {nil,{5,x=4}} ) -- lua quirk
+        lu.assertEquals( {nil,{x=4,y=5}}, {nil,{y=5,x=4}} ) -- lua quirk
         assertNotEquals( {nil,{x=4,5}}, {nil,{y=4,5}} )
     end
 
     function TestLuaUnitAssertions:test_assertTableAdditions()
-        assertEquals( {1,2,3}, {1,2,3} )
+        lu.assertEquals( {1,2,3}, {1,2,3} )
         assertNotEquals( {1,2,3}, {1,2,3,4} )
         assertNotEquals( {1,2,3,4}, {1,2,3} )
-        assertEquals( {1,x=2,3}, {1,x=2,3} )
+        lu.assertEquals( {1,x=2,3}, {1,x=2,3} )
         assertNotEquals( {1,x=2,3}, {1,x=2,3,y=4} )
         assertNotEquals( {1,x=2,3,y=4}, {1,x=2,3} )
     end
@@ -1050,11 +1050,11 @@ TestLuaUnitAssertionsError = {}
 
         -- f_with_error generates an error
         has_error = not pcall( self.f_with_error, x )
-        assertEquals( has_error, true )
+        lu.assertEquals( has_error, true )
 
         -- f does not generate an error
         has_error = not pcall( self.f, x )
-        assertEquals( has_error, false )
+        lu.assertEquals( has_error, false )
 
         -- assertError is happy with f_with_error
         assertError( self.f_with_error, x )
@@ -1074,7 +1074,7 @@ TestLuaUnitAssertionsError = {}
         assertError( f_with_multi_arguments, 3, 1, 1 )
 
         has_error = not pcall( assertError, f_with_multi_arguments, 1, 1, 1 )
-        assertEquals( has_error, true )
+        lu.assertEquals( has_error, true )
     end
 
     function TestLuaUnitAssertionsError:test_assertErrorMsgContains()
@@ -1124,20 +1124,20 @@ TestLuaUnitErrorMsg = {} --class
     end
 
     function TestLuaUnitErrorMsg:test_assertEqualsMsg()
-        assertErrorMsgEquals( 'expected: 2, actual: 1', assertEquals, 1, 2  )
-        assertErrorMsgEquals( 'expected: "exp"\nactual: "act"', assertEquals, 'act', 'exp' )
-        assertErrorMsgEquals( 'expected: \n"exp\npxe"\nactual: \n"act\ntca"', assertEquals, 'act\ntca', 'exp\npxe' )
-        assertErrorMsgEquals( 'expected: true, actual: false', assertEquals, false, true )
-        assertErrorMsgEquals( 'expected: 1.2, actual: 1', assertEquals, 1.0, 1.2)
-        assertErrorMsgMatches( 'expected: {1, 2, 3}\nactual: {3, 2, 1}', assertEquals, {3,2,1}, {1,2,3} )
-        assertErrorMsgMatches( 'expected: {one=1, two=2}\nactual: {3, 2, 1}', assertEquals, {3,2,1}, {one=1,two=2} )
-        assertErrorMsgEquals( 'expected: 2, actual: nil', assertEquals, nil, 2 )
+        assertErrorMsgEquals( 'expected: 2, actual: 1', lu.assertEquals, 1, 2  )
+        assertErrorMsgEquals( 'expected: "exp"\nactual: "act"', lu.assertEquals, 'act', 'exp' )
+        assertErrorMsgEquals( 'expected: \n"exp\npxe"\nactual: \n"act\ntca"', lu.assertEquals, 'act\ntca', 'exp\npxe' )
+        assertErrorMsgEquals( 'expected: true, actual: false', lu.assertEquals, false, true )
+        assertErrorMsgEquals( 'expected: 1.2, actual: 1', lu.assertEquals, 1.0, 1.2)
+        assertErrorMsgMatches( 'expected: {1, 2, 3}\nactual: {3, 2, 1}', lu.assertEquals, {3,2,1}, {1,2,3} )
+        assertErrorMsgMatches( 'expected: {one=1, two=2}\nactual: {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
+        assertErrorMsgEquals( 'expected: 2, actual: nil', lu.assertEquals, nil, 2 )
     end 
 
     function TestLuaUnitErrorMsg:test_assertEqualsOrderReversedMsg()
         lu.ORDER_ACTUAL_EXPECTED = false
-        assertErrorMsgEquals( 'expected: 1, actual: 2', assertEquals, 1, 2  )
-        assertErrorMsgEquals( 'expected: "act"\nactual: "exp"', assertEquals, 'act', 'exp' )
+        assertErrorMsgEquals( 'expected: 1, actual: 2', lu.assertEquals, 1, 2  )
+        assertErrorMsgEquals( 'expected: "act"\nactual: "exp"', lu.assertEquals, 'act', 'exp' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsMsg()
@@ -1293,10 +1293,10 @@ TestLuaUnitErrorMsg = {} --class
         local v = {1,2}
         assertErrorMsgMatches( 'Expected object and actual object are the same object: <table: 0?x?[%x]+> {1, 2}', assertNotIs, v, v )
         assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: <table: 0?x?[%x]+> {one=2, two=3}\nActual: <table: 0?x?[%x]+> {1, 2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
-        assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', assertEquals, {3,2,1}, {1,2,3} )
+        assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', lu.assertEquals, {3,2,1}, {1,2,3} )
         -- trigger multiline prettystr
-        assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3, 4}\nactual: <table: 0?x?[%x]+> {3, 2, 1, 4}', assertEquals, {3,2,1,4}, {1,2,3,4} )
-        assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {one=1, two=2}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', assertEquals, {3,2,1}, {one=1,two=2} )
+        assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3, 4}\nactual: <table: 0?x?[%x]+> {3, 2, 1, 4}', lu.assertEquals, {3,2,1,4}, {1,2,3,4} )
+        assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {one=1, two=2}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
     end
 
 ------------------------------------------------------------------
@@ -1317,7 +1317,7 @@ MyTestToto2 = {} --class
     function MyTestToto2:test1() table.insert( executedTests, "MyTestToto2:test1" ) end
 
 MyTestWithFailures = {} --class
-    function MyTestWithFailures:testWithFailure1() assertEquals(1, 2) end
+    function MyTestWithFailures:testWithFailure1() lu.assertEquals(1, 2) end
     function MyTestWithFailures:testWithFailure2() assertError( function() end ) end
     function MyTestWithFailures:testOk() end
 
@@ -1335,53 +1335,53 @@ TestLuaUnitExecution = {} --class
 
     function TestLuaUnitExecution:tearDown()
         executedTests = {}
-        LuaUnit.isTestName = LuaUnit.isTestNameOld
+        lu.LuaUnit.isTestName = lu.LuaUnit.isTestNameOld
     end
 
     function TestLuaUnitExecution:setUp()
         executedTests = {}
-        LuaUnit.isTestNameOld = LuaUnit.isTestName
-        LuaUnit.isTestName = function( s ) return (string.sub(s,1,6) == 'MyTest') end
+        lu.LuaUnit.isTestNameOld = lu.LuaUnit.isTestName
+        lu.LuaUnit.isTestName = function( s ) return (string.sub(s,1,6) == 'MyTest') end
     end
 
     function TestLuaUnitExecution:test_collectTests()
-        allTests = LuaUnit.collectTests()
-        assertEquals( allTests, {"MyTestFunction", "MyTestOk", "MyTestToto1", "MyTestToto2","MyTestWithFailures"})
+        allTests = lu.LuaUnit.collectTests()
+        lu.assertEquals( allTests, {"MyTestFunction", "MyTestOk", "MyTestToto1", "MyTestToto2","MyTestWithFailures"})
     end
 
     function TestLuaUnitExecution:test_MethodsAreExecutedInRightOrder()
-        local runner = LuaUnit:new()
+        local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuite( 'MyTestToto1' )
-        assertEquals( #executedTests, 5 )
-        assertEquals( executedTests[1], "MyTestToto1:test1" )
-        assertEquals( executedTests[2], "MyTestToto1:test2" )
-        assertEquals( executedTests[3], "MyTestToto1:test3" )
-        assertEquals( executedTests[4], "MyTestToto1:testa" )
-        assertEquals( executedTests[5], "MyTestToto1:testb" )
+        lu.assertEquals( #executedTests, 5 )
+        lu.assertEquals( executedTests[1], "MyTestToto1:test1" )
+        lu.assertEquals( executedTests[2], "MyTestToto1:test2" )
+        lu.assertEquals( executedTests[3], "MyTestToto1:test3" )
+        lu.assertEquals( executedTests[4], "MyTestToto1:testa" )
+        lu.assertEquals( executedTests[5], "MyTestToto1:testb" )
     end
 
     function TestLuaUnitExecution:test_runSuiteByNames()
         -- note: this also test that names are executed in explicit order
-        local runner = LuaUnit:new()
+        local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByNames( { 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' } )
-        assertEquals( #executedTests, 7 )
-        assertEquals( executedTests[1], "MyTestToto2:test1" )
-        assertEquals( executedTests[2], "MyTestToto1:test1" )
-        assertEquals( executedTests[7], "MyTestFunction" )
+        lu.assertEquals( #executedTests, 7 )
+        lu.assertEquals( executedTests[1], "MyTestToto2:test1" )
+        lu.assertEquals( executedTests[2], "MyTestToto1:test1" )
+        lu.assertEquals( executedTests[7], "MyTestFunction" )
     end
 
     function TestLuaUnitExecution:testRunSomeTestByGlobalInstance( )
-        assertEquals( #executedTests, 0 )
-        local runner = LuaUnit:new()
+        lu.assertEquals( #executedTests, 0 )
+        local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'Toto', MyTestToto1 } }  )
-        assertEquals( #executedTests, 5 )
+        lu.assertEquals( #executedTests, 5 )
 
-        assertEquals( #runner.result.tests, 5 )
-        assertEquals( runner.result.tests[1].testName, "Toto.test1" )
-        assertEquals( runner.result.tests[5].testName, "Toto.testb" )
+        lu.assertEquals( #runner.result.tests, 5 )
+        lu.assertEquals( runner.result.tests[1].testName, "Toto.test1" )
+        lu.assertEquals( runner.result.tests[5].testName, "Toto.testb" )
     end
 
     function TestLuaUnitExecution:testRunSomeTestByLocalInstance( )
@@ -1392,40 +1392,40 @@ TestLuaUnitExecution = {} --class
         function MyLocalTestToto2:test2() table.insert( executedTests, "MyLocalTestToto2:test2" ) end
         function MyLocalTestFunction() table.insert( executedTests, "MyLocalTestFunction" ) end
  
-        assertEquals( #executedTests, 0 )
-        local runner = LuaUnit:new()
+        lu.assertEquals( #executedTests, 0 )
+        local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { 
             { 'MyLocalTestToto1', MyLocalTestToto1 },
             { 'MyLocalTestToto2.test2', MyLocalTestToto2 },
             { 'MyLocalTestFunction', MyLocalTestFunction },
         } )
-        assertEquals( #executedTests, 3 )
-        assertEquals( executedTests[1], 'MyLocalTestToto1:test1')
-        assertEquals( executedTests[2], 'MyLocalTestToto2:test2')
-        assertEquals( executedTests[3], 'MyLocalTestFunction')
+        lu.assertEquals( #executedTests, 3 )
+        lu.assertEquals( executedTests[1], 'MyLocalTestToto1:test1')
+        lu.assertEquals( executedTests[2], 'MyLocalTestToto2:test2')
+        lu.assertEquals( executedTests[3], 'MyLocalTestFunction')
     end
 
     function TestLuaUnitExecution:testRunReturnsNumberOfFailures()
-        local runner = LuaUnit:new()
+        local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         ret = runner:runSuite( 'MyTestWithFailures' )
-        assertEquals(ret, 2)
+        lu.assertEquals(ret, 2)
 
         ret = runner:runSuite( 'MyTestToto1' )
-        assertEquals(ret, 0)
+        lu.assertEquals(ret, 0)
     end
 
     function TestLuaUnitExecution:testTestCountAndFailCount()
-        local runner = LuaUnit:new()
+        local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuite( 'MyTestWithFailures' )
-        assertEquals( runner.result.testCount, 3)
-        assertEquals( runner.result.failureCount, 2)
+        lu.assertEquals( runner.result.testCount, 3)
+        lu.assertEquals( runner.result.failureCount, 2)
 
         runner:runSuite( 'MyTestToto1' )
-        assertEquals( runner.result.testCount, 5)
-        assertEquals( runner.result.failureCount, 0)
+        lu.assertEquals( runner.result.testCount, 5)
+        lu.assertEquals( runner.result.failureCount, 0)
     end
 
     function TestLuaUnitExecution:testRunSetupAndTeardown()
@@ -1441,49 +1441,49 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupTeardown2:test1()    table.insert( myExecutedTests, '2test1' ) end
             function MyTestWithSetupTeardown2:tearDown() table.insert( myExecutedTests, '2tearDown' )  end
 
-        local runner = LuaUnit:new()
+        local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupTeardown.test1', MyTestWithSetupTeardown } } )
-        assertEquals( runner.result.failureCount, 0 )
-        assertEquals( myExecutedTests[1], '1setUp' )   
-        assertEquals( myExecutedTests[2], '1test1')
-        assertEquals( myExecutedTests[3], '1tearDown')
-        assertEquals( #myExecutedTests, 3)
+        lu.assertEquals( runner.result.failureCount, 0 )
+        lu.assertEquals( myExecutedTests[1], '1setUp' )   
+        lu.assertEquals( myExecutedTests[2], '1test1')
+        lu.assertEquals( myExecutedTests[3], '1tearDown')
+        lu.assertEquals( #myExecutedTests, 3)
 
         myExecutedTests = {}
         runner:runSuiteByInstances( { 
             { 'MyTestWithSetupTeardown', MyTestWithSetupTeardown },
             { 'MyTestWithSetupTeardown2', MyTestWithSetupTeardown2 } 
         } )
-        assertEquals( runner.result.failureCount, 0 )
-        assertEquals( myExecutedTests[1], '1setUp' )   
-        assertEquals( myExecutedTests[2], '1test1')
-        assertEquals( myExecutedTests[3], '1tearDown')
-        assertEquals( myExecutedTests[4], '1setUp' )   
-        assertEquals( myExecutedTests[5], '1test2')
-        assertEquals( myExecutedTests[6], '1tearDown')
-        assertEquals( myExecutedTests[7], '2setUp' )   
-        assertEquals( myExecutedTests[8], '2test1')
-        assertEquals( myExecutedTests[9], '2tearDown')
-        assertEquals( #myExecutedTests, 9)
+        lu.assertEquals( runner.result.failureCount, 0 )
+        lu.assertEquals( myExecutedTests[1], '1setUp' )   
+        lu.assertEquals( myExecutedTests[2], '1test1')
+        lu.assertEquals( myExecutedTests[3], '1tearDown')
+        lu.assertEquals( myExecutedTests[4], '1setUp' )   
+        lu.assertEquals( myExecutedTests[5], '1test2')
+        lu.assertEquals( myExecutedTests[6], '1tearDown')
+        lu.assertEquals( myExecutedTests[7], '2setUp' )   
+        lu.assertEquals( myExecutedTests[8], '2test1')
+        lu.assertEquals( myExecutedTests[9], '2tearDown')
+        lu.assertEquals( #myExecutedTests, 9)
     end
 
     function TestLuaUnitExecution:testWithSetupTeardownErrors1()
         local myExecutedTests = {}
 
         local MyTestWithSetupError = {}
-            function MyTestWithSetupError:setUp()    table.insert( myExecutedTests, 'setUp' ); assertEquals( 'b', 'c') end
+            function MyTestWithSetupError:setUp()    table.insert( myExecutedTests, 'setUp' ); lu.assertEquals( 'b', 'c') end
             function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) end
             function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' )  end
 
-        local runner = LuaUnit:new()
+        local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
-        assertEquals( runner.result.failureCount, 1 )
-        assertEquals( runner.result.testCount, 1 )
-        assertEquals( myExecutedTests[1], 'setUp' )   
-        assertEquals( myExecutedTests[2], 'tearDown')
-        assertEquals( #myExecutedTests, 2)
+        lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertEquals( runner.result.testCount, 1 )
+        lu.assertEquals( myExecutedTests[1], 'setUp' )   
+        lu.assertEquals( myExecutedTests[2], 'tearDown')
+        lu.assertEquals( #myExecutedTests, 2)
     end
 
     function TestLuaUnitExecution:testWithSetupTeardownErrors2()
@@ -1492,53 +1492,53 @@ TestLuaUnitExecution = {} --class
         local MyTestWithSetupError = {}
             function MyTestWithSetupError:setUp()    table.insert( myExecutedTests, 'setUp' ) end
             function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) end
-            function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ); assertEquals( 'b', 'c')   end
+            function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ); lu.assertEquals( 'b', 'c')   end
 
-        runner = LuaUnit:new()
+        runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
-        assertEquals( runner.result.failureCount, 1 )
-        assertEquals( runner.result.testCount, 1 )
-        assertEquals( myExecutedTests[1], 'setUp' )   
-        assertEquals( myExecutedTests[2], 'test1' )   
-        assertEquals( myExecutedTests[3], 'tearDown')
-        assertEquals( #myExecutedTests, 3)
+        lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertEquals( runner.result.testCount, 1 )
+        lu.assertEquals( myExecutedTests[1], 'setUp' )   
+        lu.assertEquals( myExecutedTests[2], 'test1' )   
+        lu.assertEquals( myExecutedTests[3], 'tearDown')
+        lu.assertEquals( #myExecutedTests, 3)
     end
 
     function TestLuaUnitExecution:testWithSetupTeardownErrors3()
         local myExecutedTests = {}
 
         local MyTestWithSetupError = {}
-            function MyTestWithSetupError:setUp()    table.insert( myExecutedTests, 'setUp' ); assertEquals( 'b', 'c') end
+            function MyTestWithSetupError:setUp()    table.insert( myExecutedTests, 'setUp' ); lu.assertEquals( 'b', 'c') end
             function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) end
-            function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ); assertEquals( 'b', 'c')   end
+            function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ); lu.assertEquals( 'b', 'c')   end
 
-        runner = LuaUnit:new()
+        runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
-        assertEquals( runner.result.failureCount, 1 )
-        assertEquals( runner.result.testCount, 1 )
-        assertEquals( myExecutedTests[1], 'setUp' )   
-        assertEquals( myExecutedTests[2], 'tearDown')
-        assertEquals( #myExecutedTests, 2)
+        lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertEquals( runner.result.testCount, 1 )
+        lu.assertEquals( myExecutedTests[1], 'setUp' )   
+        lu.assertEquals( myExecutedTests[2], 'tearDown')
+        lu.assertEquals( #myExecutedTests, 2)
     end
 
     function TestLuaUnitExecution:testWithSetupTeardownErrors4()
         local myExecutedTests = {}
 
         local MyTestWithSetupError = {}
-            function MyTestWithSetupError:setUp()    table.insert( myExecutedTests, 'setUp' ); assertEquals( 'b', 'c') end
-            function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ); assertEquals( 'b', 'c')  end
-            function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ); assertEquals( 'b', 'c')   end
+            function MyTestWithSetupError:setUp()    table.insert( myExecutedTests, 'setUp' ); lu.assertEquals( 'b', 'c') end
+            function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ); lu.assertEquals( 'b', 'c')  end
+            function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ); lu.assertEquals( 'b', 'c')   end
 
-        runner = LuaUnit:new()
+        runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
-        assertEquals( runner.result.failureCount, 1 )
-        assertEquals( runner.result.testCount, 1 )
-        assertEquals( myExecutedTests[1], 'setUp' )   
-        assertEquals( myExecutedTests[2], 'tearDown')
-        assertEquals( #myExecutedTests, 2)
+        lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertEquals( runner.result.testCount, 1 )
+        lu.assertEquals( myExecutedTests[1], 'setUp' )   
+        lu.assertEquals( myExecutedTests[2], 'tearDown')
+        lu.assertEquals( #myExecutedTests, 2)
     end
 
     function TestLuaUnitExecution:testWithSetupTeardownErrors5()
@@ -1546,110 +1546,110 @@ TestLuaUnitExecution = {} --class
 
         local MyTestWithSetupError = {}
             function MyTestWithSetupError:setUp()    table.insert( myExecutedTests, 'setUp' ) end
-            function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ); assertEquals( 'b', 'c')  end
-            function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ); assertEquals( 'b', 'c')   end
+            function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ); lu.assertEquals( 'b', 'c')  end
+            function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ); lu.assertEquals( 'b', 'c')   end
 
-        runner = LuaUnit:new()
+        runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
-        assertEquals( runner.result.failureCount, 1 )
-        assertEquals( runner.result.testCount, 1 )
-        assertEquals( myExecutedTests[1], 'setUp' )   
-        assertEquals( myExecutedTests[2], 'test1' )   
-        assertEquals( myExecutedTests[3], 'tearDown')
-        assertEquals( #myExecutedTests, 3)
+        lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertEquals( runner.result.testCount, 1 )
+        lu.assertEquals( myExecutedTests[1], 'setUp' )   
+        lu.assertEquals( myExecutedTests[2], 'test1' )   
+        lu.assertEquals( myExecutedTests[3], 'tearDown')
+        lu.assertEquals( #myExecutedTests, 3)
     end
 
     function TestLuaUnitExecution:testOutputInterface()
-        local runner = LuaUnit:new()
+        local runner = lu.LuaUnit:new()
         runner.outputType = Mock
         runner:runSuite( 'MyTestWithFailures', 'MyTestOk' )
         m = runner.output
 
-        assertEquals( m.calls[1][1], 'startSuite' )
-        assertEquals(#m.calls[1], 2 )
+        lu.assertEquals( m.calls[1][1], 'startSuite' )
+        lu.assertEquals(#m.calls[1], 2 )
 
-        assertEquals( m.calls[2][1], 'startClass' )
-        assertEquals( m.calls[2][3], 'MyTestWithFailures' )
-        assertEquals(#m.calls[2], 3 )
+        lu.assertEquals( m.calls[2][1], 'startClass' )
+        lu.assertEquals( m.calls[2][3], 'MyTestWithFailures' )
+        lu.assertEquals(#m.calls[2], 3 )
 
-        assertEquals( m.calls[3][1], 'startTest' )
-        assertEquals( m.calls[3][3], 'MyTestWithFailures.testOk' )
-        assertEquals(#m.calls[3], 3 )
+        lu.assertEquals( m.calls[3][1], 'startTest' )
+        lu.assertEquals( m.calls[3][3], 'MyTestWithFailures.testOk' )
+        lu.assertEquals(#m.calls[3], 3 )
 
-        assertEquals( m.calls[4][1], 'endTest' )
-        assertEquals( m.calls[4][3], false )
-        assertEquals(#m.calls[4], 3 )
+        lu.assertEquals( m.calls[4][1], 'endTest' )
+        lu.assertEquals( m.calls[4][3], false )
+        lu.assertEquals(#m.calls[4], 3 )
 
-        assertEquals( m.calls[5][1], 'startTest' )
-        assertEquals( m.calls[5][3], 'MyTestWithFailures.testWithFailure1' )
-        assertEquals(#m.calls[5], 3 )
+        lu.assertEquals( m.calls[5][1], 'startTest' )
+        lu.assertEquals( m.calls[5][3], 'MyTestWithFailures.testWithFailure1' )
+        lu.assertEquals(#m.calls[5], 3 )
 
-        assertEquals( m.calls[6][1], 'addFailure' )
-        assertEquals(#m.calls[6], 4 )
+        lu.assertEquals( m.calls[6][1], 'addFailure' )
+        lu.assertEquals(#m.calls[6], 4 )
 
-        assertEquals( m.calls[7][1], 'endTest' )
-        assertEquals( m.calls[7][3], true )
-        assertEquals(#m.calls[7], 3 )
+        lu.assertEquals( m.calls[7][1], 'endTest' )
+        lu.assertEquals( m.calls[7][3], true )
+        lu.assertEquals(#m.calls[7], 3 )
 
 
-        assertEquals( m.calls[8][1], 'startTest' )
-        assertEquals( m.calls[8][3], 'MyTestWithFailures.testWithFailure2' )
-        assertEquals(#m.calls[8], 3 )
+        lu.assertEquals( m.calls[8][1], 'startTest' )
+        lu.assertEquals( m.calls[8][3], 'MyTestWithFailures.testWithFailure2' )
+        lu.assertEquals(#m.calls[8], 3 )
 
-        assertEquals( m.calls[9][1], 'addFailure' )
-        assertEquals(#m.calls[9], 4 )
+        lu.assertEquals( m.calls[9][1], 'addFailure' )
+        lu.assertEquals(#m.calls[9], 4 )
 
-        assertEquals( m.calls[10][1], 'endTest' )
-        assertEquals( m.calls[10][3], true )
-        assertEquals(#m.calls[10], 3 )
+        lu.assertEquals( m.calls[10][1], 'endTest' )
+        lu.assertEquals( m.calls[10][3], true )
+        lu.assertEquals(#m.calls[10], 3 )
 
-        assertEquals( m.calls[11][1], 'endClass' )
-        assertEquals(#m.calls[11], 2 )
+        lu.assertEquals( m.calls[11][1], 'endClass' )
+        lu.assertEquals(#m.calls[11], 2 )
 
-        assertEquals( m.calls[12][1], 'startClass' )
-        assertEquals( m.calls[12][3], 'MyTestOk' )
-        assertEquals(#m.calls[12], 3 )
+        lu.assertEquals( m.calls[12][1], 'startClass' )
+        lu.assertEquals( m.calls[12][3], 'MyTestOk' )
+        lu.assertEquals(#m.calls[12], 3 )
 
-        assertEquals( m.calls[13][1], 'startTest' )
-        assertEquals( m.calls[13][3], 'MyTestOk.testOk1' )
-        assertEquals(#m.calls[13], 3 )
+        lu.assertEquals( m.calls[13][1], 'startTest' )
+        lu.assertEquals( m.calls[13][3], 'MyTestOk.testOk1' )
+        lu.assertEquals(#m.calls[13], 3 )
 
-        assertEquals( m.calls[14][1], 'endTest' )
-        assertEquals( m.calls[14][3], false )
-        assertEquals(#m.calls[14], 3 )
+        lu.assertEquals( m.calls[14][1], 'endTest' )
+        lu.assertEquals( m.calls[14][3], false )
+        lu.assertEquals(#m.calls[14], 3 )
 
-        assertEquals( m.calls[15][1], 'startTest' )
-        assertEquals( m.calls[15][3], 'MyTestOk.testOk2' )
-        assertEquals(#m.calls[15], 3 )
+        lu.assertEquals( m.calls[15][1], 'startTest' )
+        lu.assertEquals( m.calls[15][3], 'MyTestOk.testOk2' )
+        lu.assertEquals(#m.calls[15], 3 )
 
-        assertEquals( m.calls[16][1], 'endTest' )
-        assertEquals( m.calls[16][3], false )
-        assertEquals(#m.calls[16], 3 )
+        lu.assertEquals( m.calls[16][1], 'endTest' )
+        lu.assertEquals( m.calls[16][3], false )
+        lu.assertEquals(#m.calls[16], 3 )
 
-        assertEquals( m.calls[17][1], 'endClass' )
-        assertEquals(#m.calls[17], 2 )
+        lu.assertEquals( m.calls[17][1], 'endClass' )
+        lu.assertEquals(#m.calls[17], 2 )
 
-        assertEquals( m.calls[18][1], 'endSuite' )
-        assertEquals(#m.calls[18], 2 )
+        lu.assertEquals( m.calls[18][1], 'endSuite' )
+        lu.assertEquals(#m.calls[18], 2 )
 
-        assertEquals( m.calls[19], nil )
+        lu.assertEquals( m.calls[19], nil )
 
     end
 
     function TestLuaUnitExecution:test_filterWithPattern()
 
-        runner = LuaUnit:new()
+        runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuite('-p', 'Function', '-p', 'Toto.' )
-        assertEquals( executedTests[1], "MyTestFunction" )
-        assertEquals( executedTests[2], "MyTestToto1:test1" )
-        assertEquals( executedTests[3], "MyTestToto1:test2" )
-        assertEquals( executedTests[4], "MyTestToto1:test3" )
-        assertEquals( executedTests[5], "MyTestToto1:testa" )
-        assertEquals( executedTests[6], "MyTestToto1:testb" )
-        assertEquals( executedTests[7], "MyTestToto2:test1" )
-        assertEquals( #executedTests, 7)
+        lu.assertEquals( executedTests[1], "MyTestFunction" )
+        lu.assertEquals( executedTests[2], "MyTestToto1:test1" )
+        lu.assertEquals( executedTests[3], "MyTestToto1:test2" )
+        lu.assertEquals( executedTests[4], "MyTestToto1:test3" )
+        lu.assertEquals( executedTests[5], "MyTestToto1:testa" )
+        lu.assertEquals( executedTests[6], "MyTestToto1:testb" )
+        lu.assertEquals( executedTests[7], "MyTestToto2:test1" )
+        lu.assertEquals( #executedTests, 7)
     end
 
 ------------------------------------------------------------------
@@ -1664,146 +1664,146 @@ TestLuaUnitResults = {} -- class
 
     function TestLuaUnitResults:tearDown()
         executedTests = {}
-        LuaUnit.isTestName = LuaUnit.isTestNameOld
+        lu.LuaUnit.isTestName = lu.LuaUnit.isTestNameOld
     end
 
     function TestLuaUnitResults:setUp()
         executedTests = {}
-        LuaUnit.isTestNameOld = LuaUnit.isTestName
-        LuaUnit.isTestName = function( s ) return (string.sub(s,1,6) == 'MyTest') end
+        lu.LuaUnit.isTestNameOld = lu.LuaUnit.isTestName
+        lu.LuaUnit.isTestName = function( s ) return (string.sub(s,1,6) == 'MyTest') end
     end
 
     function TestLuaUnitResults:test_nodeStatus()
         es = lu.NodeStatus:new()
-        assertEquals( es.status, lu.NodeStatus.PASS )
+        lu.assertEquals( es.status, lu.NodeStatus.PASS )
         assertNil( es.msg )
         assertNil( es.stackTrace )
 
         es:fail( 'msgToto', 'stackTraceToto' )
-        assertEquals( es.status, lu.NodeStatus.FAIL )
-        assertEquals( es.msg, 'msgToto' )
-        assertEquals( es.stackTrace, 'stackTraceToto' )
+        lu.assertEquals( es.status, lu.NodeStatus.FAIL )
+        lu.assertEquals( es.msg, 'msgToto' )
+        lu.assertEquals( es.stackTrace, 'stackTraceToto' )
 
         es2 = lu.NodeStatus:new()
-        assertEquals( es2.status, lu.NodeStatus.PASS )
+        lu.assertEquals( es2.status, lu.NodeStatus.PASS )
         assertNil( es2.msg )
         assertNil( es2.stackTrace )
 
         es:pass()
-        assertEquals( es.status, lu.NodeStatus.PASS )
+        lu.assertEquals( es.status, lu.NodeStatus.PASS )
         assertNil( es.msg )
         assertNil( es.stackTrace )
 
     end
 
     function TestLuaUnitResults:test_runSuiteOk()
-        local runner = LuaUnit:new()
+        local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByNames( { 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' } )
-        assertEquals( #runner.result.tests, 7 )
-        assertEquals( #runner.result.failures, 0 )
+        lu.assertEquals( #runner.result.tests, 7 )
+        lu.assertEquals( #runner.result.failures, 0 )
 
-        assertEquals( runner.result.tests[1].testName,"MyTestToto2.test1" )
-        assertEquals( runner.result.tests[1].number, 1 )
-        assertEquals( runner.result.tests[1].className, 'MyTestToto2' )
-        assertEquals( runner.result.tests[1].status, lu.NodeStatus.PASS )
+        lu.assertEquals( runner.result.tests[1].testName,"MyTestToto2.test1" )
+        lu.assertEquals( runner.result.tests[1].number, 1 )
+        lu.assertEquals( runner.result.tests[1].className, 'MyTestToto2' )
+        lu.assertEquals( runner.result.tests[1].status, lu.NodeStatus.PASS )
 
-        assertEquals( runner.result.tests[2].testName,"MyTestToto1.test1" )
-        assertEquals( runner.result.tests[2].number, 2 )
-        assertEquals( runner.result.tests[2].className, 'MyTestToto1' )
-        assertEquals( runner.result.tests[2].status, lu.NodeStatus.PASS )
+        lu.assertEquals( runner.result.tests[2].testName,"MyTestToto1.test1" )
+        lu.assertEquals( runner.result.tests[2].number, 2 )
+        lu.assertEquals( runner.result.tests[2].className, 'MyTestToto1' )
+        lu.assertEquals( runner.result.tests[2].status, lu.NodeStatus.PASS )
 
-        assertEquals( runner.result.tests[3].testName,"MyTestToto1.test2" )
-        assertEquals( runner.result.tests[3].number, 3 )
-        assertEquals( runner.result.tests[3].className, 'MyTestToto1' )
-        assertEquals( runner.result.tests[3].status, lu.NodeStatus.PASS )
+        lu.assertEquals( runner.result.tests[3].testName,"MyTestToto1.test2" )
+        lu.assertEquals( runner.result.tests[3].number, 3 )
+        lu.assertEquals( runner.result.tests[3].className, 'MyTestToto1' )
+        lu.assertEquals( runner.result.tests[3].status, lu.NodeStatus.PASS )
 
-        assertEquals( runner.result.tests[4].testName,"MyTestToto1.test3" )
-        assertEquals( runner.result.tests[4].number, 4 )
-        assertEquals( runner.result.tests[4].className, 'MyTestToto1' )
-        assertEquals( runner.result.tests[4].status, lu.NodeStatus.PASS )
+        lu.assertEquals( runner.result.tests[4].testName,"MyTestToto1.test3" )
+        lu.assertEquals( runner.result.tests[4].number, 4 )
+        lu.assertEquals( runner.result.tests[4].className, 'MyTestToto1' )
+        lu.assertEquals( runner.result.tests[4].status, lu.NodeStatus.PASS )
 
-        assertEquals( runner.result.tests[5].testName,"MyTestToto1.testa" )
-        assertEquals( runner.result.tests[5].number, 5 )
-        assertEquals( runner.result.tests[5].className, 'MyTestToto1' )
-        assertEquals( runner.result.tests[5].status, lu.NodeStatus.PASS )
+        lu.assertEquals( runner.result.tests[5].testName,"MyTestToto1.testa" )
+        lu.assertEquals( runner.result.tests[5].number, 5 )
+        lu.assertEquals( runner.result.tests[5].className, 'MyTestToto1' )
+        lu.assertEquals( runner.result.tests[5].status, lu.NodeStatus.PASS )
 
-        assertEquals( runner.result.tests[6].testName,"MyTestToto1.testb" )
-        assertEquals( runner.result.tests[6].number, 6 )
-        assertEquals( runner.result.tests[6].className, 'MyTestToto1' )
-        assertEquals( runner.result.tests[6].status, lu.NodeStatus.PASS )
+        lu.assertEquals( runner.result.tests[6].testName,"MyTestToto1.testb" )
+        lu.assertEquals( runner.result.tests[6].number, 6 )
+        lu.assertEquals( runner.result.tests[6].className, 'MyTestToto1' )
+        lu.assertEquals( runner.result.tests[6].status, lu.NodeStatus.PASS )
 
-        assertEquals( runner.result.tests[7].testName,"MyTestFunction" )
-        assertEquals( runner.result.tests[7].number, 7)
-        assertEquals( runner.result.tests[7].className, '[TestFunctions]' )
-        assertEquals( runner.result.tests[7].status,  lu.NodeStatus.PASS )
+        lu.assertEquals( runner.result.tests[7].testName,"MyTestFunction" )
+        lu.assertEquals( runner.result.tests[7].number, 7)
+        lu.assertEquals( runner.result.tests[7].className, '[TestFunctions]' )
+        lu.assertEquals( runner.result.tests[7].status,  lu.NodeStatus.PASS )
 
     end
 
     function TestLuaUnitResults:test_runSuiteWithFailures()
-        local runner = LuaUnit:new()
+        local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuite( 'MyTestWithFailures' )
 
-        assertEquals( #runner.result.tests, 3 )
-        assertEquals( #runner.result.failures, 2 )
+        lu.assertEquals( #runner.result.tests, 3 )
+        lu.assertEquals( #runner.result.failures, 2 )
 
-        assertEquals( runner.result.tests[1].number, 1 )
-        assertEquals( runner.result.tests[1].testName, "MyTestWithFailures.testOk" )
-        assertEquals( runner.result.tests[1].className, 'MyTestWithFailures' )
-        assertEquals( runner.result.tests[1].status, lu.NodeStatus.PASS )
+        lu.assertEquals( runner.result.tests[1].number, 1 )
+        lu.assertEquals( runner.result.tests[1].testName, "MyTestWithFailures.testOk" )
+        lu.assertEquals( runner.result.tests[1].className, 'MyTestWithFailures' )
+        lu.assertEquals( runner.result.tests[1].status, lu.NodeStatus.PASS )
         assertIsNumber( runner.result.tests[1].duration )
         assertIsNil( runner.result.tests[1].msg )
         assertIsNil( runner.result.tests[1].stackTrace )
 
-        assertEquals( runner.result.tests[2].testName, 'MyTestWithFailures.testWithFailure1' )
-        assertEquals( runner.result.tests[2].className, 'MyTestWithFailures' )
-        assertEquals( runner.result.tests[2].status, lu.NodeStatus.FAIL )
+        lu.assertEquals( runner.result.tests[2].testName, 'MyTestWithFailures.testWithFailure1' )
+        lu.assertEquals( runner.result.tests[2].className, 'MyTestWithFailures' )
+        lu.assertEquals( runner.result.tests[2].status, lu.NodeStatus.FAIL )
         assertIsString( runner.result.tests[2].msg )
         assertIsString( runner.result.tests[2].stackTrace )
 
-        assertEquals( runner.result.tests[3].testName, 'MyTestWithFailures.testWithFailure2' )
-        assertEquals( runner.result.tests[3].className, 'MyTestWithFailures' )
-        assertEquals( runner.result.tests[3].status, lu.NodeStatus.FAIL )
+        lu.assertEquals( runner.result.tests[3].testName, 'MyTestWithFailures.testWithFailure2' )
+        lu.assertEquals( runner.result.tests[3].className, 'MyTestWithFailures' )
+        lu.assertEquals( runner.result.tests[3].status, lu.NodeStatus.FAIL )
         assertIsString( runner.result.tests[3].msg )
         assertIsString( runner.result.tests[3].stackTrace )
 
-        assertEquals( runner.result.failures[1].testName, 'MyTestWithFailures.testWithFailure1' )
-        assertEquals( runner.result.failures[1].className, 'MyTestWithFailures' )
-        assertEquals( runner.result.failures[1].status, lu.NodeStatus.FAIL )
+        lu.assertEquals( runner.result.failures[1].testName, 'MyTestWithFailures.testWithFailure1' )
+        lu.assertEquals( runner.result.failures[1].className, 'MyTestWithFailures' )
+        lu.assertEquals( runner.result.failures[1].status, lu.NodeStatus.FAIL )
         assertIsString( runner.result.failures[1].msg )
         assertIsString( runner.result.failures[1].stackTrace )
 
-        assertEquals( runner.result.failures[2].testName, 'MyTestWithFailures.testWithFailure2' )
-        assertEquals( runner.result.failures[2].className, 'MyTestWithFailures' )
-        assertEquals( runner.result.failures[2].status, lu.NodeStatus.FAIL )
+        lu.assertEquals( runner.result.failures[2].testName, 'MyTestWithFailures.testWithFailure2' )
+        lu.assertEquals( runner.result.failures[2].className, 'MyTestWithFailures' )
+        lu.assertEquals( runner.result.failures[2].status, lu.NodeStatus.FAIL )
         assertIsString( runner.result.failures[2].msg )
         assertIsString( runner.result.failures[2].stackTrace )
     end
 
     function TestLuaUnitResults:test_resultsWhileTestInProgress()
-        local runner = LuaUnit:new()
+        local runner = lu.LuaUnit:new()
         local MyMocker = {}
         MyMocker.new = function()
             local t = Mock:new()
             t.startTest = function(self, testName ) 
                 if self.result.currentNode.number == 1 then
-                    assertEquals( self.result.currentNode.number, 1 )
-                    assertEquals( self.result.currentNode.testName, 'MyTestWithFailures.testOk' )
-                    assertEquals( self.result.currentNode.className, 'MyTestWithFailures' )
-                    assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
+                    lu.assertEquals( self.result.currentNode.number, 1 )
+                    lu.assertEquals( self.result.currentNode.testName, 'MyTestWithFailures.testOk' )
+                    lu.assertEquals( self.result.currentNode.className, 'MyTestWithFailures' )
+                    lu.assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
                 elseif self.result.currentNode.number == 2 then
-                    assertEquals( self.result.currentNode.number, 2 )
-                    assertEquals( self.result.currentNode.testName, 'MyTestWithFailures.testWithFailure1' )
-                    assertEquals( self.result.currentNode.className, 'MyTestWithFailures' )
-                    assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
+                    lu.assertEquals( self.result.currentNode.number, 2 )
+                    lu.assertEquals( self.result.currentNode.testName, 'MyTestWithFailures.testWithFailure1' )
+                    lu.assertEquals( self.result.currentNode.className, 'MyTestWithFailures' )
+                    lu.assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
                 end
             end
             t.endTest = function(self, status)
                 if self.result.currentNode.number == 1 then
-                    assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
+                    lu.assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
                 elseif self.result.currentNode.number == 2 then
-                    assertEquals( self.result.currentNode.status, lu.NodeStatus.FAIL )
+                    lu.assertEquals( self.result.currentNode.status, lu.NodeStatus.FAIL )
                 end
             end
             return t
@@ -1812,8 +1812,8 @@ TestLuaUnitResults = {} -- class
         runner:runSuite( 'MyTestWithFailures' )
         m = runner.output
 
-        assertEquals( m.calls[1][1], 'startSuite' )
-        assertEquals(#m.calls[1], 2 )
+        lu.assertEquals( m.calls[1][1], 'startSuite' )
+        lu.assertEquals(#m.calls[1], 2 )
     end
 
 -- To execute me , use: lua run_unit_tests.lua
