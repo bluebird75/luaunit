@@ -184,23 +184,23 @@ TestLuaUnitUtilities = {} --class
     end
 
     function TestLuaUnitUtilities:test_prettystr()
-        assertEquals( lu.private.prettystr( 1 ), "1" )
-        assertEquals( lu.private.prettystr( 1.1 ), "1.1" )
-        assertEquals( lu.private.prettystr( 'abc' ), '"abc"' )
-        assertEquals( lu.private.prettystr( 'ab\ncd' ), '"ab\ncd"' )
-        assertEquals( lu.private.prettystr( 'ab\ncd', true ), '"ab\\ncd"' )
-        assertEquals( lu.private.prettystr( 'ab"cd' ), "'ab\"cd'" )
-        assertEquals( lu.private.prettystr( "ab'cd" ), '"ab\'cd"' )
-        assertStrContains( lu.private.prettystr( {1,2,3} ), "{1, 2, 3}" )
-        assertStrContains( lu.private.prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
+        assertEquals( lu.prettystr( 1 ), "1" )
+        assertEquals( lu.prettystr( 1.1 ), "1.1" )
+        assertEquals( lu.prettystr( 'abc' ), '"abc"' )
+        assertEquals( lu.prettystr( 'ab\ncd' ), '"ab\ncd"' )
+        assertEquals( lu.prettystr( 'ab\ncd', true ), '"ab\\ncd"' )
+        assertEquals( lu.prettystr( 'ab"cd' ), "'ab\"cd'" )
+        assertEquals( lu.prettystr( "ab'cd" ), '"ab\'cd"' )
+        assertStrContains( lu.prettystr( {1,2,3} ), "{1, 2, 3}" )
+        assertStrContains( lu.prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
         local t1 = {1,2,3,4,5,6}
-        assertEquals(lu.private.prettystr(t1), "{1, 2, 3, 4, 5, 6}" )
+        assertEquals(lu.prettystr(t1), "{1, 2, 3, 4, 5, 6}" )
 
         local t2 = {'aaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbb', 'ccccccccccccccccc', 'ddddddddddddd', 'eeeeeeeeeeeeeeeeee', 'ffffffffffffffff', 'ggggggggggg', 'hhhhhhhhhhhhhh'}
-        assertEquals(lu.private.prettystr(t2), table.concat( {
+        assertEquals(lu.prettystr(t2), table.concat( {
             '{',
             '    "aaaaaaaaaaaaaaaaa",',
             '    "bbbbbbbbbbbbbbbbbbbb",',
@@ -214,7 +214,7 @@ TestLuaUnitUtilities = {} --class
         } , '\n' ) )
 
         local t2bis = { 1,2,3,'12345678901234567890123456789012345678901234567890123456789012345678901234567890', 4,5,6 }
-        assertEquals(lu.private.prettystr(t2bis), [[{
+        assertEquals(lu.prettystr(t2bis), [[{
     1,
     2,
     3,
@@ -226,7 +226,7 @@ TestLuaUnitUtilities = {} --class
 
         local t3 = { l1a = { l2a = { l3a='012345678901234567890123456789012345678901234567890123456789' }, 
         l2b='bbb' }, l1b = 4}
-        assertEquals(lu.private.prettystr(t3), [[{
+        assertEquals(lu.prettystr(t3), [[{
     l1a={
         l2a={l3a="012345678901234567890123456789012345678901234567890123456789"},
         l2b="bbb"
@@ -235,10 +235,10 @@ TestLuaUnitUtilities = {} --class
 }]] )
 
         local t4 = { a=1, b=2, c=3 }
-        assertEquals(lu.private.prettystr(t4), '{a=1, b=2, c=3}' )
+        assertEquals(lu.prettystr(t4), '{a=1, b=2, c=3}' )
 
         local t5 = { t1, t2, t3 }
-        assertEquals( lu.private.prettystr(t5), [[{
+        assertEquals( lu.prettystr(t5), [[{
     {1, 2, 3, 4, 5, 6},
     {
         "aaaaaaaaaaaaaaaaa",
@@ -260,7 +260,7 @@ TestLuaUnitUtilities = {} --class
 }]] )
 
         local t6 = { t1=t1, t2=t2, t3=t3, t4=t4 }
-        assertEquals(lu.private.prettystr(t6),[[{
+        assertEquals(lu.prettystr(t6),[[{
     t1={1, 2, 3, 4, 5, 6},
     t2={
         "aaaaaaaaaaaaaaaaa",
@@ -286,15 +286,15 @@ TestLuaUnitUtilities = {} --class
     function TestLuaUnitUtilities:test_prettstrTableRecursion()
         local t = {}
         t.__index = t
-        assertStrMatches(lu.private.prettystr(t), "<table: 0?x?[%x]+> {__index=<table: 0?x?[%x]+>}")
+        assertStrMatches(lu.prettystr(t), "<table: 0?x?[%x]+> {__index=<table: 0?x?[%x]+>}")
 
         local t1 = {}
         local t2 = {}
         t1.t2 = t2
         t2.t1 = t1
         local t3 = { t1 = t1, t2 = t2 }
-        assertStrMatches(lu.private.prettystr(t1), "<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}}")
-        assertStrMatches(lu.private.prettystr(t3), [[<table: 0?x?[%x]+> {
+        assertStrMatches(lu.prettystr(t1), "<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}}")
+        assertStrMatches(lu.prettystr(t3), [[<table: 0?x?[%x]+> {
     t1=<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}},
     t2=<table: 0?x?[%x]+>
 }]])
@@ -302,7 +302,7 @@ TestLuaUnitUtilities = {} --class
         local t4 = {1,2}
         local t5 = {3,4,t4}
         t4[3] = t5
-        assertStrMatches(lu.private.prettystr(t5), "<table: 0?x?[%x]+> {3, 4, <table: 0?x?[%x]+> {1, 2, <table: 0?x?[%x]+>}}")
+        assertStrMatches(lu.prettystr(t5), "<table: 0?x?[%x]+> {3, 4, <table: 0?x?[%x]+> {1, 2, <table: 0?x?[%x]+>}}")
     end
 
     function TestLuaUnitUtilities:test_IsFunction()

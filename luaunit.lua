@@ -347,7 +347,7 @@ function table.keytostring(k)
     if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
         return k
     else
-        return M.private.prettystr(k)
+        return M.prettystr(k)
     end
 end
 
@@ -432,7 +432,7 @@ local function prettystr( v, keeponeline )
     end
     return s
 end
-M.private.prettystr = prettystr
+M.prettystr = prettystr
 
 local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
     if "string" == type( v ) then
@@ -1313,7 +1313,7 @@ M.LuaUnit = {
 if EXPORT_ASSERT_TO_GLOBALS then
     LuaUnit = M.LuaUnit
 end
-local LuaUnit_MT = { __index = LuaUnit }
+local LuaUnit_MT = { __index = M.LuaUnit }
 
     function M.LuaUnit:new()
         local t = {}
@@ -1369,7 +1369,7 @@ local LuaUnit_MT = { __index = LuaUnit }
 
         local testNames = {}
         for k, v in pairs(_G) do 
-            if LuaUnit.isTestName( k ) then
+            if M.LuaUnit.isTestName( k ) then
                 table.insert( testNames , k )
             end
         end
@@ -1474,11 +1474,11 @@ local LuaUnit_MT = { __index = LuaUnit }
         end
 
         if result['help'] then
-            LuaUnit.help()
+            M.LuaUnit.help()
         end
 
         if result['version'] then
-            LuaUnit.version()
+            M.LuaUnit.version()
         end
 
         if state ~= nil then
@@ -1755,7 +1755,7 @@ local LuaUnit_MT = { __index = LuaUnit }
     function M.LuaUnit.expandOneClass( result, className, classInstance )
         -- add all test methods of classInstance to result
         for methodName, methodInstance in sortedPairs(classInstance) do
-            if LuaUnit.isFunction(methodInstance) and LuaUnit.isMethodTestName( methodName ) then
+            if M.LuaUnit.isFunction(methodInstance) and M.LuaUnit.isMethodTestName( methodName ) then
                 table.insert( result, { className..'.'..methodName, classInstance } )
             end
         end
@@ -1768,21 +1768,21 @@ local LuaUnit_MT = { __index = LuaUnit }
 
         for i,v in ipairs( listOfNameAndInst ) do
             name, instance = v[1], v[2]
-            if LuaUnit.isFunction(instance) then
+            if M.LuaUnit.isFunction(instance) then
                 table.insert( result, { name, instance } )
             else 
                 if type(instance) ~= 'table' then
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 end
-                if LuaUnit.isClassMethod( name ) then
-                    className, methodName = LuaUnit.splitClassMethod( name )
+                if M.LuaUnit.isClassMethod( name ) then
+                    className, methodName = M.LuaUnit.splitClassMethod( name )
                     methodInstance = instance[methodName]
                     if methodInstance == nil then
                         error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
                     end
                     table.insert( result, { name, instance } )
                 else
-                    LuaUnit.expandOneClass( result, name, instance )
+                    M.LuaUnit.expandOneClass( result, name, instance )
                 end
             end
         end
@@ -1797,7 +1797,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         for i,v in ipairs( listOfNameAndInst ) do
             name, instance = v[1], v[2]
 
-            if patternFilter and not LuaUnit.patternInclude( patternFilter, name ) then
+            if patternFilter and not M.LuaUnit.patternInclude( patternFilter, name ) then
                 table.insert( excluded, v )
             else
                 table.insert( included, v )
@@ -1823,14 +1823,14 @@ local LuaUnit_MT = { __index = LuaUnit }
 
         for i,v in ipairs( filteredList ) do
             local name, instance = v[1], v[2]
-            if LuaUnit.isFunction(instance) then
+            if M.LuaUnit.isFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
             else 
                 if type(instance) ~= 'table' then
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 else
-                    assert( LuaUnit.isClassMethod( name ) )
-                    className, methodName = LuaUnit.splitClassMethod( name )
+                    assert( M.LuaUnit.isClassMethod( name ) )
+                    className, methodName = M.LuaUnit.splitClassMethod( name )
                     methodInstance = instance[methodName]
                     if methodInstance == nil then
                         error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
@@ -1854,8 +1854,8 @@ local LuaUnit_MT = { __index = LuaUnit }
         local listOfNameAndInst = {}
 
         for i,name in ipairs( listOfName ) do
-            if LuaUnit.isClassMethod( name ) then
-                className, methodName = LuaUnit.splitClassMethod( name )
+            if M.LuaUnit.isClassMethod( name ) then
+                className, methodName = M.LuaUnit.splitClassMethod( name )
                 instanceName = className
                 instance = _G[instanceName]
 
@@ -1901,7 +1901,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         -- If arguments are passed, they must be strings of the class names 
         -- that you want to run or generic command line arguments (-o, -p, -v, ...)
 
-        local runner = LuaUnit.new()
+        local runner = M.LuaUnit.new()
         return runner:runSuite(...)
     end
 
@@ -1909,8 +1909,8 @@ local LuaUnit_MT = { __index = LuaUnit }
 
         local args={...};
         if args[1] ~= nil and type(args[1]) == 'table' and args[1].__class__ == 'LuaUnit' then
-            -- run was called with the syntax LuaUnit:runSuite()
-            -- we support both LuaUnit.run() and LuaUnit:run()
+            -- run was called with the syntax M.LuaUnit:runSuite()
+            -- we support both M.LuaUnit.run() and M.LuaUnit:run()
             -- strip out the first argument
             table.remove(args,1)
         end
@@ -1920,7 +1920,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         end
 
         local no_error, error_msg, options, val
-        no_error, val = pcall( LuaUnit.parseCmdLine, args )
+        no_error, val = pcall( M.LuaUnit.parseCmdLine, args )
         if not no_error then 
             error_msg = val
             print(error_msg)
@@ -1962,7 +1962,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         testNames = options['testNames']
 
         if testNames == nil then
-            testNames = LuaUnit.collectTests()
+            testNames = M.LuaUnit.collectTests()
         end
 
         self:runSuiteByNames( testNames )
