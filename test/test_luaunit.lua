@@ -191,8 +191,8 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( lu.prettystr( 'ab\ncd', true ), '"ab\\ncd"' )
         lu.assertEquals( lu.prettystr( 'ab"cd' ), "'ab\"cd'" )
         lu.assertEquals( lu.prettystr( "ab'cd" ), '"ab\'cd"' )
-        assertStrContains( lu.prettystr( {1,2,3} ), "{1, 2, 3}" )
-        assertStrContains( lu.prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
+        lu.assertStrContains( lu.prettystr( {1,2,3} ), "{1, 2, 3}" )
+        lu.assertStrContains( lu.prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
@@ -286,15 +286,15 @@ TestLuaUnitUtilities = {} --class
     function TestLuaUnitUtilities:test_prettstrTableRecursion()
         local t = {}
         t.__index = t
-        assertStrMatches(lu.prettystr(t), "<table: 0?x?[%x]+> {__index=<table: 0?x?[%x]+>}")
+        lu.assertStrMatches(lu.prettystr(t), "<table: 0?x?[%x]+> {__index=<table: 0?x?[%x]+>}")
 
         local t1 = {}
         local t2 = {}
         t1.t2 = t2
         t2.t1 = t1
         local t3 = { t1 = t1, t2 = t2 }
-        assertStrMatches(lu.prettystr(t1), "<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}}")
-        assertStrMatches(lu.prettystr(t3), [[<table: 0?x?[%x]+> {
+        lu.assertStrMatches(lu.prettystr(t1), "<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}}")
+        lu.assertStrMatches(lu.prettystr(t3), [[<table: 0?x?[%x]+> {
     t1=<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}},
     t2=<table: 0?x?[%x]+>
 }]])
@@ -302,7 +302,7 @@ TestLuaUnitUtilities = {} --class
         local t4 = {1,2}
         local t5 = {3,4,t4}
         t4[3] = t5
-        assertStrMatches(lu.prettystr(t5), "<table: 0?x?[%x]+> {3, 4, <table: 0?x?[%x]+> {1, 2, <table: 0?x?[%x]+>}}")
+        lu.assertStrMatches(lu.prettystr(t5), "<table: 0?x?[%x]+> {3, 4, <table: 0?x?[%x]+> {1, 2, <table: 0?x?[%x]+>}}")
     end
 
     function TestLuaUnitUtilities:test_IsFunction()
@@ -683,34 +683,34 @@ TestLuaUnitAssertions = {} --class
     end
 
     function TestLuaUnitAssertions:test_assertStrContains()
-        assertStrContains( 'abcdef', 'abc' )
-        assertStrContains( 'abcdef', 'bcd' )
-        assertStrContains( 'abcdef', 'abcdef' )
-        assertStrContains( 'abc0', 0 )
-        lu.assertError( assertStrContains, 'ABCDEF', 'abc' )
-        lu.assertError( assertStrContains, '', 'abc' )
-        assertStrContains( 'abcdef', '' )
-        lu.assertError( assertStrContains, 'abcdef', 'abcx' )
-        lu.assertError( assertStrContains, 'abcdef', 'abcdefg' )
-        lu.assertError( assertStrContains, 'abcdef', 0 ) 
-        lu.assertError( assertStrContains, 'abcdef', {} ) 
-        lu.assertError( assertStrContains, 'abcdef', nil ) 
+        lu.assertStrContains( 'abcdef', 'abc' )
+        lu.assertStrContains( 'abcdef', 'bcd' )
+        lu.assertStrContains( 'abcdef', 'abcdef' )
+        lu.assertStrContains( 'abc0', 0 )
+        lu.assertError( lu.assertStrContains, 'ABCDEF', 'abc' )
+        lu.assertError( lu.assertStrContains, '', 'abc' )
+        lu.assertStrContains( 'abcdef', '' )
+        lu.assertError( lu.assertStrContains, 'abcdef', 'abcx' )
+        lu.assertError( lu.assertStrContains, 'abcdef', 'abcdefg' )
+        lu.assertError( lu.assertStrContains, 'abcdef', 0 ) 
+        lu.assertError( lu.assertStrContains, 'abcdef', {} ) 
+        lu.assertError( lu.assertStrContains, 'abcdef', nil ) 
 
-        assertStrContains( 'abcdef', 'abc', false )
-        assertStrContains( 'abcdef', 'abc', true )
-        assertStrContains( 'abcdef', 'a.c', true )
+        lu.assertStrContains( 'abcdef', 'abc', false )
+        lu.assertStrContains( 'abcdef', 'abc', true )
+        lu.assertStrContains( 'abcdef', 'a.c', true )
 
-        lu.assertError( assertStrContains, 'abcdef', '.abc', true )
+        lu.assertError( lu.assertStrContains, 'abcdef', '.abc', true )
     end
 
     function TestLuaUnitAssertions:test_assertStrIContains()
-        assertStrIContains( 'ABcdEF', 'aBc' )
-        assertStrIContains( 'abCDef', 'bcd' )
-        assertStrIContains( 'abcdef', 'abcDef' )
-        lu.assertError( assertStrIContains, '', 'aBc' )
-        assertStrIContains( 'abcDef', '' )
-        lu.assertError( assertStrIContains, 'abcdef', 'abcx' )
-        lu.assertError( assertStrIContains, 'abcdef', 'abcdefg' )
+        lu.assertStrIContains( 'ABcdEF', 'aBc' )
+        lu.assertStrIContains( 'abCDef', 'bcd' )
+        lu.assertStrIContains( 'abcdef', 'abcDef' )
+        lu.assertError( lu.assertStrIContains, '', 'aBc' )
+        lu.assertStrIContains( 'abcDef', '' )
+        lu.assertError( lu.assertStrIContains, 'abcdef', 'abcx' )
+        lu.assertError( lu.assertStrIContains, 'abcdef', 'abcdefg' )
     end
 
     function TestLuaUnitAssertions:test_assertNotStrContains()
@@ -745,20 +745,20 @@ TestLuaUnitAssertions = {} --class
     end
 
     function TestLuaUnitAssertions:test_assertStrMatches()
-        assertStrMatches( 'abcdef', 'abcdef' )
-        assertStrMatches( 'abcdef', '..cde.' )
-        lu.assertError( assertStrMatches, 'abcdef', '..def')
-        lu.assertError( assertStrMatches, 'abCDEf', '..cde.')
-        assertStrMatches( 'abcdef', 'bcdef', 2 )
-        assertStrMatches( 'abcdef', 'bcde', 2, 5 )
-        assertStrMatches( 'abcdef', 'b..e', 2, 5 )
-        assertStrMatches( 'abcdef', 'ab..e', nil, 5 )
-        lu.assertError( assertStrMatches, 'abcdef', '' )
-        lu.assertError( assertStrMatches, '', 'abcdef' )
+        lu.assertStrMatches( 'abcdef', 'abcdef' )
+        lu.assertStrMatches( 'abcdef', '..cde.' )
+        lu.assertError( lu.assertStrMatches, 'abcdef', '..def')
+        lu.assertError( lu.assertStrMatches, 'abCDEf', '..cde.')
+        lu.assertStrMatches( 'abcdef', 'bcdef', 2 )
+        lu.assertStrMatches( 'abcdef', 'bcde', 2, 5 )
+        lu.assertStrMatches( 'abcdef', 'b..e', 2, 5 )
+        lu.assertStrMatches( 'abcdef', 'ab..e', nil, 5 )
+        lu.assertError( lu.assertStrMatches, 'abcdef', '' )
+        lu.assertError( lu.assertStrMatches, '', 'abcdef' )
 
-        lu.assertError( assertStrMatches, 'abcdef', 0 ) 
-        lu.assertError( assertStrMatches, 'abcdef', {} ) 
-        lu.assertError( assertStrMatches, 'abcdef', nil ) 
+        lu.assertError( lu.assertStrMatches, 'abcdef', 0 ) 
+        lu.assertError( lu.assertStrMatches, 'abcdef', {} ) 
+        lu.assertError( lu.assertStrMatches, 'abcdef', nil ) 
     end
 
     function TestLuaUnitAssertions:test_assertItemsEquals()
@@ -1185,23 +1185,23 @@ TestLuaUnitErrorMsg = {} --class
     end
 
     function TestLuaUnitErrorMsg:test_assertStrContains()
-        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )
-        lu.assertErrorMsgEquals( 'Error, substring "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc' )
-        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx' )
+        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'xxx' )
+        lu.assertErrorMsgEquals( 'Error, substring "aBc" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'aBc' )
+        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', lu.assertStrContains, '', 'xxx' )
 
-        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx', false )
-        lu.assertErrorMsgEquals( 'Error, substring "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc', false )
-        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx', false )
+        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'xxx', false )
+        lu.assertErrorMsgEquals( 'Error, substring "aBc" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'aBc', false )
+        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', lu.assertStrContains, '', 'xxx', false )
 
-        lu.assertErrorMsgEquals( 'Error, regexp "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx', true )
-        lu.assertErrorMsgEquals( 'Error, regexp "aBc" was not found in string "abcdef"', assertStrContains, 'abcdef', 'aBc', true )
-        lu.assertErrorMsgEquals( 'Error, regexp "xxx" was not found in string ""', assertStrContains, '', 'xxx', true )
+        lu.assertErrorMsgEquals( 'Error, regexp "xxx" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'xxx', true )
+        lu.assertErrorMsgEquals( 'Error, regexp "aBc" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'aBc', true )
+        lu.assertErrorMsgEquals( 'Error, regexp "xxx" was not found in string ""', lu.assertStrContains, '', 'xxx', true )
 
     end 
 
     function TestLuaUnitErrorMsg:test_assertStrIContains()
-        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', assertStrContains, 'abcdef', 'xxx' )
-        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', assertStrContains, '', 'xxx' )
+        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'xxx' )
+        lu.assertErrorMsgEquals( 'Error, substring "xxx" was not found in string ""', lu.assertStrContains, '', 'xxx' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotStrContains()
@@ -1216,7 +1216,7 @@ TestLuaUnitErrorMsg = {} --class
     end 
 
     function TestLuaUnitErrorMsg:test_assertStrMatches()
-        lu.assertErrorMsgEquals('Error, pattern "xxx" was not matched by string "abcdef"', assertStrMatches, 'abcdef', 'xxx' )
+        lu.assertErrorMsgEquals('Error, pattern "xxx" was not matched by string "abcdef"', lu.assertStrMatches, 'abcdef', 'xxx' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsNumber()
