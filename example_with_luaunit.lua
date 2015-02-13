@@ -1,4 +1,4 @@
-
+EXPORT_ASSERT_TO_GLOBALS = true
 require('luaunit')
 
 TestToto = {} --class
