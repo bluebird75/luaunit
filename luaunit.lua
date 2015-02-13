@@ -1304,14 +1304,18 @@ end
 --
 ----------------------------------------------------------------
 
-LuaUnit = {
+M.LuaUnit = {
     outputType = TextOutput,
     verbosity = M.VERBOSITY_DEFAULT,
     __class__ = 'LuaUnit'
 }
+
+if EXPORT_ASSERT_TO_GLOBALS then
+    LuaUnit = M.LuaUnit
+end
 local LuaUnit_MT = { __index = LuaUnit }
 
-    function LuaUnit:new()
+    function M.LuaUnit:new()
         local t = {}
         setmetatable( t, LuaUnit_MT )
         return t
@@ -1319,17 +1323,17 @@ local LuaUnit_MT = { __index = LuaUnit }
 
     -----------------[[ Utility methods ]]---------------------
 
-    function LuaUnit.isFunction(aObject) 
+    function M.LuaUnit.isFunction(aObject) 
         -- return true if aObject is a function
         return 'function' == type(aObject)
     end
 
-    function LuaUnit.isClassMethod(aName)
+    function M.LuaUnit.isClassMethod(aName)
         -- return true if aName contains a class + a method name in the form class:method
         return not not string.find(aName, '.', nil, true )
     end
 
-    function LuaUnit.splitClassMethod(someName)
+    function M.LuaUnit.splitClassMethod(someName)
         -- return a pair className, methodName for a name in the form class:method
         -- return nil if not a class + method name
         -- name is class + method
@@ -1341,7 +1345,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         return className, methodName
     end
 
-    function LuaUnit.isMethodTestName( s )
+    function M.LuaUnit.isMethodTestName( s )
         -- return true is the name matches the name of a test method
         -- default rule is that is starts with 'Test' or with 'test'
         if string.sub(s,1,4):lower() == 'test' then 
@@ -1350,7 +1354,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         return false
     end
 
-    function LuaUnit.isTestName( s )
+    function M.LuaUnit.isTestName( s )
         -- return true is the name matches the name of a test
         -- default rule is that is starts with 'Test' or with 'test'
         if string.sub(s,1,4):lower() == 'test' then 
@@ -1359,7 +1363,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         return false
     end
 
-    function LuaUnit.collectTests()
+    function M.LuaUnit.collectTests()
         -- return a list of all test names in the global namespace
         -- that match LuaUnit.isTestName
 
@@ -1373,7 +1377,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         return testNames 
     end
 
-    function LuaUnit.parseCmdLine( cmdLine )
+    function M.LuaUnit.parseCmdLine( cmdLine )
         -- parse the command line 
         -- Supported command line parameters:
         -- --verbose, -v: increase verbosity
@@ -1484,17 +1488,17 @@ local LuaUnit_MT = { __index = LuaUnit }
         return result
     end
 
-    function LuaUnit.help()
+    function M.LuaUnit.help()
         print(M.USAGE)
         os.exit(0)
     end
 
-    function LuaUnit.version()
+    function M.LuaUnit.version()
         print('LuaUnit v'..M.VERSION..' by Philippe Fremy <phil@freehackers.org>')
         os.exit(0)
     end
 
-    function LuaUnit.patternInclude( patternFilter, expr )
+    function M.LuaUnit.patternInclude( patternFilter, expr )
         -- check if any of patternFilter is contained in expr. If so, return true.
         -- return false if None of the patterns are contained in expr
         -- if patternFilter is nil, return true (no filtering)
@@ -1552,7 +1556,7 @@ local LuaUnit_MT = { __index = LuaUnit }
             return (self.status ~= NodeStatus.PASS)
     end
 
-    function LuaUnit:startSuite(testCount, nonSelectedCount)
+    function M.LuaUnit:startSuite(testCount, nonSelectedCount)
         self.result = {}
         self.result.failureCount = 0
         self.result.testCount = testCount
@@ -1577,12 +1581,12 @@ local LuaUnit_MT = { __index = LuaUnit }
         self.output:startSuite()
     end
 
-    function LuaUnit:startClass( className )
+    function M.LuaUnit:startClass( className )
         self.result.currentClassName = className
         self.output:startClass( className )
     end
 
-    function LuaUnit:startTest( testName  )
+    function M.LuaUnit:startTest( testName  )
         self.result.currentTestNumber = self.result.currentTestNumber + 1
         self.result.currentNode = NodeStatus:new(
             self.result.currentTestNumber,
@@ -1594,7 +1598,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self.output:startTest( testName )
     end
 
-    function LuaUnit:addFailure( errorMsg, stackTrace )
+    function M.LuaUnit:addFailure( errorMsg, stackTrace )
         if self.result.currentNode.status == NodeStatus.PASS then
             self.result.failureCount = self.result.failureCount + 1
             self.result.currentNode:fail( errorMsg, stackTrace )
@@ -1603,7 +1607,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self.output:addFailure( errorMsg, stackTrace )
     end
 
-    function LuaUnit:endTest()
+    function M.LuaUnit:endTest()
         -- print( 'endTEst() '..prettystr(self.result.currentNode))
         -- print( 'endTEst() '..prettystr(self.result.currentNode:hasFailure()))
         self.result.currentNode.duration = os.clock() - self.result.currentNode.startTime 
@@ -1612,11 +1616,11 @@ local LuaUnit_MT = { __index = LuaUnit }
         self.result.currentNode = nil
     end
 
-    function LuaUnit:endClass()
+    function M.LuaUnit:endClass()
         self.output:endClass()
     end
 
-    function LuaUnit:endSuite()
+    function M.LuaUnit:endSuite()
         if self.result.suiteStarted == false then
             error('LuaUnit:endSuite() -- suite was already ended' )
         end
@@ -1625,7 +1629,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self.output:endSuite()
     end
 
-    function LuaUnit:setOutputType(outputType)
+    function M.LuaUnit:setOutputType(outputType)
         -- default to text
         -- tap produces results according to TAP format
         if outputType:upper() == "NIL" then
@@ -1647,11 +1651,11 @@ local LuaUnit_MT = { __index = LuaUnit }
         error( 'No such format: '..outputType,2)
     end
 
-    function LuaUnit:setVerbosity( verbosity )
+    function M.LuaUnit:setVerbosity( verbosity )
         self.verbosity = verbosity
     end
 
-    function LuaUnit:setFname( fname )
+    function M.LuaUnit:setFname( fname )
         self.fname = fname
     end
 
@@ -1659,7 +1663,7 @@ local LuaUnit_MT = { __index = LuaUnit }
 
     local SPLITTER = '\n>----------<\n'
 
-    function LuaUnit:protectedCall( classInstance , methodInstance, prettyFuncName)
+    function M.LuaUnit:protectedCall( classInstance , methodInstance, prettyFuncName)
         -- if classInstance is nil, this is just a function call
         -- else, it's method of a class being called.
 
@@ -1694,7 +1698,7 @@ local LuaUnit_MT = { __index = LuaUnit }
     end
 
 
-    function LuaUnit:execOneFunction(className, methodName, classInstance, methodInstance)
+    function M.LuaUnit:execOneFunction(className, methodName, classInstance, methodInstance)
         -- When executing a test function, className and classInstance must be nil
         -- When executing a class method, all parameters must be set
 
@@ -1748,7 +1752,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self:endTest()
     end
 
-    function LuaUnit.expandOneClass( result, className, classInstance )
+    function M.LuaUnit.expandOneClass( result, className, classInstance )
         -- add all test methods of classInstance to result
         for methodName, methodInstance in sortedPairs(classInstance) do
             if LuaUnit.isFunction(methodInstance) and LuaUnit.isMethodTestName( methodName ) then
@@ -1757,7 +1761,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         end
     end
 
-    function LuaUnit.expandClasses( listOfNameAndInst )
+    function M.LuaUnit.expandClasses( listOfNameAndInst )
         -- expand all classes (proveded as {className, classInstance}) to a list of {className.methodName, classInstance}
         -- functions and methods remain untouched
         local result = {}
@@ -1786,7 +1790,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         return result
     end
 
-    function LuaUnit.applyPatternFilter( patternFilter, listOfNameAndInst )
+    function M.LuaUnit.applyPatternFilter( patternFilter, listOfNameAndInst )
         local included = {}
         local excluded = {}
 
@@ -1803,7 +1807,7 @@ local LuaUnit_MT = { __index = LuaUnit }
 
     end
 
-    function LuaUnit:runSuiteByInstances( listOfNameAndInst )
+    function M.LuaUnit:runSuiteByInstances( listOfNameAndInst )
         -- Run an explicit list of tests. All test instances and names must be supplied.
         -- each test must be one of:
         --   * { function name, function instance }
@@ -1843,7 +1847,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self:endSuite()
     end
 
-    function LuaUnit:runSuiteByNames( listOfName )
+    function M.LuaUnit:runSuiteByNames( listOfName )
         -- Run an explicit list of test names
 
         local  className, methodName, instanceName, instance, methodInstance
@@ -1851,7 +1855,7 @@ local LuaUnit_MT = { __index = LuaUnit }
 
         for i,name in ipairs( listOfName ) do
             if LuaUnit.isClassMethod( name ) then
-                className, methodName = LuaUnit.    splitClassMethod( name )
+                className, methodName = LuaUnit.splitClassMethod( name )
                 instanceName = className
                 instance = _G[instanceName]
 
@@ -1888,7 +1892,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         self:runSuiteByInstances( listOfNameAndInst )
     end
 
-    function LuaUnit.run(...)
+    function M.LuaUnit.run(...)
         -- Run some specific test classes.
         -- If no arguments are passed, run the class names specified on the
         -- command line. If no class name is specified on the command line
@@ -1901,7 +1905,7 @@ local LuaUnit_MT = { __index = LuaUnit }
         return runner:runSuite(...)
     end
 
-    function LuaUnit:runSuite( ... )
+    function M.LuaUnit:runSuite( ... )
 
         local args={...};
         if args[1] ~= nil and type(args[1]) == 'table' and args[1].__class__ == 'LuaUnit' then
