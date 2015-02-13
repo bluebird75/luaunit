@@ -568,22 +568,22 @@ TestLuaUnitAssertions = {} --class
     end
 
     function TestLuaUnitAssertions:test_assertAlmostEquals()
-        assertAlmostEquals( 1, 1, 0.1 )
+        lu.assertAlmostEquals( 1, 1, 0.1 )
 
-        assertAlmostEquals( 1, 1.1, 0.2 )
-        assertAlmostEquals( -1, -1.1, 0.2 )
-        assertAlmostEquals( 0.1, -0.1, 0.3 )
+        lu.assertAlmostEquals( 1, 1.1, 0.2 )
+        lu.assertAlmostEquals( -1, -1.1, 0.2 )
+        lu.assertAlmostEquals( 0.1, -0.1, 0.3 )
 
-        assertAlmostEquals( 1, 1.1, 0.1 )
-        assertAlmostEquals( -1, -1.1, 0.1 )
-        assertAlmostEquals( 0.1, -0.1, 0.2 )
+        lu.assertAlmostEquals( 1, 1.1, 0.1 )
+        lu.assertAlmostEquals( -1, -1.1, 0.1 )
+        lu.assertAlmostEquals( 0.1, -0.1, 0.2 )
 
-        lu.assertError( assertAlmostEquals, 1, 1.11, 0.1 )
-        lu.assertError( assertAlmostEquals, -1, -1.11, 0.1 )
-        lu.assertError( assertAlmostEquals, -1, 1, nil )
-        lu.assertError( assertAlmostEquals, -1, nil, 0 )
-        lu.assertError( assertAlmostEquals, 1, 1.1, 0 )
-        lu.assertError( assertAlmostEquals, 1, 1.1, -0.1 )
+        lu.assertError( lu.assertAlmostEquals, 1, 1.11, 0.1 )
+        lu.assertError( lu.assertAlmostEquals, -1, -1.11, 0.1 )
+        lu.assertError( lu.assertAlmostEquals, -1, 1, nil )
+        lu.assertError( lu.assertAlmostEquals, -1, nil, 0 )
+        lu.assertError( lu.assertAlmostEquals, 1, 1.1, 0 )
+        lu.assertError( lu.assertAlmostEquals, 1, 1.1, -0.1 )
     end
 
     function TestLuaUnitAssertions:test_assertNotEquals()
@@ -762,13 +762,13 @@ TestLuaUnitAssertions = {} --class
     end
 
     function TestLuaUnitAssertions:test_assertItemsEquals()
-        assertItemsEquals(nil, nil)
-        assertItemsEquals({},{})
-        assertItemsEquals({1,2,3}, {3,1,2})
-        assertItemsEquals({nil},{nil})
-        assertItemsEquals({one=1,two=2,three=3}, {two=2,one=1,three=3})
-        assertItemsEquals({one=1,two=2,three=3}, {a=1,b=2,c=3})
-        assertItemsEquals({1,2,three=3}, {3,1,two=2})
+        lu.assertItemsEquals(nil, nil)
+        lu.assertItemsEquals({},{})
+        lu.assertItemsEquals({1,2,3}, {3,1,2})
+        lu.assertItemsEquals({nil},{nil})
+        lu.assertItemsEquals({one=1,two=2,three=3}, {two=2,one=1,three=3})
+        lu.assertItemsEquals({one=1,two=2,three=3}, {a=1,b=2,c=3})
+        lu.assertItemsEquals({1,2,three=3}, {3,1,two=2})
 
         lu.assertError(assertItemsEquals, {1}, {})
         lu.assertError(assertItemsEquals, nil, {1,2,3})
@@ -780,18 +780,18 @@ TestLuaUnitAssertions = {} --class
         lu.assertError(assertItemsEquals, {1,2,three=3}, {3,4,a=1,b=2})
         lu.assertError(assertItemsEquals, {1,2,three=3,four=4}, {3,a=1,b=2})
 
-        assertItemsEquals({one=1,two={1,2},three=3}, {one={1,2},two=1,three=3})
-        assertItemsEquals({one=1,
+        lu.assertItemsEquals({one=1,two={1,2},three=3}, {one={1,2},two=1,three=3})
+        lu.assertItemsEquals({one=1,
                            two={1,{3,2,one=1}},
                            three=3}, 
                         {two={1,{3,2,one=1}},
                          one=1,
                          three=3})
         -- itemsEquals is not recursive:
-        lu.assertError( assertItemsEquals,{1,{2,1},3}, {3,1,{1,2}})
-        lu.assertError( assertItemsEquals,{one=1,two={1,2},three=3}, {one={2,1},two=1,three=3})
-        lu.assertError( assertItemsEquals,{one=1,two={1,{3,2,one=1}},three=3}, {two={{3,one=1,2},1},one=1,three=3})
-        lu.assertError( assertItemsEquals,{one=1,two={1,{3,2,one=1}},three=3}, {two={{3,2,one=1},1},one=1,three=3})
+        lu.assertError( lu.assertItemsEquals,{1,{2,1},3}, {3,1,{1,2}})
+        lu.assertError( lu.assertItemsEquals,{one=1,two={1,2},three=3}, {one={2,1},two=1,three=3})
+        lu.assertError( lu.assertItemsEquals,{one=1,two={1,{3,2,one=1}},three=3}, {two={{3,one=1,2},1},one=1,three=3})
+        lu.assertError( lu.assertItemsEquals,{one=1,two={1,{3,2,one=1}},three=3}, {two={{3,2,one=1},1},one=1,three=3})
 
         lu.assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,three=2})
         lu.assertError(assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1,four=4})
@@ -1141,12 +1141,12 @@ TestLuaUnitErrorMsg = {} --class
     end 
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsMsg()
-        lu.assertErrorMsgEquals('Values are not almost equal\nExpected: 1 with margin of 0.1, received: 2', assertAlmostEquals, 2, 1, 0.1 )
+        lu.assertErrorMsgEquals('Values are not almost equal\nExpected: 1 with margin of 0.1, received: 2', lu.assertAlmostEquals, 2, 1, 0.1 )
     end
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsOrderReversedMsg()
         lu.ORDER_ACTUAL_EXPECTED = false
-        lu.assertErrorMsgEquals('Values are not almost equal\nExpected: 2 with margin of 0.1, received: 1', assertAlmostEquals, 2, 1, 0.1 )
+        lu.assertErrorMsgEquals('Values are not almost equal\nExpected: 2 with margin of 0.1, received: 1', lu.assertAlmostEquals, 2, 1, 0.1 )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
@@ -1266,7 +1266,7 @@ TestLuaUnitErrorMsg = {} --class
     end 
 
     function TestLuaUnitErrorMsg:test_assertItemsEquals()
-        lu.assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: {one=2, two=3}\nActual: {1, 2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
+        lu.assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: {one=2, two=3}\nActual: {1, 2}' , lu.assertItemsEquals, {1,2}, {one=2, two=3} )
     end 
 
     function TestLuaUnitErrorMsg:test_assertError()
@@ -1292,7 +1292,7 @@ TestLuaUnitErrorMsg = {} --class
         lu.assertErrorMsgMatches( 'expected: false, actual: <table: 0?x?[%x]+> {}', lu.assertFalse, {})
         local v = {1,2}
         lu.assertErrorMsgMatches( 'Expected object and actual object are the same object: <table: 0?x?[%x]+> {1, 2}', lu.assertNotIs, v, v )
-        lu.assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: <table: 0?x?[%x]+> {one=2, two=3}\nActual: <table: 0?x?[%x]+> {1, 2}' , assertItemsEquals, {1,2}, {one=2, two=3} )
+        lu.assertErrorMsgMatches('Contents of the tables are not identical:\nExpected: <table: 0?x?[%x]+> {one=2, two=3}\nActual: <table: 0?x?[%x]+> {1, 2}' , lu.assertItemsEquals, {1,2}, {one=2, two=3} )
         lu.assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', lu.assertEquals, {3,2,1}, {1,2,3} )
         -- trigger multiline prettystr
         lu.assertErrorMsgMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3, 4}\nactual: <table: 0?x?[%x]+> {3, 2, 1, 4}', lu.assertEquals, {3,2,1,4}, {1,2,3,4} )
