@@ -1,5 +1,6 @@
 
 require('test.test_luaunit')
+lu = require('luaunit')
 
-LuaUnit.verbosity = 2
-os.exit( LuaUnit.run() )
+lu.LuaUnit.verbosity = 2
+os.exit( lu.LuaUnit.run() )
