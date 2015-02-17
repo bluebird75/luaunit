@@ -116,8 +116,4 @@
 # Starting test: TestLuaUnitUtilities.test_xmlEscape
 # Starting class: TestMock
 # Starting test: TestMock.testMock
-<<<<<<< HEAD
 # Ran 109 tests in 0.016 seconds, 109 successes, 0 failures
-=======
-# Ran 109 tests in 0.078 seconds, 109 successes, 0 failures
->>>>>>> 01d61addb1b908a0180ede8e319f73eeb1ec19ad
