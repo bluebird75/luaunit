@@ -21,7 +21,6 @@ Thumbs.db
 *.suo
 *.tlb
 *.tlh
-*.bak
 *.cache
 *.ilk
 *.log
@@ -50,3 +49,4 @@ test/testWithXml*.txt
 test/unitTests*.xml
 test/unitTests*.txt
 
+*.diff
