@@ -1,13 +1,10 @@
 TODO v3.1:
 ============
-- reduce output when --quiet is used to standard output of python unit-tests
 - check documentation link glitch to TAP 
 - mention that general error are correctly handled by luaunit as failures
 - in rst, check how to document properly optional parameters
-- doc: move description of table printing to an annex
 - improve default output to make it closer to python
 - report test duration everywhere
-- less global space pollution
 
 TODO Future:
 ============
@@ -33,6 +30,10 @@ Nice to have:
 
 Done since 3.0:
 ===============
+x doc: report how to handle global space pollution/restriction
+x doc: adapt all examples to new way of requireing luaunit
+x less global space pollution
+x doc: move description of table printing to an annex
 x validate well-formed XML with a DTD
 x validate test output (TAP, ...) with functional tests
 x test failures, verify that output is correct
