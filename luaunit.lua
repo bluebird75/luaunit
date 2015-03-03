@@ -1171,7 +1171,18 @@ Adding doesn't work.
  
 3 tests, 4 assertions, 1 failures, 0 errors
 
--- 
+-- Java Junit
+.......F.
+Time: 0,003
+There was 1 failure:
+1) testCapacity(junit.samples.VectorTest)junit.framework.AssertionFailedError
+    at junit.samples.VectorTest.testCapacity(VectorTest.java:87)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+
+FAILURES!!!
+Tests run: 8,  Failures: 1,  Errors: 0
 
 ]]
 
