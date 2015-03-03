@@ -431,6 +431,20 @@ function testTestXmlQuiet()
     end
 end
 
+function testLegacyLuaunitUsage()
+    -- run test/legacy_example_usage and check exit status
+    local ret, exitCode, refExitCode, fileToRun
+    fileToRun = "test/legacy_example_with_luaunit.lua"
+    refExitCode = 12
+    ret, exitCode = osExec(string.format( '%s %s  --output text', LUA,  fileToRun)  )
+
+
+    if refExitCode ~= nil and exitCode ~= refExitCode then
+        error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
+    end 
+
+end
+
 filesToGenerateExampleXml = {
     { 'example_with_luaunit.lua', '', '--output junit --name test/ref/exampleXmlDefault.xml', 'test/ref/exampleXmlDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output junit --name test/ref/exampleXmlQuiet.xml', 'test/ref/exampleXmlQuiet.txt' },
