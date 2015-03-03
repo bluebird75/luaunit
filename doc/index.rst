@@ -17,16 +17,14 @@ Welcome to LuaUnit's documentation!
 Introduction
 ************
 
-Luaunit is a unit-testing framework for Lua. It allows you 
+LuaUnit is a unit-testing framework for Lua. It allows you 
 to write test functions and test classes with test methods, combined with 
 setup/teardown functionality. A wide range of assertions are supported.
 
-Luaunit supports several output format, like Junit or TAP, for easier integration
+LuaUnit supports several output format, like Junit or TAP, for easier integration
 into Continuous Integration platforms (Jenkins, Maven, ...) . The integrated command-line 
 options provide a flexible interface to select tests by name or patterns, control output 
 format, set verbosity, ...
-
-This documentation describes the functionality of LuaUnit v3.0 
 
 Platform support
 ================
@@ -43,7 +41,7 @@ LuaUnit is packed into a single-file. To make start using it, just add the file 
 Development
 ===========
 
-Luaunit is developed on `Github`_.
+LuaUnit is developed on `Github`_.
 
 .. _Github: https://github.com/bluebird75/luaunit
 
@@ -62,6 +60,80 @@ This documentation is available at `Read-the-docs`_.
 
 .. _Read-the-docs: http://luaunit.readthedocs.org/en/latest/
 
+Version and Changelog
+=====================
+This documentation describes the functionality of LuaUnit v3.1 .
+
+New in verison 3.1
+------------------
+* luaunit no longer pollutes global namespace, unless defining EXPORT_ASSERT_TO_GLOBALS to true
+* fixes and validation of JUnit XML generation
+* strip luaunit internal information from stacktrace
+* general improvements of test results with duration and other details
+* improve printing for tables, with an option to always print table id
+* fix printing of recursive tables 
+
+**Important note when upgrading to version 3.1** : assertions functions are
+no longer exported directly to the global namespace. See :ref:`luaunit-global-asserts`
+
+New in verison 3.0 - 9 oct 2014
+--------------------------------
+
+Because LuaUnit was forked and released as some 2.x version, version number
+is now jumping to 3.0 . 
+
+* full documentation available in text, html and pdf at read-the-docs.org
+* new output format: JUnit, compatible with Bamboo and other CI platforms
+* much better table assertions
+* new assertions for strings, with patterns and case insensitivity: assertStrContains, 
+  assertNotStrContains, assertNotStrIContains, assertStrIContains, assertStrMatches
+* new assertions for floats: assertAlmostEquals, assertNotAlmostEquals
+* type assertions: assertIsString, assertIsNumber, ...
+* error assertions: assertErrorMsgEquals, assertErrorMsgContains, assertErrorMsgMatches
+* improved error messages for several assertions
+* command-line options to select test, control output type and verbosity
+
+
+New in version 1.5 - 8. Nov 2012
+--------------------------------
+* compatibility with Lua 5.1 and 5.2
+* better object model internally
+* a lot more of internal tests
+* several internal bug fixes
+* make it easy to customize the test output
+* running test functions no longer requires a wrapper
+* several level of verbosity
+
+
+New in version 1.4 - 26. Jul 2012
+---------------------------------
+* switch from X11 to more popular BSD license
+* add TAP output format for integration into Jenkins
+* official repository now on github
+
+
+New in version 1.3 - 30. Oct 2007
+---------------------------------
+* port to lua 5.1
+* iterate over the test classes, methods and functions in the alphabetical order
+* change the default order of expected, actual in assertEquals (adjustable with USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS).
+
+
+Version 1.2 - 13. Jun 2005  
+---------------------------------
+* first public release
+
+
+Version 1.1
+------------
+* move global variables to internal variables
+* assertion order is configurable between expected/actual or actual/expected
+* new assertion to check that a function call returns an error
+* display the calling stack when an error is spotted
+* two verbosity level, like in python unittest
+
+
+
 Getting started
 ***************
 
@@ -72,12 +144,12 @@ To get started, create your file *test_something.lua* .
 
 The script should import LuaUnit::
 
-    require('luaunit')
+    luaunit = require('luaunit')
 
 The last line executes your script with LuaUnit and exit with the
 proper error code::
 
-    os.exit( LuaUnit.run() )
+    os.exit( luaunit.LuaUnit.run() )
 
 Now, run your file with::
 
@@ -121,13 +193,13 @@ Suppose you want to test the following add function::
 You write the following tests::
 
     function testAddPositive()
-        assertEquals(add(1,1),2)
+        luaunit.assertEquals(add(1,1),2)
     end
 
     function testAddZero()
-        assertEquals(add(1,0),0)
-        assertEquals(add(0,5),0)
-        assertEquals(add(0,0),0)
+        luaunit.assertEquals(add(1,0),0)
+        luaunit.assertEquals(add(0,5),0)
+        luaunit.assertEquals(add(0,0),0)
     end
 
 
@@ -163,7 +235,7 @@ we use :func:`assertErrorMsgContains` . First argument is the expected message, 
 and the optional arguments::
 
     function testAddError()
-        assertErrorMsgContains('Can only add positive or null numbers, received 2 and -3', add, 2, -3)
+        luaunit.assertErrorMsgContains('Can only add positive or null numbers, received 2 and -3', add, 2, -3)
     end
 
 Now, suppose we also have the following function to test::
@@ -180,8 +252,8 @@ provides assertion for type testing (see :ref:`assert-type`). In this case, we u
 
     function testAdder()
         f = adder(3)
-        assertIsFunction( f )
-        assertEquals( f(2), 5 )
+        luaunit.assertIsFunction( f )
+        luaunit.assertEquals( f(2), 5 )
     end
 
 Grouping tests, setup/teardown functionality
@@ -210,23 +282,23 @@ We move the tests related to the function add into their own table::
 
     TestAdd = {}
         function TestAdd:testAddPositive()
-            assertEquals(add(1,1),2)
+            luaunit.assertEquals(add(1,1),2)
         end
 
         function TestAdd:testAddZero()
-            assertEquals(add(1,0),0)
-            assertEquals(add(0,5),0)
-            assertEquals(add(0,0),0)
+            luaunit.assertEquals(add(1,0),0)
+            luaunit.assertEquals(add(0,5),0)
+            luaunit.assertEquals(add(0,0),0)
         end
 
         function TestAdd:testAddError()
-            assertErrorMsgContains('Can only add positive or null numbers, received 2 and -3', add, 2, -3)
+            luaunit.assertErrorMsgContains('Can only add positive or null numbers, received 2 and -3', add, 2, -3)
         end
 
         function TestAdd:testAdder()
             f = adder(3)
-            assertIsFunction( f )
-            assertEquals( f(2), 5 )
+            luaunit.assertIsFunction( f )
+            luaunit.assertEquals( f(2), 5 )
         end
     -- end of table TestAdd
 
@@ -234,17 +306,17 @@ Then we create a second set of tests for div::
 
     TestDiv = {}
         function TestDiv:testDivPositive()
-            assertEquals(div(4,2),2)
+            luaunit.assertEquals(div(4,2),2)
         end
 
         function TestDiv:testDivZero()
-            assertEquals(div(4,0),0)
-            assertEquals(div(0,5),0)
-            assertEquals(div(0,0),0)
+            luaunit.assertEquals(div(4,0),0)
+            luaunit.assertEquals(div(0,5),0)
+            luaunit.assertEquals(div(0,0),0)
         end
 
         function TestDiv:testDivError()
-            assertErrorMsgContains('Can only div positive or null numbers, received 2 and -3', div, 2, -3)
+            luaunit.assertErrorMsgContains('Can only div positive or null numbers, received 2 and -3', div, 2, -3)
         end
     -- end of table TestDiv
 
@@ -296,7 +368,7 @@ log file name, and erase the log filename after every test::
             log('toto')
             -- make sure that our log file was created
             f = io.open(self.fname, 'r')
-            assertNotNil( f )
+            luaunit.assertNotNil( f )
             f:close()
         end
 
@@ -308,7 +380,7 @@ log file name, and erase the log filename after every test::
 .. Note::
 
     *Errors generated during execution of setUp() or tearDown()
-    functions are considered    test failures.*
+    functions are considered test failures.*
 
 Using the command-line
 ======================
@@ -383,6 +455,69 @@ assertions, command-line options and specific behavior.
 Reference documentation
 ***********************
 
+.. _luaunit-global-asserts:
+
+Enabling global or module-level functions
+=========================================
+
+Versions of LuaUnit before version 3.1 would export all assertions functions to the global namespace. A typical
+lua test file would look like this:
+
+.. code-block:: lua
+
+    require('luaunit')
+
+    TestToto = {} --class
+
+        function TestToto:test1_withFailure()
+            assertEquals( self.a , 1 )
+            -- will fail
+            assertEquals( self.a , 2 )
+            assertEquals( self.a , 2 )
+        end
+
+    [...]
+
+However, this is an obsolete practice in Lua. It is now recommended to keep all functions inside the module. Starting
+from version 3.1 LuaUnit follows this practice and the code should be adapted to look like this:
+
+.. code-block:: lua
+
+    -- the imported module must be stored
+    luaunit = require('luaunit')
+
+    TestToto = {} --class
+
+        function TestToto:test1_withFailure()
+            -- assertions are prefixed with the module name.
+            luaunit.assertEquals( self.a , 1 )
+            luaunit.assertEquals( self.a , 2 )
+            luaunit.assertEquals( self.a , 2 )
+        end
+
+    [...]
+
+If you prefer the old way, LuaUnit can continue to export assertions functions if you set the following
+global variable **prior** to importing LuaUnit:
+
+.. code-block:: lua
+
+    -- this works
+    EXPORT_ASSERT_TO_GLOBALS = true
+    require('luaunit')
+
+    TestToto = {} --class
+
+        function TestToto:test1_withFailure()
+            assertEquals( self.a , 1 )
+            -- will fail
+            assertEquals( self.a , 2 )
+            assertEquals( self.a , 2 )
+        end
+
+    [...]
+
+
 .. _luaunit-run:
 
 LuaUnit.run() function
@@ -392,7 +527,7 @@ LuaUnit.run() function
 
 Normally, you should run your test suite with the following line::
 
-    os.exit(LuaUnit.run())
+    os.exit(luaunit.LuaUnit.run())
 
 The *run()* function returns the number of failures of the test suite. This is
 good for an exit code, 0 meaning success.
@@ -407,7 +542,7 @@ instead of the command-line. It uses the same syntax.
 Example::
 
     -- execute tests matching the 'withXY' pattern
-    os.exit(LuaUnit.run('--pattern', 'withXY'))
+    os.exit(luaunit.LuaUnit.run('--pattern', 'withXY'))
 
 
 **Choice of tests**
@@ -446,7 +581,7 @@ LuaUnit.runSuite() function
 If you want to keep the flexibility of the command-line parsing, but want to force
 some parameters, like the output format, you must use a slightly different syntax::
 
-    lu = LuaUnit.new()
+    lu = luaunit.LuaUnit.new()
     lu:setOutputType("tap")
     os.exit( lu:runSuite() )
 
@@ -518,42 +653,7 @@ Assertions functions
 You will now find the list of all assertion functions. For all functions, When an assertion fails, the failure
 message tries to be as informative as possible, by displaying the expectation and value that caused the failure.
 
-Display of tables
-------------------
-
-It is possible to always display the table id along with the content, by setting a global parameter. This
-helps identifying tables:
-
-.. code-block:: lua
-
-    PRINT_TABLE_REF_IN_ERROR_MSG = true
-
-    local t1 = {1,2,3}
-    -- display of table t1 becomes:
-    -- "<table: 0x29ab56> {1,2,3}"
-
-
-.. Note :: table loops
-
-    When displaying table content, it is possible to encounter loops, if for example two table references eachother. In such
-    cases, LuaUnit display the full table content once, along with the table id, and displays only the table id for the looping
-    reference.
-
-**Example:** displaying a table with reference loop
-
-.. code-block:: lua
-
-    local t1 = {}
-    local t2 = {}
-    t1.t2 = t2
-    t1.a = {1,2,3}
-    t2.t1 = t1
-
-    -- table t1 inside t2 is only displayed by its id. All tables being referenced
-    -- are displayed with their id
-    "<table: 0x29ab56> { a={1,2,3}, t2=<table: 0x27ab23> {t1=<table: 0x29ab56>} }"
-
-
+.. Note:: see :More on table printing: to know more about tables.
 
 .. _assert-equality:
 
@@ -562,12 +662,12 @@ Equality assertions
 All equality assertions functions take two arguments, in the order 
 *actual value* then *expected value*. Some people are more familiar
 with the order *expected value* then *actual value*. It is possible to configure
-LuaUnit to use the opposite order for all equality assertions, by setting up a global
+LuaUnit to use the opposite order for all equality assertions, by setting up a module
 variable:
 
 .. code-block:: lua
 
-    ORDER_ACTUAL_EXPECTED=false
+    luaunit.ORDER_ACTUAL_EXPECTED=false
 
 The order only matters for the message that is displayed in case of failures. It does
 not influence the test itself.
@@ -644,10 +744,10 @@ Value assertions
         t1={1,2}
         t2={1,2}
 
-        assertIs(s1,s1) -- ok
-        assertIs(s1,s2) -- ok
-        assertIs(t1,t1) -- ok
-        assertIs(t1,t2) -- fail
+        luaunit.assertIs(s1,s1) -- ok
+        luaunit.assertIs(s1,s2) -- ok
+        luaunit.assertIs(t1,t1) -- ok
+        luaunit.assertIs(t1,t2) -- fail
     
 .. function:: assertNotIs(actual, expected)
 
@@ -807,7 +907,7 @@ Table assertions
 
 .. code-block:: lua
 
-        assertItemsEquals( {1,2,3}, {3,2,1} ) -- assertion succeeds
+        luaunit.assertItemsEquals( {1,2,3}, {3,2,1} ) -- assertion succeeds
 
 ..
 
@@ -818,12 +918,57 @@ Table assertions
 
 .. code-block:: lua
 
-        assertItemsEquals( {1,{2,3},4}, {4,{3,2,},1} ) -- assertion fails because {2,3} ~= {3,2}
+        luaunit.assertItemsEquals( {1,{2,3},4}, {4,{3,2,},1} ) -- assertion fails because {2,3} ~= {3,2}
 
 
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-Annex: index and search page
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Annexes
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
+Annex A: More on table printing
+********************************
+
+When asserting tables equality, by default, the table content is printed in case of failures. LuaUnit tries to print
+tables in a readable format. It is 
+possible to always display the table id along with the content, by setting a module parameter PRINT_TABLE_REF_IN_ERROR_MSG . This
+helps identifying tables:
+
+.. code-block:: lua
+
+    local t1 = {1,2,3}
+    -- normally, t1 is dispalyed as: "{1,2,3}"
+
+    -- if setting this:
+    luaunit.PRINT_TABLE_REF_IN_ERROR_MSG = true
+
+    -- display of table t1 becomes: "<table: 0x29ab56> {1,2,3}"
+
+
+.. Note :: table loops
+
+    When displaying table content, it is possible to encounter loops, if for example two table references eachother. In such
+    cases, LuaUnit display the full table content once, along with the table id, and displays only the table id for the looping
+    reference.
+
+**Example:** displaying a table with reference loop
+
+.. code-block:: lua
+
+    local t1 = {}
+    local t2 = {}
+    t1.t2 = t2
+    t1.a = {1,2,3}
+    t2.t1 = t1
+
+    -- when displaying table t1:
+    --   table t1 inside t2 is only displayed by its id because t1 is already being displayed
+    --   table t2 is displayed along with its id because it is part of a loop.
+    -- t1: "<table: 0x29ab56> { a={1,2,3}, t2=<table: 0x27ab23> {t1=<table: 0x29ab56>} }"
+
+
+
+Index and Search page
+**********************
 
 * :ref:`genindex`
 * :ref:`search`
