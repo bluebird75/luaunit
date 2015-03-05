@@ -1,30 +1,15 @@
 1..15
-# Started on 02/01/15 00:00:55
+# Started on 03/06/15 00:07:22
 # Starting class: TestTiti
-TestTiti:setUp
-some stuff test 1
 not ok 1	TestTiti.test1_withFailure
-TestTiti:tearDown
-TestTiti:setUp
-some stuff test 2
 not ok 2	TestTiti.test2_withFailure
-TestTiti:tearDown
-TestTiti:setUp
-some stuff test 3
-TestTiti:tearDown
 ok     3	TestTiti.test3
 # Starting class: TestToto
-some stuff test 1
 not ok 4	TestToto.test1_withFailure
-some stuff test 2
 not ok 5	TestToto.test2_withFailure
-some stuff test 3
 ok     6	TestToto.test3
-some stuff test 4
 not ok 7	TestToto.test4
-some stuff test 5
 not ok 8	TestToto.test5
-some stuff test 6
 not ok 9	TestToto.test6
 not ok 10	TestToto.test7
 not ok 11	TestToto.test8a
@@ -32,4 +17,4 @@ not ok 12	TestToto.test8b
 not ok 13	test1_withFailure
 not ok 14	test2_withFailure
 ok     15	test3
-# Ran 15 tests in 0.000 seconds, 3 successes, 12 failures
+# Ran 15 tests in 0.012 seconds, 3 successes, 12 failures

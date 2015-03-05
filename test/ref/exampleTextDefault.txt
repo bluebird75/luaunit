@@ -1,45 +1,30 @@
-Started on 02/01/15 00:00:55
+Started on 03/06/15 00:08:03
 >>>>>>>>> TestTiti
 >>> TestTiti.test1_withFailure
-TestTiti:setUp
-some stuff test 1
 example_with_luaunit.lua:99: expected: 2, actual: 1
 Failed
-TestTiti:tearDown
 >>> TestTiti.test2_withFailure
-TestTiti:setUp
-some stuff test 2
 example_with_luaunit.lua:108: expected: "bof"
 actual: "hop"
 Failed
-TestTiti:tearDown
 >>> TestTiti.test3
-TestTiti:setUp
-some stuff test 3
-TestTiti:tearDown
 
 >>>>>>>>> TestToto
 >>> TestToto.test1_withFailure
-some stuff test 1
 example_with_luaunit.lua:19: expected: 2, actual: 1
 Failed
 >>> TestToto.test2_withFailure
-some stuff test 2
 example_with_luaunit.lua:28: expected: "bof"
 actual: "hop"
 Failed
 >>> TestToto.test3
-some stuff test 3
 >>> TestToto.test4
-some stuff test 4
 example_with_luaunit.lua:41: Received the not expected value: 1
 Failed
 >>> TestToto.test5
-some stuff test 5
 example_with_luaunit.lua:47: expected: false, actual: 1
 Failed
 >>> TestToto.test6
-some stuff test 6
 example_with_luaunit.lua:52: expected: true, actual: false
 Failed
 >>> TestToto.test7
@@ -120,4 +105,4 @@ example_with_luaunit.lua:130: assertion failed!
 stack traceback:
 	example_with_luaunit.lua:130: in function 'test2_withFailure'
 
-Success: 20% - 3 / 15, executed in 0.000 seconds
+Success: 20% - 3 / 15, executed in 0.012 seconds
