@@ -13,7 +13,7 @@ TestToto = {} --class
     end
 
     function TestToto:test1_withFailure()
-        print( "some stuff test 1" )
+        -- print( "some stuff test 1" )
         assertEquals( self.a , 1 )
         -- will fail
         assertEquals( self.a , 2 )
@@ -21,7 +21,7 @@ TestToto = {} --class
     end
 
     function TestToto:test2_withFailure()
-        print( "some stuff test 2" )
+        -- print( "some stuff test 2" )
         assertEquals( self.a , 1 )
         assertEquals( self.s , 'hop' )
         -- will fail
@@ -30,25 +30,25 @@ TestToto = {} --class
     end
 
     function TestToto:test3()
-        print( "some stuff test 3" )
+        -- print( "some stuff test 3" )
         assertEquals( self.a , 1 )
         assertEquals( self.s , 'hop' )
         assertEquals( type(self.a), 'number' )
     end
 
     function TestToto:test4()
-        print( "some stuff test 4" )
+        -- print( "some stuff test 4" )
         assertNotEquals( self.a , 1 )
     end
 
     function TestToto:test5()
-        print( "some stuff test 5" )
+        -- print( "some stuff test 5" )
         assertTrue( self.a )
         assertFalse( self.a )
     end
 
     function TestToto:test6()
-        print( "some stuff test 6" )
+        -- print( "some stuff test 6" )
         assertTrue( false )
     end
 
@@ -84,16 +84,16 @@ TestTiti = {} --class
         -- set up tests
         self.a = 1
         self.s = 'hop' 
-        print( 'TestTiti:setUp' )
+        -- print( 'TestTiti:setUp' )
     end
 
     function TestTiti:tearDown()
         -- some tearDown() code if necessary
-        print( 'TestTiti:tearDown' )
+        -- print( 'TestTiti:tearDown' )
     end
 
     function TestTiti:test1_withFailure()
-        print( "some stuff test 1" )
+        -- print( "some stuff test 1" )
         assertEquals( self.a , 1 )
         -- will fail
         assertEquals( self.a , 2 )
@@ -101,7 +101,7 @@ TestTiti = {} --class
     end
 
     function TestTiti:test2_withFailure()
-        print( "some stuff test 2" )
+        -- print( "some stuff test 2" )
         assertEquals( self.a , 1 )
         assertEquals( self.s , 'hop' )
         -- will fail
@@ -110,7 +110,7 @@ TestTiti = {} --class
     end
 
     function TestTiti:test3()
-        print( "some stuff test 3" )
+        -- print( "some stuff test 3" )
         assertEquals( self.a , 1 )
         assertEquals( self.s , 'hop' )
     end
