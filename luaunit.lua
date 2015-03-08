@@ -1184,6 +1184,43 @@ There was 1 failure:
 FAILURES!!!
 Tests run: 8,  Failures: 1,  Errors: 0
 
+
+-- Maven
+
+# mvn test
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running math.AdditionTest
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 
+0.03 sec <<< FAILURE!
+
+Results :
+
+Failed tests: 
+  testLireSymbole(math.AdditionTest)
+
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0
+
+
+-- LuaUnit 
+---- non verbose
+* display . or F or E when running tests
+---- verbose
+* display test name + ok/fail
+----
+* blank line
+* number) ERROR or FAILURE: TestName
+   Stack trace
+* blank line
+* number) ERROR or FAILURE: TestName
+   Stack trace
+
+then --------------
+then "Ran x tests in 0.000s (%d not selected, %d skipped)"
+then OK or FAILED (failures=1, error=1)
+
+
 ]]
 
 local TextOutput = { __class__ = 'TextOutput' }
@@ -1202,85 +1239,88 @@ local TextOutput_MT = { -- class
     end
 
     function TextOutput:startSuite()
-        if self.verbosity > M.VERBOSITY_QUIET then
+        if self.verbosity > M.VERBOSITY_DEFAULT then
             print( 'Started on '.. self.result.startDate )
         end
     end
 
     function TextOutput:startClass(className)
-        if self.verbosity > M.VERBOSITY_LOW then
-            print( '>>>>>>>>> '.. self.result.currentClassName )
-        end
+        -- display nothing when starting a new class
     end
 
     function TextOutput:startTest(testName)
-        if self.verbosity > M.VERBOSITY_LOW then 
-            print( ">>> ".. self.result.currentNode.testName ) 
+        if self.verbosity > M.VERBOSITY_DEFAULT then 
+            io.stdout:write( "    ".. self.result.currentNode.testName.." ... " ) 
         end 
     end 
 
     function TextOutput:addFailure( errorMsg, stackTrace ) 
-        table.insert( self.errorList, { self.result.currentNode.testName, errorMsg, stackTrace } ) 
-        if self.verbosity == 0 then
-            io.stdout:write("F") 
-        end
-        if self.verbosity > M.VERBOSITY_LOW then
-            print( errorMsg )
-            print( 'Failed' )
-        end
+        -- nothing
     end
 
     function TextOutput:endTest(testHasFailure)
         if not testHasFailure then
-            if self.verbosity > M.VERBOSITY_LOW then
-                --print ("Ok" )
+            if self.verbosity > M.VERBOSITY_DEFAULT then
+                io.stdout:write("Ok\n")
             else 
                 io.stdout:write(".")
+            end
+        else
+            if self.verbosity > M.VERBOSITY_DEFAULT then
+                io.stdout:write( 'FAIL\n' )
+                print( self.result.currentNode.msg )
+                --[[
+                -- find out when to do this:
+                if self.verbosity > M.VERBOSITY_DEFAULT then
+                    print( self.result.currentNode.stackTrace )
+                end
+                ]]
+            else
+                io.stdout:write("F") 
             end
         end
     end
 
     function TextOutput:endClass()
-        if self.verbosity > M.VERBOSITY_LOW then
-           print()
-        end
+        -- nothing
     end
 
-    function TextOutput:displayOneFailedTest( failure )
-        testName, errorMsg, stackTrace = unpack( failure )
-        print(">>> "..testName.." failed")
-        print( errorMsg )
-        if self.verbosity > M.VERBOSITY_LOW then
-            print( stackTrace )
-        end
-    end
-
-    function TextOutput:displayFailedTests()
-        if #self.errorList == 0 then return end
-        print("Failed tests:")
-        print("-------------")
-        for i,v in ipairs(self.errorList) do
-            self:displayOneFailedTest( v )
-        end
+    function TextOutput:displayOneFailedTest( index, failure )
+        print(index..") "..failure.testName )
+        print( failure.msg )
+        print( failure.stackTrace )
         print()
     end
 
+    function TextOutput:displayFailedTests()
+        if self.result.failureCount == 0 then return end
+        print("Failed tests:")
+        print("-------------")
+        for i,v in ipairs(self.result.failures) do
+            self:displayOneFailedTest( i, v )
+        end
+    end
+
     function TextOutput:endSuite()
-        if self.verbosity <= M.VERBOSITY_LOW then
-            print()
-        else
+        if self.verbosity > M.VERBOSITY_DEFAULT then
             print("=========================================================")
+        else
+            print()
         end
         self:displayFailedTests()
-        local successPercent, successCount
-        successCount = self.result.testCount - self.result.failureCount
-        if self.result.testCount == 0 then
-            successPercent = 100
-        else
-            successPercent = math.ceil( 100 * successCount / self.result.testCount )
+        local ignoredString = ""
+        if self.result.nonSelectedCount > 0 then
+            ignoredString = string.format('ignored=%d', self.result.nonSelectedCount )
         end
-        print( string.format("Success: %d%% - %d / %d, executed in %0.3f seconds",
-            successPercent, successCount, self.result.testCount, self.result.duration) )
+        print( string.format("Ran %d tests in %0.3f seconds", self.result.testCount, self.result.duration ) )
+        if self.result.failureCount == 0 then
+            print('OK '.. ignoredString)
+        else
+            if self.result.nonSelectedCount > 0 then
+                ignoredString = ', '..ignoredString
+            end
+            print(string.format('FAILED (failures=%d%s)', self.result.failureCount, ignoredString ) )
+        end
     end
 
 
