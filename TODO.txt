@@ -2,7 +2,6 @@ TODO v3.1:
 ============
 - check documentation link glitch to TAP 
 - mention that general error are correctly handled by luaunit as failures
-- in rst, check how to document properly optional parameters
 - improve default output to make it closer to python
 - report test duration everywhere
 
@@ -21,7 +20,7 @@ TODO Future:
 	+ expected length of X, got Y
 	+ keys differing in table 1 and 2
 - XML: report system information
-- check that no globals were added by executing a test
+- detect if a functions creates new global variables.
 
 Nice to have: 
 ============
