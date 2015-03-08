@@ -435,8 +435,9 @@ function testLegacyLuaunitUsage()
     -- run test/legacy_example_usage and check exit status
     local ret, exitCode, refExitCode, fileToRun
     fileToRun = "test/legacy_example_with_luaunit.lua"
+    fileOutput = "test/legacyExample.txt"
     refExitCode = 12
-    ret, exitCode = osExec(string.format( '%s %s  --output text', LUA,  fileToRun)  )
+    ret, exitCode = osExec(string.format( '%s %s  --output text > %s', LUA,  fileToRun, fileOutput)  )
 
 
     if refExitCode ~= nil and exitCode ~= refExitCode then
@@ -539,7 +540,7 @@ function main()
             while i <=  #arg do
                 fileSet = filesSetIndex[ arg[i] ]
                 if fileSet == nil then
-                    error('Unable to generate files for target '..arg[i] )
+                    error(string.format('Unable to generate files for target %s\n', arg[i]) )
                 end
                 -- print('Generating '..arg[i])
                 updateRefFiles( fileSet )

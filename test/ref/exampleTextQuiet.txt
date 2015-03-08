@@ -1,19 +1,4 @@
-TestTiti:setUp
-some stuff test 1
-FTestTiti:tearDown
-TestTiti:setUp
-some stuff test 2
-FTestTiti:tearDown
-TestTiti:setUp
-some stuff test 3
-TestTiti:tearDown
-.some stuff test 1
-Fsome stuff test 2
-Fsome stuff test 3
-.some stuff test 4
-Fsome stuff test 5
-Fsome stuff test 6
-FFFFFF.
+FF.FF.FFFFFFFF.
 Failed tests:
 -------------
 >>> TestTiti.test1_withFailure failed
@@ -44,4 +29,4 @@ example_with_luaunit.lua:124: assertion failed!
 >>> test2_withFailure failed
 example_with_luaunit.lua:130: assertion failed!
 
-Success: 20% - 3 / 15, executed in 0.015 seconds
+Success: 20% - 3 / 15, executed in 0.011 seconds
