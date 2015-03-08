@@ -1309,11 +1309,11 @@ local TextOutput_MT = { -- class
         end
         self:displayFailedTests()
         local ignoredString = ""
-        if self.result.nonSelectedCount > 0 then
-            ignoredString = string.format('ignored=%d', self.result.nonSelectedCount )
-        end
         print( string.format("Ran %d tests in %0.3f seconds", self.result.testCount, self.result.duration ) )
         if self.result.failureCount == 0 then
+            if self.result.nonSelectedCount > 0 then
+                ignoredString = string.format('(ignored=%d)', self.result.nonSelectedCount )
+            end
             print('OK '.. ignoredString)
         else
             if self.result.nonSelectedCount > 0 then
