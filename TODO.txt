@@ -4,6 +4,7 @@ TODO v3.1:
 - mention that general error are correctly handled by luaunit as failures
 - improve default output to make it closer to python
 - report test duration everywhere
+- validate output with ignored tests (0 failures or some failures)
 
 TODO Future:
 ============
