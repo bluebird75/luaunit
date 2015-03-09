@@ -9,7 +9,6 @@ before_install:
   - sudo apt-get install $LUA libxml2-utils
   
 script:
-  - xmllint --version
   - $LUA run_unit_tests.lua
   - $LUA run_functional_tests.lua
 
