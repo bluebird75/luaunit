@@ -85,9 +85,9 @@ end
 local HAS_XMLLINT 
 do
     xmllint_output_fname = 'test/has_xmllint.txt'
-    HAS_XMLLINT = osExec('xmllint.exe --version 2> '..xmllint_output_fname)
+    HAS_XMLLINT = osExec('xmllint --version 2> '..xmllint_output_fname)
     if not HAS_XMLLINT then
-        report('WARNING: xmllint.exe absent, can not validate xml validity')
+        report('WARNING: xmllint absent, can not validate xml validity')
     end
     os.remove(xmllint_output_fname)
 end
