@@ -1,108 +1,102 @@
 Started on 03/06/15 00:08:03
->>>>>>>>> TestTiti
->>> TestTiti.test1_withFailure
+    TestTiti.test1_withFailure ... FAIL
 example_with_luaunit.lua:99: expected: 2, actual: 1
-Failed
->>> TestTiti.test2_withFailure
+    TestTiti.test2_withFailure ... FAIL
 example_with_luaunit.lua:108: expected: "bof"
 actual: "hop"
-Failed
->>> TestTiti.test3
-
->>>>>>>>> TestToto
->>> TestToto.test1_withFailure
+    TestTiti.test3 ... Ok
+    TestToto.test1_withFailure ... FAIL
 example_with_luaunit.lua:19: expected: 2, actual: 1
-Failed
->>> TestToto.test2_withFailure
+    TestToto.test2_withFailure ... FAIL
 example_with_luaunit.lua:28: expected: "bof"
 actual: "hop"
-Failed
->>> TestToto.test3
->>> TestToto.test4
+    TestToto.test3 ... Ok
+    TestToto.test4 ... FAIL
 example_with_luaunit.lua:41: Received the not expected value: 1
-Failed
->>> TestToto.test5
+    TestToto.test5 ... FAIL
 example_with_luaunit.lua:47: expected: false, actual: 1
-Failed
->>> TestToto.test6
+    TestToto.test6 ... FAIL
 example_with_luaunit.lua:52: expected: true, actual: false
-Failed
->>> TestToto.test7
+    TestToto.test7 ... FAIL
 example_with_luaunit.lua:58: expected: {1, 2, three=3}
 actual: {1, 2}
-Failed
->>> TestToto.test8a
+    TestToto.test8a ... FAIL
 example_with_luaunit.lua:76: Bouhouhoum error!
-Failed
->>> TestToto.test8b
+    TestToto.test8b ... FAIL
 example_with_luaunit.lua:76: Bouhouhoum error!
-Failed
-
->>>>>>>>> [TestFunctions]
->>> test1_withFailure
+    test1_withFailure ... FAIL
 example_with_luaunit.lua:124: assertion failed!
-Failed
->>> test2_withFailure
+    test2_withFailure ... FAIL
 example_with_luaunit.lua:130: assertion failed!
-Failed
->>> test3
-
+    test3 ... Ok
 =========================================================
 Failed tests:
 -------------
->>> TestTiti.test1_withFailure failed
+1) TestTiti.test1_withFailure
 example_with_luaunit.lua:99: expected: 2, actual: 1
 stack traceback:
 	example_with_luaunit.lua:99: in function 'TestTiti.test1_withFailure'
->>> TestTiti.test2_withFailure failed
+
+2) TestTiti.test2_withFailure
 example_with_luaunit.lua:108: expected: "bof"
 actual: "hop"
 stack traceback:
 	example_with_luaunit.lua:108: in function 'TestTiti.test2_withFailure'
->>> TestToto.test1_withFailure failed
+
+3) TestToto.test1_withFailure
 example_with_luaunit.lua:19: expected: 2, actual: 1
 stack traceback:
 	example_with_luaunit.lua:19: in function 'TestToto.test1_withFailure'
->>> TestToto.test2_withFailure failed
+
+4) TestToto.test2_withFailure
 example_with_luaunit.lua:28: expected: "bof"
 actual: "hop"
 stack traceback:
 	example_with_luaunit.lua:28: in function 'TestToto.test2_withFailure'
->>> TestToto.test4 failed
+
+5) TestToto.test4
 example_with_luaunit.lua:41: Received the not expected value: 1
 stack traceback:
 	example_with_luaunit.lua:41: in function 'TestToto.test4'
->>> TestToto.test5 failed
+
+6) TestToto.test5
 example_with_luaunit.lua:47: expected: false, actual: 1
 stack traceback:
 	example_with_luaunit.lua:47: in function 'TestToto.test5'
->>> TestToto.test6 failed
+
+7) TestToto.test6
 example_with_luaunit.lua:52: expected: true, actual: false
 stack traceback:
 	example_with_luaunit.lua:52: in function 'TestToto.test6'
->>> TestToto.test7 failed
+
+8) TestToto.test7
 example_with_luaunit.lua:58: expected: {1, 2, three=3}
 actual: {1, 2}
 stack traceback:
 	example_with_luaunit.lua:58: in function 'TestToto.test7'
->>> TestToto.test8a failed
+
+9) TestToto.test8a
 example_with_luaunit.lua:76: Bouhouhoum error!
 stack traceback:
 	example_with_luaunit.lua:76: in function 'funcWithError'
 	example_with_luaunit.lua:63: in function 'TestToto.test8a'
->>> TestToto.test8b failed
+
+10) TestToto.test8b
 example_with_luaunit.lua:76: Bouhouhoum error!
 stack traceback:
 	example_with_luaunit.lua:76: in function 'funcWithError'
 	example_with_luaunit.lua:72: in function 'funcWithFuncWithError'
 	example_with_luaunit.lua:68: in function 'TestToto.test8b'
->>> test1_withFailure failed
+
+11) test1_withFailure
 example_with_luaunit.lua:124: assertion failed!
 stack traceback:
 	example_with_luaunit.lua:124: in function 'test1_withFailure'
->>> test2_withFailure failed
+
+12) test2_withFailure
 example_with_luaunit.lua:130: assertion failed!
 stack traceback:
 	example_with_luaunit.lua:130: in function 'test2_withFailure'
 
-Success: 20% - 3 / 15, executed in 0.006 seconds
+Ran 15 tests in 0.006 seconds
+FAILED (failures=12)

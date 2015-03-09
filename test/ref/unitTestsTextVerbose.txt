@@ -1,126 +1,113 @@
 Started on 02/01/15 00:00:56
->>>>>>>>> TestLuaUnitAssertions
->>> TestLuaUnitAssertions.test_assertAlmostEquals
->>> TestLuaUnitAssertions.test_assertEquals
->>> TestLuaUnitAssertions.test_assertFalse
->>> TestLuaUnitAssertions.test_assertIs
->>> TestLuaUnitAssertions.test_assertIsBoolean
->>> TestLuaUnitAssertions.test_assertIsCoroutine
->>> TestLuaUnitAssertions.test_assertIsFunction
->>> TestLuaUnitAssertions.test_assertIsNil
->>> TestLuaUnitAssertions.test_assertIsNumber
->>> TestLuaUnitAssertions.test_assertIsString
->>> TestLuaUnitAssertions.test_assertIsTable
->>> TestLuaUnitAssertions.test_assertIsUserdata
->>> TestLuaUnitAssertions.test_assertItemsEquals
->>> TestLuaUnitAssertions.test_assertNil
->>> TestLuaUnitAssertions.test_assertNotAlmostEquals
->>> TestLuaUnitAssertions.test_assertNotEquals
->>> TestLuaUnitAssertions.test_assertNotEqualsDifferentTypes2
->>> TestLuaUnitAssertions.test_assertNotIs
->>> TestLuaUnitAssertions.test_assertNotNil
->>> TestLuaUnitAssertions.test_assertNotStrContains
->>> TestLuaUnitAssertions.test_assertNotStrIContains
->>> TestLuaUnitAssertions.test_assertStrContains
->>> TestLuaUnitAssertions.test_assertStrIContains
->>> TestLuaUnitAssertions.test_assertStrMatches
->>> TestLuaUnitAssertions.test_assertTableAdditions
->>> TestLuaUnitAssertions.test_assertTableLev2
->>> TestLuaUnitAssertions.test_assertTableList
->>> TestLuaUnitAssertions.test_assertTableNil
->>> TestLuaUnitAssertions.test_assertTableNilFront
->>> TestLuaUnitAssertions.test_assertTableNum
->>> TestLuaUnitAssertions.test_assertTableStr
->>> TestLuaUnitAssertions.test_assertTrue
-
->>>>>>>>> TestLuaUnitAssertionsError
->>> TestLuaUnitAssertionsError.test_assertError
->>> TestLuaUnitAssertionsError.test_assertErrorMsgContains
->>> TestLuaUnitAssertionsError.test_assertErrorMsgEquals
->>> TestLuaUnitAssertionsError.test_assertErrorMsgMatches
-
->>>>>>>>> TestLuaUnitErrorMsg
->>> TestLuaUnitErrorMsg.test_assertAlmostEqualsMsg
->>> TestLuaUnitErrorMsg.test_assertAlmostEqualsOrderReversedMsg
->>> TestLuaUnitErrorMsg.test_assertEqualsMsg
->>> TestLuaUnitErrorMsg.test_assertEqualsOrderReversedMsg
->>> TestLuaUnitErrorMsg.test_assertError
->>> TestLuaUnitErrorMsg.test_assertErrorMsg
->>> TestLuaUnitErrorMsg.test_assertIs
->>> TestLuaUnitErrorMsg.test_assertIsBoolean
->>> TestLuaUnitErrorMsg.test_assertIsCoroutine
->>> TestLuaUnitErrorMsg.test_assertIsFunction
->>> TestLuaUnitErrorMsg.test_assertIsNumber
->>> TestLuaUnitErrorMsg.test_assertIsString
->>> TestLuaUnitErrorMsg.test_assertIsTable
->>> TestLuaUnitErrorMsg.test_assertIsUserdata
->>> TestLuaUnitErrorMsg.test_assertItemsEquals
->>> TestLuaUnitErrorMsg.test_assertNil
->>> TestLuaUnitErrorMsg.test_assertNotAlmostEqualsMsg
->>> TestLuaUnitErrorMsg.test_assertNotEqualsMsg
->>> TestLuaUnitErrorMsg.test_assertNotEqualsOrderReversedMsg
->>> TestLuaUnitErrorMsg.test_assertNotIs
->>> TestLuaUnitErrorMsg.test_assertNotStrContains
->>> TestLuaUnitErrorMsg.test_assertNotStrIContains
->>> TestLuaUnitErrorMsg.test_assertStrContains
->>> TestLuaUnitErrorMsg.test_assertStrIContains
->>> TestLuaUnitErrorMsg.test_assertStrMatches
->>> TestLuaUnitErrorMsg.test_assertTrueFalse
->>> TestLuaUnitErrorMsg.test_printTableWithRef
-
->>>>>>>>> TestLuaUnitExecution
->>> TestLuaUnitExecution.testOutputInterface
->>> TestLuaUnitExecution.testRunReturnsNumberOfFailures
->>> TestLuaUnitExecution.testRunSetupAndTeardown
->>> TestLuaUnitExecution.testRunSomeTestByGlobalInstance
->>> TestLuaUnitExecution.testRunSomeTestByLocalInstance
->>> TestLuaUnitExecution.testTestCountAndFailCount
->>> TestLuaUnitExecution.testWithSetupTeardownErrors1
->>> TestLuaUnitExecution.testWithSetupTeardownErrors2
->>> TestLuaUnitExecution.testWithSetupTeardownErrors3
->>> TestLuaUnitExecution.testWithSetupTeardownErrors4
->>> TestLuaUnitExecution.testWithSetupTeardownErrors5
->>> TestLuaUnitExecution.test_MethodsAreExecutedInRightOrder
->>> TestLuaUnitExecution.test_collectTests
->>> TestLuaUnitExecution.test_filterWithPattern
->>> TestLuaUnitExecution.test_runSuiteByNames
-
->>>>>>>>> TestLuaUnitResults
->>> TestLuaUnitResults.test_nodeStatus
->>> TestLuaUnitResults.test_resultsWhileTestInProgress
->>> TestLuaUnitResults.test_runSuiteOk
->>> TestLuaUnitResults.test_runSuiteWithFailures
-
->>>>>>>>> TestLuaUnitUtilities
->>> TestLuaUnitUtilities.test_IsClassMethod
->>> TestLuaUnitUtilities.test_IsFunction
->>> TestLuaUnitUtilities.test_applyPatternFilter
->>> TestLuaUnitUtilities.test_expandClasses
->>> TestLuaUnitUtilities.test_expandOneClass
->>> TestLuaUnitUtilities.test_genSortedIndex
->>> TestLuaUnitUtilities.test_hasNewline
->>> TestLuaUnitUtilities.test_includePattern
->>> TestLuaUnitUtilities.test_isTestName
->>> TestLuaUnitUtilities.test_parseCmdLine
->>> TestLuaUnitUtilities.test_prefixString
->>> TestLuaUnitUtilities.test_prettstrTableRecursion
->>> TestLuaUnitUtilities.test_prettystr
->>> TestLuaUnitUtilities.test_prettystr_adv_tables
->>> TestLuaUnitUtilities.test_sortedNextReturnsSortedKeyValues
->>> TestLuaUnitUtilities.test_sortedNextWorksOnTwoTables
->>> TestLuaUnitUtilities.test_sortedNextWorksTwiceOnTable
->>> TestLuaUnitUtilities.test_splitClassMethod
->>> TestLuaUnitUtilities.test_strMatch
->>> TestLuaUnitUtilities.test_strSplit3CharDelim
->>> TestLuaUnitUtilities.test_strSplitOnFailure
->>> TestLuaUnitUtilities.test_strSplitOneCharDelim
->>> TestLuaUnitUtilities.test_stripStackTrace
->>> TestLuaUnitUtilities.test_table_keytostring
->>> TestLuaUnitUtilities.test_xmlCDataEscape
->>> TestLuaUnitUtilities.test_xmlEscape
-
->>>>>>>>> TestMock
->>> TestMock.testMock
-
+    TestLuaUnitAssertions.test_assertAlmostEquals ... Ok
+    TestLuaUnitAssertions.test_assertEquals ... Ok
+    TestLuaUnitAssertions.test_assertFalse ... Ok
+    TestLuaUnitAssertions.test_assertIs ... Ok
+    TestLuaUnitAssertions.test_assertIsBoolean ... Ok
+    TestLuaUnitAssertions.test_assertIsCoroutine ... Ok
+    TestLuaUnitAssertions.test_assertIsFunction ... Ok
+    TestLuaUnitAssertions.test_assertIsNil ... Ok
+    TestLuaUnitAssertions.test_assertIsNumber ... Ok
+    TestLuaUnitAssertions.test_assertIsString ... Ok
+    TestLuaUnitAssertions.test_assertIsTable ... Ok
+    TestLuaUnitAssertions.test_assertIsUserdata ... Ok
+    TestLuaUnitAssertions.test_assertItemsEquals ... Ok
+    TestLuaUnitAssertions.test_assertNil ... Ok
+    TestLuaUnitAssertions.test_assertNotAlmostEquals ... Ok
+    TestLuaUnitAssertions.test_assertNotEquals ... Ok
+    TestLuaUnitAssertions.test_assertNotEqualsDifferentTypes2 ... Ok
+    TestLuaUnitAssertions.test_assertNotIs ... Ok
+    TestLuaUnitAssertions.test_assertNotNil ... Ok
+    TestLuaUnitAssertions.test_assertNotStrContains ... Ok
+    TestLuaUnitAssertions.test_assertNotStrIContains ... Ok
+    TestLuaUnitAssertions.test_assertStrContains ... Ok
+    TestLuaUnitAssertions.test_assertStrIContains ... Ok
+    TestLuaUnitAssertions.test_assertStrMatches ... Ok
+    TestLuaUnitAssertions.test_assertTableAdditions ... Ok
+    TestLuaUnitAssertions.test_assertTableLev2 ... Ok
+    TestLuaUnitAssertions.test_assertTableList ... Ok
+    TestLuaUnitAssertions.test_assertTableNil ... Ok
+    TestLuaUnitAssertions.test_assertTableNilFront ... Ok
+    TestLuaUnitAssertions.test_assertTableNum ... Ok
+    TestLuaUnitAssertions.test_assertTableStr ... Ok
+    TestLuaUnitAssertions.test_assertTrue ... Ok
+    TestLuaUnitAssertionsError.test_assertError ... Ok
+    TestLuaUnitAssertionsError.test_assertErrorMsgContains ... Ok
+    TestLuaUnitAssertionsError.test_assertErrorMsgEquals ... Ok
+    TestLuaUnitAssertionsError.test_assertErrorMsgMatches ... Ok
+    TestLuaUnitErrorMsg.test_assertAlmostEqualsMsg ... Ok
+    TestLuaUnitErrorMsg.test_assertAlmostEqualsOrderReversedMsg ... Ok
+    TestLuaUnitErrorMsg.test_assertEqualsMsg ... Ok
+    TestLuaUnitErrorMsg.test_assertEqualsOrderReversedMsg ... Ok
+    TestLuaUnitErrorMsg.test_assertError ... Ok
+    TestLuaUnitErrorMsg.test_assertErrorMsg ... Ok
+    TestLuaUnitErrorMsg.test_assertIs ... Ok
+    TestLuaUnitErrorMsg.test_assertIsBoolean ... Ok
+    TestLuaUnitErrorMsg.test_assertIsCoroutine ... Ok
+    TestLuaUnitErrorMsg.test_assertIsFunction ... Ok
+    TestLuaUnitErrorMsg.test_assertIsNumber ... Ok
+    TestLuaUnitErrorMsg.test_assertIsString ... Ok
+    TestLuaUnitErrorMsg.test_assertIsTable ... Ok
+    TestLuaUnitErrorMsg.test_assertIsUserdata ... Ok
+    TestLuaUnitErrorMsg.test_assertItemsEquals ... Ok
+    TestLuaUnitErrorMsg.test_assertNil ... Ok
+    TestLuaUnitErrorMsg.test_assertNotAlmostEqualsMsg ... Ok
+    TestLuaUnitErrorMsg.test_assertNotEqualsMsg ... Ok
+    TestLuaUnitErrorMsg.test_assertNotEqualsOrderReversedMsg ... Ok
+    TestLuaUnitErrorMsg.test_assertNotIs ... Ok
+    TestLuaUnitErrorMsg.test_assertNotStrContains ... Ok
+    TestLuaUnitErrorMsg.test_assertNotStrIContains ... Ok
+    TestLuaUnitErrorMsg.test_assertStrContains ... Ok
+    TestLuaUnitErrorMsg.test_assertStrIContains ... Ok
+    TestLuaUnitErrorMsg.test_assertStrMatches ... Ok
+    TestLuaUnitErrorMsg.test_assertTrueFalse ... Ok
+    TestLuaUnitErrorMsg.test_printTableWithRef ... Ok
+    TestLuaUnitExecution.testOutputInterface ... Ok
+    TestLuaUnitExecution.testRunReturnsNumberOfFailures ... Ok
+    TestLuaUnitExecution.testRunSetupAndTeardown ... Ok
+    TestLuaUnitExecution.testRunSomeTestByGlobalInstance ... Ok
+    TestLuaUnitExecution.testRunSomeTestByLocalInstance ... Ok
+    TestLuaUnitExecution.testTestCountAndFailCount ... Ok
+    TestLuaUnitExecution.testWithSetupTeardownErrors1 ... Ok
+    TestLuaUnitExecution.testWithSetupTeardownErrors2 ... Ok
+    TestLuaUnitExecution.testWithSetupTeardownErrors3 ... Ok
+    TestLuaUnitExecution.testWithSetupTeardownErrors4 ... Ok
+    TestLuaUnitExecution.testWithSetupTeardownErrors5 ... Ok
+    TestLuaUnitExecution.test_MethodsAreExecutedInRightOrder ... Ok
+    TestLuaUnitExecution.test_collectTests ... Ok
+    TestLuaUnitExecution.test_filterWithPattern ... Ok
+    TestLuaUnitExecution.test_runSuiteByNames ... Ok
+    TestLuaUnitResults.test_nodeStatus ... Ok
+    TestLuaUnitResults.test_resultsWhileTestInProgress ... Ok
+    TestLuaUnitResults.test_runSuiteOk ... Ok
+    TestLuaUnitResults.test_runSuiteWithFailures ... Ok
+    TestLuaUnitUtilities.test_IsClassMethod ... Ok
+    TestLuaUnitUtilities.test_IsFunction ... Ok
+    TestLuaUnitUtilities.test_applyPatternFilter ... Ok
+    TestLuaUnitUtilities.test_expandClasses ... Ok
+    TestLuaUnitUtilities.test_expandOneClass ... Ok
+    TestLuaUnitUtilities.test_genSortedIndex ... Ok
+    TestLuaUnitUtilities.test_hasNewline ... Ok
+    TestLuaUnitUtilities.test_includePattern ... Ok
+    TestLuaUnitUtilities.test_isTestName ... Ok
+    TestLuaUnitUtilities.test_parseCmdLine ... Ok
+    TestLuaUnitUtilities.test_prefixString ... Ok
+    TestLuaUnitUtilities.test_prettstrTableRecursion ... Ok
+    TestLuaUnitUtilities.test_prettystr ... Ok
+    TestLuaUnitUtilities.test_prettystr_adv_tables ... Ok
+    TestLuaUnitUtilities.test_sortedNextReturnsSortedKeyValues ... Ok
+    TestLuaUnitUtilities.test_sortedNextWorksOnTwoTables ... Ok
+    TestLuaUnitUtilities.test_sortedNextWorksTwiceOnTable ... Ok
+    TestLuaUnitUtilities.test_splitClassMethod ... Ok
+    TestLuaUnitUtilities.test_strMatch ... Ok
+    TestLuaUnitUtilities.test_strSplit3CharDelim ... Ok
+    TestLuaUnitUtilities.test_strSplitOnFailure ... Ok
+    TestLuaUnitUtilities.test_strSplitOneCharDelim ... Ok
+    TestLuaUnitUtilities.test_stripStackTrace ... Ok
+    TestLuaUnitUtilities.test_table_keytostring ... Ok
+    TestLuaUnitUtilities.test_xmlCDataEscape ... Ok
+    TestLuaUnitUtilities.test_xmlEscape ... Ok
+    TestMock.testMock ... Ok
 =========================================================
-Success: 100% - 109 / 109, executed in 0.016 seconds
+Ran 109 tests in 0.031 seconds
+OK 
