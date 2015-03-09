@@ -150,7 +150,7 @@ function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
             -- capture but nothing to adjust, just return
             return
         end
-        error('No line in file '..fileOut..' matching pattern '..pattern )
+        error('No line in file '..fileOut..' matching pattern "'..pattern..'"' )
     end
 
     f = io.open( fileOut, 'w')
@@ -197,10 +197,10 @@ function check_text_output( fileToRun, options, output, refOutput, refExitCode )
         error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
     end
 
-    if options ~= '--quiet' then
+    if options == '--verbose' then
         adjustFile( output, refOutput, 'Started on (.*)')
     end
-    adjustFile( output, refOutput, 'Success: .*, executed in (%d.%d*) seconds' )
+    adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
     if options ~= '--quiet' then
         -- For Lua 5.1 / 5.2 compatibility
         adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)', true )
