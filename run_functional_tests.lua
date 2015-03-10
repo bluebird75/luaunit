@@ -508,6 +508,8 @@ filesSetIndex = {
     TestXml=filesToGenerateTestXml,
 }
 
+
+
 function updateRefFiles( filesToGenerate )
     local ret
 
@@ -540,7 +542,11 @@ function main()
             while i <=  #arg do
                 fileSet = filesSetIndex[ arg[i] ]
                 if fileSet == nil then
-                    error(string.format('Unable to generate files for target %s\n', arg[i]) )
+                    local validTarget = ''
+                    for k,v in pairs(filesSetIndex) do
+                        validTarget = validTarget .. ' '.. k
+                    end
+                    error(string.format('Unable to generate files for target %s\nPossible targets: %s\n', arg[i], validTarget) )
                 end
                 -- print('Generating '..arg[i])
                 updateRefFiles( fileSet )
