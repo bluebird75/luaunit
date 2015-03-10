@@ -14,7 +14,7 @@ local M={}
 -- private exported functions (for testing)
 M.private = {}
 
-M.VERSION='3.0'
+M.VERSION='3.1'
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
 assertEquals( expected, actual ).
