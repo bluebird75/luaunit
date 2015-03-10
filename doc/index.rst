@@ -210,6 +210,7 @@ Rerun your test script (-v is to activate a more verbose output) ::
     lua test_something.lua -v
 
 It now prints::
+
     Started on 03/10/15 16:45:41
         TestAdd.testAddPositive ... Ok
         TestAdd.testAddZero ... Ok
