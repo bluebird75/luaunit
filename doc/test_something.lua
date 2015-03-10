@@ -1,5 +1,5 @@
 
-require('luaunit')
+luaunit = require('luaunit')
 
 function add(v1,v2)
     -- add positive numbers
@@ -33,6 +33,46 @@ function div(v1,v2)
     return v1/v2
 end
 
+
+
+TestAdd = {}
+    function TestAdd:testAddPositive()
+        luaunit.assertEquals(add(1,1),2)
+    end
+
+    function TestAdd:testAddZero()
+        luaunit.assertEquals(add(1,0),0)
+        luaunit.assertEquals(add(0,5),0)
+        luaunit.assertEquals(add(0,0),0)
+    end
+
+    function TestAdd:testAddError()
+        luaunit.assertErrorMsgContains('Can only add positive or null numbers, received 2 and -3', add, 2, -3)
+    end
+
+    function TestAdd:testAdder()
+        f = adder(3)
+        luaunit.assertIsFunction( f )
+        luaunit.assertEquals( f(2), 5 )
+    end
+-- end of table TestAdd
+
+TestDiv = {}
+    function TestDiv:testDivPositive()
+        luaunit.assertEquals(div(4,2),2)
+    end
+
+    function TestDiv:testDivZero()
+        luaunit.assertEquals(div(4,0),0)
+        luaunit.assertEquals(div(0,5),0)
+        luaunit.assertEquals(div(0,0),0)
+    end
+
+    function TestDiv:testDivError()
+        luaunit.assertErrorMsgContains('Can only divide positive or null numbers, received 2 and -3', div, 2, -3)
+    end
+
+--[[
 TestLogger = {}
     function TestLogger:setUp()
         -- define the fname to use for logging
@@ -45,7 +85,7 @@ TestLogger = {}
         initLog(self.fname)
         log('toto')
         f = io.open(self.fname, 'r')
-        assertNotNil( f )
+        luaunit.assertNotNil( f )
         f:close()
     end
 
@@ -55,44 +95,7 @@ TestLogger = {}
         os.remove(self.fname)
     end
 
-
-
-TestAdd = {}
-    function TestAdd:testAddPositive()
-        assertEquals(add(1,1),2)
-    end
-
-    function TestAdd:testAddZero()
-        assertEquals(add(1,0),0)
-        assertEquals(add(0,5),0)
-        assertEquals(add(0,0),0)
-    end
-
-    function TestAdd:testAddError()
-        assertErrorMsgContains('Can only add positive or null numbers, received 2 and -3', add, 2, -3)
-    end
-
-    function TestAdd:testAdder()
-        f = adder(3)
-        assertIsFunction( f )
-        assertEquals( f(2), 5 )
-    end
--- end of table TestAdd
-
-TestDiv = {}
-    function TestDiv:testDivPositive()
-        assertEquals(div(4,2),2)
-    end
-
-    function TestDiv:testDivZero()
-        assertEquals(div(4,0),0)
-        assertEquals(div(0,5),0)
-        assertEquals(div(0,0),0)
-    end
-
-    function TestDiv:testDivError()
-        assertErrorMsgContains('Can only div positive or null numbers, received 2 and -3', div, 2, -3)
-    end
 -- end of table TestDiv
+]]
 
-os.exit(LuaUnit.run())
+os.exit(luaunit.LuaUnit.run())

@@ -157,9 +157,8 @@ Now, run your file with::
 
 It prints something like::
 
-    Started on 08/07/14 07:07:40
-    =========================================================
-    Success: 100% - 0 / 0, executed in 0.000 seconds
+    Ran 0 tests in 0 seconds
+    OK    
 
 Now, your testing framework is in place, you can start writing tests.
 
@@ -206,26 +205,24 @@ You write the following tests::
 :func:`assertEquals` is the most common used assertion function. It simply
 verifies that both argument are equals, in the order actual value, expected value.
 
-Rerun your test script::
+Rerun your test script (-v is to activate a more verbose output) ::
 
-    lua test_something.lua
+    lua test_something.lua -v
 
 It now prints::
-
-    Started on 08/16/14 13:55:18
-    >>>>>>>>> <TestFunctions>
-    >>> testAddPositive
-    >>> testAddZero
-
+    Started on 03/10/15 16:45:41
+        TestAdd.testAddPositive ... Ok
+        TestAdd.testAddZero ... Ok
     =========================================================
-    Success: 100% - 2 / 2, executed in 0.000 seconds
+    Ran 2 tests in 0.010 seconds
+    OK
 
 You always have:
 
 * the date at which the test suite was started
 * the group to which the function belongs (usually, the name of the function table, and *<TestFunctions>* for all direct test functions)
 * the name of the function being executed
-* a report at the end, with number of executed test, success rate and execution duration
+* a report at the end, with number of executed test, number of non selected tests, number of failures and duration.
 
 
 You also want to test that when the function receives negative numbers, it generates an error. Use
@@ -316,26 +313,23 @@ Then we create a second set of tests for div::
         end
 
         function TestDiv:testDivError()
-            luaunit.assertErrorMsgContains('Can only div positive or null numbers, received 2 and -3', div, 2, -3)
+            luaunit.assertErrorMsgContains('Can only divide positive or null numbers, received 2 and -3', div, 2, -3)
         end
     -- end of table TestDiv
 
 Execution of the test suite now looks like this::
 
-    Started on 08/16/14 22:05:03
-    >>>>>>>>> TestAdd
-    >>> TestAdd.testAddError
-    >>> TestAdd.testAddPositive
-    >>> TestAdd.testAddZero
-    >>> TestAdd.testAdder
-
-    >>>>>>>>> TestDiv
-    >>> TestDiv.testDivError
-    >>> TestDiv.testDivPositive
-    >>> TestDiv.testDivZero
-
+    Started on 03/10/15 16:47:33
+        TestAdd.testAddError ... Ok
+        TestAdd.testAddPositive ... Ok
+        TestAdd.testAddZero ... Ok
+        TestAdd.testAdder ... Ok
+        TestDiv.testDivError ... Ok
+        TestDiv.testDivPositive ... Ok
+        TestDiv.testDivZero ... Ok
     =========================================================
-    Success: 100% - 7 / 7, executed in 0.000 seconds
+    Ran 7 tests in 0.010 seconds
+    OK
 
 
 When tests are defined in tables, you can optionally define two special
@@ -396,9 +390,31 @@ Choose the test output format with ``-o`` or ``--output``. Available formats are
 * TAP: TAP format
 * junit: output junit xml
 
-Example::
+Example of non-verbose text format::
 
-    lua my_test_suite.lua -o TAP
+    $ lua doc/test_something.lua
+    .......
+    Ran 7 tests in 0.002 seconds
+    OK
+
+
+Example of TAP format::
+
+    $ lua doc/test_something.lua -o TAP
+    1..7
+    # Started on 03/10/15 16:50:09
+    # Starting class: TestAdd
+    ok     1        TestAdd.testAddError
+    ok     2        TestAdd.testAddPositive
+    ok     3        TestAdd.testAddZero
+    ok     4        TestAdd.testAdder
+    # Starting class: TestDiv
+    ok     5        TestDiv.testDivError
+    ok     6        TestDiv.testDivPositive
+    ok     7        TestDiv.testDivZero
+    # Ran 7 tests in 0.022 seconds, 7 successes, 0 failures
+
+
 
 **List of tests to run**
 
@@ -409,8 +425,16 @@ and the test method. The option may be repeated.
 Example::
 
     -- Run all TestAdd table tests and one test of TestDiv table.
-    lua my_test_suite.lua TestAdd TestDiv.testDivError
-
+    $ lua doc/test_something.lua TestAdd TestDiv.testDivError -v
+    Started on 03/10/15 16:52:20
+        TestAdd.testAddError ... Ok
+        TestAdd.testAddPositive ... Ok
+        TestAdd.testAddZero ... Ok
+        TestAdd.testAdder ... Ok
+        TestDiv.testDivError ... Ok
+    =========================================================
+    Ran 5 tests in 0.000 seconds
+    OK
 
 **Filtering tests**
 
@@ -422,23 +446,21 @@ Example::
 
     -- Run all tests of zero testing and error testing
     -- by using the magic character .
-    lua my_test_suite.lua -p Err.r -p Z.ro
+    lua my_test_suite.lua -v -p Err.r -p Z.ro
 
 For our test suite, it gives the following output::
 
-    Started on 08/16/14 22:38:30
-    >>>>>>>>> TestAdd
-    >>> TestAdd.testAddError
-    >>> TestAdd.testAddZero
-
-    >>>>>>>>> TestDiv
-    >>> TestDiv.testDivError
-    >>> TestDiv.testDivZero
-
+    Started on 03/10/15 16:48:29
+        TestAdd.testAddError ... Ok
+        TestAdd.testAddZero ... Ok
+        TestDiv.testDivError ... Ok
+        TestDiv.testDivZero ... Ok
     =========================================================
-    Success: 100% - 4 / 4, executed in 0.000 seconds
+    Ran 4 tests in 0.010 seconds
+    OK (ignored=3)
 
-The pattern can be any lua pattern. Be sure to exclude all magic
+The number of tests ignored by the selection is printed, along
+with the test result. The pattern can be any lua pattern. Be sure to exclude all magic
 characters with % (like -+?*) and protect your pattern from the shell
 interpretation by putting it in quotes.
 
@@ -470,10 +492,10 @@ lua test file would look like this:
     TestToto = {} --class
 
         function TestToto:test1_withFailure()
-            assertEquals( self.a , 1 )
+            local a = 1
+            assertEquals( a , 1 )
             -- will fail
-            assertEquals( self.a , 2 )
-            assertEquals( self.a , 2 )
+            assertEquals( a , 2 )
         end
 
     [...]
@@ -489,10 +511,10 @@ from version 3.1 LuaUnit follows this practice and the code should be adapted to
     TestToto = {} --class
 
         function TestToto:test1_withFailure()
-            -- assertions are prefixed with the module name.
-            luaunit.assertEquals( self.a , 1 )
-            luaunit.assertEquals( self.a , 2 )
-            luaunit.assertEquals( self.a , 2 )
+            local a = 1
+            luaunit.assertEquals( a , 1 )
+            -- will fail
+            luaunit.assertEquals( a , 2 )
         end
 
     [...]
@@ -509,10 +531,10 @@ global variable **prior** to importing LuaUnit:
     TestToto = {} --class
 
         function TestToto:test1_withFailure()
-            assertEquals( self.a , 1 )
+            local a = 1
+            assertEquals( a , 1 )
             -- will fail
-            assertEquals( self.a , 2 )
-            assertEquals( self.a , 2 )
+            assertEquals( a , 2 )
         end
 
     [...]
@@ -613,7 +635,7 @@ Formats available:
 * ``text``: the default output format of LuaUnit
 * ``nil``: no output at all
 * ``tap``: output compatible with the `Test Anything Protocol`_ 
-* ``junit``: output compatible with the *JUnit xml* format
+* ``junit``: output compatible with the *JUnit xml* format (used by many CI platforms)
 
 .. _Test Anything Protocol: http://testanything.org/
 
