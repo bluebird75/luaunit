@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="15" timestamp="2015-03-06T00:09:12" time="0.007" errors="0" failures="12">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="15" timestamp="2015-03-10T21:06:34" time="0.000" errors="0" failures="12">
         <properties>
             <property name="Lua Version" value="Lua 5.2"/>
-            <property name="LuaUnit Version" value="3.0"/>
+            <property name="LuaUnit Version" value="3.1"/>
         </properties>
         <testcase classname="TestTiti" name="TestTiti.test1_withFailure" time="0.000">
             <failure type="example_with_luaunit.lua:99: expected: 2, actual: 1">

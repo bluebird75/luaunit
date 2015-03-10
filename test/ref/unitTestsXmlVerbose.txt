@@ -1,5 +1,5 @@
 # XML output to test/ref/unitTestsXmlVerbose.xml
-# Started on 02/12/15 14:33:32
+# Started on 03/10/15 21:06:33
 # Starting class: TestLuaUnitAssertions
 # Starting test: TestLuaUnitAssertions.test_assertAlmostEquals
 # Starting test: TestLuaUnitAssertions.test_assertEquals
@@ -116,4 +116,4 @@
 # Starting test: TestLuaUnitUtilities.test_xmlEscape
 # Starting class: TestMock
 # Starting test: TestMock.testMock
-# Ran 109 tests in 0.016 seconds, 109 successes, 0 failures
+# Ran 109 tests in 0.030 seconds, 109 successes, 0 failures
