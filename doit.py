@@ -1,15 +1,15 @@
 import subprocess, sys, os, shutil, os.path, optparse
 
-VERSION='3.0'
+VERSION='3.1'
 RELEASE_NAME='luaunit-%s' % VERSION
 RELEASE_DIR='release/' + RELEASE_NAME + '/'
 TARGET_ZIP=RELEASE_NAME + '.zip'
 TARGET_TGZ=RELEASE_NAME + '.tgz'
-REPO_PATH='d:/work/luaunit/luaunit-git/luaunit/'
+REPO_PATH='d:/work/luaunit/luaunit-git/luaunit2/'
 
-LUA50='d:/program/lua/lua50/lua50.exe'
-LUA51='d:/program/lua/lua51/lua51.exe'
-LUA52='d:/program/lua/lua52/lua52.exe'
+# LUA50='d:/program/dev/lua/lua50/lua50.exe'
+LUA51='d:/program/dev/lua/lua51/lua51.exe'
+LUA52='d:/program/dev/lua/lua52/lua52.exe'
 
 ALL_LUA = ( 
     (LUA52, 'lua 5.2'), 
@@ -25,8 +25,13 @@ def report( s ):
 def run_tests():
     '''Run tests with all versions of lua'''
     for lua, luaversion in ALL_LUA:
-        report( 'Running tests with %s' % luaversion )
-        retcode = subprocess.call( [lua, 'test_luaunit.lua'] )
+        report( 'Running unit-tests tests with %s' % luaversion )
+        retcode = subprocess.call( [lua, 'run_unit_tests.lua'] )
+        if retcode != 0:
+            report( 'Invalid retcode when running tests: %d' % retcode )
+            sys.exit( retcode )
+        report( 'Running functional tests tests with %s' % luaversion )
+        retcode = subprocess.call( [lua, 'run_functional_tests.lua'] )
         if retcode != 0:
             report( 'Invalid retcode when running tests: %d' % retcode )
             sys.exit( retcode )
