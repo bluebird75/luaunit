@@ -1,13 +1,12 @@
 TODO v3.1:
 ============
-- check documentation link glitch to TAP 
 - mention that general error are correctly handled by luaunit as failures
-- improve default output to make it closer to python
-- report test duration everywhere
-- validate output with ignored tests (0 failures or some failures)
 
 TODO Future:
 ============
+- detect if a functions creates new global variables.
+- validate output with ignored tests (0 failures or some failures)
+- report test duration everywhere
 - allow to skip tests
 - make a difference between errors and failures
 - randomized testing
@@ -21,7 +20,6 @@ TODO Future:
 	+ expected length of X, got Y
 	+ keys differing in table 1 and 2
 - XML: report system information
-- detect if a functions creates new global variables.
 
 Nice to have: 
 ============
@@ -30,6 +28,7 @@ Nice to have:
 
 Done since 3.0:
 ===============
+x check documentation link glitch to TAP 
 x doc: report how to handle global space pollution/restriction
 x doc: adapt all examples to new way of requireing luaunit
 x less global space pollution
