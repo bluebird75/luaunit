@@ -64,7 +64,7 @@ Version and Changelog
 =====================
 This documentation describes the functionality of LuaUnit v3.1 .
 
-New in verison 3.1
+New in version 3.1
 ------------------
 * luaunit no longer pollutes global namespace, unless defining EXPORT_ASSERT_TO_GLOBALS to true
 * fixes and validation of JUnit XML generation
@@ -76,7 +76,7 @@ New in verison 3.1
 **Important note when upgrading to version 3.1** : assertions functions are
 no longer exported directly to the global namespace. See :ref:`luaunit-global-asserts`
 
-New in verison 3.0 - 9 oct 2014
+New in version 3.0 - 9 oct 2014
 --------------------------------
 
 Because LuaUnit was forked and released as some 2.x version, version number
