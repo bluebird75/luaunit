@@ -33,6 +33,18 @@ LuaUnit has a mailing list with low activity (a few emails per months). To subsc
 
 ### History 
 
+#### Version 3.1 - 10 Mar. 2015
+* luaunit no longer pollutes global namespace, unless defining EXPORT_ASSERT_TO_GLOBALS to true
+* fixes and validation of JUnit XML generation
+* strip luaunit internal information from stacktrace
+* general improvements of test results with duration and other details
+* improve printing for tables, with an option to always print table id
+* fix printing of recursive tables 
+
+**Important note when upgrading to version 3.1** : assertions functions are
+no longer exported directly to the global namespace. See documentation for upgrade
+paths.
+
 #### Version 3.0 - 9. Oct 2014
 
 Since some people have forked LuaUnit and release some 2.x version, I am
