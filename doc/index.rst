@@ -29,7 +29,7 @@ format, set verbosity, ...
 Platform support
 ================
 
-LuaUnit works with Lua 5.1 and 5.2 . It is tested on Windows XP, Windows Server 2003 and Ubuntu 14.04 (see 
+LuaUnit works with Lua 5.1, 5.2 and 5.3 . It is tested on Windows XP, Windows Server 2003 and Ubuntu 14.04 (see 
 continuous build results on `Travis-CI`_  and `AppVeyor`_ ) and should work on all platforms supported by lua.
 It has no other dependency than lua itself. 
 

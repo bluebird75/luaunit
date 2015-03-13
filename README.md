@@ -14,7 +14,7 @@ into Continuous Integration platforms (Jenkins, Maven, ...) . The integrated com
 options provide a flexible interface to select tests by name or patterns, control output 
 format, set verbosity, ...
 
-LuaUnit works with Lua 5.1 and 5.2 . It was tested on Windows XP, Windows Server 2012 R2 (x64) and Ubuntu 14.04 (see 
+LuaUnit works with Lua 5.1, 5.2 and 5.3 . It was tested on Windows XP, Windows Server 2012 R2 (x64) and Ubuntu 14.04 (see 
 continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) and [AppVeyor](https://ci.appveyor.com/project/bluebird75/luaunit) ) and should work on all platforms supported by lua.
 It has no other dependency than lua itself. 
 

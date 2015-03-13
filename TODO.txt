@@ -1,6 +1,7 @@
 
 TODO Future:
 ============
+- travis lua 5.3
 - add the ability to count the number of assertions that should have been executed in the test
 - mention that general error are correctly handled by luaunit as failures
 - detect if a functions creates new global variables.
@@ -22,8 +23,11 @@ TODO Future:
 
 Nice to have: 
 ============
-- lua 5.3 ? Need to wait for support by travis-CI
 - stack unwrapping like in py.test
+
+Done since 3.1:
+===============
+x lua 5.3 
 
 Done since 3.0:
 ===============

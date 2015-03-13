@@ -10,8 +10,10 @@ REPO_PATH='d:/work/luaunit/luaunit-git/luaunit2/'
 # LUA50='d:/program/dev/lua/lua50/lua50.exe'
 LUA51='d:/program/dev/lua/lua51/lua51.exe'
 LUA52='d:/program/dev/lua/lua52/lua52.exe'
+LUA53='d:/program/dev/lua/lua53/lua53.exe'
 
 ALL_LUA = ( 
+    (LUA53, 'lua 5.3'), 
     (LUA52, 'lua 5.2'), 
     (LUA51, 'lua 5.1'), 
 #    (LUA50, 'lua 5.0'),
