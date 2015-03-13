@@ -1,9 +1,8 @@
-TODO v3.1:
-============
-- mention that general error are correctly handled by luaunit as failures
 
 TODO Future:
 ============
+- add the ability to count the number of assertions that should have been executed in the test
+- mention that general error are correctly handled by luaunit as failures
 - detect if a functions creates new global variables.
 - validate output with ignored tests (0 failures or some failures)
 - report test duration everywhere
