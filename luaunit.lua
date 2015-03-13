@@ -1739,6 +1739,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         if prettyFuncName then
             -- we do have the real method name, improve the stack trace
             stackTrace = string.gsub( stackTrace, "in function 'methodInstance'", "in function '"..prettyFuncName.."'")
+            -- Needed for Lua 5.3 
+            stackTrace = string.gsub( stackTrace, "in method 'methodInstance'", "in method '"..prettyFuncName.."'")
+            stackTrace = string.gsub( stackTrace, "in upvalue 'methodInstance'", "in method '"..prettyFuncName.."'")
         end
 
         if STRIP_LUAUNIT_FROM_STACKTRACE then

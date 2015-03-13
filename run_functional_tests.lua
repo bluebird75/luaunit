@@ -177,6 +177,8 @@ function check_tap_output( fileToRun, options, output, refOutput, refExitCode )
         -- For Lua 5.1 / 5.2 compatibility
         adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)', true )
     end
+    -- For Lua 5.3: stack trace uses "method" instead of "function"
+    adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
 
     ret = osExec( string.format([[diff -NPw -u  -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output ) )
     if not ret then
@@ -205,6 +207,8 @@ function check_text_output( fileToRun, options, output, refOutput, refExitCode )
         -- For Lua 5.1 / 5.2 compatibility
         adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)', true )
     end
+    -- For Lua 5.3: stack trace uses "method" instead of "function"
+    adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
  
 
     ret = osExec( string.format([[diff -NPw -u  -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output ) )
@@ -257,6 +261,9 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     adjustFile( xmlOutput, refXmlOutput, '.*<property name="Lua Version" value="(Lua 5..)"/>')
     adjustFile( output, refOutput, '(.+%[C%]: i?n? ?%?)', true )
     adjustFile( xmlOutput, refXmlOutput, '(.+%[C%]: i?n? ?%?.*)', true )
+    -- For Lua 5.3: stack trace uses "method" instead of "function"
+    adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
+    adjustFile( xmlOutput, refXmlOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
 
 
     if HAS_XMLLINT then
