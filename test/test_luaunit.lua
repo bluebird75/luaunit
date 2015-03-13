@@ -1128,7 +1128,11 @@ TestLuaUnitErrorMsg = {} --class
         lu.assertErrorMsgEquals( 'expected: "exp"\nactual: "act"', lu.assertEquals, 'act', 'exp' )
         lu.assertErrorMsgEquals( 'expected: \n"exp\npxe"\nactual: \n"act\ntca"', lu.assertEquals, 'act\ntca', 'exp\npxe' )
         lu.assertErrorMsgEquals( 'expected: true, actual: false', lu.assertEquals, false, true )
-        lu.assertErrorMsgEquals( 'expected: 1.2, actual: 1', lu.assertEquals, 1.0, 1.2)
+        if _VERSION == 'Lua 5.3' then
+            lu.assertErrorMsgEquals( 'expected: 1.2, actual: 1.0', lu.assertEquals, 1.0, 1.2)
+        else
+            lu.assertErrorMsgEquals( 'expected: 1.2, actual: 1', lu.assertEquals, 1.0, 1.2)
+        end
         lu.assertErrorMsgMatches( 'expected: {1, 2, 3}\nactual: {3, 2, 1}', lu.assertEquals, {3,2,1}, {1,2,3} )
         lu.assertErrorMsgMatches( 'expected: {one=1, two=2}\nactual: {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
         lu.assertErrorMsgEquals( 'expected: 2, actual: nil', lu.assertEquals, nil, 2 )
