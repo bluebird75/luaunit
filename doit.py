@@ -53,7 +53,7 @@ def packageit():
         os.mkdir('release')
     except OSError:
         pass
-    subprocess.check_call(['d:/program/msysgit/msysgit/bin/git.exe', 'clone', '--no-hardlinks', REPO_PATH, RELEASE_DIR])
+    subprocess.check_call(['d:/program/utils/Git/bin/git.exe', 'clone', '--no-hardlinks', REPO_PATH, RELEASE_DIR])
     os.chdir( RELEASE_DIR )
 
     # Release dir cleanup 
