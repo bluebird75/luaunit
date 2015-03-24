@@ -1,3 +1,4 @@
+#!/usr/bin/env lua
 
 require('test.test_luaunit')
 lu = require('luaunit')
