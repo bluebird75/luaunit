@@ -13,8 +13,8 @@ before_install:
   - bash .travis/setup_lua.sh
 
 script: 
-  - $LUA run_unit_tests.lua
-  - $LUA run_functional_tests.lua
+  - lua run_unit_tests.lua
+  - lua run_functional_tests.lua
 
 notifications:
   email:
