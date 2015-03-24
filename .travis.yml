@@ -1,14 +1,18 @@
-language: erlang
+language: c
 
 env:
+  global:
+    - LUAROCKS=2.2.0-rc1
   matrix:
     - LUA=lua5.1
     - LUA=lua5.2
+    - LUA=lua5.3
+    - LUA=luajit
 
 before_install:
-  - sudo apt-get install $LUA libxml2-utils
-  
-script:
+  - bash .travis/setup_lua.sh
+
+script: 
   - $LUA run_unit_tests.lua
   - $LUA run_functional_tests.lua
 
