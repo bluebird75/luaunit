@@ -1722,7 +1722,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             return debug.traceback(e..SPLITTER, 3)
         end
 
-        local ok=true, fullErrMsg, stackTrace, errMsg, t
+        local ok, fullErrMsg, stackTrace, errMsg, t
         if classInstance then
             -- stupid Lua < 5.2 does not allow xpcall with arguments so let's use a workaround
             ok, fullErrMsg = xpcall( function () methodInstance(classInstance) end, err_handler )
@@ -1756,7 +1756,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         -- When executing a test function, className and classInstance must be nil
         -- When executing a class method, all parameters must be set
 
-        local ok, errMsg, stackTrace
+        local ok, errMsg, stackTrace, prettyFuncName
 
         if type(methodInstance) ~= 'function' then
             error( tostring(methodName)..' must be a function, not '..type(methodInstance))
@@ -1821,7 +1821,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         local result = {}
 
         for i,v in ipairs( listOfNameAndInst ) do
-            name, instance = v[1], v[2]
+            local name, instance = v[1], v[2]
             if M.LuaUnit.isFunction(instance) then
                 table.insert( result, { name, instance } )
             else 
@@ -1849,7 +1849,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         local excluded = {}
 
         for i,v in ipairs( listOfNameAndInst ) do
-            name, instance = v[1], v[2]
+            local name, instance = v[1], v[2]
 
             if patternFilter and not M.LuaUnit.patternInclude( patternFilter, name ) then
                 table.insert( excluded, v )
@@ -2013,7 +2013,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             self.patternFilter = options.pattern
         end
 
-        testNames = options['testNames']
+        local testNames = options['testNames']
 
         if testNames == nil then
             testNames = M.LuaUnit.collectTests()
