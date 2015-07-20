@@ -902,19 +902,19 @@ function M.assertItemsEquals(actual, expected)
     end
 end
 
-assert_equals = assertEquals
-assert_not_equals = assertNotEquals
-assert_error = assertError
-assert_true = assertTrue
-assert_false = assertFalse
-assert_is_number = assertIsNumber
-assert_is_string = assertIsString
-assert_is_table = assertIsTable
-assert_is_boolean = assertIsBoolean
-assert_is_nil = assertIsNil
-assert_is_function = assertIsFunction
-assert_is = assertIs
-assert_not_is = assertNotIs
+M.assert_equals = M.assertEquals
+M.assert_not_equals = M.assertNotEquals
+M.assert_error = M.assertError
+M.assert_true = M.assertTrue
+M.assert_false = M.assertFalse
+M.assert_is_number = M.assertIsNumber
+M.assert_is_string = M.assertIsString
+M.assert_is_table = M.assertIsTable
+M.assert_is_boolean = M.assertIsBoolean
+M.assert_is_nil = M.assertIsNil
+M.assert_is_function = M.assertIsFunction
+M.assert_is = M.assertIs
+M.assert_not_is = M.assertNotIs
 
 
 if EXPORT_ASSERT_TO_GLOBALS then
@@ -946,6 +946,20 @@ if EXPORT_ASSERT_TO_GLOBALS then
     assertIs               = M.assertIs
     assertNotIs            = M.assertNotIs
     assertItemsEquals      = M.assertItemsEquals
+    -- aliases
+    assert_equals          = M.assertEquals
+    assert_not_equals      = M.assertNotEquals
+    assert_error           = M.assertError
+    assert_true            = M.assertTrue
+    assert_false           = M.assertFalse
+    assert_is_number       = M.assertIsNumber
+    assert_is_string       = M.assertIsString
+    assert_is_table        = M.assertIsTable
+    assert_is_boolean      = M.assertIsBoolean
+    assert_is_nil          = M.assertIsNil
+    assert_is_function     = M.assertIsFunction
+    assert_is              = M.assertIs
+    assert_not_is          = M.assertNotIs
 end
 
 ----------------------------------------------------------------
