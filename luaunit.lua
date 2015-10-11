@@ -35,7 +35,7 @@ M.VERBOSITY_VERBOSE = 20
 -- EXPORT_ASSERT_TO_GLOBALS = true
 
 -- we need to keep a copy of the script args before it is overriden
-local cmdline_argv = arg
+local cmdline_argv = rawget(_G, "arg")
 
 M.USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
 Options:
