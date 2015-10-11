@@ -184,25 +184,14 @@ local function strMatch(s, pattern, start, final )
     -- return false in every other cases
     -- if start is nil, matches from the beginning of the string
     -- if end is nil, matches to the end of the string
-    if start == nil then
-        start = 1
-    end
-
-    if final == nil then
-        final = string.len(s)
-    end
+    start = start or 1
+    final = final or string.len(s)
 
     local foundStart, foundEnd = string.find(s, pattern, start, false)
-    if not foundStart then
-        -- no match
-        return false
-    end
-
-    if foundStart == start and foundEnd == final then
+    if foundStart and foundStart == start and foundEnd == final then
         return true
     end
-
-    return false
+    return false -- no match
 end
 M.private.strMatch = strMatch
 
