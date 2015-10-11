@@ -214,19 +214,14 @@ local function xmlEscape( s )
     -- <   &lt;
     -- >   &gt;
     -- &   &amp;
-    local substTable = {
-        { '&',   "&amp;" },
-        { '"',   "&quot;" },
-        { "'",   "&apos;" },
-        { '<',   "&lt;" },
-        { '>',   "&gt;" },
-    }
 
-    for _, v in ipairs( substTable ) do
-        s = string.gsub( s, v[1], v[2] )
-    end
-
-    return s
+    return string.gsub( s, '.', {
+        ['&'] = "&amp;",
+        ['"'] = "&quot;",
+        ["'"] = "&apos;",
+        ['<'] = "&lt;",
+        ['>'] = "&gt;",
+    } )
 end
 M.private.xmlEscape = xmlEscape
 
