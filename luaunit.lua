@@ -172,10 +172,8 @@ M.private.hasNewLine = hasNewLine
 
 local function prefixString( prefix, s )
     -- Prefix all the lines of s with prefix
-    local t, s2
-    t = strsplit('\n', s)
-    s2 = prefix..table.concat(t, '\n'..prefix)
-    return s2
+    local t = strsplit('\n', s)
+    return prefix..table.concat(t, '\n'..prefix)
 end
 M.private.prefixString = prefixString
 
@@ -217,8 +215,7 @@ M.private.xmlEscape = xmlEscape
 local function xmlCDataEscape( s )
     -- Return s escaped for CData section
     -- escapes: "]]>"
-    local s = string.gsub( s, ']]>', ']]&gt;' )
-    return s
+    return string.gsub( s, ']]>', ']]&gt;' )
 end
 M.private.xmlCDataEscape = xmlCDataEscape
 
@@ -289,8 +286,7 @@ local function stripLuaunitTrace( stackTrace )
 
     -- print( '<<'..stackTrace..'>>' )
 
-    local t, ret
-    t = strsplit( '\n', stackTrace )
+    local t = strsplit( '\n', stackTrace )
     -- print( prettystr(t) )
 
     local idx=2
@@ -318,8 +314,7 @@ local function stripLuaunitTrace( stackTrace )
     end
 
     -- print( prettystr(t) )
-    ret = table.concat( t, '\n')
-    return ret
+    return table.concat( t, '\n')
 
 end
 M.private.stripLuaunitTrace = stripLuaunitTrace
@@ -948,7 +943,7 @@ end
 
 ----------------------------------------------------------------
 --
---                     Ouptutters
+--                     Outputters
 --
 ----------------------------------------------------------------
 
