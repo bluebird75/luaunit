@@ -1,4 +1,4 @@
---[[ 
+--[[
         luaunit.lua
 
 Description: A unit testing framework
@@ -29,13 +29,13 @@ local STRIP_LUAUNIT_FROM_STACKTRACE=true
 M.VERBOSITY_DEFAULT = 10
 M.VERBOSITY_LOW     = 1
 M.VERBOSITY_QUIET   = 0
-M.VERBOSITY_VERBOSE = 20 
+M.VERBOSITY_VERBOSE = 20
 
 -- set EXPORT_ASSERT_TO_GLOBALS to have all asserts visible as global values
 -- EXPORT_ASSERT_TO_GLOBALS = true
 
 -- we need to keep a copy of the script args before it is overriden
-local cmdline_argv = arg
+local cmdline_argv = rawget(_G, "arg")
 
 M.USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
 Options:
@@ -45,11 +45,11 @@ Options:
   -q, --quiet:            Set verbosity to minimum
   -o, --output OUTPUT:    Set output type to OUTPUT
                           Possible values: text, tap, junit, nil
-  -n, --name NAME:        For junit only, mandatory name of xml file 
+  -n, --name NAME:        For junit only, mandatory name of xml file
   -p, --pattern PATTERN:  Execute all test names matching the lua PATTERN
                           May be repeated to include severals patterns
                           Make sure you esape magic chars like +? with %
-  testname1, testname2, ... : tests to run in the form of testFunction, 
+  testname1, testname2, ... : tests to run in the form of testFunction,
                               TestClass or TestClass.testMethod
 ]]
 
@@ -84,7 +84,7 @@ M.private.__genSortedIndex = __genSortedIndex
 
 -- Contains the keys of the table being iterated, already sorted
 -- and the last index that has been iterated
--- Example: 
+-- Example:
 --    t a table on which we iterate
 --    sortedNextCache[ t ].idx is the sorted index of the table
 --    sortedNextCache[ t ].lastIdx is the last index used in the sorted index
@@ -143,7 +143,7 @@ end
 
 local function strsplit(delimiter, text)
 -- Split text into a list consisting of the strings in text,
--- separated by strings matching delimiter (which may be a pattern). 
+-- separated by strings matching delimiter (which may be a pattern).
 -- example: strsplit(",%s*", "Anna, Bob, Charlie,Dolores")
     local list = {}
     local pos = 1
@@ -172,10 +172,8 @@ M.private.hasNewLine = hasNewLine
 
 local function prefixString( prefix, s )
     -- Prefix all the lines of s with prefix
-    local t, s2
-    t = strsplit('\n', s)
-    s2 = prefix..table.concat(t, '\n'..prefix)
-    return s2
+    local t = strsplit('\n', s)
+    return prefix..table.concat(t, '\n'..prefix)
 end
 M.private.prefixString = prefixString
 
@@ -184,25 +182,14 @@ local function strMatch(s, pattern, start, final )
     -- return false in every other cases
     -- if start is nil, matches from the beginning of the string
     -- if end is nil, matches to the end of the string
-    if start == nil then
-        start = 1
-    end
-
-    if final == nil then
-        final = string.len(s)
-    end
+    start = start or 1
+    final = final or string.len(s)
 
     local foundStart, foundEnd = string.find(s, pattern, start, false)
-    if not foundStart then
-        -- no match
-        return false
-    end
-    
-    if foundStart == start and foundEnd == final then
+    if foundStart and foundStart == start and foundEnd == final then
         return true
     end
-
-    return false
+    return false -- no match
 end
 M.private.strMatch = strMatch
 
@@ -214,27 +201,21 @@ local function xmlEscape( s )
     -- <   &lt;
     -- >   &gt;
     -- &   &amp;
-    local substTable = {
-        { '&',   "&amp;" },
-        { '"',   "&quot;" },
-        { "'",   "&apos;" },
-        { '<',   "&lt;" },
-        { '>',   "&gt;" },
-    }
 
-    for _, v in ipairs( substTable ) do
-        s = string.gsub( s, v[1], v[2] )
-    end
-
-    return s
+    return string.gsub( s, '.', {
+        ['&'] = "&amp;",
+        ['"'] = "&quot;",
+        ["'"] = "&apos;",
+        ['<'] = "&lt;",
+        ['>'] = "&gt;",
+    } )
 end
 M.private.xmlEscape = xmlEscape
 
 local function xmlCDataEscape( s )
     -- Return s escaped for CData section
-    -- escapes: "]]>" 
-    local s = string.gsub( s, ']]>', ']]&gt;' )
-    return s
+    -- escapes: "]]>"
+    return string.gsub( s, ']]>', ']]&gt;' )
 end
 M.private.xmlCDataEscape = xmlCDataEscape
 
@@ -305,8 +286,7 @@ local function stripLuaunitTrace( stackTrace )
 
     -- print( '<<'..stackTrace..'>>' )
 
-    local t, ret
-    t = strsplit( '\n', stackTrace )
+    local t = strsplit( '\n', stackTrace )
     -- print( prettystr(t) )
 
     local idx=2
@@ -334,8 +314,7 @@ local function stripLuaunitTrace( stackTrace )
     end
 
     -- print( prettystr(t) )
-    ret = table.concat( t, '\n')
-    return ret
+    return table.concat( t, '\n')
 
 end
 M.private.stripLuaunitTrace = stripLuaunitTrace
@@ -424,7 +403,7 @@ local function prettystr( v, keeponeline )
     local recursionTable = {}
     local s = M.private.prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
     if recursionTable['recursionDetected'] == true and M.PRINT_TABLE_REF_IN_ERROR_MSG == false then
-        -- some table contain recursive references, 
+        -- some table contain recursive references,
         -- so we must recompute the value by including all table references
         -- else the result looks like crap
         recursionTable = {}
@@ -557,7 +536,7 @@ function M.assertError(f, ...)
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( f, ... )
-    if not no_error then return end 
+    if not no_error then return end
     error( "Expected an error when calling function but no error generated", 2 )
 end
 
@@ -649,7 +628,7 @@ function M.assertNotAlmostEquals( actual, expected, margin )
     if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
-    
+
     -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
     -- which by default does not work. We need to give margin a small boost
     local realmargin = margin + 0.00000000001
@@ -695,7 +674,7 @@ function M.assertStrIContains( str, sub )
         error( 'Error, substring '..subPretty..' was not found (case insensitively) in string '..strPretty,2)
     end
 end
-    
+
 function M.assertNotStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
@@ -964,7 +943,7 @@ end
 
 ----------------------------------------------------------------
 --
---                     Ouptutters
+--                     Outputters
 --
 ----------------------------------------------------------------
 
@@ -987,11 +966,11 @@ local TapOutput_MT = { __index = TapOutput }
         setmetatable( t, TapOutput_MT )
         return t
     end
-    function TapOutput:startSuite() 
+    function TapOutput:startSuite()
         print("1.."..self.result.testCount)
         print('# Started on '..self.result.startDate)
     end
-    function TapOutput:startClass(className) 
+    function TapOutput:startClass(className)
         if className ~= '[TestFunctions]' then
             print('# Starting class: '..className)
         end
@@ -1068,7 +1047,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         print('# XML output to '..self.fname)
         print('# Started on '..self.result.startDate)
     end
-    function JUnitOutput:startClass(className) 
+    function JUnitOutput:startClass(className)
         if className ~= '[TestFunctions]' then
             print('# Starting class: '..className)
         end
@@ -1101,7 +1080,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         self.fd:write('<?xml version="1.0" encoding="UTF-8" ?>\n')
         self.fd:write('<testsuites>\n')
         self.fd:write(string.format(
-            '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s" time="%0.3f" errors="0" failures="%d">\n', 
+            '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s" time="%0.3f" errors="0" failures="%d">\n',
             self.result.testCount, self.result.startIsodate, self.result.duration, self.result.failureCount ))
         self.fd:write("        <properties>\n")
         self.fd:write(string.format('            <property name="Lua Version" value="%s"/>\n', _VERSION ) )
@@ -1110,10 +1089,10 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         self.fd:write("        </properties>\n")
 
         for i,node in ipairs(self.result.tests) do
-            self.fd:write(string.format('        <testcase classname="%s" name="%s" time="%0.3f">\n', 
+            self.fd:write(string.format('        <testcase classname="%s" name="%s" time="%0.3f">\n',
                 node.className, node.testName, node.duration ) )
             if node.status ~= M.NodeStatus.PASS then
-                self.fd:write('            <failure type="' ..xmlEscape(node.msg) .. '">\n')  
+                self.fd:write('            <failure type="' ..xmlEscape(node.msg) .. '">\n')
                 self.fd:write('                <![CDATA[' ..xmlCDataEscape(node.stackTrace) .. ']]></failure>\n')
             end
             self.fd:write('        </testcase>\n')
@@ -1125,7 +1104,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         self.fd:write('    <system-err/>\n')
 
         self.fd:write('    </testsuite>\n')
-        self.fd:write('</testsuites>\n') 
+        self.fd:write('</testsuites>\n')
         self.fd:close()
         return self.result.failureCount
     end
@@ -1263,12 +1242,12 @@ local TextOutput_MT = { -- class
     end
 
     function TextOutput:startTest(testName)
-        if self.verbosity > M.VERBOSITY_DEFAULT then 
-            io.stdout:write( "    ".. self.result.currentNode.testName.." ... " ) 
-        end 
-    end 
+        if self.verbosity > M.VERBOSITY_DEFAULT then
+            io.stdout:write( "    ".. self.result.currentNode.testName.." ... " )
+        end
+    end
 
-    function TextOutput:addFailure( errorMsg, stackTrace ) 
+    function TextOutput:addFailure( errorMsg, stackTrace )
         -- nothing
     end
 
@@ -1276,7 +1255,7 @@ local TextOutput_MT = { -- class
         if not testHasFailure then
             if self.verbosity > M.VERBOSITY_DEFAULT then
                 io.stdout:write("Ok\n")
-            else 
+            else
                 io.stdout:write(".")
             end
         else
@@ -1290,7 +1269,7 @@ local TextOutput_MT = { -- class
                 end
                 ]]
             else
-                io.stdout:write("F") 
+                io.stdout:write("F")
             end
         end
     end
@@ -1345,13 +1324,13 @@ local TextOutput_MT = { -- class
 --                     class NilOutput
 ----------------------------------------------------------------
 
-local function nopCallable() 
-    --print(42) 
+local function nopCallable()
+    --print(42)
     return nopCallable
 end
 
 local NilOutput = {
-    __class__ = 'NilOuptut',    
+    __class__ = 'NilOuptut',
 }
 local NilOutput_MT = {
     __index = nopCallable,
@@ -1360,7 +1339,7 @@ function NilOutput:new()
     local t = {}
     t.__class__ = 'NilOutput'
     setmetatable( t, NilOutput_MT )
-    return t 
+    return t
 end
 
 ----------------------------------------------------------------
@@ -1388,7 +1367,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     -----------------[[ Utility methods ]]---------------------
 
-    function M.LuaUnit.isFunction(aObject) 
+    function M.LuaUnit.isFunction(aObject)
         -- return true if aObject is a function
         return 'function' == type(aObject)
     end
@@ -1413,7 +1392,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     function M.LuaUnit.isMethodTestName( s )
         -- return true is the name matches the name of a test method
         -- default rule is that is starts with 'Test' or with 'test'
-        if string.sub(s,1,4):lower() == 'test' then 
+        if string.sub(s,1,4):lower() == 'test' then
             return true
         end
         return false
@@ -1422,7 +1401,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     function M.LuaUnit.isTestName( s )
         -- return true is the name matches the name of a test
         -- default rule is that is starts with 'Test' or with 'test'
-        if string.sub(s,1,4):lower() == 'test' then 
+        if string.sub(s,1,4):lower() == 'test' then
             return true
         end
         return false
@@ -1433,17 +1412,17 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         -- that match LuaUnit.isTestName
 
         local testNames = {}
-        for k, v in pairs(_G) do 
+        for k, v in pairs(_G) do
             if M.LuaUnit.isTestName( k ) then
                 table.insert( testNames , k )
             end
         end
         table.sort( testNames )
-        return testNames 
+        return testNames
     end
 
     function M.LuaUnit.parseCmdLine( cmdLine )
-        -- parse the command line 
+        -- parse the command line
         -- Supported command line parameters:
         -- --verbose, -v: increase verbosity
         -- --quiet, -q: silence output
@@ -1452,7 +1431,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         -- --name, -n, + fname: name of output file for junit, default to stdout
         -- [testnames, ...]: run selected test names
         --
-        -- Returnsa table with the following fields:
+        -- Returns a table with the following fields:
         -- verbosity: nil, M.VERBOSITY_DEFAULT, M.VERBOSITY_QUIET, M.VERBOSITY_VERBOSE
         -- output: nil, 'tap', 'junit', 'text', 'nil'
         -- testNames: nil or a list of test names to run
@@ -1525,10 +1504,10 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             if state ~= nil then
                 setArg( cmdArg, state, result )
                 state = nil
-            else 
+            else
                 if cmdArg:sub(1,1) == '-' then
                     state = parseOption( cmdArg )
-                else 
+                else
                     if result['testNames'] then
                         table.insert( result['testNames'], cmdArg )
                     else
@@ -1589,7 +1568,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     M.NodeStatus = NodeStatus
     local NodeStatus_MT = { __index = NodeStatus }
 
-    -- values of status 
+    -- values of status
     NodeStatus.PASS='PASS'
     NodeStatus.FAIL='FAIL'
 
@@ -1675,7 +1654,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     function M.LuaUnit:endTest()
         -- print( 'endTEst() '..prettystr(self.result.currentNode))
         -- print( 'endTEst() '..prettystr(self.result.currentNode:hasFailure()))
-        self.result.currentNode.duration = os.clock() - self.result.currentNode.startTime 
+        self.result.currentNode.duration = os.clock() - self.result.currentNode.startTime
         self.result.currentNode.startTime = nil
         self.output:endTest( self.result.currentNode:hasFailure() )
         self.result.currentNode = nil
@@ -1704,11 +1683,11 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         if outputType:upper() == "TAP" then
             self.outputType = TapOutput
             return
-        end 
+        end
         if outputType:upper() == "JUNIT" then
             self.outputType = JUnitOutput
             return
-        end 
+        end
         if outputType:upper() == "TEXT" then
             self.outputType = TextOutput
             return
@@ -1753,7 +1732,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         if prettyFuncName then
             -- we do have the real method name, improve the stack trace
             stackTrace = string.gsub( stackTrace, "in function 'methodInstance'", "in function '"..prettyFuncName.."'")
-            -- Needed for Lua 5.3 
+            -- Needed for Lua 5.3
             stackTrace = string.gsub( stackTrace, "in method 'methodInstance'", "in method '"..prettyFuncName.."'")
             stackTrace = string.gsub( stackTrace, "in upvalue 'methodInstance'", "in method '"..prettyFuncName.."'")
         end
@@ -1838,7 +1817,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             local name, instance = v[1], v[2]
             if M.LuaUnit.isFunction(instance) then
                 table.insert( result, { name, instance } )
-            else 
+            else
                 if type(instance) ~= 'table' then
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 end
@@ -1893,7 +1872,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             local name, instance = v[1], v[2]
             if M.LuaUnit.isFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
-            else 
+            else
                 if type(instance) ~= 'table' then
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 else
@@ -1966,7 +1945,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         -- command line. If no class name is specified on the command line
         -- run all classes whose name starts with 'Test'
         --
-        -- If arguments are passed, they must be strings of the class names 
+        -- If arguments are passed, they must be strings of the class names
         -- that you want to run or generic command line arguments (-o, -p, -v, ...)
 
         local runner = M.LuaUnit.new()
@@ -1989,13 +1968,13 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
         local no_error, error_msg, options, val
         no_error, val = pcall( M.LuaUnit.parseCmdLine, args )
-        if not no_error then 
+        if not no_error then
             error_msg = val
             print(error_msg)
             print()
             print(M.USAGE)
             os.exit(-1)
-        end 
+        end
 
         options = val
 
@@ -2010,13 +1989,13 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
         if options.output then
             no_error, val = pcall(self.setOutputType,self,options.output)
-            if not no_error then 
+            if not no_error then
                 error_msg = val
                 print(error_msg)
                 print()
                 print(M.USAGE)
                 os.exit(-1)
-            end 
+            end
         end
 
         if options.fname then
