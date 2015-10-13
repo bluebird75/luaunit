@@ -535,9 +535,9 @@ end
 function M.assertError(f, ...)
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
-    local no_error, error_msg = pcall( f, ... )
-    if not no_error then return end
-    error( "Expected an error when calling function but no error generated", 2 )
+    if pcall( f, ... ) then
+        error( "Expected an error when calling function but no error generated", 2 )
+    end
 end
 
 function M.assertTrue(value)
