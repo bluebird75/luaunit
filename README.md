@@ -25,7 +25,24 @@ https://github.com/bluebird75/luaunit
 
 It is released under the BSD license.
 
-Documentation is available on [read-the-docs](http://luaunit.readthedocs.org/en/latest/)
+Documentation is available on
+[read-the-docs](http://luaunit.readthedocs.org/en/latest/)
+
+##Install
+
+The version of this module available from LuaRocks is quite
+outdated. Most of the stuff does not work, specially the examples. You
+can download this repo via
+
+	git clone git@github.com:bluebird75/luaunit.git
+
+and then install it by copying `luaunit.lua` to the Lua libs directory
+or run, if you have the default installation
+
+	sudo make install
+
+Edit `Makefile` for Lua version and installation directory if that
+fails. 
 
 **Community**
 
