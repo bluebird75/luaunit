@@ -37,12 +37,12 @@ can download this repo via
 	git clone git@github.com:bluebird75/luaunit.git
 
 and then install it by copying `luaunit.lua` to the Lua libs directory
-or run, if you have the default installation
+or run, if you have the default installation, 
 
-	sudo make install
+	sudo python doit.py install
 
-Edit `Makefile` for Lua version and installation directory if that
-fails. 
+Edit `install()` for Lua version and installation directory if that
+fails. It uses, by default, Linux paths that depend on the version. 
 
 **Community**
 
