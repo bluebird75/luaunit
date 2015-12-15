@@ -565,43 +565,43 @@ function M.assertError(f, ...)
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     if pcall( f, ... ) then
-        error( "Expected an error when calling function but no error generated", 2 )
+        failure( "Expected an error when calling function but no error generated", 2 )
     end
 end
 
 function M.assertTrue(value)
     if not value then
-        error("expected: true, actual: " ..prettystr(value), 2)
+        failure("expected: true, actual: " ..prettystr(value), 2)
     end
 end
 
 function M.assertFalse(value)
     if value then
-        error("expected: false, actual: " ..prettystr(value), 2)
+        failure("expected: false, actual: " ..prettystr(value), 2)
     end
 end
 
 function M.assertNil(value)
     if value ~= nil then
-        error("expected: nil, actual: " ..prettystr(value), 2)
+        failure("expected: nil, actual: " ..prettystr(value), 2)
     end
 end
 
 function M.assertNotNil(value)
     if value == nil then
-        error("expected non nil value, received nil", 2)
+        failure("expected non nil value, received nil", 2)
     end
 end
 
 function M.assertEquals(actual, expected)
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
-            error( errorMsgEquality(actual, expected), 2 )
+            failure( errorMsgEquality(actual, expected), 2 )
         end
     elseif type(actual) ~= type(expected) then
-        error( errorMsgEquality(actual, expected), 2 )
+        failure( errorMsgEquality(actual, expected), 2 )
     elseif actual ~= expected then
-        error( errorMsgEquality(actual, expected), 2 )
+        failure( errorMsgEquality(actual, expected), 2 )
     end
 end
 
@@ -622,7 +622,7 @@ function M.assertAlmostEquals( actual, expected, margin )
     -- which by default does not work. We need to give margin a small boost
     local realmargin = margin + 0.00000000001
     if math.abs(expected - actual) > realmargin then
-        error( 'Values are not almost equal\nExpected: '..expected..' with margin of '..margin..', received: '..actual, 2)
+        failure( 'Values are not almost equal\nExpected: '..expected..' with margin of '..margin..', received: '..actual, 2)
     end
 end
 
@@ -658,7 +658,7 @@ function M.assertNotAlmostEquals( actual, expected, margin )
     -- which by default does not work. We need to give margin a small boost
     local realmargin = margin + 0.00000000001
     if math.abs(expected - actual) <= realmargin then
-        error( 'Values are almost equal\nExpected: '..expected..' with a difference above margin of '..margin..', received: '..actual, 2)
+        failure( 'Values are almost equal\nExpected: '..expected..' with a difference above margin of '..margin..', received: '..actual, 2)
     end
 end
 
@@ -717,7 +717,7 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        error( 'No error generated when calling function but expected error: "'..expectedMsg..'"', 2 )
+        failure( 'No error generated when calling function but expected error: "'..expectedMsg..'"', 2 )
     end
     if error_msg ~= expectedMsg then
         error_msg, expectedMsg = prettystrPadded(error_msg, expectedMsg)
@@ -731,7 +731,7 @@ function M.assertErrorMsgContains( partialMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        error( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), 2 )
+        failure( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), 2 )
     end
     if not string.find( error_msg, partialMsg, nil, true ) then
         error_msg, partialMsg = prettystrPadded(error_msg, partialMsg)
@@ -745,7 +745,7 @@ function M.assertErrorMsgMatches( expectedMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        error( 'No error generated when calling function but expected error matching: "'..expectedMsg..'"', 2 )
+        failure( 'No error generated when calling function but expected error matching: "'..expectedMsg..'"', 2 )
     end
     if not strMatch( error_msg, expectedMsg ) then
         expectedMsg, error_msg = prettystrPadded(expectedMsg, error_msg)
@@ -761,49 +761,49 @@ end
 
 function M.assertIsNumber(value)
     if type(value) ~= 'number' then
-        error( errorMsgTypeMismatch( 'number', value ), 2 )
+        failure( errorMsgTypeMismatch( 'number', value ), 2 )
     end
 end
 
 function M.assertIsString(value)
     if type(value) ~= "string" then
-        error( errorMsgTypeMismatch( 'string', value ), 2 )
+        failure( errorMsgTypeMismatch( 'string', value ), 2 )
     end
 end
 
 function M.assertIsTable(value)
     if type(value) ~= 'table' then
-        error( errorMsgTypeMismatch( 'table', value ), 2 )
+        failure( errorMsgTypeMismatch( 'table', value ), 2 )
     end
 end
 
 function M.assertIsBoolean(value)
     if type(value) ~= 'boolean' then
-        error( errorMsgTypeMismatch( 'boolean', value ), 2 )
+        failure( errorMsgTypeMismatch( 'boolean', value ), 2 )
     end
 end
 
 function M.assertIsNil(value)
     if type(value) ~= "nil" then
-        error( errorMsgTypeMismatch( 'nil', value ), 2 )
+        failure( errorMsgTypeMismatch( 'nil', value ), 2 )
     end
 end
 
 function M.assertIsFunction(value)
     if type(value) ~= 'function' then
-        error( errorMsgTypeMismatch( 'function', value ), 2 )
+        failure( errorMsgTypeMismatch( 'function', value ), 2 )
     end
 end
 
 function M.assertIsUserdata(value)
     if type(value) ~= 'userdata' then
-        error( errorMsgTypeMismatch( 'userdata', value ), 2 )
+        failure( errorMsgTypeMismatch( 'userdata', value ), 2 )
     end
 end
 
 function M.assertIsCoroutine(value)
     if type(value) ~= 'thread' then
-        error( errorMsgTypeMismatch( 'thread', value ), 2 )
+        failure( errorMsgTypeMismatch( 'thread', value ), 2 )
     end
 end
 
