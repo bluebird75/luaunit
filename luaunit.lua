@@ -706,13 +706,9 @@ function M.assertStrMatches( str, pattern, start, final )
     -- Verify a full match for the string
     -- for a partial match, simply use assertStrContains with useRe set to true
     if not strMatch( str, pattern, start, final ) then
-        local patternPretty = prettystr(pattern)
-        local strPretty = prettystr(str)
-        if hasNewLine( patternPretty..strPretty) then
-            patternPretty = '\n'..patternPretty..'\n'
-            strPretty = '\n'..strPretty
-        end
-        error( 'Error, pattern '..patternPretty..' was not matched by string '..strPretty,2)
+        pattern, str = prettystrPadded(pattern, str, '\n')
+        fail_fmt(2, 'Error, pattern %s was not matched by string %s',
+                 pattern, str)
     end
 end
 
@@ -723,12 +719,10 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
     if no_error then
         error( 'No error generated when calling function but expected error: "'..expectedMsg..'"', 2 )
     end
-    if not (error_msg == expectedMsg) then
-        if hasNewLine( error_msg..expectedMsg ) then
-            expectedMsg = '\n'..expectedMsg
-            error_msg = '\n'..error_msg
-        end
-        error( 'Exact error message expected: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
+    if error_msg ~= expectedMsg then
+        error_msg, expectedMsg = prettystrPadded(error_msg, expectedMsg)
+        fail_fmt(2, 'Exact error message expected: %s\nError message received: %s\n',
+                 expectedMsg, error_msg)
     end
 end
 
@@ -754,20 +748,15 @@ function M.assertErrorMsgMatches( expectedMsg, func, ... )
         error( 'No error generated when calling function but expected error matching: "'..expectedMsg..'"', 2 )
     end
     if not strMatch( error_msg, expectedMsg ) then
-        if hasNewLine(error_msg..expectedMsg) then
-            expectedMsg = '\n'..expectedMsg
-            error_msg = '\n'..error_msg
-        end
-        error( 'Error message does not match: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
+        expectedMsg, error_msg = prettystrPadded(expectedMsg, error_msg)
+        fail_fmt(2, 'Error message does not match: %s\nError message received: %s\n',
+                 expectedMsg, error_msg)
     end
 end
 
 local function errorMsgTypeMismatch( expectedType, actual )
-    local actualStr = prettystr(actual)
-    if hasNewLine(actualStr) then
-        actualStr =  '\n'..actualStr
-    end
-    return "Expected: a "..expectedType..' value, actual: type '..type(actual)..', value '..actualStr
+    return string.format('Expected: a %s value, actual: type %s, value %s',
+                          expectedType, type(actual), prettystrPadded(actual))
 end
 
 function M.assertIsNumber(value)
@@ -825,15 +814,9 @@ function M.assertIs(actual, expected)
         actual, expected = expected, actual
     end
     if actual ~= expected then
-        local expectedStr = prettystr(expected)
-        local actualStr = prettystr(actual)
-        if hasNewLine(expectedStr..actualStr) then
-            expectedStr = '\n'..expectedStr..'\n'
-            actualStr =  '\n'..actualStr
-        else
-            expectedStr = expectedStr..', '
-        end
-        error( 'Expected object and actual object are not the same\nExpected: '..expectedStr..'actual: '..actualStr, 2)
+        expected, actual = prettystrPadded(expected, actual, '\n', ', ')
+        fail_fmt(2, 'Expected object and actual object are not the same\nExpected: %sactual: %s',
+                 expected, actual)
     end
 end
 
@@ -842,11 +825,8 @@ function M.assertNotIs(actual, expected)
         actual, expected = expected, actual
     end
     if actual == expected then
-        local expectedStr = prettystr(expected)
-        if hasNewLine(expectedStr) then
-            expectedStr = '\n'..expectedStr
-        end
-        error( 'Expected object and actual object are the same object: '..expectedStr, 2 )
+        fail_fmt(2, 'Expected object and actual object are the same object: %s',
+                 prettystrPadded(expected))
     end
 end
 
@@ -855,13 +835,9 @@ function M.assertItemsEquals(actual, expected)
     -- are contained in table actual. Warning, this function
     -- is at least O(n^2)
     if not _is_table_items_equals(actual, expected ) then
-        local expectedStr = prettystr(expected)
-        local actualStr = prettystr(actual)
-        if hasNewLine(expectedStr..actualStr) then
-            expectedStr = '\n'..expectedStr
-            actualStr =  '\n'..actualStr
-        end
-        error( 'Contents of the tables are not identical:\nExpected: '..expectedStr..'\nActual: '..actualStr, 2 )
+        expected, actual = prettystrPadded(expected, actual)
+        fail_fmt(2, 'Contents of the tables are not identical:\nExpected: %s\nActual: %s',
+                 expected, actual)
     end
 end
 
