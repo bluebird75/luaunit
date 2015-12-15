@@ -1705,43 +1705,38 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     --------------[[ Runner ]]-----------------
 
-    local SPLITTER = '\n>----------<\n'
-
     function M.LuaUnit:protectedCall( classInstance , methodInstance, prettyFuncName)
         -- if classInstance is nil, this is just a function call
         -- else, it's method of a class being called.
 
         local function err_handler(e)
-            return debug.traceback(e..SPLITTER, 3)
+            -- transform error into a table, adding the traceback information
+            return {
+                msg = e,
+                trace = string.sub(debug.traceback("", 3), 2)
+            }
         end
 
-        local ok, fullErrMsg, stackTrace, errMsg, t
+        local ok, err
         if classInstance then
             -- stupid Lua < 5.2 does not allow xpcall with arguments so let's use a workaround
-            ok, fullErrMsg = xpcall( function () methodInstance(classInstance) end, err_handler )
+            ok, err = xpcall( function () methodInstance(classInstance) end, err_handler )
         else
-            ok, fullErrMsg = xpcall( function () methodInstance() end, err_handler )
+            ok, err = xpcall( function () methodInstance() end, err_handler )
         end
         if ok then
             return ok
         end
 
-        t = strsplit( SPLITTER, fullErrMsg )
-        errMsg = t[1]
-        stackTrace = string.sub(t[2],2)
-        if prettyFuncName then
-            -- we do have the real method name, improve the stack trace
-            stackTrace = string.gsub( stackTrace, "in function 'methodInstance'", "in function '"..prettyFuncName.."'")
-            -- Needed for Lua 5.3
-            stackTrace = string.gsub( stackTrace, "in method 'methodInstance'", "in method '"..prettyFuncName.."'")
-            stackTrace = string.gsub( stackTrace, "in upvalue 'methodInstance'", "in method '"..prettyFuncName.."'")
+        -- reformat / improve the stack trace
+        if prettyFuncName then -- we do have the real method name
+            err.trace = err.trace:gsub("in (%a+) 'methodInstance'", "in %1 '"..prettyFuncName.."'")
         end
-
         if STRIP_LUAUNIT_FROM_STACKTRACE then
-            stackTrace = stripLuaunitTrace( stackTrace )
+            err.trace = stripLuaunitTrace(err.trace)
         end
 
-        return ok, errMsg, stackTrace
+        return ok, err.msg, err.trace
     end
 
 
