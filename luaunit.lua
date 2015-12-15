@@ -665,77 +665,40 @@ end
 function M.assertStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    local subType
-    local noUseRe = not useRe
-    if string.find(str, sub, 1, noUseRe) == nil then
-        if noUseRe then
-            subType = 'substring'
-        else
-            subType = 'regexp'
-        end
-        local subPretty = prettystr(sub)
-        local strPretty = prettystr(str)
-        if hasNewLine( subPretty..strPretty ) then
-            subPretty = '\n'..subPretty..'\n'
-            strPretty = '\n'..strPretty
-        end
-        error( 'Error, '..subType..' '..subPretty..' was not found in string '..strPretty, 2)
+    if not string.find(str, sub, 1, not useRe) then
+        sub, str = prettystrPadded(sub, str, '\n')
+        fail_fmt(2, 'Error, %s %s was not found in string %s',
+                 useRe and 'regexp' or 'substring', sub, str)
     end
 end
 
 function M.assertStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    local lstr, lsub, subPretty, strPretty
-    lstr = string.lower(str)
-    lsub = string.lower(sub)
-    if string.find(lstr, lsub, 1, true) == nil then
-        subPretty = prettystr(sub)
-        strPretty = prettystr(str)
-        if hasNewLine( subPretty..strPretty ) then
-            subPretty = '\n'..subPretty..'\n'
-            strPretty = '\n'..strPretty
-        end
-        error( 'Error, substring '..subPretty..' was not found (case insensitively) in string '..strPretty,2)
+    if not string.find(str:lower(), sub:lower(), 1, true) then
+        sub, str = prettystrPadded(sub, str, '\n')
+        fail_fmt(2, 'Error, substring %s was not found (case insensitively) in string %s',
+                 sub, str)
     end
 end
 
 function M.assertNotStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    local substrType
-    local noUseRe = not useRe
-    if string.find(str, sub, 1, noUseRe) ~= nil then
-        local substrType
-        if noUseRe then
-            substrType = 'substring'
-        else
-            substrType = 'regexp'
-        end
-        local subPretty = prettystr(sub)
-        local strPretty = prettystr(str)
-        if hasNewLine( subPretty..strPretty ) then
-            subPretty = '\n'..subPretty..'\n'
-            strPretty = '\n'..strPretty
-        end
-        error( 'Error, '..substrType..' '..subPretty..' was found in string '..strPretty,2)
+    if string.find(str, sub, 1, not useRe) then
+        sub, str = prettystrPadded(sub, str, '\n')
+        fail_fmt(2, 'Error, %s %s was found in string %s',
+                 useRe and 'regexp' or 'substring', sub, str)
     end
 end
 
 function M.assertNotStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    local lstr, lsub
-    lstr = string.lower(str)
-    lsub = string.lower(sub)
-    if string.find(lstr, lsub, 1, true) ~= nil then
-        local subPretty = prettystr(sub)
-        local strPretty = prettystr(str)
-        if hasNewLine( subPretty..strPretty) then
-            subPretty = '\n'..subPretty..'\n'
-            strPretty = '\n'..strPretty
-        end
-        error( 'Error, substring '..subPretty..' was found (case insensitively) in string '..strPretty,2)
+    if string.find(str:lower(), sub:lower(), 1, true) then
+        sub, str = prettystrPadded(sub, str, '\n')
+        fail_fmt(2, 'Error, substring %s was found (case insensitively) in string %s',
+                 sub, str)
     end
 end
 
@@ -777,13 +740,9 @@ function M.assertErrorMsgContains( partialMsg, func, ... )
         error( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), 2 )
     end
     if not string.find( error_msg, partialMsg, nil, true ) then
-        local partialMsgStr = prettystr(partialMsg)
-        local errorMsgStr = prettystr(error_msg)
-        if hasNewLine(error_msg..partialMsg) then
-            partialMsgStr = '\n'..partialMsgStr
-            errorMsgStr = '\n'..errorMsgStr
-        end
-        error( 'Error message does not contain: '..partialMsgStr..'\nError message received: '..errorMsgStr..'\n',2)
+        error_msg, partialMsg = prettystrPadded(error_msg, partialMsg)
+        fail_fmt(2, 'Error message does not contain: %s\nError message received: %s\n',
+                 partialMsg, error_msg)
     end
 end
 
