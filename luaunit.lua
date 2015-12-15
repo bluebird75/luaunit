@@ -458,6 +458,7 @@ local function prettystrPadded(value1, value2, suffix_a, suffix_b)
     end
     return str1 .. (suffix_b or ""), str2
 end
+M.private.prettystrPadded = prettystrPadded
 
 local function _table_contains(t, element)
     if t then
@@ -540,6 +541,7 @@ local function fail_fmt(level, ...)
      -- failure with printf-style formatted message and given error level
     failure(string.format(...), (level or 1) + 1)
  end
+M.private.fail_fmt = fail_fmt
 
 ----------------------------------------------------------------
 --
