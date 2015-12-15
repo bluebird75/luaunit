@@ -437,6 +437,28 @@ local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recurs
 end
 M.private.prettystr_sub = prettystr_sub
 
+local function prettystrPadded(value1, value2, suffix_a, suffix_b)
+    --[[
+    This function helps with the recurring task of constructing the "expected
+    vs. actual" error messages. It takes two arbitrary values and formats
+    corresponding strings with prettystr().
+
+    To keep the (possibly complex) output more readable in case the resulting
+    strings contain line breaks, they get automatically prefixed with additional
+    newlines. Both suffixes are optional (default to empty strings), and get
+    appended to the "value1" string. "suffix_a" is used if line breaks were
+    encountered, "suffix_b" otherwise.
+
+    Returns the two formatted strings (including padding/newlines).
+    ]]
+    local str1, str2 = prettystr(value1), prettystr(value2)
+    if hasNewLine(str1) or hasNewLine(str2) then
+        -- line break(s) detected, add padding
+        return "\n" .. str1 .. (suffix_a or ""), "\n" .. str2
+    end
+    return str1 .. (suffix_b or ""), str2
+end
+
 local function _table_contains(t, element)
     if t then
         for _, value in pairs(t) do
@@ -505,6 +527,19 @@ local function _is_table_equals(actual, expected)
     return false
 end
 M.private._is_table_equals = _is_table_equals
+
+local function failure(msg, level)
+    -- raise an error indicating a test failure
+    -- for error() compatibility we adjust "level" here (by +1), to report the
+    -- calling context
+    -- (Note: this code might be adjusted later to distinguish "failure" vs. "error")
+    error(msg, (level or 1) + 1)
+end
+
+local function fail_fmt(level, ...)
+     -- failure with printf-style formatted message and given error level
+    failure(string.format(...), (level or 1) + 1)
+ end
 
 ----------------------------------------------------------------
 --
