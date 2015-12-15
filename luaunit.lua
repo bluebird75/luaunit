@@ -550,23 +550,15 @@ M.private.fail_fmt = fail_fmt
 ----------------------------------------------------------------
 
 local function errorMsgEquality(actual, expected)
-    local errorMsg
     if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
-    local expectedStr = prettystr(expected)
-    local actualStr = prettystr(actual)
     if type(expected) == 'string' or type(expected) == 'table' then
-        if hasNewLine( expectedStr..actualStr ) then
-            expectedStr = '\n'..expectedStr
-            actualStr = '\n'..actualStr
-        end
-        errorMsg = "expected: "..expectedStr.."\n"..
-                         "actual: "..actualStr
-    else
-        errorMsg = "expected: "..expectedStr..", actual: "..actualStr
+        expected, actual = prettystrPadded(expected, actual)
+        return string.format("expected: %s\nactual: %s", expected, actual)
     end
-    return errorMsg
+    return string.format("expected: %s, actual: %s",
+                         prettystr(expected), prettystr(actual))
 end
 
 function M.assertError(f, ...)
@@ -639,18 +631,14 @@ function M.assertNotEquals(actual, expected)
         return
     end
 
-    local genError = false
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
             return
         end
-        genError = true
-    elseif actual == expected then
-        genError = true
+    elseif actual ~= expected then
+        return
     end
-    if genError then
-        error( 'Received the not expected value: ' .. prettystr(actual), 2 )
-    end
+    fail_fmt(2, 'Received the not expected value: %s', prettystr(actual))
 end
 
 function M.assertNotAlmostEquals( actual, expected, margin )
