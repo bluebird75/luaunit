@@ -86,12 +86,21 @@ def makedoc():
     shutil.copytree('_build/html', 'html')
     os.chdir('..')
 
+def install():
+    installpath = '/usr/local/share/lua/'
+    for lua, luaversion in ALL_LUA:
+        lua,ver = luaversion.split( )
+        if os.path.exists(installpath+ver):
+            shutil.copy('luaunit.lua',installpath+ver)
+            
+
 
 OptToFunc = {
     'runtests'      : run_tests,
     'runexample'    : run_example,
     'packageit'     : packageit,
     'makedoc'       : makedoc,
+    'install'       : install,
     'help'          : help,
 }
 

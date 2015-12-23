@@ -52,3 +52,6 @@ test/unitTests*.txt
 test/legacyExample.txt
 
 *.diff
+
+#Emacs
+*~
