@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="109" timestamp="2015-03-10T21:06:33" time="0.031" errors="0" failures="0">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="111" timestamp="2015-03-10T21:06:33" time="0.031" errors="0" failures="0">
         <properties>
             <property name="Lua Version" value="Lua 5.2"/>
             <property name="LuaUnit Version" value="3.1"/>
@@ -169,6 +169,8 @@
         </testcase>
         <testcase classname="TestLuaUnitResults" name="TestLuaUnitResults.test_runSuiteWithFailures" time="0.000">
         </testcase>
+        <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_FailFmt" time="0.000">
+        </testcase>
         <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_IsClassMethod" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_IsFunction" time="0.000">
@@ -190,6 +192,8 @@
         <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_parseCmdLine" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_prefixString" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_prettstrPadded" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_prettstrTableRecursion" time="0.000">
         </testcase>

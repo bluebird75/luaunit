@@ -88,6 +88,7 @@
 # Starting test: TestLuaUnitResults.test_runSuiteOk
 # Starting test: TestLuaUnitResults.test_runSuiteWithFailures
 # Starting class: TestLuaUnitUtilities
+# Starting test: TestLuaUnitUtilities.test_FailFmt
 # Starting test: TestLuaUnitUtilities.test_IsClassMethod
 # Starting test: TestLuaUnitUtilities.test_IsFunction
 # Starting test: TestLuaUnitUtilities.test_applyPatternFilter
@@ -99,6 +100,7 @@
 # Starting test: TestLuaUnitUtilities.test_isTestName
 # Starting test: TestLuaUnitUtilities.test_parseCmdLine
 # Starting test: TestLuaUnitUtilities.test_prefixString
+# Starting test: TestLuaUnitUtilities.test_prettstrPadded
 # Starting test: TestLuaUnitUtilities.test_prettstrTableRecursion
 # Starting test: TestLuaUnitUtilities.test_prettystr
 # Starting test: TestLuaUnitUtilities.test_prettystr_adv_tables
@@ -116,4 +118,4 @@
 # Starting test: TestLuaUnitUtilities.test_xmlEscape
 # Starting class: TestMock
 # Starting test: TestMock.testMock
-# Ran 109 tests in 0.031 seconds, 109 successes, 0 failures
+# Ran 111 tests in 0.031 seconds, 111 successes, 0 failures

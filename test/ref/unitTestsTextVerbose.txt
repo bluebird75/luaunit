@@ -81,6 +81,7 @@ Started on 02/01/15 00:00:56
     TestLuaUnitResults.test_resultsWhileTestInProgress ... Ok
     TestLuaUnitResults.test_runSuiteOk ... Ok
     TestLuaUnitResults.test_runSuiteWithFailures ... Ok
+    TestLuaUnitUtilities.test_FailFmt ... Ok
     TestLuaUnitUtilities.test_IsClassMethod ... Ok
     TestLuaUnitUtilities.test_IsFunction ... Ok
     TestLuaUnitUtilities.test_applyPatternFilter ... Ok
@@ -92,6 +93,7 @@ Started on 02/01/15 00:00:56
     TestLuaUnitUtilities.test_isTestName ... Ok
     TestLuaUnitUtilities.test_parseCmdLine ... Ok
     TestLuaUnitUtilities.test_prefixString ... Ok
+    TestLuaUnitUtilities.test_prettstrPadded ... Ok
     TestLuaUnitUtilities.test_prettstrTableRecursion ... Ok
     TestLuaUnitUtilities.test_prettystr ... Ok
     TestLuaUnitUtilities.test_prettystr_adv_tables ... Ok
@@ -109,5 +111,5 @@ Started on 02/01/15 00:00:56
     TestLuaUnitUtilities.test_xmlEscape ... Ok
     TestMock.testMock ... Ok
 =========================================================
-Ran 109 tests in 0.031 seconds
+Ran 111 tests in 0.031 seconds
 OK 

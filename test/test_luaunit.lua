@@ -305,6 +305,105 @@ TestLuaUnitUtilities = {} --class
         lu.assertStrMatches(lu.prettystr(t5), "<table: 0?x?[%x]+> {3, 4, <table: 0?x?[%x]+> {1, 2, <table: 0?x?[%x]+>}}")
     end
 
+    function TestLuaUnitUtilities:test_prettstrPadded()
+        local foo, bar, str1, str2
+
+        -- test all combinations of: foo = nil, "foo", "fo\no" (embedded
+        -- newline); and bar = nil, "bar", "bar\n" (trailing newline)
+
+        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        lu.assertEquals(str1, "nil")
+        lu.assertEquals(str2, "nil")
+        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        lu.assertEquals(str1, "nil_B")
+        lu.assertEquals(str2, "nil")
+
+        bar = "bar"
+        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        lu.assertEquals(str1, "nil")
+        lu.assertEquals(str2, '"bar"')
+        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        lu.assertEquals(str1, "nil_B")
+        lu.assertEquals(str2, '"bar"')
+
+        bar = "bar\n"
+        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        lu.assertEquals(str1, "\nnil")
+        lu.assertEquals(str2, '\n"bar\n"')
+        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        lu.assertEquals(str1, "\nnil_A")
+        lu.assertEquals(str2, '\n"bar\n"')
+
+        foo = "foo"
+        bar = nil
+        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        lu.assertEquals(str1, '"foo"')
+        lu.assertEquals(str2, "nil")
+        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        lu.assertEquals(str1, '"foo"_B')
+        lu.assertEquals(str2, "nil")
+
+        bar = "bar"
+        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        lu.assertEquals(str1, '"foo"')
+        lu.assertEquals(str2, '"bar"')
+        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        lu.assertEquals(str1, '"foo"_B')
+        lu.assertEquals(str2, '"bar"')
+
+        bar = "bar\n"
+        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        lu.assertEquals(str1, '\n"foo"')
+        lu.assertEquals(str2, '\n"bar\n"')
+        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        lu.assertEquals(str1, '\n"foo"_A')
+        lu.assertEquals(str2, '\n"bar\n"')
+
+        foo = "fo\no"
+        bar = nil
+        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        lu.assertEquals(str1, '\n"fo\no"')
+        lu.assertEquals(str2, "\nnil")
+        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        lu.assertEquals(str1, '\n"fo\no"_A')
+        lu.assertEquals(str2, "\nnil")
+
+        bar = "bar"
+        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        lu.assertEquals(str1, '\n"fo\no"')
+        lu.assertEquals(str2, '\n"bar"')
+        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        lu.assertEquals(str1, '\n"fo\no"_A')
+        lu.assertEquals(str2, '\n"bar"')
+
+        bar = "bar\n"
+        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        lu.assertEquals(str1, '\n"fo\no"')
+        lu.assertEquals(str2, '\n"bar\n"')
+        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        lu.assertEquals(str1, '\n"fo\no"_A')
+        lu.assertEquals(str2, '\n"bar\n"')
+    end
+
+    function TestLuaUnitUtilities:test_FailFmt()
+        -- raise failure from within nested functions
+        local function bar(level)
+            lu.private.fail_fmt(level, "hex=%X", 123)
+        end
+        local function foo(level)
+            bar(level)
+        end
+
+        local _, err = pcall(foo) -- default level 1 = error position in bar()
+        local line1 = err:match("test[\\/]test_luaunit%.lua:(%d+): hex=7B$")
+        lu.assertNotNil(line1)
+        _, err = pcall(foo, 2) -- level 2 = error position within foo()
+        local line2 = err:match("test[\\/]test_luaunit%.lua:(%d+): hex=7B$")
+        lu.assertNotNil(line2)
+        -- make sure that "line2" position is exactly 3 lines after "line1"
+        lu.assertEquals(tonumber(line2), tonumber(line1) + 3)
+    end
+
     function TestLuaUnitUtilities:test_IsFunction()
         lu.assertEquals( lu.LuaUnit.isFunction( function (a,b) end ), true )
         lu.assertEquals( lu.LuaUnit.isFunction( nil ), false )

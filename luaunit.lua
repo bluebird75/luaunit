@@ -437,6 +437,29 @@ local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recurs
 end
 M.private.prettystr_sub = prettystr_sub
 
+local function prettystrPadded(value1, value2, suffix_a, suffix_b)
+    --[[
+    This function helps with the recurring task of constructing the "expected
+    vs. actual" error messages. It takes two arbitrary values and formats
+    corresponding strings with prettystr().
+
+    To keep the (possibly complex) output more readable in case the resulting
+    strings contain line breaks, they get automatically prefixed with additional
+    newlines. Both suffixes are optional (default to empty strings), and get
+    appended to the "value1" string. "suffix_a" is used if line breaks were
+    encountered, "suffix_b" otherwise.
+
+    Returns the two formatted strings (including padding/newlines).
+    ]]
+    local str1, str2 = prettystr(value1), prettystr(value2)
+    if hasNewLine(str1) or hasNewLine(str2) then
+        -- line break(s) detected, add padding
+        return "\n" .. str1 .. (suffix_a or ""), "\n" .. str2
+    end
+    return str1 .. (suffix_b or ""), str2
+end
+M.private.prettystrPadded = prettystrPadded
+
 local function _table_contains(t, element)
     if t then
         for _, value in pairs(t) do
@@ -506,6 +529,20 @@ local function _is_table_equals(actual, expected)
 end
 M.private._is_table_equals = _is_table_equals
 
+local function failure(msg, level)
+    -- raise an error indicating a test failure
+    -- for error() compatibility we adjust "level" here (by +1), to report the
+    -- calling context
+    -- (Note: this code might be adjusted later to distinguish "failure" vs. "error")
+    error(msg, (level or 1) + 1)
+end
+
+local function fail_fmt(level, ...)
+     -- failure with printf-style formatted message and given error level
+    failure(string.format(...), (level or 1) + 1)
+ end
+M.private.fail_fmt = fail_fmt
+
 ----------------------------------------------------------------
 --
 --                     assertions
@@ -513,66 +550,58 @@ M.private._is_table_equals = _is_table_equals
 ----------------------------------------------------------------
 
 local function errorMsgEquality(actual, expected)
-    local errorMsg
     if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end
-    local expectedStr = prettystr(expected)
-    local actualStr = prettystr(actual)
     if type(expected) == 'string' or type(expected) == 'table' then
-        if hasNewLine( expectedStr..actualStr ) then
-            expectedStr = '\n'..expectedStr
-            actualStr = '\n'..actualStr
-        end
-        errorMsg = "expected: "..expectedStr.."\n"..
-                         "actual: "..actualStr
-    else
-        errorMsg = "expected: "..expectedStr..", actual: "..actualStr
+        expected, actual = prettystrPadded(expected, actual)
+        return string.format("expected: %s\nactual: %s", expected, actual)
     end
-    return errorMsg
+    return string.format("expected: %s, actual: %s",
+                         prettystr(expected), prettystr(actual))
 end
 
 function M.assertError(f, ...)
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
-    local no_error, error_msg = pcall( f, ... )
-    if not no_error then return end
-    error( "Expected an error when calling function but no error generated", 2 )
+    if pcall( f, ... ) then
+        failure( "Expected an error when calling function but no error generated", 2 )
+    end
 end
 
 function M.assertTrue(value)
     if not value then
-        error("expected: true, actual: " ..prettystr(value), 2)
+        failure("expected: true, actual: " ..prettystr(value), 2)
     end
 end
 
 function M.assertFalse(value)
     if value then
-        error("expected: false, actual: " ..prettystr(value), 2)
+        failure("expected: false, actual: " ..prettystr(value), 2)
     end
 end
 
 function M.assertNil(value)
     if value ~= nil then
-        error("expected: nil, actual: " ..prettystr(value), 2)
+        failure("expected: nil, actual: " ..prettystr(value), 2)
     end
 end
 
 function M.assertNotNil(value)
     if value == nil then
-        error("expected non nil value, received nil", 2)
+        failure("expected non nil value, received nil", 2)
     end
 end
 
 function M.assertEquals(actual, expected)
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
-            error( errorMsgEquality(actual, expected), 2 )
+            failure( errorMsgEquality(actual, expected), 2 )
         end
     elseif type(actual) ~= type(expected) then
-        error( errorMsgEquality(actual, expected), 2 )
+        failure( errorMsgEquality(actual, expected), 2 )
     elseif actual ~= expected then
-        error( errorMsgEquality(actual, expected), 2 )
+        failure( errorMsgEquality(actual, expected), 2 )
     end
 end
 
@@ -593,7 +622,7 @@ function M.assertAlmostEquals( actual, expected, margin )
     -- which by default does not work. We need to give margin a small boost
     local realmargin = margin + 0.00000000001
     if math.abs(expected - actual) > realmargin then
-        error( 'Values are not almost equal\nExpected: '..expected..' with margin of '..margin..', received: '..actual, 2)
+        failure( 'Values are not almost equal\nExpected: '..expected..' with margin of '..margin..', received: '..actual, 2)
     end
 end
 
@@ -602,18 +631,14 @@ function M.assertNotEquals(actual, expected)
         return
     end
 
-    local genError = false
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
             return
         end
-        genError = true
-    elseif actual == expected then
-        genError = true
+    elseif actual ~= expected then
+        return
     end
-    if genError then
-        error( 'Received the not expected value: ' .. prettystr(actual), 2 )
-    end
+    fail_fmt(2, 'Received the not expected value: %s', prettystr(actual))
 end
 
 function M.assertNotAlmostEquals( actual, expected, margin )
@@ -633,84 +658,47 @@ function M.assertNotAlmostEquals( actual, expected, margin )
     -- which by default does not work. We need to give margin a small boost
     local realmargin = margin + 0.00000000001
     if math.abs(expected - actual) <= realmargin then
-        error( 'Values are almost equal\nExpected: '..expected..' with a difference above margin of '..margin..', received: '..actual, 2)
+        failure( 'Values are almost equal\nExpected: '..expected..' with a difference above margin of '..margin..', received: '..actual, 2)
     end
 end
 
 function M.assertStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    local subType
-    local noUseRe = not useRe
-    if string.find(str, sub, 1, noUseRe) == nil then
-        if noUseRe then
-            subType = 'substring'
-        else
-            subType = 'regexp'
-        end
-        local subPretty = prettystr(sub)
-        local strPretty = prettystr(str)
-        if hasNewLine( subPretty..strPretty ) then
-            subPretty = '\n'..subPretty..'\n'
-            strPretty = '\n'..strPretty
-        end
-        error( 'Error, '..subType..' '..subPretty..' was not found in string '..strPretty, 2)
+    if not string.find(str, sub, 1, not useRe) then
+        sub, str = prettystrPadded(sub, str, '\n')
+        fail_fmt(2, 'Error, %s %s was not found in string %s',
+                 useRe and 'regexp' or 'substring', sub, str)
     end
 end
 
 function M.assertStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    local lstr, lsub, subPretty, strPretty
-    lstr = string.lower(str)
-    lsub = string.lower(sub)
-    if string.find(lstr, lsub, 1, true) == nil then
-        subPretty = prettystr(sub)
-        strPretty = prettystr(str)
-        if hasNewLine( subPretty..strPretty ) then
-            subPretty = '\n'..subPretty..'\n'
-            strPretty = '\n'..strPretty
-        end
-        error( 'Error, substring '..subPretty..' was not found (case insensitively) in string '..strPretty,2)
+    if not string.find(str:lower(), sub:lower(), 1, true) then
+        sub, str = prettystrPadded(sub, str, '\n')
+        fail_fmt(2, 'Error, substring %s was not found (case insensitively) in string %s',
+                 sub, str)
     end
 end
 
 function M.assertNotStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    local substrType
-    local noUseRe = not useRe
-    if string.find(str, sub, 1, noUseRe) ~= nil then
-        local substrType
-        if noUseRe then
-            substrType = 'substring'
-        else
-            substrType = 'regexp'
-        end
-        local subPretty = prettystr(sub)
-        local strPretty = prettystr(str)
-        if hasNewLine( subPretty..strPretty ) then
-            subPretty = '\n'..subPretty..'\n'
-            strPretty = '\n'..strPretty
-        end
-        error( 'Error, '..substrType..' '..subPretty..' was found in string '..strPretty,2)
+    if string.find(str, sub, 1, not useRe) then
+        sub, str = prettystrPadded(sub, str, '\n')
+        fail_fmt(2, 'Error, %s %s was found in string %s',
+                 useRe and 'regexp' or 'substring', sub, str)
     end
 end
 
 function M.assertNotStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    local lstr, lsub
-    lstr = string.lower(str)
-    lsub = string.lower(sub)
-    if string.find(lstr, lsub, 1, true) ~= nil then
-        local subPretty = prettystr(sub)
-        local strPretty = prettystr(str)
-        if hasNewLine( subPretty..strPretty) then
-            subPretty = '\n'..subPretty..'\n'
-            strPretty = '\n'..strPretty
-        end
-        error( 'Error, substring '..subPretty..' was found (case insensitively) in string '..strPretty,2)
+    if string.find(str:lower(), sub:lower(), 1, true) then
+        sub, str = prettystrPadded(sub, str, '\n')
+        fail_fmt(2, 'Error, substring %s was found (case insensitively) in string %s',
+                 sub, str)
     end
 end
 
@@ -718,13 +706,9 @@ function M.assertStrMatches( str, pattern, start, final )
     -- Verify a full match for the string
     -- for a partial match, simply use assertStrContains with useRe set to true
     if not strMatch( str, pattern, start, final ) then
-        local patternPretty = prettystr(pattern)
-        local strPretty = prettystr(str)
-        if hasNewLine( patternPretty..strPretty) then
-            patternPretty = '\n'..patternPretty..'\n'
-            strPretty = '\n'..strPretty
-        end
-        error( 'Error, pattern '..patternPretty..' was not matched by string '..strPretty,2)
+        pattern, str = prettystrPadded(pattern, str, '\n')
+        fail_fmt(2, 'Error, pattern %s was not matched by string %s',
+                 pattern, str)
     end
 end
 
@@ -733,14 +717,12 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        error( 'No error generated when calling function but expected error: "'..expectedMsg..'"', 2 )
+        failure( 'No error generated when calling function but expected error: "'..expectedMsg..'"', 2 )
     end
-    if not (error_msg == expectedMsg) then
-        if hasNewLine( error_msg..expectedMsg ) then
-            expectedMsg = '\n'..expectedMsg
-            error_msg = '\n'..error_msg
-        end
-        error( 'Exact error message expected: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
+    if error_msg ~= expectedMsg then
+        error_msg, expectedMsg = prettystrPadded(error_msg, expectedMsg)
+        fail_fmt(2, 'Exact error message expected: %s\nError message received: %s\n',
+                 expectedMsg, error_msg)
     end
 end
 
@@ -749,16 +731,12 @@ function M.assertErrorMsgContains( partialMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        error( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), 2 )
+        failure( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), 2 )
     end
     if not string.find( error_msg, partialMsg, nil, true ) then
-        local partialMsgStr = prettystr(partialMsg)
-        local errorMsgStr = prettystr(error_msg)
-        if hasNewLine(error_msg..partialMsg) then
-            partialMsgStr = '\n'..partialMsgStr
-            errorMsgStr = '\n'..errorMsgStr
-        end
-        error( 'Error message does not contain: '..partialMsgStr..'\nError message received: '..errorMsgStr..'\n',2)
+        error_msg, partialMsg = prettystrPadded(error_msg, partialMsg)
+        fail_fmt(2, 'Error message does not contain: %s\nError message received: %s\n',
+                 partialMsg, error_msg)
     end
 end
 
@@ -767,70 +745,65 @@ function M.assertErrorMsgMatches( expectedMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        error( 'No error generated when calling function but expected error matching: "'..expectedMsg..'"', 2 )
+        failure( 'No error generated when calling function but expected error matching: "'..expectedMsg..'"', 2 )
     end
     if not strMatch( error_msg, expectedMsg ) then
-        if hasNewLine(error_msg..expectedMsg) then
-            expectedMsg = '\n'..expectedMsg
-            error_msg = '\n'..error_msg
-        end
-        error( 'Error message does not match: "'..expectedMsg..'"\nError message received: "'..error_msg..'"\n',2)
+        expectedMsg, error_msg = prettystrPadded(expectedMsg, error_msg)
+        fail_fmt(2, 'Error message does not match: %s\nError message received: %s\n',
+                 expectedMsg, error_msg)
     end
 end
 
 local function errorMsgTypeMismatch( expectedType, actual )
-    local actualStr = prettystr(actual)
-    if hasNewLine(actualStr) then
-        actualStr =  '\n'..actualStr
-    end
-    return "Expected: a "..expectedType..' value, actual: type '..type(actual)..', value '..actualStr
+    return string.format('Expected: a %s value, actual: type %s, value %s',
+                          expectedType, type(actual), prettystrPadded(actual))
 end
 
 function M.assertIsNumber(value)
     if type(value) ~= 'number' then
-        error( errorMsgTypeMismatch( 'number', value ), 2 )
+        failure( errorMsgTypeMismatch( 'number', value ), 2 )
     end
 end
 
 function M.assertIsString(value)
     if type(value) ~= "string" then
-        error( errorMsgTypeMismatch( 'string', value ), 2 )
+        failure( errorMsgTypeMismatch( 'string', value ), 2 )
     end
 end
 
 function M.assertIsTable(value)
     if type(value) ~= 'table' then
-        error( errorMsgTypeMismatch( 'table', value ), 2 )
+        failure( errorMsgTypeMismatch( 'table', value ), 2 )
     end
 end
 
 function M.assertIsBoolean(value)
     if type(value) ~= 'boolean' then
-        error( errorMsgTypeMismatch( 'boolean', value ), 2 )
+        failure( errorMsgTypeMismatch( 'boolean', value ), 2 )
     end
 end
 
 function M.assertIsNil(value)
     if type(value) ~= "nil" then
-        error( errorMsgTypeMismatch( 'nil', value ), 2 )
+        failure( errorMsgTypeMismatch( 'nil', value ), 2 )
     end
 end
 
 function M.assertIsFunction(value)
     if type(value) ~= 'function' then
-        error( errorMsgTypeMismatch( 'function', value ), 2 )
+        failure( errorMsgTypeMismatch( 'function', value ), 2 )
     end
 end
 
 function M.assertIsUserdata(value)
     if type(value) ~= 'userdata' then
-        error( errorMsgTypeMismatch( 'userdata', value ), 2 )
+        failure( errorMsgTypeMismatch( 'userdata', value ), 2 )
     end
 end
 
 function M.assertIsCoroutine(value)
     if type(value) ~= 'thread' then
-        error( errorMsgTypeMismatch( 'thread', value ), 2 )
+        failure( errorMsgTypeMismatch( 'thread', value ), 2 )
     end
 end
 
@@ -841,15 +814,9 @@ function M.assertIs(actual, expected)
         actual, expected = expected, actual
     end
     if actual ~= expected then
-        local expectedStr = prettystr(expected)
-        local actualStr = prettystr(actual)
-        if hasNewLine(expectedStr..actualStr) then
-            expectedStr = '\n'..expectedStr..'\n'
-            actualStr =  '\n'..actualStr
-        else
-            expectedStr = expectedStr..', '
-        end
-        error( 'Expected object and actual object are not the same\nExpected: '..expectedStr..'actual: '..actualStr, 2)
+        expected, actual = prettystrPadded(expected, actual, '\n', ', ')
+        fail_fmt(2, 'Expected object and actual object are not the same\nExpected: %sactual: %s',
+                 expected, actual)
     end
 end
 
@@ -858,11 +825,8 @@ function M.assertNotIs(actual, expected)
         actual, expected = expected, actual
     end
     if actual == expected then
-        local expectedStr = prettystr(expected)
-        if hasNewLine(expectedStr) then
-            expectedStr = '\n'..expectedStr
-        end
-        error( 'Expected object and actual object are the same object: '..expectedStr, 2 )
+        fail_fmt(2, 'Expected object and actual object are the same object: %s',
+                 prettystrPadded(expected))
     end
 end
 
@@ -871,13 +835,9 @@ function M.assertItemsEquals(actual, expected)
     -- are contained in table actual. Warning, this function
     -- is at least O(n^2)
     if not _is_table_items_equals(actual, expected ) then
-        local expectedStr = prettystr(expected)
-        local actualStr = prettystr(actual)
-        if hasNewLine(expectedStr..actualStr) then
-            expectedStr = '\n'..expectedStr
-            actualStr =  '\n'..actualStr
-        end
-        error( 'Contents of the tables are not identical:\nExpected: '..expectedStr..'\nActual: '..actualStr, 2 )
+        expected, actual = prettystrPadded(expected, actual)
+        fail_fmt(2, 'Contents of the tables are not identical:\nExpected: %s\nActual: %s',
+                 expected, actual)
     end
 end
 
@@ -1705,43 +1665,38 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     --------------[[ Runner ]]-----------------
 
-    local SPLITTER = '\n>----------<\n'
-
     function M.LuaUnit:protectedCall( classInstance , methodInstance, prettyFuncName)
         -- if classInstance is nil, this is just a function call
         -- else, it's method of a class being called.
 
         local function err_handler(e)
-            return debug.traceback(e..SPLITTER, 3)
+            -- transform error into a table, adding the traceback information
+            return {
+                msg = e,
+                trace = string.sub(debug.traceback("", 3), 2)
+            }
         end
 
-        local ok, fullErrMsg, stackTrace, errMsg, t
+        local ok, err
         if classInstance then
             -- stupid Lua < 5.2 does not allow xpcall with arguments so let's use a workaround
-            ok, fullErrMsg = xpcall( function () methodInstance(classInstance) end, err_handler )
+            ok, err = xpcall( function () methodInstance(classInstance) end, err_handler )
         else
-            ok, fullErrMsg = xpcall( function () methodInstance() end, err_handler )
+            ok, err = xpcall( function () methodInstance() end, err_handler )
         end
         if ok then
             return ok
         end
 
-        t = strsplit( SPLITTER, fullErrMsg )
-        errMsg = t[1]
-        stackTrace = string.sub(t[2],2)
-        if prettyFuncName then
-            -- we do have the real method name, improve the stack trace
-            stackTrace = string.gsub( stackTrace, "in function 'methodInstance'", "in function '"..prettyFuncName.."'")
-            -- Needed for Lua 5.3
-            stackTrace = string.gsub( stackTrace, "in method 'methodInstance'", "in method '"..prettyFuncName.."'")
-            stackTrace = string.gsub( stackTrace, "in upvalue 'methodInstance'", "in method '"..prettyFuncName.."'")
+        -- reformat / improve the stack trace
+        if prettyFuncName then -- we do have the real method name
+            err.trace = err.trace:gsub("in (%a+) 'methodInstance'", "in %1 '"..prettyFuncName.."'")
         end
-
         if STRIP_LUAUNIT_FROM_STACKTRACE then
-            stackTrace = stripLuaunitTrace( stackTrace )
+            err.trace = stripLuaunitTrace(err.trace)
         end
 
-        return ok, errMsg, stackTrace
+        return ok, err.msg, err.trace
     end
 
 
