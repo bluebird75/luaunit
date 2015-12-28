@@ -46,9 +46,9 @@ Options:
   -o, --output OUTPUT:    Set output type to OUTPUT
                           Possible values: text, tap, junit, nil
   -n, --name NAME:        For junit only, mandatory name of xml file
-  -p, --pattern PATTERN:  Execute all test names matching the lua PATTERN
+  -p, --pattern PATTERN:  Execute all test names matching the Lua PATTERN
                           May be repeated to include severals patterns
-                          Make sure you esape magic chars like +? with %
+                          Make sure you escape magic chars like +? with %
   testname1, testname2, ... : tests to run in the form of testFunction,
                               TestClass or TestClass.testMethod
 ]]
@@ -1064,7 +1064,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
 
         end
 
-        -- Next to lines are Needed to validate junit ANT xsd but really not useful in general:
+        -- Next two lines are needed to validate junit ANT xsd, but really not useful in general:
         self.fd:write('    <system-out/>\n')
         self.fd:write('    <system-err/>\n')
 
@@ -1781,7 +1781,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     end
 
     function M.LuaUnit.expandClasses( listOfNameAndInst )
-        -- expand all classes (proveded as {className, classInstance}) to a list of {className.methodName, classInstance}
+        -- expand all classes (provided as {className, classInstance}) to a list of {className.methodName, classInstance}
         -- functions and methods remain untouched
         local result = {}
 

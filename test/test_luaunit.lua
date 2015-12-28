@@ -283,7 +283,7 @@ TestLuaUnitUtilities = {} --class
 }]])
     end
 
-    function TestLuaUnitUtilities:test_prettstrTableRecursion()
+    function TestLuaUnitUtilities:test_prettystrTableRecursion()
         local t = {}
         t.__index = t
         lu.assertStrMatches(lu.prettystr(t), "<table: 0?x?[%x]+> {__index=<table: 0?x?[%x]+>}")
@@ -305,7 +305,7 @@ TestLuaUnitUtilities = {} --class
         lu.assertStrMatches(lu.prettystr(t5), "<table: 0?x?[%x]+> {3, 4, <table: 0?x?[%x]+> {1, 2, <table: 0?x?[%x]+>}}")
     end
 
-    function TestLuaUnitUtilities:test_prettstrPadded()
+    function TestLuaUnitUtilities:test_prettystrPadded()
         local foo, bar, str1, str2
 
         -- test all combinations of: foo = nil, "foo", "fo\no" (embedded

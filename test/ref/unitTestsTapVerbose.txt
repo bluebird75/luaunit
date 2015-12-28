@@ -100,9 +100,9 @@ ok     91	TestLuaUnitUtilities.test_includePattern
 ok     92	TestLuaUnitUtilities.test_isTestName
 ok     93	TestLuaUnitUtilities.test_parseCmdLine
 ok     94	TestLuaUnitUtilities.test_prefixString
-ok     95	TestLuaUnitUtilities.test_prettstrPadded
-ok     96	TestLuaUnitUtilities.test_prettstrTableRecursion
-ok     97	TestLuaUnitUtilities.test_prettystr
+ok     95	TestLuaUnitUtilities.test_prettystr
+ok     96	TestLuaUnitUtilities.test_prettystrPadded
+ok     97	TestLuaUnitUtilities.test_prettystrTableRecursion
 ok     98	TestLuaUnitUtilities.test_prettystr_adv_tables
 ok     99	TestLuaUnitUtilities.test_sortedNextReturnsSortedKeyValues
 ok     100	TestLuaUnitUtilities.test_sortedNextWorksOnTwoTables
