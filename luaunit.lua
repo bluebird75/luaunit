@@ -1613,13 +1613,14 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     --------------[[ Runner ]]-----------------
 
-    function M.LuaUnit:protectedCall( classInstance , methodInstance, prettyFuncName)
+    function M.LuaUnit:protectedCall(classInstance, methodInstance, prettyFuncName)
         -- if classInstance is nil, this is just a function call
         -- else, it's method of a class being called.
 
         local function err_handler(e)
             -- transform error into a table, adding the traceback information
             return {
+                status = NodeStatus.FAIL,
                 msg = e,
                 trace = string.sub(debug.traceback("", 3), 2)
             }
@@ -1633,7 +1634,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             ok, err = xpcall( function () methodInstance() end, err_handler )
         end
         if ok then
-            return ok
+            return {status = NodeStatus.PASS}
         end
 
         -- reformat / improve the stack trace
@@ -1644,7 +1645,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             err.trace = stripLuaunitTrace(err.trace)
         end
 
-        return ok, err.msg, err.trace
+        return err -- return the error "object" (table)
     end
 
 
@@ -1652,7 +1653,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         -- When executing a test function, className and classInstance must be nil
         -- When executing a class method, all parameters must be set
 
-        local ok, errMsg, stackTrace, prettyFuncName
+        local prettyFuncName, err
 
         if type(methodInstance) ~= 'function' then
             error( tostring(methodName)..' must be a function, not '..type(methodInstance))
@@ -1682,18 +1683,18 @@ local LuaUnit_MT = { __index = M.LuaUnit }
                          or self.asFunction( classInstance.setup )
                          or self.asFunction( classInstance.SetUp )
             if func then
-                ok, errMsg, stackTrace = self:protectedCall( classInstance, func, className..'.setUp')
-                if not ok then
-                    self:addFailure( errMsg, stackTrace )
+                err = self:protectedCall( classInstance, func, className..'.setUp')
+                if err.status ~= NodeStatus.PASS then
+                    self:addFailure( err.msg, err.trace )
                 end
             end
         end
 
         -- run testMethod()
         if not self.result.currentNode:hasFailure() then
-            ok, errMsg, stackTrace = self:protectedCall( classInstance, methodInstance, prettyFuncName)
-            if not ok then
-                self:addFailure( errMsg, stackTrace )
+            err = self:protectedCall( classInstance, methodInstance, prettyFuncName)
+            if err.status ~= NodeStatus.PASS then
+                self:addFailure( err.msg, err.trace )
             end
         end
 
@@ -1704,9 +1705,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
                          or self.asFunction( classInstance.teardown )
                          or self.asFunction( classInstance.Teardown )
             if func then
-                ok, errMsg, stackTrace = self:protectedCall( classInstance, func, className..'.tearDown')
-                if not ok then
-                    self:addFailure( errMsg, stackTrace )
+                err = self:protectedCall( classInstance, func, className..'.tearDown')
+                if err.status ~= NodeStatus.PASS then
+                    self:addFailure( err.msg, err.trace )
                 end
             end
         end
