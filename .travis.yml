@@ -1,21 +1,29 @@
 language: c
 
+sudo: false
+
 env:
   global:
-    - LUAROCKS=2.2.0-rc1
+    - LUAROCKS=2.2.2
   matrix:
     - LUA=lua5.1
     - LUA=lua5.2
     - LUA=lua5.3
-    # luajit fails on functional tests for complex reasons
-    # disabling it for now
-    # - LUA=luajit    
+    - LUA=luajit     # latest stable version (2.0.x)
+    - LUA=luajit2.0  # current head of 2.0 branch
+    - LUA=luajit2.1  # current head of 2.1 branch
+
+# 'bleeding edge' LuaJIT may fail without breaking the build
+matrix:
+  allow_failures:
+    - env: LUA=luajit2.0
+    - env: LUA=luajit2.1
 
 before_install:
-  - bash .travis/setup_lua.sh
+  - source .travis/setenv_lua.sh
 
 script: 
-  - lua run_unit_tests.lua
+  - lua -v run_unit_tests.lua
   - lua run_functional_tests.lua
 
 notifications:
