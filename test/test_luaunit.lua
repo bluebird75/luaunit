@@ -405,8 +405,11 @@ TestLuaUnitUtilities = {} --class
     end
 
     function TestLuaUnitUtilities:test_IsFunction()
-        lu.assertEquals( lu.LuaUnit.isFunction( function (a,b) end ), true )
-        lu.assertEquals( lu.LuaUnit.isFunction( nil ), false )
+        -- previous LuaUnit.isFunction was superseded by LuaUnit.asFunction
+        -- (which can also serve as a boolean expression)
+        lu.assertNotNil( lu.LuaUnit.asFunction( function (a,b) end ) )
+        lu.assertNil( lu.LuaUnit.asFunction( nil ) )
+        lu.assertNil( lu.LuaUnit.asFunction( "not a function" ) )
     end
 
     function TestLuaUnitUtilities:test_IsClassMethod()
@@ -1544,6 +1547,21 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupTeardown2:test1()    table.insert( myExecutedTests, '2test1' ) end
             function MyTestWithSetupTeardown2:tearDown() table.insert( myExecutedTests, '2tearDown' )  end
 
+        local MyTestWithSetupTeardown3 = {}
+            function MyTestWithSetupTeardown3:Setup()    table.insert( myExecutedTests, '3Setup' ) end
+            function MyTestWithSetupTeardown3:test1()    table.insert( myExecutedTests, '3test1' ) end
+            function MyTestWithSetupTeardown3:Teardown() table.insert( myExecutedTests, '3Teardown' )  end
+
+        local MyTestWithSetupTeardown4 = {}
+            function MyTestWithSetupTeardown4:setup()    table.insert( myExecutedTests, '4setup' ) end
+            function MyTestWithSetupTeardown4:test1()    table.insert( myExecutedTests, '4test1' ) end
+            function MyTestWithSetupTeardown4:teardown() table.insert( myExecutedTests, '4teardown' )  end
+
+        local MyTestWithSetupTeardown5 = {}
+            function MyTestWithSetupTeardown5:SetUp()    table.insert( myExecutedTests, '5SetUp' ) end
+            function MyTestWithSetupTeardown5:test1()    table.insert( myExecutedTests, '5test1' ) end
+            function MyTestWithSetupTeardown5:TearDown() table.insert( myExecutedTests, '5TearDown' )  end
+
         local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupTeardown.test1', MyTestWithSetupTeardown } } )
@@ -1556,7 +1574,10 @@ TestLuaUnitExecution = {} --class
         myExecutedTests = {}
         runner:runSuiteByInstances( { 
             { 'MyTestWithSetupTeardown', MyTestWithSetupTeardown },
-            { 'MyTestWithSetupTeardown2', MyTestWithSetupTeardown2 } 
+            { 'MyTestWithSetupTeardown2', MyTestWithSetupTeardown2 },
+            { 'MyTestWithSetupTeardown3', MyTestWithSetupTeardown3 },
+            { 'MyTestWithSetupTeardown4', MyTestWithSetupTeardown4 },
+            { 'MyTestWithSetupTeardown5', MyTestWithSetupTeardown5 }
         } )
         lu.assertEquals( runner.result.failureCount, 0 )
         lu.assertEquals( myExecutedTests[1], '1setUp' )   
@@ -1568,7 +1589,16 @@ TestLuaUnitExecution = {} --class
         lu.assertEquals( myExecutedTests[7], '2setUp' )   
         lu.assertEquals( myExecutedTests[8], '2test1')
         lu.assertEquals( myExecutedTests[9], '2tearDown')
-        lu.assertEquals( #myExecutedTests, 9)
+        lu.assertEquals( myExecutedTests[10], '3Setup')
+        lu.assertEquals( myExecutedTests[11], '3test1')
+        lu.assertEquals( myExecutedTests[12], '3Teardown')
+        lu.assertEquals( myExecutedTests[13], '4setup')
+        lu.assertEquals( myExecutedTests[14], '4test1')
+        lu.assertEquals( myExecutedTests[15], '4teardown')
+        lu.assertEquals( myExecutedTests[16], '5SetUp')
+        lu.assertEquals( myExecutedTests[17], '5test1')
+        lu.assertEquals( myExecutedTests[18], '5TearDown')
+        lu.assertEquals( #myExecutedTests, 18)
     end
 
     function TestLuaUnitExecution:testWithSetupTeardownErrors1()
