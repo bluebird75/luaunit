@@ -1550,13 +1550,17 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         self.output:startTest( testName )
     end
 
-    function M.LuaUnit:addFailure( errorMsg, stackTrace )
-        if self.result.currentNode.status == NodeStatus.PASS then
+    function M.LuaUnit:addStatus( err )
+        -- "err" is expected to be a table / result from protectedCall()
+        if err.status == NodeStatus.PASS then return end
+
+        local node = self.result.currentNode
+        if node.status == NodeStatus.PASS then
             self.result.failureCount = self.result.failureCount + 1
-            self.result.currentNode:fail( errorMsg, stackTrace )
-            table.insert( self.result.failures, self.result.currentNode )
+            node:fail( err.msg, err.trace )
+            table.insert( self.result.failures, node )
         end
-        self.output:addFailure( errorMsg, stackTrace )
+        self.output:addFailure( err.msg, err.trace )
     end
 
     function M.LuaUnit:endTest()
@@ -1653,12 +1657,11 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         -- When executing a test function, className and classInstance must be nil
         -- When executing a class method, all parameters must be set
 
-        local prettyFuncName, err
-
         if type(methodInstance) ~= 'function' then
             error( tostring(methodName)..' must be a function, not '..type(methodInstance))
         end
 
+        local prettyFuncName
         if className == nil then
             className = '[TestFunctions]'
             prettyFuncName = methodName
@@ -1683,19 +1686,13 @@ local LuaUnit_MT = { __index = M.LuaUnit }
                          or self.asFunction( classInstance.setup )
                          or self.asFunction( classInstance.SetUp )
             if func then
-                err = self:protectedCall( classInstance, func, className..'.setUp')
-                if err.status ~= NodeStatus.PASS then
-                    self:addFailure( err.msg, err.trace )
-                end
+                self:addStatus(self:protectedCall(classInstance, func, className..'.setUp'))
             end
         end
 
         -- run testMethod()
-        if not self.result.currentNode:hasFailure() then
-            err = self:protectedCall( classInstance, methodInstance, prettyFuncName)
-            if err.status ~= NodeStatus.PASS then
-                self:addFailure( err.msg, err.trace )
-            end
+        if self.result.currentNode.status == NodeStatus.PASS then
+            self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
         end
 
         -- lastly, run tearDown (if any)
@@ -1705,10 +1702,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
                          or self.asFunction( classInstance.teardown )
                          or self.asFunction( classInstance.Teardown )
             if func then
-                err = self:protectedCall( classInstance, func, className..'.tearDown')
-                if err.status ~= NodeStatus.PASS then
-                    self:addFailure( err.msg, err.trace )
-                end
+                self:addStatus(self:protectedCall(classInstance, func, className..'.tearDown'))
             end
         end
 
