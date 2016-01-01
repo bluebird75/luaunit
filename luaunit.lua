@@ -801,13 +801,11 @@ function M.assertIsUserdata(value)
     end
 end
 
-function M.assertIsCoroutine(value)
+function M.assertIsThread(value)
     if type(value) ~= 'thread' then
         failure( errorMsgTypeMismatch( 'thread', value ), 2 )
     end
 end
-
-M.assertIsThread = M.assertIsCoroutine
 
 function M.assertIs(actual, expected)
     if not M.ORDER_ACTUAL_EXPECTED then
@@ -852,6 +850,12 @@ M.assert_is_table = M.assertIsTable
 M.assert_is_boolean = M.assertIsBoolean
 M.assert_is_nil = M.assertIsNil
 M.assert_is_function = M.assertIsFunction
+M.assert_is_thread      = M.assertIsThread
+
+-- all assertions with Coroutine duplicate Thread assertions
+M.assertIsCoroutine     = M.assertIsThread
+M.assert_is_coroutine   = M.assertIsThread
+
 M.assert_is = M.assertIs
 M.assert_not_is = M.assertNotIs
 
@@ -881,6 +885,7 @@ if EXPORT_ASSERT_TO_GLOBALS then
     assertIsNil            = M.assertIsNil
     assertIsFunction       = M.assertIsFunction
     assertIsUserdata       = M.assertIsUserdata
+    assertIsThread         = M.assertIsThread
     assertIsCoroutine      = M.assertIsCoroutine
     assertIs               = M.assertIs
     assertNotIs            = M.assertNotIs
