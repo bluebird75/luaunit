@@ -1,102 +1,102 @@
-Started on 03/06/15 00:08:03
+Started on 01/01/16 22:13:02
     TestTiti.test1_withFailure ... FAIL
-example_with_luaunit.lua:99: expected: 2, actual: 1
+example_with_luaunit.lua:101: expected: 2, actual: 1
     TestTiti.test2_withFailure ... FAIL
-example_with_luaunit.lua:108: expected: "bof"
+example_with_luaunit.lua:110: expected: "bof"
 actual: "hop"
     TestTiti.test3 ... Ok
     TestToto.test1_withFailure ... FAIL
-example_with_luaunit.lua:19: expected: 2, actual: 1
+example_with_luaunit.lua:21: expected: 2, actual: 1
     TestToto.test2_withFailure ... FAIL
-example_with_luaunit.lua:28: expected: "bof"
+example_with_luaunit.lua:30: expected: "bof"
 actual: "hop"
     TestToto.test3 ... Ok
     TestToto.test4 ... FAIL
-example_with_luaunit.lua:41: Received the not expected value: 1
+example_with_luaunit.lua:43: Received the not expected value: 1
     TestToto.test5 ... FAIL
-example_with_luaunit.lua:47: expected: false, actual: 1
+example_with_luaunit.lua:49: expected: false, actual: 1
     TestToto.test6 ... FAIL
-example_with_luaunit.lua:52: expected: true, actual: false
+example_with_luaunit.lua:54: expected: true, actual: false
     TestToto.test7 ... FAIL
-example_with_luaunit.lua:58: expected: {1, 2, three=3}
+example_with_luaunit.lua:60: expected: {1, 2, three=3}
 actual: {1, 2}
     TestToto.test8a ... FAIL
-example_with_luaunit.lua:76: Bouhouhoum error!
+example_with_luaunit.lua:78: Bouhouhoum error!
     TestToto.test8b ... FAIL
-example_with_luaunit.lua:76: Bouhouhoum error!
+example_with_luaunit.lua:78: Bouhouhoum error!
     test1_withFailure ... FAIL
-example_with_luaunit.lua:124: assertion failed!
+example_with_luaunit.lua:126: assertion failed!
     test2_withFailure ... FAIL
-example_with_luaunit.lua:130: assertion failed!
+example_with_luaunit.lua:132: assertion failed!
     test3 ... Ok
 =========================================================
 Failed tests:
 -------------
 1) TestTiti.test1_withFailure
-example_with_luaunit.lua:99: expected: 2, actual: 1
+example_with_luaunit.lua:101: expected: 2, actual: 1
 stack traceback:
-	example_with_luaunit.lua:99: in function 'TestTiti.test1_withFailure'
+	example_with_luaunit.lua:101: in function 'TestTiti.test1_withFailure'
 
 2) TestTiti.test2_withFailure
-example_with_luaunit.lua:108: expected: "bof"
+example_with_luaunit.lua:110: expected: "bof"
 actual: "hop"
 stack traceback:
-	example_with_luaunit.lua:108: in function 'TestTiti.test2_withFailure'
+	example_with_luaunit.lua:110: in function 'TestTiti.test2_withFailure'
 
 3) TestToto.test1_withFailure
-example_with_luaunit.lua:19: expected: 2, actual: 1
+example_with_luaunit.lua:21: expected: 2, actual: 1
 stack traceback:
-	example_with_luaunit.lua:19: in function 'TestToto.test1_withFailure'
+	example_with_luaunit.lua:21: in function 'TestToto.test1_withFailure'
 
 4) TestToto.test2_withFailure
-example_with_luaunit.lua:28: expected: "bof"
+example_with_luaunit.lua:30: expected: "bof"
 actual: "hop"
 stack traceback:
-	example_with_luaunit.lua:28: in function 'TestToto.test2_withFailure'
+	example_with_luaunit.lua:30: in function 'TestToto.test2_withFailure'
 
 5) TestToto.test4
-example_with_luaunit.lua:41: Received the not expected value: 1
+example_with_luaunit.lua:43: Received the not expected value: 1
 stack traceback:
-	example_with_luaunit.lua:41: in function 'TestToto.test4'
+	example_with_luaunit.lua:43: in function 'TestToto.test4'
 
 6) TestToto.test5
-example_with_luaunit.lua:47: expected: false, actual: 1
+example_with_luaunit.lua:49: expected: false, actual: 1
 stack traceback:
-	example_with_luaunit.lua:47: in function 'TestToto.test5'
+	example_with_luaunit.lua:49: in function 'TestToto.test5'
 
 7) TestToto.test6
-example_with_luaunit.lua:52: expected: true, actual: false
+example_with_luaunit.lua:54: expected: true, actual: false
 stack traceback:
-	example_with_luaunit.lua:52: in function 'TestToto.test6'
+	example_with_luaunit.lua:54: in function 'TestToto.test6'
 
 8) TestToto.test7
-example_with_luaunit.lua:58: expected: {1, 2, three=3}
+example_with_luaunit.lua:60: expected: {1, 2, three=3}
 actual: {1, 2}
 stack traceback:
-	example_with_luaunit.lua:58: in function 'TestToto.test7'
+	example_with_luaunit.lua:60: in function 'TestToto.test7'
 
 9) TestToto.test8a
-example_with_luaunit.lua:76: Bouhouhoum error!
+example_with_luaunit.lua:78: Bouhouhoum error!
 stack traceback:
-	example_with_luaunit.lua:76: in function 'funcWithError'
-	example_with_luaunit.lua:63: in function 'TestToto.test8a'
+	example_with_luaunit.lua:78: in function 'funcWithError'
+	example_with_luaunit.lua:65: in function 'TestToto.test8a'
 
 10) TestToto.test8b
-example_with_luaunit.lua:76: Bouhouhoum error!
+example_with_luaunit.lua:78: Bouhouhoum error!
 stack traceback:
-	example_with_luaunit.lua:76: in function 'funcWithError'
-	example_with_luaunit.lua:72: in function 'funcWithFuncWithError'
-	example_with_luaunit.lua:68: in function 'TestToto.test8b'
+	example_with_luaunit.lua:78: in function 'funcWithError'
+	example_with_luaunit.lua:74: in function 'funcWithFuncWithError'
+	example_with_luaunit.lua:70: in function 'TestToto.test8b'
 
 11) test1_withFailure
-example_with_luaunit.lua:124: assertion failed!
+example_with_luaunit.lua:126: assertion failed!
 stack traceback:
-	example_with_luaunit.lua:124: in function 'test1_withFailure'
+	example_with_luaunit.lua:126: in function 'test1_withFailure'
 
 12) test2_withFailure
-example_with_luaunit.lua:130: assertion failed!
+example_with_luaunit.lua:132: assertion failed!
 stack traceback:
-	example_with_luaunit.lua:130: in function 'test2_withFailure'
+	example_with_luaunit.lua:132: in function 'test2_withFailure'
 
-Ran 15 tests in 0.006 seconds
+Ran 15 tests in 0.005 seconds
 FAILED (failures=12)

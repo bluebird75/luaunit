@@ -1,35 +1,35 @@
 # XML output to test/ref/exampleXmlQuiet.xml
-# Started on 03/10/15 21:06:34
+# Started on 01/01/16 22:13:01
 # Starting class: TestTiti
 # Starting test: TestTiti.test1_withFailure
-# Failure: example_with_luaunit.lua:99: expected: 2, actual: 1
+# Failure: example_with_luaunit.lua:101: expected: 2, actual: 1
 # Starting test: TestTiti.test2_withFailure
-# Failure: example_with_luaunit.lua:108: expected: "bof"
+# Failure: example_with_luaunit.lua:110: expected: "bof"
 actual: "hop"
 # Starting test: TestTiti.test3
 # Starting class: TestToto
 # Starting test: TestToto.test1_withFailure
-# Failure: example_with_luaunit.lua:19: expected: 2, actual: 1
+# Failure: example_with_luaunit.lua:21: expected: 2, actual: 1
 # Starting test: TestToto.test2_withFailure
-# Failure: example_with_luaunit.lua:28: expected: "bof"
+# Failure: example_with_luaunit.lua:30: expected: "bof"
 actual: "hop"
 # Starting test: TestToto.test3
 # Starting test: TestToto.test4
-# Failure: example_with_luaunit.lua:41: Received the not expected value: 1
+# Failure: example_with_luaunit.lua:43: Received the not expected value: 1
 # Starting test: TestToto.test5
-# Failure: example_with_luaunit.lua:47: expected: false, actual: 1
+# Failure: example_with_luaunit.lua:49: expected: false, actual: 1
 # Starting test: TestToto.test6
-# Failure: example_with_luaunit.lua:52: expected: true, actual: false
+# Failure: example_with_luaunit.lua:54: expected: true, actual: false
 # Starting test: TestToto.test7
-# Failure: example_with_luaunit.lua:58: expected: {1, 2, three=3}
+# Failure: example_with_luaunit.lua:60: expected: {1, 2, three=3}
 actual: {1, 2}
 # Starting test: TestToto.test8a
-# Failure: example_with_luaunit.lua:76: Bouhouhoum error!
+# Failure: example_with_luaunit.lua:78: Bouhouhoum error!
 # Starting test: TestToto.test8b
-# Failure: example_with_luaunit.lua:76: Bouhouhoum error!
+# Failure: example_with_luaunit.lua:78: Bouhouhoum error!
 # Starting test: test1_withFailure
-# Failure: example_with_luaunit.lua:124: assertion failed!
+# Failure: example_with_luaunit.lua:126: assertion failed!
 # Starting test: test2_withFailure
-# Failure: example_with_luaunit.lua:130: assertion failed!
+# Failure: example_with_luaunit.lua:132: assertion failed!
 # Starting test: test3
-# Ran 15 tests in 0.010 seconds, 3 successes, 12 failures
+# Ran 15 tests in 0.006 seconds, 3 successes, 12 failures
