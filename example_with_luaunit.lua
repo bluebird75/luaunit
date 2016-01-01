@@ -1,3 +1,5 @@
+#!/usr/bin/env lua
+
 EXPORT_ASSERT_TO_GLOBALS = true
 require('luaunit')
 

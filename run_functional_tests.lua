@@ -1,3 +1,5 @@
+#!/usr/bin/env lua
+
 require('os')
 lu = require('luaunit')
 
