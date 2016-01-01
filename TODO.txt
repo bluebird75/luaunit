@@ -20,6 +20,8 @@ TODO Future:
 	+ expected length of X, got Y
 	+ keys differing in table 1 and 2
 - XML: report system information
+- better error messages for string differences
+- provide a legacy wrapFunction()
 
 Nice to have: 
 ============
