@@ -3,7 +3,7 @@
     <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="15" timestamp="2016-01-01T22:13:01" time="0.015" errors="0" failures="12">
         <properties>
             <property name="Lua Version" value="Lua 5.2"/>
-            <property name="LuaUnit Version" value="3.1"/>
+            <property name="LuaUnit Version" value="3.2"/>
         </properties>
         <testcase classname="TestTiti" name="TestTiti.test1_withFailure" time="0.000">
             <failure type="example_with_luaunit.lua:101: expected: 2, actual: 1">
