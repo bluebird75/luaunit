@@ -62,6 +62,15 @@ jumping the version number.
 - improved error messages for several assertions
 - command-line options to select test, control output type and verbosity
 
+#### Version 2.0
+Unofficial fork from version 1.3
+- lua 5.2 module style, without global namespace pollution
+- setUp() may be named Setup() or setup()
+- tearDown() may be named Teardown() or teardown()
+- wrapFunction() may be called WrapFunctions() or wrap_functions()
+- run() may also be called Run()
+- table deep comparision (also available in 1.4)
+- control verbosity with setVerbosity() SetVerbosity() and set_verbosity()
 
 #### Version 1.5 - 8. Nov 2012
 - compatibility with Lua 5.1 and 5.2
