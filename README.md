@@ -51,7 +51,7 @@ LuaUnit has a mailing list with low activity (a few emails per months). To subsc
 ### History 
 
 #### Version 3.2
-* lua 5.3 support
+* lua 5.3 and luajit (1, 2.0, 2.1) support, validated on Travis CI
 
 #### Version 3.1 - 10 Mar. 2015
 * luaunit no longer pollutes global namespace, unless defining EXPORT_ASSERT_TO_GLOBALS to true
