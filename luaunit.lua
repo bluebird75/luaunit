@@ -1332,9 +1332,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     -----------------[[ Utility methods ]]---------------------
 
-    function M.LuaUnit.isFunction(aObject)
-        -- return true if aObject is a function
-        return 'function' == type(aObject)
+    function M.LuaUnit.asFunction(aObject)
+        -- return "aObject" if it is a function, and nil otherwise
+        if 'function' == type(aObject) then return aObject end
     end
 
     function M.LuaUnit.isClassMethod(aName)
@@ -1732,11 +1732,17 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
         self:startTest(prettyFuncName)
 
-        -- run setUp first(if any)
-        if classInstance and self.isFunction( classInstance.setUp ) then
-            ok, errMsg, stackTrace = self:protectedCall( classInstance, classInstance.setUp, className..'.setUp')
-            if not ok then
-                self:addFailure( errMsg, stackTrace )
+        -- run setUp first (if any)
+        if classInstance then
+            local func = self.asFunction( classInstance.setUp )
+                         or self.asFunction( classInstance.Setup )
+                         or self.asFunction( classInstance.setup )
+                         or self.asFunction( classInstance.SetUp )
+            if func then
+                ok, errMsg, stackTrace = self:protectedCall( classInstance, func, className..'.setUp')
+                if not ok then
+                    self:addFailure( errMsg, stackTrace )
+                end
             end
         end
 
@@ -1748,11 +1754,17 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             end
         end
 
-        -- lastly, run tearDown(if any)
-        if classInstance and self.isFunction(classInstance.tearDown) then
-            ok, errMsg, stackTrace = self:protectedCall( classInstance, classInstance.tearDown, className..'.tearDown')
-            if not ok then
-                self:addFailure( errMsg, stackTrace )
+        -- lastly, run tearDown (if any)
+        if classInstance then
+            local func = self.asFunction( classInstance.tearDown )
+                         or self.asFunction( classInstance.TearDown )
+                         or self.asFunction( classInstance.teardown )
+                         or self.asFunction( classInstance.Teardown )
+            if func then
+                ok, errMsg, stackTrace = self:protectedCall( classInstance, func, className..'.tearDown')
+                if not ok then
+                    self:addFailure( errMsg, stackTrace )
+                end
             end
         end
 
@@ -1762,7 +1774,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     function M.LuaUnit.expandOneClass( result, className, classInstance )
         -- add all test methods of classInstance to result
         for methodName, methodInstance in sortedPairs(classInstance) do
-            if M.LuaUnit.isFunction(methodInstance) and M.LuaUnit.isMethodTestName( methodName ) then
+            if M.LuaUnit.asFunction(methodInstance) and M.LuaUnit.isMethodTestName( methodName ) then
                 table.insert( result, { className..'.'..methodName, classInstance } )
             end
         end
@@ -1775,7 +1787,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
         for i,v in ipairs( listOfNameAndInst ) do
             local name, instance = v[1], v[2]
-            if M.LuaUnit.isFunction(instance) then
+            if M.LuaUnit.asFunction(instance) then
                 table.insert( result, { name, instance } )
             else
                 if type(instance) ~= 'table' then
@@ -1830,7 +1842,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
         for i,v in ipairs( filteredList ) do
             local name, instance = v[1], v[2]
-            if M.LuaUnit.isFunction(instance) then
+            if M.LuaUnit.asFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
             else
                 if type(instance) ~= 'table' then
