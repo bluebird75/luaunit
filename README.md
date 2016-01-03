@@ -23,6 +23,8 @@ LuaUnit is packed into a single-file. To make start using it, just add the file 
 LuaUnit is maintained on github:
 https://github.com/bluebird75/luaunit
 
+For more information on LuaUnit development, please check: [Developing LuaUnit](http://luaunit.readthedocs.org/en/latest/#developing-luaunit)
+
 It is released under the BSD license.
 
 Documentation is available on
