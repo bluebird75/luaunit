@@ -906,19 +906,19 @@ local TapOutput_MT = { __index = TapOutput }
     end
     function TapOutput:startTest(testName) end
 
-    function TapOutput:addFailure( errorMsg, stackTrace )
-        print(string.format("not ok %d\t%s", self.result.currentTestNumber, self.result.currentNode.testName ))
+    function TapOutput:addFailure( node )
+        io.stdout:write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
         if self.verbosity > M.VERBOSITY_LOW then
-           print( prefixString( '    ', errorMsg ) )
+           print( prefixString( '    ', node.msg ) )
         end
         if self.verbosity > M.VERBOSITY_DEFAULT then
-           print( prefixString( '    ', stackTrace ) )
+           print( prefixString( '    ', node.stackTrace ) )
         end
     end
 
-    function TapOutput:endTest(testHasFailure)
-        if not self.result.currentNode:hasFailure() then
-            print(string.format("ok     %d\t%s", self.result.currentTestNumber, self.result.currentNode.testName ))
+    function TapOutput:endTest( node )
+        if not node:hasFailure() then
+            io.stdout:write("ok     ", self.result.currentTestNumber, "\t", node.testName, "\n")
         end
     end
 
@@ -985,12 +985,12 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         print('# Starting test: '..testName)
     end
 
-    function JUnitOutput:addFailure( errorMsg, stackTrace )
-        print('# Failure: '..errorMsg)
-        -- print('# '..stackTrace)
+    function JUnitOutput:addFailure( node )
+        print('# Failure: ' .. node.msg)
+        -- print('# ' .. node.stackTrace)
     end
 
-    function JUnitOutput:endTest(testHasFailure)
+    function JUnitOutput:endTest( node )
     end
 
     function JUnitOutput:endClass()
@@ -1176,12 +1176,12 @@ local TextOutput_MT = { -- class
         end
     end
 
-    function TextOutput:addFailure( errorMsg, stackTrace )
+    function TextOutput:addFailure( node )
         -- nothing
     end
 
-    function TextOutput:endTest(testHasFailure)
-        if not testHasFailure then
+    function TextOutput:endTest( node )
+        if not node:hasFailure() then
             if self.verbosity > M.VERBOSITY_DEFAULT then
                 io.stdout:write("Ok\n")
             else
@@ -1189,16 +1189,17 @@ local TextOutput_MT = { -- class
             end
         else
             if self.verbosity > M.VERBOSITY_DEFAULT then
-                io.stdout:write( 'FAIL\n' )
-                print( self.result.currentNode.msg )
+                print( node.status )
+                print( node.msg )
                 --[[
                 -- find out when to do this:
                 if self.verbosity > M.VERBOSITY_DEFAULT then
-                    print( self.result.currentNode.stackTrace )
+                    print( node.stackTrace )
                 end
                 ]]
             else
-                io.stdout:write("F")
+                -- write only the first character of status
+                io.stdout:write(string.sub(node.status, 1, 1))
             end
         end
     end
@@ -1567,15 +1568,16 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             node:fail( err.msg, err.trace )
             table.insert( self.result.failures, node )
         end
-        self.output:addFailure( err.msg, err.trace )
+        self.output:addFailure( node )
     end
 
     function M.LuaUnit:endTest()
-        -- print( 'endTEst() '..prettystr(self.result.currentNode))
-        -- print( 'endTEst() '..prettystr(self.result.currentNode:hasFailure()))
-        self.result.currentNode.duration = os.clock() - self.result.currentNode.startTime
-        self.result.currentNode.startTime = nil
-        self.output:endTest( self.result.currentNode:hasFailure() )
+        local node = self.result.currentNode
+        -- print( 'endTest() '..prettystr(node))
+        -- print( 'endTest() '..prettystr(node:hasFailure()))
+        node.duration = os.clock() - node.startTime
+        node.startTime = nil
+        self.output:endTest( node )
         self.result.currentNode = nil
     end
 

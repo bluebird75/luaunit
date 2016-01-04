@@ -1713,19 +1713,21 @@ TestLuaUnitExecution = {} --class
         lu.assertEquals(#m.calls[3], 3 )
 
         lu.assertEquals( m.calls[4][1], 'endTest' )
-        lu.assertEquals( m.calls[4][3], false )
         lu.assertEquals(#m.calls[4], 3 )
+        lu.assertIsTable( m.calls[4][3] )
+        lu.assertEquals( m.calls[4][3].status, lu.NodeStatus.PASS )
 
         lu.assertEquals( m.calls[5][1], 'startTest' )
         lu.assertEquals( m.calls[5][3], 'MyTestWithFailures.testWithFailure1' )
         lu.assertEquals(#m.calls[5], 3 )
 
         lu.assertEquals( m.calls[6][1], 'addFailure' )
-        lu.assertEquals(#m.calls[6], 4 )
+        lu.assertEquals(#m.calls[6], 3 )
 
         lu.assertEquals( m.calls[7][1], 'endTest' )
-        lu.assertEquals( m.calls[7][3], true )
         lu.assertEquals(#m.calls[7], 3 )
+        lu.assertIsTable( m.calls[7][3] )
+        lu.assertEquals( m.calls[7][3].status, lu.NodeStatus.FAIL )
 
 
         lu.assertEquals( m.calls[8][1], 'startTest' )
@@ -1733,11 +1735,12 @@ TestLuaUnitExecution = {} --class
         lu.assertEquals(#m.calls[8], 3 )
 
         lu.assertEquals( m.calls[9][1], 'addFailure' )
-        lu.assertEquals(#m.calls[9], 4 )
+        lu.assertEquals(#m.calls[9], 3 )
 
         lu.assertEquals( m.calls[10][1], 'endTest' )
-        lu.assertEquals( m.calls[10][3], true )
         lu.assertEquals(#m.calls[10], 3 )
+        lu.assertIsTable( m.calls[10][3] )
+        lu.assertEquals( m.calls[10][3].status, lu.NodeStatus.FAIL )
 
         lu.assertEquals( m.calls[11][1], 'endClass' )
         lu.assertEquals(#m.calls[11], 2 )
@@ -1751,16 +1754,18 @@ TestLuaUnitExecution = {} --class
         lu.assertEquals(#m.calls[13], 3 )
 
         lu.assertEquals( m.calls[14][1], 'endTest' )
-        lu.assertEquals( m.calls[14][3], false )
         lu.assertEquals(#m.calls[14], 3 )
+        lu.assertIsTable( m.calls[14][3] )
+        lu.assertEquals( m.calls[14][3].status, lu.NodeStatus.PASS )
 
         lu.assertEquals( m.calls[15][1], 'startTest' )
         lu.assertEquals( m.calls[15][3], 'MyTestOk.testOk2' )
         lu.assertEquals(#m.calls[15], 3 )
 
         lu.assertEquals( m.calls[16][1], 'endTest' )
-        lu.assertEquals( m.calls[16][3], false )
         lu.assertEquals(#m.calls[16], 3 )
+        lu.assertIsTable( m.calls[16][3] )
+        lu.assertEquals( m.calls[16][3].status, lu.NodeStatus.PASS )
 
         lu.assertEquals( m.calls[17][1], 'endClass' )
         lu.assertEquals(#m.calls[17], 2 )
