@@ -917,7 +917,7 @@ local TapOutput_MT = { __index = TapOutput }
     end
 
     function TapOutput:endTest( node )
-        if not node:hasFailure() then
+        if node:passed() then
             io.stdout:write("ok     ", self.result.currentTestNumber, "\t", node.testName, "\n")
         end
     end
@@ -1020,12 +1020,10 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         for i,node in ipairs(self.result.tests) do
             self.fd:write(string.format('        <testcase classname="%s" name="%s" time="%0.3f">\n',
                 node.className, node.testName, node.duration ) )
-            if node.status ~= M.NodeStatus.PASS then
-                self.fd:write('            <failure type="', xmlEscape(node.msg), '">\n')
-                self.fd:write('                <![CDATA[', xmlCDataEscape(node.stackTrace), ']]></failure>\n')
+            if node:failed() then
+                self.fd:write(node:statusXML())
             end
             self.fd:write('        </testcase>\n')
-
         end
 
         -- Next two lines are needed to validate junit ANT xsd, but really not useful in general:
@@ -1181,7 +1179,7 @@ local TextOutput_MT = { -- class
     end
 
     function TextOutput:endTest( node )
-        if not node:hasFailure() then
+        if node:passed() then
             if self.verbosity > M.VERBOSITY_DEFAULT then
                 io.stdout:write("Ok\n")
             else
@@ -1475,8 +1473,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         return false
     end
 
-    --------------[[ Output methods ]]-------------------------
-
+----------------------------------------------------------------
+--                     class NodeStatus
+----------------------------------------------------------------
 
     local NodeStatus = { -- class
         __class__ = 'NodeStatus',
@@ -1485,8 +1484,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     local NodeStatus_MT = { __index = NodeStatus }
 
     -- values of status
-    NodeStatus.PASS='PASS'
-    NodeStatus.FAIL='FAIL'
+    NodeStatus.PASS  = 'PASS'
+    NodeStatus.FAIL  = 'FAIL'
+    NodeStatus.ERROR = 'ERROR'
 
     function NodeStatus:new( number, testName, className )
         local t = {}
@@ -1511,10 +1511,46 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         self.stackTrace = stackTrace
     end
 
-    function NodeStatus:hasFailure()
-            -- print('hasFailure: '..prettystr(self))
-            return (self.status ~= NodeStatus.PASS)
+    function NodeStatus:error(msg, stackTrace)
+        self.status = self.ERROR
+        self.msg = msg
+        self.stackTrace = stackTrace
     end
+
+    function NodeStatus:passed()
+        return self.status == NodeStatus.PASS
+    end
+
+    function NodeStatus:failed()
+        -- print('hasFailure: '..prettystr(self))
+        return self.status ~= NodeStatus.PASS
+    end
+
+    function NodeStatus:isFailure()
+        return self.status == NodeStatus.FAIL
+    end
+
+    function NodeStatus:isError()
+        return self.status == NodeStatus.ERROR
+    end
+
+    function NodeStatus:statusXML()
+        if self:isError() then
+            return table.concat(
+                {'            <error type="', xmlEscape(self.msg), '">\n',
+                 '                <![CDATA[', xmlCDataEscape(self.stackTrace),
+                 ']]></error>\n'})
+        end
+        if self:isFailure() then
+            return table.concat(
+                {'            <failure type="', xmlEscape(self.msg), '">\n',
+                 '                <![CDATA[', xmlCDataEscape(self.stackTrace),
+                 ']]></failure>\n'})
+        end
+        return '            <passed/>\n' -- (not XSD-compliant! normally shouldn't get here)
+    end
+
+    --------------[[ Output methods ]]-------------------------
 
     function M.LuaUnit:startSuite(testCount, nonSelectedCount)
         self.result = {}
@@ -1574,7 +1610,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     function M.LuaUnit:endTest()
         local node = self.result.currentNode
         -- print( 'endTest() '..prettystr(node))
-        -- print( 'endTest() '..prettystr(node:hasFailure()))
+        -- print( 'endTest() '..prettystr(node:failed()))
         node.duration = os.clock() - node.startTime
         node.startTime = nil
         self.output:endTest( node )
@@ -1700,7 +1736,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         end
 
         -- run testMethod()
-        if self.result.currentNode.status == NodeStatus.PASS then
+        if self.result.currentNode:passed() then
             self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
         end
 
