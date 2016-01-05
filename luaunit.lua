@@ -1860,8 +1860,8 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     function M.LuaUnit:runSuite( ... )
 
-        local args={...};
-        if args[1] ~= nil and type(args[1]) == 'table' and args[1].__class__ == 'LuaUnit' then
+        local args = {...}
+        if type(args[1]) == 'table' and args[1].__class__ == 'LuaUnit' then
             -- run was called with the syntax M.LuaUnit:runSuite()
             -- we support both M.LuaUnit.run() and M.LuaUnit:run()
             -- strip out the first argument
