@@ -75,6 +75,8 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( lu.private.__genSortedIndex( { 2, 5, 7} ), {1,2,3} )
         lu.assertEquals( lu.private.__genSortedIndex( { a='1', h='2', c='3' } ), {'a', 'c', 'h'} )
         lu.assertEquals( lu.private.__genSortedIndex( { 1, 'z', a='1', h='2', c='3' } ), { 1, 2, 'a', 'c', 'h' } )
+        lu.assertEquals( lu.private.__genSortedIndex( { b=4, a=3, true, foo="bar", nil, bar=false, 42, c=5 } ),
+                                                      { 1, 3, 'a', 'b', 'bar', 'c', 'foo' } )
     end
 
     function TestLuaUnitUtilities:test_sortedNextWorks()
@@ -200,8 +202,11 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( lu.prettystr( 'ab\ncd', true ), '"ab\\ncd"' )
         lu.assertEquals( lu.prettystr( 'ab"cd' ), "'ab\"cd'" )
         lu.assertEquals( lu.prettystr( "ab'cd" ), '"ab\'cd"' )
-        lu.assertStrContains( lu.prettystr( {1,2,3} ), "{1, 2, 3}" )
-        lu.assertStrContains( lu.prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
+        lu.assertEquals( lu.prettystr( {1,2,3} ), "{1, 2, 3}" )
+        lu.assertEquals( lu.prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
+        lu.assertEquals( lu.prettystr( { [{}] = 1 }), '{{}=1}' )
+        lu.assertEquals( lu.prettystr( { 1, [{}] = 1, 2 }), '{1, 2, {}=1}' )
+        lu.assertEquals( lu.prettystr( { 1, [{one=1}] = 1, 2, "test", false }), '{1, 2, "test", false, {one=1}=1}' )
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
