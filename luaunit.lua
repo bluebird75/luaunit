@@ -61,25 +61,39 @@ Options:
 --
 ----------------------------------------------------------------
 
+local crossTypeOrdering = {
+    number = 1,
+    boolean = 2,
+    string = 3,
+    table = 4,
+    other = 5
+}
+local crossTypeComparison = {
+    number = function(a, b) return a < b end,
+    string = function(a, b) return a < b end,
+    other = function(a, b) return tostring(a) < tostring(b) end,
+}
+
+local function crossTypeSort(a, b)
+    local type_a, type_b = type(a), type(b)
+    if type_a == type_b then
+        local func = crossTypeComparison[type_a] or crossTypeComparison.other
+        return func(a, b)
+    end
+    type_a = crossTypeOrdering[type_a] or crossTypeOrdering.other
+    type_b = crossTypeOrdering[type_b] or crossTypeOrdering.other
+    return type_a < type_b
+end
+
 local function __genSortedIndex( t )
-    local sortedIndexStr = {}
-    local sortedIndexInt = {}
+    -- Returns a sequence consisting of t's keys, sorted.
     local sortedIndex = {}
+
     for key,_ in pairs(t) do
-        if type(key) == 'string' then
-            table.insert( sortedIndexStr, key )
-        else
-            table.insert( sortedIndexInt, key )
-        end
+        table.insert(sortedIndex, key)
     end
-    table.sort( sortedIndexInt )
-    table.sort( sortedIndexStr )
-    for _,value in ipairs(sortedIndexInt) do
-        table.insert( sortedIndex, value )
-    end
-    for _,value in ipairs(sortedIndexStr) do
-        table.insert( sortedIndex, value )
-    end
+
+    table.sort(sortedIndex, crossTypeSort)
     return sortedIndex
 end
 M.private.__genSortedIndex = __genSortedIndex
