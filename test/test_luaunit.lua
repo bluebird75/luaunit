@@ -193,6 +193,9 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( lu.prettystr( "ab'cd" ), '"ab\'cd"' )
         lu.assertStrContains( lu.prettystr( {1,2,3} ), "{1, 2, 3}" )
         lu.assertStrContains( lu.prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
+        lu.assertStrContains( lu.prettystr( { [{}] = 1 }), '{{}=1}' )
+        lu.assertStrContains( lu.prettystr( { 1, [{}] = 1, 2 }), '{1, 2, {}=1}' )
+        lu.assertStrContains( lu.prettystr( { 1, [{one=1}] = 1, 2, "test", false }), '{1, 2, "test", false, {one=1}=1}' )
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
