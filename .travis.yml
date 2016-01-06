@@ -25,11 +25,15 @@ matrix:
 before_install:
   - source .travis/setenv_lua.sh
   - luarocks install luacheck
+  - luarocks install luacov-coveralls
 
 script: 
-  - lua -v run_unit_tests.lua
-  - lua run_functional_tests.lua
+  - lua -v -lluacov run_unit_tests.lua
+  - lua run_functional_tests.lua --coverage
   - luacheck *.lua test/
+
+after_success:
+  - luacov-coveralls -v --include %./luaunit.lua
 
 notifications:
   email:
