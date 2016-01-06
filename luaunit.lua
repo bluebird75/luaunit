@@ -59,25 +59,34 @@ Options:
 --
 ----------------------------------------------------------------
 
+local typeOrdering = { number = 1, boolean = 2, string = 3, table = 4, other = 5 }
+local typeComparison = {
+    number = function(a, b) return a < b end,
+    string = function(a, b) return a < b end,
+    table = function(a, b) return #a < #b end,
+    boolean = function(a, b) return not a and b end
+}
+
+local function crossTypeCompare(a, b)
+    if type(a) == type(b) then
+        local f = typeComparison[type(a)]
+        return f and f(a, b) or false
+    else
+        a = typeOrdering[type(a)] or typeOrdering.other
+        b = typeOrdering[type(b)] or typeOrdering.other
+        return a < b
+    end
+end
+
 local function __genSortedIndex( t )
-    local sortedIndexStr = {}
-    local sortedIndexInt = {}
+    -- Returns a sequence consisting of t's keys, sorted.
     local sortedIndex = {}
+
     for key,_ in pairs(t) do
-        if type(key) == 'string' then
-            table.insert( sortedIndexStr, key )
-        else
-            table.insert( sortedIndexInt, key )
-        end
+        table.insert(sortedIndex, key)
     end
-    table.sort( sortedIndexInt )
-    table.sort( sortedIndexStr )
-    for _,value in ipairs(sortedIndexInt) do
-        table.insert( sortedIndex, value )
-    end
-    for _,value in ipairs(sortedIndexStr) do
-        table.insert( sortedIndex, value )
-    end
+
+    table.sort(sortedIndex, crossTypeCompare)
     return sortedIndex
 end
 M.private.__genSortedIndex = __genSortedIndex
