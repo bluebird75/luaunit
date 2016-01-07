@@ -37,6 +37,8 @@ M.VERBOSITY_VERBOSE = 20
 -- we need to keep a copy of the script args before it is overriden
 local cmdline_argv = rawget(_G, "arg")
 
+M.FAILURE_PREFIX = 'LuaUnit test FAILURE: ' -- prefix string for failed tests
+
 M.USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
 Options:
   -h, --help:             Print this help
@@ -519,8 +521,7 @@ local function failure(msg, level)
     -- raise an error indicating a test failure
     -- for error() compatibility we adjust "level" here (by +1), to report the
     -- calling context
-    -- (Note: this code might be adjusted later to distinguish "failure" vs. "error")
-    error(msg, (level or 1) + 1)
+    error(M.FAILURE_PREFIX .. msg, (level or 1) + 1)
 end
 
 local function fail_fmt(level, ...)
@@ -1669,7 +1670,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         local function err_handler(e)
             -- transform error into a table, adding the traceback information
             return {
-                status = NodeStatus.FAIL,
+                status = NodeStatus.ERROR,
                 msg = e,
                 trace = string.sub(debug.traceback("", 3), 2)
             }
@@ -1684,6 +1685,15 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         end
         if ok then
             return {status = NodeStatus.PASS}
+        end
+
+        -- determine if the error was a failed test:
+        -- We do this by stripping the failure prefix from the error message,
+        -- while keeping track of the gsub() count. A non-zero value -> failure
+        local failed
+        err.msg, failed = err.msg:gsub(M.FAILURE_PREFIX, "", 1)
+        if failed > 0 then
+            err.status = NodeStatus.FAIL
         end
 
         -- reformat / improve the stack trace
