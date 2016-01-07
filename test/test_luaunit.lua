@@ -682,10 +682,11 @@ TestLuaUnitAssertions = {} --class
 
         lu.assertError( lu.assertAlmostEquals, 1, 1.11, 0.1 )
         lu.assertError( lu.assertAlmostEquals, -1, -1.11, 0.1 )
-        lu.assertError( lu.assertAlmostEquals, -1, 1, nil )
-        lu.assertError( lu.assertAlmostEquals, -1, nil, 0 )
-        lu.assertError( lu.assertAlmostEquals, 1, 1.1, 0 )
-        lu.assertError( lu.assertAlmostEquals, 1, 1.1, -0.1 )
+        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, -1, 1, nil )
+        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, -1, nil, 0 )
+        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, nil, 1, 0 )
+        lu.assertErrorMsgContains( "margin must be positive", lu.assertAlmostEquals, 1, 1.1, 0 )
+        lu.assertErrorMsgContains( "margin must be positive", lu.assertAlmostEquals, 1, 1.1, -0.1 )
     end
 
     function TestLuaUnitAssertions:test_assertNotEquals()
@@ -726,10 +727,11 @@ TestLuaUnitAssertions = {} --class
 
         lu.assertError( lu.assertNotAlmostEquals, 1, 1.11, 0.2 )
         lu.assertError( lu.assertNotAlmostEquals, -1, -1.11, 0.2 )
-        lu.assertError( lu.assertNotAlmostEquals, -1, 1, nil )
-        lu.assertError( lu.assertNotAlmostEquals, -1, nil, 0 )
-        lu.assertError( lu.assertNotAlmostEquals, 1, 1.1, 0 )
-        lu.assertError( lu.assertNotAlmostEquals, 1, 1.1, -0.1 )
+        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertNotAlmostEquals, -1, 1, nil )
+        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertNotAlmostEquals, -1, nil, 0 )
+        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertNotAlmostEquals, nil, 1, 0 )
+        lu.assertErrorMsgContains( "margin must be positive", lu.assertNotAlmostEquals, 1, 1.1, 0 )
+        lu.assertErrorMsgContains( "margin must be positive", lu.assertNotAlmostEquals, 1, 1.1, -0.1 )
     end
 
     function TestLuaUnitAssertions:test_assertNotEqualsDifferentTypes2()

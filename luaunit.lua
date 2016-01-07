@@ -526,8 +526,13 @@ end
 local function fail_fmt(level, ...)
      -- failure with printf-style formatted message and given error level
     failure(string.format(...), (level or 1) + 1)
- end
+end
 M.private.fail_fmt = fail_fmt
+
+local function error_fmt(level, ...)
+     -- printf-style error()
+    error(string.format(...), (level or 1) + 1)
+end
 
 ----------------------------------------------------------------
 --
@@ -594,9 +599,10 @@ end
 function M.assertAlmostEquals( actual, expected, margin )
     -- check that two floats are close by margin
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
-        error('assertAlmostEquals: must supply only number arguments.\nArguments supplied: '..actual..', '..expected..', '..margin, 2)
+        error_fmt(2, 'assertAlmostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
+            prettystr(actual), prettystr(expected), prettystr(margin))
     end
-    if margin < 0 then
+    if margin <= 0 then
         error( 'assertAlmostEquals: margin must be positive, current value is '..margin, 2)
     end
 
@@ -630,7 +636,8 @@ end
 function M.assertNotAlmostEquals( actual, expected, margin )
     -- check that two floats are not close by margin
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
-        error('assertNotAlmostEquals: must supply only number arguments.\nArguments supplied: '..actual..', '..expected..', '..margin, 2)
+        error_fmt(2, 'assertAlmostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
+            prettystr(actual), prettystr(expected), prettystr(margin))
     end
     if margin <= 0 then
         error( 'assertNotAlmostEquals: margin must be positive, current value is '..margin, 2)
