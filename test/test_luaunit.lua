@@ -104,23 +104,15 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( k, 'aaa' )
         lu.assertEquals( v, 'abc' )
 
-        -- Note: With the current implementation, sortedNextCache only can
-        -- manage one state per table; so we can't expect to resume our
-        -- previous iteration afterwards...
-        --
         -- run a generic for loop (internally using a separate state)
         local tested = {}
         for k, v in lu.private.sortedPairs(t1) do table.insert(tested, v) end
         lu.assertEquals( tested, {'abc', 'cba', 'def'} )
 
         -- and finally let's see if we can search for an "out of sequence" key
-        --
-        -- CURRENTLY FAILS (even with for loop above commented out)
-        --[[
         k, v = sortedNext( state, 'bbb' )
         lu.assertEquals( k, 'ccc' )
         lu.assertEquals( v, 'def' )
-        --]]
     end
 
     function TestLuaUnitUtilities:test_sortedNextWorksOnTwoTables()
