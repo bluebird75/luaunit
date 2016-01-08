@@ -132,7 +132,6 @@ local function sortedNext(t, state)
     sortedNextCache[t] = nil
     return
 end
-M.private.sortedNext = sortedNext
 
 local function sortedPairs(t)
     -- Equivalent of the pairs() function on tables. Allows to iterate
@@ -140,6 +139,7 @@ local function sortedPairs(t)
     -- and support comparison
     return sortedNext, t, nil
 end
+M.private.sortedPairs = sortedPairs
 
 local function strsplit(delimiter, text)
 -- Split text into a list consisting of the strings in text,

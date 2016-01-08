@@ -1,5 +1,5 @@
 # XML output to test/ref/unitTestsXmlDefault.xml
-# Started on 01/01/16 22:13:02
+# Started on 01/08/16 12:18:32
 # Starting class: TestLuaUnitAssertions
 # Starting test: TestLuaUnitAssertions.test_assertAlmostEquals
 # Starting test: TestLuaUnitAssertions.test_assertEquals
@@ -104,9 +104,8 @@
 # Starting test: TestLuaUnitUtilities.test_prettstrTableRecursion
 # Starting test: TestLuaUnitUtilities.test_prettystr
 # Starting test: TestLuaUnitUtilities.test_prettystr_adv_tables
-# Starting test: TestLuaUnitUtilities.test_sortedNextReturnsSortedKeyValues
+# Starting test: TestLuaUnitUtilities.test_sortedNextWorks
 # Starting test: TestLuaUnitUtilities.test_sortedNextWorksOnTwoTables
-# Starting test: TestLuaUnitUtilities.test_sortedNextWorksTwiceOnTable
 # Starting test: TestLuaUnitUtilities.test_splitClassMethod
 # Starting test: TestLuaUnitUtilities.test_strMatch
 # Starting test: TestLuaUnitUtilities.test_strSplit3CharDelim
@@ -118,4 +117,4 @@
 # Starting test: TestLuaUnitUtilities.test_xmlEscape
 # Starting class: TestMock
 # Starting test: TestMock.testMock
-# Ran 111 tests in 0.039 seconds, 111 successes, 0 failures
+# Ran 110 tests in 0.024 seconds, 110 successes, 0 failures
