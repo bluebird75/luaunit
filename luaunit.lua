@@ -611,25 +611,30 @@ function M.assertEquals(actual, expected)
     end
 end
 
-function M.assertAlmostEquals( actual, expected, margin )
-    -- check that two floats are close by margin
+-- Help Lua in corner cases like almostEquals(1.1, 1.0, 0.1), which by default
+-- may not work. We need to give margin a small boost; EPSILON defines the
+-- default value to use for this:
+local EPSILON = 0.00000000001
+function M.almostEquals( actual, expected, margin, margin_boost )
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
-        error_fmt(2, 'assertAlmostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
+        error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
             prettystr(actual), prettystr(expected), prettystr(margin))
     end
     if margin <= 0 then
-        error( 'assertAlmostEquals: margin must be positive, current value is '..margin, 2)
+        error('almostEquals: margin must be positive, current value is ' .. margin, 3)
     end
+    local realmargin = margin + (margin_boost or EPSILON)
+    return math.abs(expected - actual) <= realmargin
+end
 
-    if not M.ORDER_ACTUAL_EXPECTED then
-        expected, actual = actual, expected
-    end
-
-    -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
-    -- which by default does not work. We need to give margin a small boost
-    local realmargin = margin + 0.00000000001
-    if math.abs(expected - actual) > realmargin then
-        failure( 'Values are not almost equal\nExpected: '..expected..' with margin of '..margin..', received: '..actual, 2)
+function M.assertAlmostEquals( actual, expected, margin )
+    -- check that two floats are close by margin
+    if not M.almostEquals(actual, expected, margin) then
+        if not M.ORDER_ACTUAL_EXPECTED then
+            expected, actual = actual, expected
+        end
+        fail_fmt(2, 'Values are not almost equal\nExpected: %s with margin of %s, received: %s',
+                 expected, margin, actual)
     end
 end
 
@@ -650,23 +655,12 @@ end
 
 function M.assertNotAlmostEquals( actual, expected, margin )
     -- check that two floats are not close by margin
-    if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
-        error_fmt(2, 'assertAlmostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
-            prettystr(actual), prettystr(expected), prettystr(margin))
-    end
-    if margin <= 0 then
-        error( 'assertNotAlmostEquals: margin must be positive, current value is '..margin, 2)
-    end
-
-    if not M.ORDER_ACTUAL_EXPECTED then
-        expected, actual = actual, expected
-    end
-
-    -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
-    -- which by default does not work. We need to give margin a small boost
-    local realmargin = margin + 0.00000000001
-    if math.abs(expected - actual) <= realmargin then
-        failure( 'Values are almost equal\nExpected: '..expected..' with a difference above margin of '..margin..', received: '..actual, 2)
+    if M.almostEquals(actual, expected, margin) then
+        if not M.ORDER_ACTUAL_EXPECTED then
+            expected, actual = actual, expected
+        end
+        fail_fmt(2, 'Values are almost equal\nExpected: %s with a difference above margin of %s, received: %s',
+                 expected, margin, actual)
     end
 end
 
