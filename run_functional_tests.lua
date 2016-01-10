@@ -403,41 +403,21 @@ function testXmlQuiet()
 end
 
 function testTestXmlDefault()
-    if _VERSION == 'Lua 5.1' then
-        -- this test differs slightly in Lua 5.1 and 5.2
-        -- I did not manage to adjust the "(...tail call...)" printed differently in Lua 5.2 vs 5.1
-        lu.assertEquals( 0,
-            check_xml_output('test/test_with_xml.lua', '', 'test/testWithXmlDefault51.txt', 'test/testWithXmlDefault51.xml',
-            'test/testWithXmlLintDefault51.txt', 'test/ref/testWithXmlDefault51.txt', 'test/ref/testWithXmlDefault51.xml', 2 ) )
-    else
-        lu.assertEquals( 0,
-            check_xml_output('test/test_with_xml.lua', '', 'test/testWithXmlDefault.txt', 'test/testWithXmlDefault.xml',
-            'test/testWithXmlLintDefault.txt', 'test/ref/testWithXmlDefault.txt', 'test/ref/testWithXmlDefault.xml', 2 ) )
-    end
+    lu.assertEquals( 0,
+        check_xml_output('test/test_with_xml.lua', '', 'test/testWithXmlDefault.txt', 'test/testWithXmlDefault.xml',
+        'test/testWithXmlLintDefault.txt', 'test/ref/testWithXmlDefault.txt', 'test/ref/testWithXmlDefault.xml', 2 ) )
 end
 
 function testTestXmlVerbose()
-    if _VERSION == 'Lua 5.1' then
-        lu.assertEquals( 0,
-            check_xml_output('test/test_with_xml.lua', '--verbose', 'test/testWithXmlVerbose51.txt', 'test/testWithXmlVerbose51.xml',
-            'test/testWithXmlLintVerbose51.txt', 'test/ref/testWithXmlVerbose51.txt', 'test/ref/testWithXmlVerbose51.xml', 2 ) )
-    else
-        lu.assertEquals( 0,
-            check_xml_output('test/test_with_xml.lua', '--verbose', 'test/testWithXmlVerbose.txt', 'test/testWithXmlVerbose.xml',
-            'test/testWithXmlLintVerbose.txt', 'test/ref/testWithXmlVerbose.txt', 'test/ref/testWithXmlVerbose.xml', 2 ) )
-    end
+    lu.assertEquals( 0,
+        check_xml_output('test/test_with_xml.lua', '--verbose', 'test/testWithXmlVerbose.txt', 'test/testWithXmlVerbose.xml',
+        'test/testWithXmlLintVerbose.txt', 'test/ref/testWithXmlVerbose.txt', 'test/ref/testWithXmlVerbose.xml', 2 ) )
 end
 
 function testTestXmlQuiet()
-    if _VERSION == 'Lua 5.1' then
-        lu.assertEquals( 0,
-            check_xml_output('test/test_with_xml.lua', '--quiet', 'test/testWithXmlQuiet51.txt', 'test/testWithXmlQuiet51.xml',
-            'test/testWithXmlLintQuiet51.txt', 'test/ref/testWithXmlQuiet51.txt', 'test/ref/testWithXmlQuiet51.xml', 2 ) )
-    else
-        lu.assertEquals( 0,
-            check_xml_output('test/test_with_xml.lua', '--quiet', 'test/testWithXmlQuiet.txt', 'test/testWithXmlQuiet.xml',
-            'test/testWithXmlLintQuiet.txt', 'test/ref/testWithXmlQuiet.txt', 'test/ref/testWithXmlQuiet.xml', 2 ) )
-    end
+    lu.assertEquals( 0,
+        check_xml_output('test/test_with_xml.lua', '--quiet', 'test/testWithXmlQuiet.txt', 'test/testWithXmlQuiet.xml',
+        'test/testWithXmlLintQuiet.txt', 'test/ref/testWithXmlQuiet.txt', 'test/ref/testWithXmlQuiet.xml', 2 ) )
 end
 
 function testLegacyLuaunitUsage()
@@ -495,16 +475,11 @@ filesToGenerateUnitText = {
     { 'run_unit_tests.lua', '--verbose', '--output text', 'test/ref/unitTestsTextVerbose.txt' },
 }
 
-filesToGenerateTestXml = {}
-if _VERSION == 'Lua 5.1' then
-    table.insert( filesToGenerateTestXml, { 'test/test_with_xml.lua', '', '--output junit --name test/ref/testWithXmlDefault51.xml', 'test/ref/testWithXmlDefault51.txt' } )
-    table.insert( filesToGenerateTestXml, { 'test/test_with_xml.lua', '--verbose', '--output junit --name test/ref/testWithXmlVerbose51.xml', 'test/ref/testWithXmlVerbose51.txt' } )
-    table.insert( filesToGenerateTestXml, { 'test/test_with_xml.lua', '--quiet', '--output junit --name test/ref/testWithXmlQuiet51.xml', 'test/ref/testWithXmlQuiet51.txt' } )
-else
-    table.insert( filesToGenerateTestXml, { 'test/test_with_xml.lua', '', '--output junit --name test/ref/testWithXmlDefault.xml', 'test/ref/testWithXmlDefault.txt' } )
-    table.insert( filesToGenerateTestXml, { 'test/test_with_xml.lua', '--verbose', '--output junit --name test/ref/testWithXmlVerbose.xml', 'test/ref/testWithXmlVerbose.txt' } )
-    table.insert( filesToGenerateTestXml, { 'test/test_with_xml.lua', '--quiet', '--output junit --name test/ref/testWithXmlQuiet.xml', 'test/ref/testWithXmlQuiet.txt' } )
-end
+filesToGenerateTestXml = {
+    { 'test/test_with_xml.lua', '', '--output junit --name test/ref/testWithXmlDefault.xml', 'test/ref/testWithXmlDefault.txt' },
+    { 'test/test_with_xml.lua', '--verbose', '--output junit --name test/ref/testWithXmlVerbose.xml', 'test/ref/testWithXmlVerbose.txt' },
+    { 'test/test_with_xml.lua', '--quiet', '--output junit --name test/ref/testWithXmlQuiet.xml', 'test/ref/testWithXmlQuiet.txt' },
+}
 
 filesSetIndex = {
     UnitText=filesToGenerateUnitText,

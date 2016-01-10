@@ -93,9 +93,9 @@ Started on 01/01/16 22:13:02
     TestLuaUnitUtilities.test_isTestName ... Ok
     TestLuaUnitUtilities.test_parseCmdLine ... Ok
     TestLuaUnitUtilities.test_prefixString ... Ok
-    TestLuaUnitUtilities.test_prettstrPadded ... Ok
-    TestLuaUnitUtilities.test_prettstrTableRecursion ... Ok
     TestLuaUnitUtilities.test_prettystr ... Ok
+    TestLuaUnitUtilities.test_prettystrPadded ... Ok
+    TestLuaUnitUtilities.test_prettystrTableRecursion ... Ok
     TestLuaUnitUtilities.test_prettystr_adv_tables ... Ok
     TestLuaUnitUtilities.test_sortedNextReturnsSortedKeyValues ... Ok
     TestLuaUnitUtilities.test_sortedNextWorksOnTwoTables ... Ok

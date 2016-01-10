@@ -46,9 +46,9 @@ Options:
   -o, --output OUTPUT:    Set output type to OUTPUT
                           Possible values: text, tap, junit, nil
   -n, --name NAME:        For junit only, mandatory name of xml file
-  -p, --pattern PATTERN:  Execute all test names matching the lua PATTERN
+  -p, --pattern PATTERN:  Execute all test names matching the Lua PATTERN
                           May be repeated to include severals patterns
-                          Make sure you esape magic chars like +? with %
+                          Make sure you escape magic chars like +? with %
   testname1, testname2, ... : tests to run in the form of testFunction,
                               TestClass or TestClass.testMethod
 ]]
@@ -145,18 +145,17 @@ local function strsplit(delimiter, text)
 -- Split text into a list consisting of the strings in text,
 -- separated by strings matching delimiter (which may be a pattern).
 -- example: strsplit(",%s*", "Anna, Bob, Charlie,Dolores")
-    local list = {}
-    local pos = 1
     if string.find("", delimiter, 1, true) then -- this would result in endless loops
         error("delimiter matches empty string!")
     end
-    while 1 do
-        local first, last = string.find(text, delimiter, pos, true)
+    local list, pos, first, last = {}, 1
+    while true do
+        first, last = text:find(delimiter, pos, true)
         if first then -- found?
-            table.insert(list, string.sub(text, pos, first-1))
-            pos = last+1
+            table.insert(list, text:sub(pos, first - 1))
+            pos = last + 1
         else
-            table.insert(list, string.sub(text, pos))
+            table.insert(list, text:sub(pos))
             break
         end
     end
@@ -186,10 +185,7 @@ local function strMatch(s, pattern, start, final )
     final = final or string.len(s)
 
     local foundStart, foundEnd = string.find(s, pattern, start, false)
-    if foundStart and foundStart == start and foundEnd == final then
-        return true
-    end
-    return false -- no match
+    return foundStart == start and foundEnd == final
 end
 M.private.strMatch = strMatch
 
@@ -218,18 +214,6 @@ local function xmlCDataEscape( s )
     return string.gsub( s, ']]>', ']]&gt;' )
 end
 M.private.xmlCDataEscape = xmlCDataEscape
-
-local patternLuaunitTrace='(.*[/\\]luaunit%.lua:%d+: .*)'
-local function isLuaunitInternalLine( s )
-    -- return true if line of stack trace comes from inside luaunit
-    -- print( 'Matching for luaunit: '..s )
-    local matchStart, matchEnd, capture = string.find( s, patternLuaunitTrace )
-    if matchStart then
-        -- print('Match luaunit line')
-        return true
-    end
-    return false
-end
 
 local function stripLuaunitTrace( stackTrace )
     --[[
@@ -284,31 +268,32 @@ local function stripLuaunitTrace( stackTrace )
     -- kepp lines until we hit a luaunit line
     ]]
 
+    local function isLuaunitInternalLine( s )
+        -- return true if line of stack trace comes from inside luaunit
+        return s:find('[/\\]luaunit%.lua:%d+: ') ~= nil
+    end
+
     -- print( '<<'..stackTrace..'>>' )
 
     local t = strsplit( '\n', stackTrace )
     -- print( prettystr(t) )
 
-    local idx=2
+    local idx = 2
 
     -- remove lines that are still part of luaunit
-    while idx <= #t do
-        if isLuaunitInternalLine( t[idx] ) then
-            -- print('Removing : '..t[idx] )
-            table.remove(t, idx)
-        else
-            break
-        end
+    while t[idx] and isLuaunitInternalLine( t[idx] ) do
+        -- print('Removing : '..t[idx] )
+        table.remove(t, idx)
     end
 
     -- keep lines until we hit luaunit again
-    while (idx <= #t) and (not isLuaunitInternalLine(t[idx])) do
+    while t[idx] and (not isLuaunitInternalLine(t[idx])) do
         -- print('Keeping : '..t[idx] )
-        idx = idx+1
+        idx = idx + 1
     end
 
     -- remove remaining luaunit lines
-    while idx <= #t do
+    while t[idx] do
         -- print('Removing : '..t[idx] )
         table.remove(t, idx)
     end
@@ -384,13 +369,14 @@ function table.tostring( tbl, indentLevel, printTableRefs, recursionTable )
     end
 
     if dispOnMultLines then
-        indentString = string.rep("    ", indentLevel)
-        closingIndentString = string.rep("    ", math.max(0, indentLevel-1) )
-        result_str = table_ref.."{\n"..indentString .. table.concat( result, ",\n"..indentString  ) .. "\n"..closingIndentString.."}"
+        local indentString = string.rep("    ", indentLevel - 1)
+        result = {table_ref, "{\n    ", indentString,
+                  table.concat(result, ",\n    " .. indentString), "\n",
+                  indentString, "}"}
     else
-        result_str = table_ref.."{".. table.concat( result, ", " ) .. "}"
+        result = {table_ref, "{", table.concat(result, ", "), "}"}
     end
-    return result_str
+    return table.concat(result)
 end
 
 local function prettystr( v, keeponeline )
@@ -402,7 +388,7 @@ local function prettystr( v, keeponeline )
     ]]--
     local recursionTable = {}
     local s = M.private.prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
-    if recursionTable['recursionDetected'] == true and M.PRINT_TABLE_REF_IN_ERROR_MSG == false then
+    if recursionTable.recursionDetected and (M.PRINT_TABLE_REF_IN_ERROR_MSG == false) then
         -- some table contain recursive references,
         -- so we must recompute the value by including all table references
         -- else the result looks like crap
@@ -540,8 +526,13 @@ end
 local function fail_fmt(level, ...)
      -- failure with printf-style formatted message and given error level
     failure(string.format(...), (level or 1) + 1)
- end
+end
 M.private.fail_fmt = fail_fmt
+
+local function error_fmt(level, ...)
+     -- printf-style error()
+    error(string.format(...), (level or 1) + 1)
+end
 
 ----------------------------------------------------------------
 --
@@ -608,9 +599,10 @@ end
 function M.assertAlmostEquals( actual, expected, margin )
     -- check that two floats are close by margin
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
-        error('assertAlmostEquals: must supply only number arguments.\nArguments supplied: '..actual..', '..expected..', '..margin, 2)
+        error_fmt(2, 'assertAlmostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
+            prettystr(actual), prettystr(expected), prettystr(margin))
     end
-    if margin < 0 then
+    if margin <= 0 then
         error( 'assertAlmostEquals: margin must be positive, current value is '..margin, 2)
     end
 
@@ -644,7 +636,8 @@ end
 function M.assertNotAlmostEquals( actual, expected, margin )
     -- check that two floats are not close by margin
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
-        error('assertNotAlmostEquals: must supply only number arguments.\nArguments supplied: '..actual..', '..expected..', '..margin, 2)
+        error_fmt(2, 'assertAlmostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
+            prettystr(actual), prettystr(expected), prettystr(margin))
     end
     if margin <= 0 then
         error( 'assertNotAlmostEquals: margin must be positive, current value is '..margin, 2)
@@ -754,56 +747,27 @@ function M.assertErrorMsgMatches( expectedMsg, func, ... )
     end
 end
 
-local function errorMsgTypeMismatch( expectedType, actual )
-    return string.format('Expected: a %s value, actual: type %s, value %s',
-                          expectedType, type(actual), prettystrPadded(actual))
-end
+--[[
+Add type assertion functions to the module table M. Each of these functions
+takes a single parameter "value", and checks that its Lua type matches the
+expected string (derived from the function name):
 
-function M.assertIsNumber(value)
-    if type(value) ~= 'number' then
-        failure( errorMsgTypeMismatch( 'number', value ), 2 )
-    end
-end
+M.assertIsXxx(value) -> ensure that type(value) conforms to "xxx"
+]]
+for _, funcName in ipairs(
+    {'assertIsNumber', 'assertIsString', 'assertIsTable', 'assertIsBoolean',
+     'assertIsNil', 'assertIsFunction', 'assertIsUserdata', 'assertIsThread'}
+) do
+    local typeExpected = funcName:match("^assertIs([A-Z]%a*)$")
+    -- Lua type() always returns lowercase, also make sure the match() succeeded
+    typeExpected = typeExpected and typeExpected:lower()
+                   or error("bad function name '"..funcName.."' for type assertion")
 
-function M.assertIsString(value)
-    if type(value) ~= "string" then
-        failure( errorMsgTypeMismatch( 'string', value ), 2 )
-    end
-end
-
-function M.assertIsTable(value)
-    if type(value) ~= 'table' then
-        failure( errorMsgTypeMismatch( 'table', value ), 2 )
-    end
-end
-
-function M.assertIsBoolean(value)
-    if type(value) ~= 'boolean' then
-        failure( errorMsgTypeMismatch( 'boolean', value ), 2 )
-    end
-end
-
-function M.assertIsNil(value)
-    if type(value) ~= "nil" then
-        failure( errorMsgTypeMismatch( 'nil', value ), 2 )
-    end
-end
-
-function M.assertIsFunction(value)
-    if type(value) ~= 'function' then
-        failure( errorMsgTypeMismatch( 'function', value ), 2 )
-    end
-end
-
-function M.assertIsUserdata(value)
-    if type(value) ~= 'userdata' then
-        failure( errorMsgTypeMismatch( 'userdata', value ), 2 )
-    end
-end
-
-function M.assertIsThread(value)
-    if type(value) ~= 'thread' then
-        failure( errorMsgTypeMismatch( 'thread', value ), 2 )
+    M[funcName] = function(value)
+        if type(value) ~= typeExpected then
+            fail_fmt(2, 'Expected: a %s value, actual: type %s, value %s',
+                     typeExpected, type(value), prettystrPadded(value))
+        end
     end
 end
 
@@ -1057,14 +1021,14 @@ local JUnitOutput_MT = { __index = JUnitOutput }
             self.fd:write(string.format('        <testcase classname="%s" name="%s" time="%0.3f">\n',
                 node.className, node.testName, node.duration ) )
             if node.status ~= M.NodeStatus.PASS then
-                self.fd:write('            <failure type="' ..xmlEscape(node.msg) .. '">\n')
-                self.fd:write('                <![CDATA[' ..xmlCDataEscape(node.stackTrace) .. ']]></failure>\n')
+                self.fd:write('            <failure type="', xmlEscape(node.msg), '">\n')
+                self.fd:write('                <![CDATA[', xmlCDataEscape(node.stackTrace), ']]></failure>\n')
             end
             self.fd:write('        </testcase>\n')
 
         end
 
-        -- Next to lines are Needed to validate junit ANT xsd but really not useful in general:
+        -- Next two lines are needed to validate junit ANT xsd, but really not useful in general:
         self.fd:write('    <system-out/>\n')
         self.fd:write('    <system-err/>\n')
 
@@ -1208,7 +1172,7 @@ local TextOutput_MT = { -- class
 
     function TextOutput:startTest(testName)
         if self.verbosity > M.VERBOSITY_DEFAULT then
-            io.stdout:write( "    ".. self.result.currentNode.testName.." ... " )
+            io.stdout:write( "    ", self.result.currentNode.testName, " ... " )
         end
     end
 
@@ -1339,7 +1303,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     function M.LuaUnit.isClassMethod(aName)
         -- return true if aName contains a class + a method name in the form class:method
-        return not not string.find(aName, '.', nil, true )
+        return string.find(aName, '.', nil, true) ~= nil
     end
 
     function M.LuaUnit.splitClassMethod(someName)
@@ -1357,19 +1321,13 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     function M.LuaUnit.isMethodTestName( s )
         -- return true is the name matches the name of a test method
         -- default rule is that is starts with 'Test' or with 'test'
-        if string.sub(s,1,4):lower() == 'test' then
-            return true
-        end
-        return false
+        return string.sub(s, 1, 4):lower() == 'test'
     end
 
     function M.LuaUnit.isTestName( s )
         -- return true is the name matches the name of a test
         -- default rule is that is starts with 'Test' or with 'test'
-        if string.sub(s,1,4):lower() == 'test' then
-            return true
-        end
-        return false
+        return string.sub(s, 1, 4):lower() == 'test'
     end
 
     function M.LuaUnit.collectTests()
@@ -1416,28 +1374,22 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             if option == '--help' or option == '-h' then
                 result['help'] = true
                 return
-            end
-            if option == '--version' then
+            elseif option == '--version' then
                 result['version'] = true
                 return
-            end
-            if option == '--verbose' or option == '-v' then
+            elseif option == '--verbose' or option == '-v' then
                 result['verbosity'] = M.VERBOSITY_VERBOSE
                 return
-            end
-            if option == '--quiet' or option == '-q' then
+            elseif option == '--quiet' or option == '-q' then
                 result['verbosity'] = M.VERBOSITY_QUIET
                 return
-            end
-            if option == '--output' or option == '-o' then
+            elseif option == '--output' or option == '-o' then
                 state = SET_OUTPUT
                 return state
-            end
-            if option == '--name' or option == '-n' then
+            elseif option == '--name' or option == '-n' then
                 state = SET_FNAME
                 return state
-            end
-            if option == '--pattern' or option == '-p' then
+            elseif option == '--pattern' or option == '-p' then
                 state = SET_PATTERN
                 return state
             end
@@ -1448,12 +1400,10 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             if state == SET_OUTPUT then
                 result['output'] = cmdArg
                 return
-            end
-            if state == SET_FNAME then
+            elseif state == SET_FNAME then
                 result['fname'] = cmdArg
                 return
-            end
-            if state == SET_PATTERN then
+            elseif state == SET_PATTERN then
                 if result['pattern'] then
                     table.insert( result['pattern'], cmdArg )
                 else
@@ -1607,13 +1557,17 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         self.output:startTest( testName )
     end
 
-    function M.LuaUnit:addFailure( errorMsg, stackTrace )
-        if self.result.currentNode.status == NodeStatus.PASS then
+    function M.LuaUnit:addStatus( err )
+        -- "err" is expected to be a table / result from protectedCall()
+        if err.status == NodeStatus.PASS then return end
+
+        local node = self.result.currentNode
+        if node.status == NodeStatus.PASS then
             self.result.failureCount = self.result.failureCount + 1
-            self.result.currentNode:fail( errorMsg, stackTrace )
-            table.insert( self.result.failures, self.result.currentNode )
+            node:fail( err.msg, err.trace )
+            table.insert( self.result.failures, node )
         end
-        self.output:addFailure( errorMsg, stackTrace )
+        self.output:addFailure( err.msg, err.trace )
     end
 
     function M.LuaUnit:endTest()
@@ -1670,13 +1624,14 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     --------------[[ Runner ]]-----------------
 
-    function M.LuaUnit:protectedCall( classInstance , methodInstance, prettyFuncName)
+    function M.LuaUnit:protectedCall(classInstance, methodInstance, prettyFuncName)
         -- if classInstance is nil, this is just a function call
         -- else, it's method of a class being called.
 
         local function err_handler(e)
             -- transform error into a table, adding the traceback information
             return {
+                status = NodeStatus.FAIL,
                 msg = e,
                 trace = string.sub(debug.traceback("", 3), 2)
             }
@@ -1690,7 +1645,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             ok, err = xpcall( function () methodInstance() end, err_handler )
         end
         if ok then
-            return ok
+            return {status = NodeStatus.PASS}
         end
 
         -- reformat / improve the stack trace
@@ -1701,7 +1656,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             err.trace = stripLuaunitTrace(err.trace)
         end
 
-        return ok, err.msg, err.trace
+        return err -- return the error "object" (table)
     end
 
 
@@ -1709,12 +1664,11 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         -- When executing a test function, className and classInstance must be nil
         -- When executing a class method, all parameters must be set
 
-        local ok, errMsg, stackTrace, prettyFuncName
-
         if type(methodInstance) ~= 'function' then
             error( tostring(methodName)..' must be a function, not '..type(methodInstance))
         end
 
+        local prettyFuncName
         if className == nil then
             className = '[TestFunctions]'
             prettyFuncName = methodName
@@ -1739,19 +1693,13 @@ local LuaUnit_MT = { __index = M.LuaUnit }
                          or self.asFunction( classInstance.setup )
                          or self.asFunction( classInstance.SetUp )
             if func then
-                ok, errMsg, stackTrace = self:protectedCall( classInstance, func, className..'.setUp')
-                if not ok then
-                    self:addFailure( errMsg, stackTrace )
-                end
+                self:addStatus(self:protectedCall(classInstance, func, className..'.setUp'))
             end
         end
 
         -- run testMethod()
-        if not self.result.currentNode:hasFailure() then
-            ok, errMsg, stackTrace = self:protectedCall( classInstance, methodInstance, prettyFuncName)
-            if not ok then
-                self:addFailure( errMsg, stackTrace )
-            end
+        if self.result.currentNode.status == NodeStatus.PASS then
+            self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
         end
 
         -- lastly, run tearDown (if any)
@@ -1761,10 +1709,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
                          or self.asFunction( classInstance.teardown )
                          or self.asFunction( classInstance.Teardown )
             if func then
-                ok, errMsg, stackTrace = self:protectedCall( classInstance, func, className..'.tearDown')
-                if not ok then
-                    self:addFailure( errMsg, stackTrace )
-                end
+                self:addStatus(self:protectedCall(classInstance, func, className..'.tearDown'))
             end
         end
 
@@ -1781,7 +1726,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     end
 
     function M.LuaUnit.expandClasses( listOfNameAndInst )
-        -- expand all classes (proveded as {className, classInstance}) to a list of {className.methodName, classInstance}
+        -- expand all classes (provided as {className, classInstance}) to a list of {className.methodName, classInstance}
         -- functions and methods remain untouched
         local result = {}
 
@@ -1810,20 +1755,16 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     end
 
     function M.LuaUnit.applyPatternFilter( patternFilter, listOfNameAndInst )
-        local included = {}
-        local excluded = {}
-
-        for i,v in ipairs( listOfNameAndInst ) do
-            local name, instance = v[1], v[2]
-
-            if patternFilter and not M.LuaUnit.patternInclude( patternFilter, name ) then
-                table.insert( excluded, v )
-            else
+        local included, excluded = {}, {}
+        for i, v in ipairs( listOfNameAndInst ) do
+            -- local name, instance = v[1], v[2]
+            if M.LuaUnit.patternInclude( patternFilter, v[1] ) then
                 table.insert( included, v )
+            else
+                table.insert( excluded, v )
             end
         end
         return included, excluded
-
     end
 
     function M.LuaUnit:runSuiteByInstances( listOfNameAndInst )
@@ -1926,8 +1867,8 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     function M.LuaUnit:runSuite( ... )
 
-        local args={...};
-        if args[1] ~= nil and type(args[1]) == 'table' and args[1].__class__ == 'LuaUnit' then
+        local args = {...}
+        if type(args[1]) == 'table' and args[1].__class__ == 'LuaUnit' then
             -- run was called with the syntax M.LuaUnit:runSuite()
             -- we support both M.LuaUnit.run() and M.LuaUnit:run()
             -- strip out the first argument

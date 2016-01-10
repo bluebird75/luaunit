@@ -193,11 +193,11 @@
         </testcase>
         <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_prefixString" time="0.000">
         </testcase>
-        <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_prettstrPadded" time="0.000">
-        </testcase>
-        <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_prettstrTableRecursion" time="0.000">
-        </testcase>
         <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_prettystr" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_prettystrPadded" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_prettystrTableRecursion" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitUtilities" name="TestLuaUnitUtilities.test_prettystr_adv_tables" time="0.000">
         </testcase>
