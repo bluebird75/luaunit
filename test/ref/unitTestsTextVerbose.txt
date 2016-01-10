@@ -1,4 +1,4 @@
-Started on 01/01/16 22:13:02
+Started on 01/08/16 12:18:32
     TestLuaUnitAssertions.test_assertAlmostEquals ... Ok
     TestLuaUnitAssertions.test_assertEquals ... Ok
     TestLuaUnitAssertions.test_assertFalse ... Ok
@@ -97,9 +97,8 @@ Started on 01/01/16 22:13:02
     TestLuaUnitUtilities.test_prettystrPadded ... Ok
     TestLuaUnitUtilities.test_prettystrTableRecursion ... Ok
     TestLuaUnitUtilities.test_prettystr_adv_tables ... Ok
-    TestLuaUnitUtilities.test_sortedNextReturnsSortedKeyValues ... Ok
+    TestLuaUnitUtilities.test_sortedNextWorks ... Ok
     TestLuaUnitUtilities.test_sortedNextWorksOnTwoTables ... Ok
-    TestLuaUnitUtilities.test_sortedNextWorksTwiceOnTable ... Ok
     TestLuaUnitUtilities.test_splitClassMethod ... Ok
     TestLuaUnitUtilities.test_strMatch ... Ok
     TestLuaUnitUtilities.test_strSplit3CharDelim ... Ok
@@ -111,5 +110,5 @@ Started on 01/01/16 22:13:02
     TestLuaUnitUtilities.test_xmlEscape ... Ok
     TestMock.testMock ... Ok
 =========================================================
-Ran 111 tests in 0.030 seconds
+Ran 110 tests in 0.024 seconds
 OK 

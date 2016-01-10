@@ -82,64 +82,50 @@ local function __genSortedIndex( t )
 end
 M.private.__genSortedIndex = __genSortedIndex
 
--- Contains the keys of the table being iterated, already sorted
--- and the last index that has been iterated
--- Example:
---    t a table on which we iterate
---    sortedNextCache[ t ].idx is the sorted index of the table
---    sortedNextCache[ t ].lastIdx is the last index used in the sorted index
-local sortedNextCache = {}
-
-local function sortedNext(t, state)
+local function sortedNext(state, control)
     -- Equivalent of the next() function of table iteration, but returns the
-    -- keys in the alphabetic order. We use a temporary sorted key table that
-    -- is stored in a global variable. We also store the last index
-    -- used in the iteration to find the next one quickly
-
-    --print("sortedNext: state = "..tostring(state) )
+    -- keys in sorted order (see __genSortedIndex and crossTypeSort).
+    -- The state is a temporary variable during iteration and contains the
+    -- sorted key table (state.sortedIdx). It also stores the last index (into
+    -- the keys) used by the iteration, to find the next one quickly.
     local key
-    if state == nil then
-        -- the first time, generate the index
-        -- cleanup the previous index, just in case...
-        sortedNextCache[ t ] = nil
-        sortedNextCache[ t ] = { idx=__genSortedIndex( t ), lastIdx=1 }
-        key = sortedNextCache[t].idx[1]
-        return key, t[key]
+
+    --print("sortedNext: control = "..tostring(control) )
+    if control == nil then
+        -- start of iteration
+        state.lastIdx = 1
+        key = state.sortedIdx[1]
+        return key, state.t[key]
     end
 
-    -- normally, the previous index in the orderedTable is there:
-    local lastIndex = sortedNextCache[ t ].lastIdx
-    if sortedNextCache[t].idx[lastIndex] == state then
-        key = sortedNextCache[t].idx[lastIndex+1]
-        sortedNextCache[ t ].lastIdx = lastIndex+1
-    else
+    -- normally, we expect the control variable to match the last key used
+    if control ~= state.sortedIdx[state.lastIdx] then
         -- strange, we have to find the next value by ourselves
-        key = nil
-        for i = 1,#sortedNextCache[t] do
-            if sortedNextCache[t].idx[i] == state then
-                key = sortedNextCache[t].idx[i+1]
-                sortedNextCache[ t ].lastIdx = i+1
-                -- break
-            end
-        end
+        state.lastIdx = 0
+        repeat
+            state.lastIdx = state.lastIdx + 1
+            key = state.sortedIdx[state.lastIdx]
+        until key == control or key == nil
     end
 
+    -- proceed by retrieving the next value (or nil) from the sorted keys
+    state.lastIdx = state.lastIdx + 1
+    key = state.sortedIdx[state.lastIdx]
     if key then
-        return key, t[key]
+        return key, state.t[key]
     end
 
-    -- no more value to return, cleanup
-    sortedNextCache[t] = nil
-    return
+    -- getting here means returning `nil`, which will end the iteration
 end
-M.private.sortedNext = sortedNext
 
-local function sortedPairs(t)
-    -- Equivalent of the pairs() function on tables. Allows to iterate
-    -- in sorted order. This works only if the key types are all the same
-    -- and support comparison
-    return sortedNext, t, nil
+local function sortedPairs(tbl)
+    -- Equivalent of the pairs() function on tables. Allows to iterate in
+    -- sorted order. As required by "generic for" loops, this will return the
+    -- iterator (function), an "invariant state", and the initial control value.
+    -- (see http://www.lua.org/pil/7.2.html)
+    return sortedNext, {t = tbl, sortedIdx = __genSortedIndex(tbl)}, nil
 end
+M.private.sortedPairs = sortedPairs
 
 local function strsplit(delimiter, text)
 -- Split text into a list consisting of the strings in text,

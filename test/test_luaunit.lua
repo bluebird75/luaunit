@@ -77,56 +77,65 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( lu.private.__genSortedIndex( { 1, 'z', a='1', h='2', c='3' } ), { 1, 2, 'a', 'c', 'h' } )
     end
 
-    function TestLuaUnitUtilities:test_sortedNextReturnsSortedKeyValues()
+    function TestLuaUnitUtilities:test_sortedNextWorks()
         t1 = {}
         t1['aaa'] = 'abc'
         t1['ccc'] = 'def'
         t1['bbb'] = 'cba'
 
-        k, v = lu.private.sortedNext( t1, nil )
+        -- mimic semantics of "generic for" loop
+        local sortedNext, state = lu.private.sortedPairs(t1)
+
+        k, v = sortedNext( state, nil )
         lu.assertEquals( k, 'aaa' )
         lu.assertEquals( v, 'abc' )
-        k, v = lu.private.sortedNext( t1, k )
+        k, v = sortedNext( state, k )
         lu.assertEquals( k, 'bbb' )
         lu.assertEquals( v, 'cba' )
-        k, v = lu.private.sortedNext( t1, k )
+        k, v = sortedNext( state, k )
         lu.assertEquals( k, 'ccc' )
         lu.assertEquals( v, 'def' )
-        k, v = lu.private.sortedNext( t1, k )
+        k, v = sortedNext( state, k )
         lu.assertEquals( k, nil )
         lu.assertEquals( v, nil )
-    end
 
-    function TestLuaUnitUtilities:test_sortedNextWorksTwiceOnTable()
-        t1 = {}
-        t1['aaa'] = 'abc'
-        t1['ccc'] = 'def'
-        t1['bbb'] = 'cba'
-
-        k, v = lu.private.sortedNext( t1, nil )
-        k, v = lu.private.sortedNext( t1, k )
-        k, v = lu.private.sortedNext( t1, nil )
+        -- check if starting the iteration a second time works
+        k, v = sortedNext( state, nil )
         lu.assertEquals( k, 'aaa' )
         lu.assertEquals( v, 'abc' )
+
+        -- run a generic for loop (internally using a separate state)
+        local tested = {}
+        for k, v in lu.private.sortedPairs(t1) do table.insert(tested, v) end
+        lu.assertEquals( tested, {'abc', 'cba', 'def'} )
+
+        -- and finally let's see if we can search for an "out of sequence" key
+        k, v = sortedNext( state, 'bbb' )
+        lu.assertEquals( k, 'ccc' )
+        lu.assertEquals( v, 'def' )
     end
 
     function TestLuaUnitUtilities:test_sortedNextWorksOnTwoTables()
         t1 = { aaa = 'abc', ccc = 'def' }
         t2 = { ['3'] = '33', ['1'] = '11' }
 
-        k, v = lu.private.sortedNext( t1, nil )
+        local sortedNext, state1, state2
+        sortedNext, state1 = lu.private.sortedPairs(t1)
+        sortedNext, state2 = lu.private.sortedPairs(t2)
+
+        k, v = sortedNext( state1, nil )
         lu.assertEquals( k, 'aaa' )
         lu.assertEquals( v, 'abc' )
 
-        k, v = lu.private.sortedNext( t2, nil )
+        k, v = sortedNext( state2, nil )
         lu.assertEquals( k, '1' )
         lu.assertEquals( v, '11' )
 
-        k, v = lu.private.sortedNext( t1, 'aaa' )
+        k, v = sortedNext( state1, 'aaa' )
         lu.assertEquals( k, 'ccc' )
         lu.assertEquals( v, 'def' )
 
-        k, v = lu.private.sortedNext( t2, '1' )
+        k, v = sortedNext( state2, '1' )
         lu.assertEquals( k, '3' )
         lu.assertEquals( v, '33' )
     end
