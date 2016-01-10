@@ -1015,17 +1015,17 @@ TestLuaUnitAssertions = {} --class
         lu.assertIsFunction(f)
     end
 
-    function TestLuaUnitAssertions:test_assertIsCoroutine()
-        assertFailure(lu.assertIsCoroutine, 1)
-        assertFailure(lu.assertIsCoroutine, 1.4)
-        assertFailure(lu.assertIsCoroutine, "hi there!")
-        assertFailure(lu.assertIsCoroutine, nil)
-        assertFailure(lu.assertIsCoroutine, {})
-        assertFailure(lu.assertIsCoroutine, {1,2,3})
-        assertFailure(lu.assertIsCoroutine, {1})
-        assertFailure(lu.assertIsCoroutine, false)
-        assertFailure(lu.assertIsCoroutine, function(v) local y=v+1 end )
-        lu.assertIsCoroutine(coroutine.create( function(v) local y=v+1 end ) )
+    function TestLuaUnitAssertions:test_assertIsThread()
+        assertFailure(lu.assertIsThread, 1)
+        assertFailure(lu.assertIsThread, 1.4)
+        assertFailure(lu.assertIsThread, "hi there!")
+        assertFailure(lu.assertIsThread, nil)
+        assertFailure(lu.assertIsThread, {})
+        assertFailure(lu.assertIsThread, {1,2,3})
+        assertFailure(lu.assertIsThread, {1})
+        assertFailure(lu.assertIsThread, false)
+        assertFailure(lu.assertIsThread, function(v) local y=v+1 end )
+        lu.assertIsThread(coroutine.create( function(v) local y=v+1 end ) )
     end
 
     function TestLuaUnitAssertions:test_assertIsUserdata()
@@ -1399,9 +1399,9 @@ TestLuaUnitErrorMsg = {} --class
         assertFailureEquals( 'Expected: a function value, actual: type nil, value nil', lu.assertIsFunction, nil )
     end 
 
-    function TestLuaUnitErrorMsg:test_assertIsCoroutine()
-        assertFailureEquals( 'Expected: a thread value, actual: type number, value 1.2', lu.assertIsCoroutine, 1.2 )
-        assertFailureEquals( 'Expected: a thread value, actual: type nil, value nil', lu.assertIsCoroutine, nil )
+    function TestLuaUnitErrorMsg:test_assertIsThread()
+        assertFailureEquals( 'Expected: a thread value, actual: type number, value 1.2', lu.assertIsThread, 1.2 )
+        assertFailureEquals( 'Expected: a thread value, actual: type nil, value nil', lu.assertIsThread, nil )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsUserdata()
