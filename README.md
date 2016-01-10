@@ -32,19 +32,32 @@ Documentation is available on
 
 ##Install
 
-The version of this module available from LuaRocks is quite
-outdated. Most of the stuff does not work, specially the examples. You
-can download this repo via
+**github** 
 
-	git clone git@github.com:bluebird75/luaunit.git
+The simplest way to install LuaUnit is to fetch the github version:
 
-and then install it by copying `luaunit.lua` to the Lua libs directory
-or run, if you have the default installation, 
+    git clone git@github.com:bluebird75/luaunit.git
 
-	sudo python doit.py install
+Then copy it into your project or the Lua libs directory.
+
+On Linux, you can also install it into your lua directories
+
+    sudo python doit.py install
 
 Edit `install()` for Lua version and installation directory if that
 fails. It uses, by default, Linux paths that depend on the version. 
+
+**bower**
+
+You can also install it zith bower :
+
+    bower install https://github.com/bluebird75/luaunit.git.
+
+
+**LuaRock**
+
+The version on LuaRock is outdated. Uploading a new version is planned in the future.
+
 
 **Community**
 
