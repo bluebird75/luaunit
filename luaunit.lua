@@ -37,6 +37,8 @@ M.VERBOSITY_VERBOSE = 20
 -- we need to keep a copy of the script args before it is overriden
 local cmdline_argv = rawget(_G, "arg")
 
+M.FAILURE_PREFIX = 'LuaUnit test FAILURE: ' -- prefix string for failed tests
+
 M.USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
 Options:
   -h, --help:             Print this help
@@ -291,78 +293,27 @@ end
 M.private.stripLuaunitTrace = stripLuaunitTrace
 
 
-function table.keytostring(k)
-    -- like prettystr but do not enclose with "" if the string is just alphanumerical
-    -- this is better for displaying table keys who are often simple strings
-    if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
-        return k
-    else
-        return M.prettystr(k)
-    end
-end
+local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
+    local type_v = type(v)
+    if "string" == type_v  then
+        if keeponeline then v = v:gsub("\n", "\\n") end
 
-function table.tostring( tbl, indentLevel, printTableRefs, recursionTable )
-    printTableRefs = printTableRefs or M.PRINT_TABLE_REF_IN_ERROR_MSG
-    recursionTable = recursionTable or {}
-    recursionTable[tbl] = true
-
-    local result, done = {}, {}
-    local dispOnMultLines = false
-
-    for k, v in ipairs( tbl ) do
-        if recursionTable[v] then
-            -- recursion detected!
-            recursionTable['recursionDetected'] = true
-            table.insert( result, "<"..tostring(v)..">" )
-        else
-            table.insert( result, M.private.prettystr_sub( v, indentLevel+1, false, printTableRefs, recursionTable ) )
+        -- use clever delimiters according to content:
+        -- enclose with single quotes if string contains ", but no '
+        if v:find('"', 1, true) and not v:find("'", 1, true) then
+            return "'" .. v .. "'"
         end
+        -- use double quotes otherwise, escape embedded "
+        return '"' .. v:gsub('"', '\\"') .. '"'
 
-        done[ k ] = true
-    end
-
-    for k, v in sortedPairs( tbl ) do
-        if not done[ k ] then
-            if recursionTable[v] then
-                -- recursion detected!
-                recursionTable['recursionDetected'] = true
-                table.insert( result, table.keytostring( k ) .. "=" .. "<"..tostring(v)..">" )
-            else
-                table.insert( result,
-                    table.keytostring( k ) .. "=" .. M.private.prettystr_sub( v, indentLevel+1, true, printTableRefs, recursionTable ) )
-            end
-        end
-    end
-    if printTableRefs then
-        table_ref = "<"..tostring(tbl).."> "
-    else
-        table_ref = ''
+    elseif "table" == type_v then
+        --if v.__class__ then
+        --    return string.gsub( tostring(v), 'table', v.__class__ )
+        --end
+        return M.private._table_tostring(v, indentLevel, printTableRefs, recursionTable)
     end
 
-    local SEP_LENGTH=2     -- ", "
-    local totalLength = 0
-    for k, v in ipairs( result ) do
-        l = string.len( v )
-        totalLength = totalLength + l
-        if l > M.LINE_LENGTH-1 then
-            dispOnMultLines = true
-        end
-    end
-    -- adjust with length of separator
-    totalLength = totalLength + SEP_LENGTH * math.max( 0, #result-1) + 2 -- two items need 1 sep, thee items two seps + len of '{}'
-    if totalLength > M.LINE_LENGTH-1 then
-        dispOnMultLines = true
-    end
-
-    if dispOnMultLines then
-        local indentString = string.rep("    ", indentLevel - 1)
-        result = {table_ref, "{\n    ", indentString,
-                  table.concat(result, ",\n    " .. indentString), "\n",
-                  indentString, "}"}
-    else
-        result = {table_ref, "{", table.concat(result, ", "), "}"}
-    end
-    return table.concat(result)
+    return tostring(v)
 end
 
 local function prettystr( v, keeponeline )
@@ -373,41 +324,17 @@ local function prettystr( v, keeponeline )
     * tables are expanded
     ]]--
     local recursionTable = {}
-    local s = M.private.prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
-    if recursionTable.recursionDetected and (M.PRINT_TABLE_REF_IN_ERROR_MSG == false) then
+    local s = prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
+    if recursionTable.recursionDetected and not M.PRINT_TABLE_REF_IN_ERROR_MSG then
         -- some table contain recursive references,
         -- so we must recompute the value by including all table references
         -- else the result looks like crap
         recursionTable = {}
-        s = M.private.prettystr_sub(v, 1, keeponeline, true, recursionTable)
+        s = prettystr_sub(v, 1, keeponeline, true, recursionTable)
     end
     return s
 end
 M.prettystr = prettystr
-
-local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
-    if "string" == type( v ) then
-        if keeponeline then
-            v = string.gsub( v, "\n", "\\n" )
-        end
-
-        -- use clever delimiters according to content:
-        -- if string contains ", enclose with '
-        -- if string contains ', enclose with "
-        if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
-            return "'" .. v .. "'"
-        end
-        return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
-    end
-    if type(v) == 'table' then
-        --if v.__class__ then
-        --    return string.gsub( tostring(v), 'table', v.__class__ )
-        --end
-        return table.tostring(v, indentLevel, printTableRefs, recursionTable)
-    end
-    return tostring(v)
-end
-M.private.prettystr_sub = prettystr_sub
 
 local function prettystrPadded(value1, value2, suffix_a, suffix_b)
     --[[
@@ -431,6 +358,85 @@ local function prettystrPadded(value1, value2, suffix_a, suffix_b)
     return str1 .. (suffix_b or ""), str2
 end
 M.private.prettystrPadded = prettystrPadded
+
+local function _table_keytostring(k)
+    -- like prettystr but do not enclose with "" if the string is just alphanumerical
+    -- this is better for displaying table keys who are often simple strings
+    if "string" == type(k) and k:match("^[_%a][_%w]*$") then
+        return k
+    end
+    return prettystr(k)
+end
+M.private._table_keytostring = _table_keytostring
+
+local TABLE_TOSTRING_SEP = ", "
+local TABLE_TOSTRING_SEP_LEN = string.len(TABLE_TOSTRING_SEP)
+
+local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable )
+    printTableRefs = printTableRefs or M.PRINT_TABLE_REF_IN_ERROR_MSG
+    recursionTable = recursionTable or {}
+    recursionTable[tbl] = true
+
+    local result, done = {}, {}
+    local dispOnMultLines = false
+
+    for k, v in ipairs( tbl ) do
+        if recursionTable[v] then
+            -- recursion detected!
+            recursionTable.recursionDetected = true
+            table.insert( result, "<"..tostring(v)..">" )
+        else
+            table.insert( result, prettystr_sub( v, indentLevel+1, false, printTableRefs, recursionTable ) )
+        end
+
+        done[ k ] = true
+    end
+
+    for k, v in sortedPairs( tbl ) do
+        if not done[ k ] then
+            if recursionTable[v] then
+                -- recursion detected!
+                recursionTable.recursionDetected = true
+                table.insert( result, _table_keytostring( k ) .. "=" .. "<"..tostring(v)..">" )
+            else
+                table.insert( result,
+                    _table_keytostring( k ) .. "=" .. prettystr_sub( v, indentLevel+1, true, printTableRefs, recursionTable ) )
+            end
+        end
+    end
+
+    -- set dispOnMultLines if the maximum LINE_LENGTH would be exceeded
+    local totalLength = 0
+    for k, v in ipairs( result ) do
+        totalLength = totalLength + string.len( v )
+        if totalLength >= M.LINE_LENGTH then
+            dispOnMultLines = true
+            break
+        end
+    end
+
+    if not dispOnMultLines then
+        -- adjust with length of separator:
+        -- two items need 1 sep, three items two seps, ... plus len of '{}'
+        totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * math.max(0, #result - 1) + 2
+        dispOnMultLines = totalLength >= M.LINE_LENGTH
+    end
+
+    -- now reformat the result table (currently holding element strings)
+    if dispOnMultLines then
+        local indentString = string.rep("    ", indentLevel - 1)
+        result = {"{\n    ", indentString,
+                  table.concat(result, ",\n    " .. indentString), "\n",
+                  indentString, "}"}
+    else
+        result = {"{", table.concat(result, TABLE_TOSTRING_SEP), "}"}
+    end
+    if printTableRefs then
+        table.insert(result, 1, "<"..tostring(tbl).."> ")
+    end
+    return table.concat(result)
+end
+M.private._table_tostring = _table_tostring -- prettystr_sub() needs it
 
 local function _table_contains(t, element)
     if t then
@@ -505,8 +511,7 @@ local function failure(msg, level)
     -- raise an error indicating a test failure
     -- for error() compatibility we adjust "level" here (by +1), to report the
     -- calling context
-    -- (Note: this code might be adjusted later to distinguish "failure" vs. "error")
-    error(msg, (level or 1) + 1)
+    error(M.FAILURE_PREFIX .. msg, (level or 1) + 1)
 end
 
 local function fail_fmt(level, ...)
@@ -892,19 +897,19 @@ local TapOutput_MT = { __index = TapOutput }
     end
     function TapOutput:startTest(testName) end
 
-    function TapOutput:addFailure( errorMsg, stackTrace )
-        print(string.format("not ok %d\t%s", self.result.currentTestNumber, self.result.currentNode.testName ))
+    function TapOutput:addFailure( node )
+        io.stdout:write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
         if self.verbosity > M.VERBOSITY_LOW then
-           print( prefixString( '    ', errorMsg ) )
+           print( prefixString( '    ', node.msg ) )
         end
         if self.verbosity > M.VERBOSITY_DEFAULT then
-           print( prefixString( '    ', stackTrace ) )
+           print( prefixString( '    ', node.stackTrace ) )
         end
     end
 
-    function TapOutput:endTest(testHasFailure)
-        if not self.result.currentNode:hasFailure() then
-            print(string.format("ok     %d\t%s", self.result.currentTestNumber, self.result.currentNode.testName ))
+    function TapOutput:endTest( node )
+        if node:passed() then
+            io.stdout:write("ok     ", self.result.currentTestNumber, "\t", node.testName, "\n")
         end
     end
 
@@ -971,12 +976,12 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         print('# Starting test: '..testName)
     end
 
-    function JUnitOutput:addFailure( errorMsg, stackTrace )
-        print('# Failure: '..errorMsg)
-        -- print('# '..stackTrace)
+    function JUnitOutput:addFailure( node )
+        print('# Failure: ' .. node.msg)
+        -- print('# ' .. node.stackTrace)
     end
 
-    function JUnitOutput:endTest(testHasFailure)
+    function JUnitOutput:endTest( node )
     end
 
     function JUnitOutput:endClass()
@@ -1006,12 +1011,10 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         for i,node in ipairs(self.result.tests) do
             self.fd:write(string.format('        <testcase classname="%s" name="%s" time="%0.3f">\n',
                 node.className, node.testName, node.duration ) )
-            if node.status ~= M.NodeStatus.PASS then
-                self.fd:write('            <failure type="', xmlEscape(node.msg), '">\n')
-                self.fd:write('                <![CDATA[', xmlCDataEscape(node.stackTrace), ']]></failure>\n')
+            if node:failed() then
+                self.fd:write(node:statusXML())
             end
             self.fd:write('        </testcase>\n')
-
         end
 
         -- Next two lines are needed to validate junit ANT xsd, but really not useful in general:
@@ -1162,12 +1165,12 @@ local TextOutput_MT = { -- class
         end
     end
 
-    function TextOutput:addFailure( errorMsg, stackTrace )
+    function TextOutput:addFailure( node )
         -- nothing
     end
 
-    function TextOutput:endTest(testHasFailure)
-        if not testHasFailure then
+    function TextOutput:endTest( node )
+        if node:passed() then
             if self.verbosity > M.VERBOSITY_DEFAULT then
                 io.stdout:write("Ok\n")
             else
@@ -1175,16 +1178,17 @@ local TextOutput_MT = { -- class
             end
         else
             if self.verbosity > M.VERBOSITY_DEFAULT then
-                io.stdout:write( 'FAIL\n' )
-                print( self.result.currentNode.msg )
+                print( node.status )
+                print( node.msg )
                 --[[
                 -- find out when to do this:
                 if self.verbosity > M.VERBOSITY_DEFAULT then
-                    print( self.result.currentNode.stackTrace )
+                    print( node.stackTrace )
                 end
                 ]]
             else
-                io.stdout:write("F")
+                -- write only the first character of status
+                io.stdout:write(string.sub(node.status, 1, 1))
             end
         end
     end
@@ -1460,8 +1464,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         return false
     end
 
-    --------------[[ Output methods ]]-------------------------
-
+----------------------------------------------------------------
+--                     class NodeStatus
+----------------------------------------------------------------
 
     local NodeStatus = { -- class
         __class__ = 'NodeStatus',
@@ -1470,8 +1475,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     local NodeStatus_MT = { __index = NodeStatus }
 
     -- values of status
-    NodeStatus.PASS='PASS'
-    NodeStatus.FAIL='FAIL'
+    NodeStatus.PASS  = 'PASS'
+    NodeStatus.FAIL  = 'FAIL'
+    NodeStatus.ERROR = 'ERROR'
 
     function NodeStatus:new( number, testName, className )
         local t = {}
@@ -1496,10 +1502,46 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         self.stackTrace = stackTrace
     end
 
-    function NodeStatus:hasFailure()
-            -- print('hasFailure: '..prettystr(self))
-            return (self.status ~= NodeStatus.PASS)
+    function NodeStatus:error(msg, stackTrace)
+        self.status = self.ERROR
+        self.msg = msg
+        self.stackTrace = stackTrace
     end
+
+    function NodeStatus:passed()
+        return self.status == NodeStatus.PASS
+    end
+
+    function NodeStatus:failed()
+        -- print('hasFailure: '..prettystr(self))
+        return self.status ~= NodeStatus.PASS
+    end
+
+    function NodeStatus:isFailure()
+        return self.status == NodeStatus.FAIL
+    end
+
+    function NodeStatus:isError()
+        return self.status == NodeStatus.ERROR
+    end
+
+    function NodeStatus:statusXML()
+        if self:isError() then
+            return table.concat(
+                {'            <error type="', xmlEscape(self.msg), '">\n',
+                 '                <![CDATA[', xmlCDataEscape(self.stackTrace),
+                 ']]></error>\n'})
+        end
+        if self:isFailure() then
+            return table.concat(
+                {'            <failure type="', xmlEscape(self.msg), '">\n',
+                 '                <![CDATA[', xmlCDataEscape(self.stackTrace),
+                 ']]></failure>\n'})
+        end
+        return '            <passed/>\n' -- (not XSD-compliant! normally shouldn't get here)
+    end
+
+    --------------[[ Output methods ]]-------------------------
 
     function M.LuaUnit:startSuite(testCount, nonSelectedCount)
         self.result = {}
@@ -1553,15 +1595,16 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             node:fail( err.msg, err.trace )
             table.insert( self.result.failures, node )
         end
-        self.output:addFailure( err.msg, err.trace )
+        self.output:addFailure( node )
     end
 
     function M.LuaUnit:endTest()
-        -- print( 'endTEst() '..prettystr(self.result.currentNode))
-        -- print( 'endTEst() '..prettystr(self.result.currentNode:hasFailure()))
-        self.result.currentNode.duration = os.clock() - self.result.currentNode.startTime
-        self.result.currentNode.startTime = nil
-        self.output:endTest( self.result.currentNode:hasFailure() )
+        local node = self.result.currentNode
+        -- print( 'endTest() '..prettystr(node))
+        -- print( 'endTest() '..prettystr(node:failed()))
+        node.duration = os.clock() - node.startTime
+        node.startTime = nil
+        self.output:endTest( node )
         self.result.currentNode = nil
     end
 
@@ -1617,7 +1660,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         local function err_handler(e)
             -- transform error into a table, adding the traceback information
             return {
-                status = NodeStatus.FAIL,
+                status = NodeStatus.ERROR,
                 msg = e,
                 trace = string.sub(debug.traceback("", 3), 2)
             }
@@ -1632,6 +1675,15 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         end
         if ok then
             return {status = NodeStatus.PASS}
+        end
+
+        -- determine if the error was a failed test:
+        -- We do this by stripping the failure prefix from the error message,
+        -- while keeping track of the gsub() count. A non-zero value -> failure
+        local failed
+        err.msg, failed = err.msg:gsub(M.FAILURE_PREFIX, "", 1)
+        if failed > 0 then
+            err.status = NodeStatus.FAIL
         end
 
         -- reformat / improve the stack trace
@@ -1684,7 +1736,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         end
 
         -- run testMethod()
-        if self.result.currentNode.status == NodeStatus.PASS then
+        if self.result.currentNode:passed() then
             self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
         end
 
