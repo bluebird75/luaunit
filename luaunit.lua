@@ -9,6 +9,7 @@ License: BSD License, see LICENSE.txt
 Version: 3.0
 ]]--
 
+require("math")
 local M={}
 
 -- private exported functions (for testing)
@@ -117,11 +118,24 @@ local function sortedNext(state, control)
     -- normally, we expect the control variable to match the last key used
     if control ~= state.sortedIdx[state.lastIdx] then
         -- strange, we have to find the next value by ourselves
-        state.lastIdx = 0
+        -- the key table is sorted in crossTypeSort() order! -> use bisection
+        local count = #state.sortedIdx
+        local lower, upper = 1, count
         repeat
-            state.lastIdx = state.lastIdx + 1
+            state.lastIdx = math.modf((lower + upper) / 2)
             key = state.sortedIdx[state.lastIdx]
-        until key == control or key == nil
+            if key == control then break; end -- key found (and thus prev index)
+            if crossTypeSort(key, control) then
+                -- key < control, continue search "right" (towards upper bound)
+                lower = state.lastIdx + 1
+            else
+                -- key > control, continue search "left" (towards lower bound)
+                upper = state.lastIdx - 1
+            end
+        until lower > upper
+        if lower > upper then -- only true if the key wasn't found, ...
+            state.lastIdx = count -- ... so ensure no match for the code below
+        end
     end
 
     -- proceed by retrieving the next value (or nil) from the sorted keys
@@ -391,32 +405,26 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
     recursionTable = recursionTable or {}
     recursionTable[tbl] = true
 
-    local result, done = {}, {}
-    local dispOnMultLines = false
+    local result, dispOnMultLines = {}, false
 
-    for k, v in ipairs( tbl ) do
-        if recursionTable[v] then
-            -- recursion detected!
-            recursionTable.recursionDetected = true
-            table.insert( result, "<"..tostring(v)..">" )
-        else
-            table.insert( result, prettystr_sub( v, indentLevel+1, false, printTableRefs, recursionTable ) )
-        end
-
-        done[ k ] = true
-    end
-
+    local entry, count, seq_index = nil, 0, 1
     for k, v in sortedPairs( tbl ) do
-        if not done[ k ] then
-            if recursionTable[v] then
-                -- recursion detected!
-                recursionTable.recursionDetected = true
-                table.insert( result, _table_keytostring( k ) .. "=" .. "<"..tostring(v)..">" )
-            else
-                table.insert( result,
-                    _table_keytostring( k ) .. "=" .. prettystr_sub( v, indentLevel+1, true, printTableRefs, recursionTable ) )
-            end
+        if k == seq_index then
+            -- for the sequential part of tables, we'll skip the "<key>=" output
+            entry = ''
+            seq_index = seq_index + 1
+        else
+            entry = _table_keytostring( k ) .. "="
         end
+        if recursionTable[v] then -- recursion detected!
+            recursionTable.recursionDetected = true
+            entry = entry .. "<"..tostring(v)..">"
+        else
+            entry = entry ..
+                prettystr_sub( v, indentLevel+1, true, printTableRefs, recursionTable )
+        end
+        count = count + 1
+        result[count] = entry
     end
 
     -- set dispOnMultLines if the maximum LINE_LENGTH would be exceeded
@@ -430,10 +438,12 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
     end
 
     if not dispOnMultLines then
-        -- adjust with length of separator:
+        -- adjust with length of separator(s):
         -- two items need 1 sep, three items two seps, ... plus len of '{}'
-        totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * math.max(0, #result - 1) + 2
-        dispOnMultLines = totalLength >= M.LINE_LENGTH
+        if count > 0 then
+            totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * (count - 1)
+        end
+        dispOnMultLines = totalLength + 2 >= M.LINE_LENGTH
     end
 
     -- now reformat the result table (currently holding element strings)
@@ -446,7 +456,7 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
         result = {"{", table.concat(result, TABLE_TOSTRING_SEP), "}"}
     end
     if printTableRefs then
-        table.insert(result, 1, "<"..tostring(tbl).."> ")
+        table.insert(result, 1, "<"..tostring(tbl).."> ") -- prepend table ref
     end
     return table.concat(result)
 end

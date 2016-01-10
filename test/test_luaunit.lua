@@ -111,7 +111,15 @@ TestLuaUnitUtilities = {} --class
         for k, v in lu.private.sortedPairs(t1) do table.insert(tested, v) end
         lu.assertEquals( tested, {'abc', 'cba', 'def'} )
 
-        -- and finally let's see if we can search for an "out of sequence" key
+        -- test bisection algorithm by searching for non-existing key values
+        k, v = sortedNext( state, '' ) -- '' would come before any of the keys
+        lu.assertNil( k )
+        lu.assertNil( v )
+        k, v = sortedNext( state, 'xyz' ) -- 'xyz' would be after any other key
+        lu.assertNil( k )
+        lu.assertNil( v )
+
+        -- finally let's see if we successfully find an "out of sequence" key
         k, v = sortedNext( state, 'bbb' )
         lu.assertEquals( k, 'ccc' )
         lu.assertEquals( v, 'def' )
