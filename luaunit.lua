@@ -307,78 +307,27 @@ end
 M.private.stripLuaunitTrace = stripLuaunitTrace
 
 
-function table.keytostring(k)
-    -- like prettystr but do not enclose with "" if the string is just alphanumerical
-    -- this is better for displaying table keys who are often simple strings
-    if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
-        return k
-    else
-        return M.prettystr(k)
-    end
-end
+local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
+    local type_v = type(v)
+    if "string" == type_v  then
+        if keeponeline then v = v:gsub("\n", "\\n") end
 
-function table.tostring( tbl, indentLevel, printTableRefs, recursionTable )
-    printTableRefs = printTableRefs or M.PRINT_TABLE_REF_IN_ERROR_MSG
-    recursionTable = recursionTable or {}
-    recursionTable[tbl] = true
-
-    local result, done = {}, {}
-    local dispOnMultLines = false
-
-    for k, v in ipairs( tbl ) do
-        if recursionTable[v] then
-            -- recursion detected!
-            recursionTable['recursionDetected'] = true
-            table.insert( result, "<"..tostring(v)..">" )
-        else
-            table.insert( result, M.private.prettystr_sub( v, indentLevel+1, false, printTableRefs, recursionTable ) )
+        -- use clever delimiters according to content:
+        -- enclose with single quotes if string contains ", but no '
+        if v:find('"', 1, true) and not v:find("'", 1, true) then
+            return "'" .. v .. "'"
         end
+        -- use double quotes otherwise, escape embedded "
+        return '"' .. v:gsub('"', '\\"') .. '"'
 
-        done[ k ] = true
-    end
-
-    for k, v in sortedPairs( tbl ) do
-        if not done[ k ] then
-            if recursionTable[v] then
-                -- recursion detected!
-                recursionTable['recursionDetected'] = true
-                table.insert( result, table.keytostring( k ) .. "=" .. "<"..tostring(v)..">" )
-            else
-                table.insert( result,
-                    table.keytostring( k ) .. "=" .. M.private.prettystr_sub( v, indentLevel+1, true, printTableRefs, recursionTable ) )
-            end
-        end
-    end
-    if printTableRefs then
-        table_ref = "<"..tostring(tbl).."> "
-    else
-        table_ref = ''
+    elseif "table" == type_v then
+        --if v.__class__ then
+        --    return string.gsub( tostring(v), 'table', v.__class__ )
+        --end
+        return M.private._table_tostring(v, indentLevel, printTableRefs, recursionTable)
     end
 
-    local SEP_LENGTH=2     -- ", "
-    local totalLength = 0
-    for k, v in ipairs( result ) do
-        l = string.len( v )
-        totalLength = totalLength + l
-        if l > M.LINE_LENGTH-1 then
-            dispOnMultLines = true
-        end
-    end
-    -- adjust with length of separator
-    totalLength = totalLength + SEP_LENGTH * math.max( 0, #result-1) + 2 -- two items need 1 sep, thee items two seps + len of '{}'
-    if totalLength > M.LINE_LENGTH-1 then
-        dispOnMultLines = true
-    end
-
-    if dispOnMultLines then
-        local indentString = string.rep("    ", indentLevel - 1)
-        result = {table_ref, "{\n    ", indentString,
-                  table.concat(result, ",\n    " .. indentString), "\n",
-                  indentString, "}"}
-    else
-        result = {table_ref, "{", table.concat(result, ", "), "}"}
-    end
-    return table.concat(result)
+    return tostring(v)
 end
 
 local function prettystr( v, keeponeline )
@@ -389,41 +338,17 @@ local function prettystr( v, keeponeline )
     * tables are expanded
     ]]--
     local recursionTable = {}
-    local s = M.private.prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
-    if recursionTable.recursionDetected and (M.PRINT_TABLE_REF_IN_ERROR_MSG == false) then
+    local s = prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
+    if recursionTable.recursionDetected and not M.PRINT_TABLE_REF_IN_ERROR_MSG then
         -- some table contain recursive references,
         -- so we must recompute the value by including all table references
         -- else the result looks like crap
         recursionTable = {}
-        s = M.private.prettystr_sub(v, 1, keeponeline, true, recursionTable)
+        s = prettystr_sub(v, 1, keeponeline, true, recursionTable)
     end
     return s
 end
 M.prettystr = prettystr
-
-local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
-    if "string" == type( v ) then
-        if keeponeline then
-            v = string.gsub( v, "\n", "\\n" )
-        end
-
-        -- use clever delimiters according to content:
-        -- if string contains ", enclose with '
-        -- if string contains ', enclose with "
-        if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
-            return "'" .. v .. "'"
-        end
-        return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
-    end
-    if type(v) == 'table' then
-        --if v.__class__ then
-        --    return string.gsub( tostring(v), 'table', v.__class__ )
-        --end
-        return table.tostring(v, indentLevel, printTableRefs, recursionTable)
-    end
-    return tostring(v)
-end
-M.private.prettystr_sub = prettystr_sub
 
 local function prettystrPadded(value1, value2, suffix_a, suffix_b)
     --[[
@@ -447,6 +372,85 @@ local function prettystrPadded(value1, value2, suffix_a, suffix_b)
     return str1 .. (suffix_b or ""), str2
 end
 M.private.prettystrPadded = prettystrPadded
+
+local function _table_keytostring(k)
+    -- like prettystr but do not enclose with "" if the string is just alphanumerical
+    -- this is better for displaying table keys who are often simple strings
+    if "string" == type(k) and k:match("^[_%a][_%w]*$") then
+        return k
+    end
+    return prettystr(k)
+end
+M.private._table_keytostring = _table_keytostring
+
+local TABLE_TOSTRING_SEP = ", "
+local TABLE_TOSTRING_SEP_LEN = string.len(TABLE_TOSTRING_SEP)
+
+local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable )
+    printTableRefs = printTableRefs or M.PRINT_TABLE_REF_IN_ERROR_MSG
+    recursionTable = recursionTable or {}
+    recursionTable[tbl] = true
+
+    local result, done = {}, {}
+    local dispOnMultLines = false
+
+    for k, v in ipairs( tbl ) do
+        if recursionTable[v] then
+            -- recursion detected!
+            recursionTable.recursionDetected = true
+            table.insert( result, "<"..tostring(v)..">" )
+        else
+            table.insert( result, prettystr_sub( v, indentLevel+1, false, printTableRefs, recursionTable ) )
+        end
+
+        done[ k ] = true
+    end
+
+    for k, v in sortedPairs( tbl ) do
+        if not done[ k ] then
+            if recursionTable[v] then
+                -- recursion detected!
+                recursionTable.recursionDetected = true
+                table.insert( result, _table_keytostring( k ) .. "=" .. "<"..tostring(v)..">" )
+            else
+                table.insert( result,
+                    _table_keytostring( k ) .. "=" .. prettystr_sub( v, indentLevel+1, true, printTableRefs, recursionTable ) )
+            end
+        end
+    end
+
+    -- set dispOnMultLines if the maximum LINE_LENGTH would be exceeded
+    local totalLength = 0
+    for k, v in ipairs( result ) do
+        totalLength = totalLength + string.len( v )
+        if totalLength >= M.LINE_LENGTH then
+            dispOnMultLines = true
+            break
+        end
+    end
+
+    if not dispOnMultLines then
+        -- adjust with length of separator:
+        -- two items need 1 sep, three items two seps, ... plus len of '{}'
+        totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * math.max(0, #result - 1) + 2
+        dispOnMultLines = totalLength >= M.LINE_LENGTH
+    end
+
+    -- now reformat the result table (currently holding element strings)
+    if dispOnMultLines then
+        local indentString = string.rep("    ", indentLevel - 1)
+        result = {"{\n    ", indentString,
+                  table.concat(result, ",\n    " .. indentString), "\n",
+                  indentString, "}"}
+    else
+        result = {"{", table.concat(result, TABLE_TOSTRING_SEP), "}"}
+    end
+    if printTableRefs then
+        table.insert(result, 1, "<"..tostring(tbl).."> ")
+    end
+    return table.concat(result)
+end
+M.private._table_tostring = _table_tostring -- prettystr_sub() needs it
 
 local function _table_contains(t, element)
     if t then

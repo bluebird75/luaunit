@@ -178,9 +178,9 @@ TestLuaUnitUtilities = {} --class
 
 
     function TestLuaUnitUtilities:test_table_keytostring()
-        lu.assertEquals( table.keytostring( 'a' ), 'a' )
-        lu.assertEquals( table.keytostring( 'a0' ), 'a0' )
-        lu.assertEquals( table.keytostring( 'a0!' ), '"a0!"' )
+        lu.assertEquals( lu.private._table_keytostring( 'a' ), 'a' )
+        lu.assertEquals( lu.private._table_keytostring( 'a0' ), 'a0' )
+        lu.assertEquals( lu.private._table_keytostring( 'a0!' ), '"a0!"' )
     end
 
     function TestLuaUnitUtilities:test_prettystr()
