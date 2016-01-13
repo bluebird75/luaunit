@@ -1,0 +1,28 @@
+shallow_clone: true
+
+# create a build matrix to use various Lua and LuaJIT versions
+environment:
+  matrix:
+    - LUAENV: cinst
+    - LUAENV: lua51
+    - LUAENV: lua52
+    - LUAENV: lua53
+    - LUAENV: luajit20
+    - LUAENV: luajit21
+
+# cinst occasionally has problems, allow it to fail
+matrix:
+  allow_failures:
+    - LUAENV: cinst
+
+# install required binaries via batch file (also sets %LUA% path)
+install:
+- cmd: .appveyor\install-lua.cmd
+
+build: off
+
+test_script:
+- cmd: >-
+    %LUA% -v run_unit_tests.lua
+
+    %LUA% run_functional_tests.lua
