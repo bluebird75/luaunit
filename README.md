@@ -1,11 +1,14 @@
+* This is NiteHawk's fork of https://github.com/bluebird75/luaunit.
+<br>Note: Changes intended to propagate 'upstream' will go into the
+["contrib" branch](https://github.com/n1tehawk/luaunit/commits/contrib).
+
+[![License](http://img.shields.io/badge/License-BSD-green.svg)](LICENSE.md)
+[![Build status](https://ci.appveyor.com/api/projects/status/0cghd9wblstupbb2?svg=true)](https://ci.appveyor.com/project/n1tehawk/luaunit)
+[![Build Status](https://travis-ci.org/n1tehawk/luaunit.svg)](https://travis-ci.org/n1tehawk/luaunit)
+[![Coverage Status](https://coveralls.io/repos/n1tehawk/luaunit/badge.svg?branch=nitehawk&service=github)](https://coveralls.io/github/n1tehawk/luaunit?branch=nitehawk)
 
 ## LuaUnit
 by Philippe Fremy
-
-[![Build status](https://ci.appveyor.com/api/projects/status/us6uh4e5q597jj54?svg=true&passingText=Windows%20Build%20passing&failingText=Windows%20Build%20failed)](https://ci.appveyor.com/project/bluebird75/luaunit)
-[![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
-[![Documentation Status](https://readthedocs.org/projects/luaunit/badge/?version=latest)](https://readthedocs.org/projects/luaunit/?badge=latest)
-[![Coverage Status](https://coveralls.io/repos/github/bluebird75/luaunit/badge.svg?branch=master)](https://coveralls.io/github/bluebird75/luaunit?branch=master)
 
 LuaUnit is a unit-testing framework for Lua. It allows you 
 to write test functions and test classes with test methods, combined with 
