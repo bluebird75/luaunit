@@ -10,6 +10,11 @@ environment:
     - LUAENV: luajit20
     - LUAENV: luajit21
 
+# cinst occasionally has problems, allow it to fail
+matrix:
+  allow_failures:
+    - LUAENV: cinst
+
 # install required binaries via batch file (also sets %LUA% path)
 install:
 - cmd: .appveyor\install-lua.cmd
