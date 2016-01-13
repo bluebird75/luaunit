@@ -236,8 +236,6 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
     adjustFile( xmlOutput, refXmlOutput, '.*<testsuite.*(timestamp=".-" time=".-").*')
-    -- neutralize all testcase time values in ref xml output
-    adjustFile( refXmlOutput, refXmlOutput, '.*<testcase .*(time=".-").*' )
     adjustFile( xmlOutput, refXmlOutput, '.*<testcase .*(time=".-").*' )
     -- For Lua 5.1 / 5.2 compatibility
     adjustFile( xmlOutput, refXmlOutput, '.*<property name="Lua Version" value="(Lua 5..)"/>')
@@ -475,6 +473,11 @@ function updateRefFiles( filesToGenerate )
             os.exit(1)
         end
         ]]
+        -- neutralize all testcase time values in ref xml output
+        local refXmlName = string.match(v[3], "--name (test/ref/.*%.xml)$")
+        if refXmlName then
+            adjustFile( refXmlName, refXmlName, '.*<testcase .*(time=".-").*' )
+        end
     end
 end
 
