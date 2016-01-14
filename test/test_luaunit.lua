@@ -167,28 +167,14 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( #t, 3 )
     end
 
-    function TestLuaUnitUtilities:test_strSplitOnFailure()
-        s1 = 'd:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:467: expected: 1, actual: 2\n'
-        s2 = [[stack traceback:
-    .\luaunit.lua:443: in function <.\luaunit.lua:442>
-    [C]: in function 'error'
-    .\luaunit.lua:56: in function 'lu.assertEquals'
-    d:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:467: in function <d:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:466>
-    [C]: in function 'xpcall'
-    .\luaunit.lua:447: in function 'protectedCall'
-    .\luaunit.lua:479: in function '_runTestMethod'
-    .\luaunit.lua:527: in function 'runTestMethod'
-    .\luaunit.lua:569: in function 'runTestClass'
-    .\luaunit.lua:609: in function <.\luaunit.lua:588>
-    (...tail calls...)
-    d:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:528: in main chunk
-    [C]: in ?
-]]
-        local SPLITTER = '\n>----------<\n'
-        local t = lu.private.strsplit( SPLITTER, s1..SPLITTER..s2)
-        lu.assertEquals( t[1], s1)
-        lu.assertEquals( t[2], s2)
-        lu.assertEquals( #t, 2 )
+    function TestLuaUnitUtilities:test_protectedCall()
+        local function boom() error("Something went wrong.") end
+        local err = lu.LuaUnit:protectedCall(nil, boom, "kaboom")
+
+        -- check that err received the expected fields
+        lu.assertEquals(err.status, "ERROR")
+        lu.assertStrContains(err.msg, "Something went wrong.")
+        lu.assertStrMatches(err.trace, "^stack traceback:.*in %a+ 'kaboom'.*")
     end
 
     function TestLuaUnitUtilities:test_prefixString()

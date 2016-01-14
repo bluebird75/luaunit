@@ -1,5 +1,5 @@
 # XML output to test/ref/unitTestsXmlVerbose.xml
-# Started on 01/08/16 12:18:32
+# Started on 01/14/16 11:27:04
 # Starting class: TestLuaUnitAssertions
 # Starting test: TestLuaUnitAssertions.test_assertAlmostEquals
 # Starting test: TestLuaUnitAssertions.test_assertEquals
@@ -104,12 +104,12 @@
 # Starting test: TestLuaUnitUtilities.test_prettystrPadded
 # Starting test: TestLuaUnitUtilities.test_prettystrTableRecursion
 # Starting test: TestLuaUnitUtilities.test_prettystr_adv_tables
+# Starting test: TestLuaUnitUtilities.test_protectedCall
 # Starting test: TestLuaUnitUtilities.test_sortedNextWorks
 # Starting test: TestLuaUnitUtilities.test_sortedNextWorksOnTwoTables
 # Starting test: TestLuaUnitUtilities.test_splitClassMethod
 # Starting test: TestLuaUnitUtilities.test_strMatch
 # Starting test: TestLuaUnitUtilities.test_strSplit3CharDelim
-# Starting test: TestLuaUnitUtilities.test_strSplitOnFailure
 # Starting test: TestLuaUnitUtilities.test_strSplitOneCharDelim
 # Starting test: TestLuaUnitUtilities.test_stripStackTrace
 # Starting test: TestLuaUnitUtilities.test_table_keytostring
@@ -117,4 +117,4 @@
 # Starting test: TestLuaUnitUtilities.test_xmlEscape
 # Starting class: TestMock
 # Starting test: TestMock.testMock
-# Ran 110 tests in 0.024 seconds, 110 successes, 0 failures
+# Ran 110 tests in 0.023 seconds, 110 successes, 0 failures
