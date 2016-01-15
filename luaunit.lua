@@ -1571,7 +1571,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         self.result.currentNode = nil
         self.result.suiteStarted = true
         self.result.startTime = os.clock()
-        self.result.startDate = os.date()
+        self.result.startDate = os.date(os.getenv('LUAUNIT_DATEFMT'))
         self.result.startIsodate = os.date('%Y-%m-%dT%H:%M:%S')
         self.result.patternFilter = self.patternFilter
         self.result.tests = {}
