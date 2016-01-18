@@ -75,6 +75,8 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( lu.private.__genSortedIndex( { 2, 5, 7} ), {1,2,3} )
         lu.assertEquals( lu.private.__genSortedIndex( { a='1', h='2', c='3' } ), {'a', 'c', 'h'} )
         lu.assertEquals( lu.private.__genSortedIndex( { 1, 'z', a='1', h='2', c='3' } ), { 1, 2, 'a', 'c', 'h' } )
+        lu.assertEquals( lu.private.__genSortedIndex( { b=4, a=3, true, foo="bar", nil, bar=false, 42, c=5 } ),
+                                                      { 1, 3, 'a', 'b', 'bar', 'c', 'foo' } )
     end
 
     function TestLuaUnitUtilities:test_sortedNextWorks()
@@ -109,7 +111,15 @@ TestLuaUnitUtilities = {} --class
         for k, v in lu.private.sortedPairs(t1) do table.insert(tested, v) end
         lu.assertEquals( tested, {'abc', 'cba', 'def'} )
 
-        -- and finally let's see if we can search for an "out of sequence" key
+        -- test bisection algorithm by searching for non-existing key values
+        k, v = sortedNext( state, '' ) -- '' would come before any of the keys
+        lu.assertNil( k )
+        lu.assertNil( v )
+        k, v = sortedNext( state, 'xyz' ) -- 'xyz' would be after any other key
+        lu.assertNil( k )
+        lu.assertNil( v )
+
+        -- finally let's see if we successfully find an "out of sequence" key
         k, v = sortedNext( state, 'bbb' )
         lu.assertEquals( k, 'ccc' )
         lu.assertEquals( v, 'def' )
@@ -157,28 +167,14 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( #t, 3 )
     end
 
-    function TestLuaUnitUtilities:test_strSplitOnFailure()
-        s1 = 'd:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:467: expected: 1, actual: 2\n'
-        s2 = [[stack traceback:
-    .\luaunit.lua:443: in function <.\luaunit.lua:442>
-    [C]: in function 'error'
-    .\luaunit.lua:56: in function 'lu.assertEquals'
-    d:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:467: in function <d:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:466>
-    [C]: in function 'xpcall'
-    .\luaunit.lua:447: in function 'protectedCall'
-    .\luaunit.lua:479: in function '_runTestMethod'
-    .\luaunit.lua:527: in function 'runTestMethod'
-    .\luaunit.lua:569: in function 'runTestClass'
-    .\luaunit.lua:609: in function <.\luaunit.lua:588>
-    (...tail calls...)
-    d:/work/luaunit/luaunit-git/luaunit/test_luaunit.lua:528: in main chunk
-    [C]: in ?
-]]
-        local SPLITTER = '\n>----------<\n'
-        local t = lu.private.strsplit( SPLITTER, s1..SPLITTER..s2)
-        lu.assertEquals( t[1], s1)
-        lu.assertEquals( t[2], s2)
-        lu.assertEquals( #t, 2 )
+    function TestLuaUnitUtilities:test_protectedCall()
+        local function boom() error("Something went wrong.") end
+        local err = lu.LuaUnit:protectedCall(nil, boom, "kaboom")
+
+        -- check that err received the expected fields
+        lu.assertEquals(err.status, "ERROR")
+        lu.assertStrContains(err.msg, "Something went wrong.")
+        lu.assertStrMatches(err.trace, "^stack traceback:.*in %a+ 'kaboom'.*")
     end
 
     function TestLuaUnitUtilities:test_prefixString()
@@ -200,8 +196,11 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( lu.prettystr( 'ab\ncd', true ), '"ab\\ncd"' )
         lu.assertEquals( lu.prettystr( 'ab"cd' ), "'ab\"cd'" )
         lu.assertEquals( lu.prettystr( "ab'cd" ), '"ab\'cd"' )
-        lu.assertStrContains( lu.prettystr( {1,2,3} ), "{1, 2, 3}" )
-        lu.assertStrContains( lu.prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
+        lu.assertEquals( lu.prettystr( {1,2,3} ), "{1, 2, 3}" )
+        lu.assertEquals( lu.prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
+        lu.assertEquals( lu.prettystr( { [{}] = 1 }), '{{}=1}' )
+        lu.assertEquals( lu.prettystr( { 1, [{}] = 1, 2 }), '{1, 2, {}=1}' )
+        lu.assertEquals( lu.prettystr( { 1, [{one=1}] = 1, 2, "test", false }), '{1, 2, "test", false, {one=1}=1}' )
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()

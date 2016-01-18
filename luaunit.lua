@@ -9,6 +9,7 @@ License: BSD License, see LICENSE.txt
 Version: 3.0
 ]]--
 
+require("math")
 local M={}
 
 -- private exported functions (for testing)
@@ -61,25 +62,39 @@ Options:
 --
 ----------------------------------------------------------------
 
+local crossTypeOrdering = {
+    number = 1,
+    boolean = 2,
+    string = 3,
+    table = 4,
+    other = 5
+}
+local crossTypeComparison = {
+    number = function(a, b) return a < b end,
+    string = function(a, b) return a < b end,
+    other = function(a, b) return tostring(a) < tostring(b) end,
+}
+
+local function crossTypeSort(a, b)
+    local type_a, type_b = type(a), type(b)
+    if type_a == type_b then
+        local func = crossTypeComparison[type_a] or crossTypeComparison.other
+        return func(a, b)
+    end
+    type_a = crossTypeOrdering[type_a] or crossTypeOrdering.other
+    type_b = crossTypeOrdering[type_b] or crossTypeOrdering.other
+    return type_a < type_b
+end
+
 local function __genSortedIndex( t )
-    local sortedIndexStr = {}
-    local sortedIndexInt = {}
+    -- Returns a sequence consisting of t's keys, sorted.
     local sortedIndex = {}
+
     for key,_ in pairs(t) do
-        if type(key) == 'string' then
-            table.insert( sortedIndexStr, key )
-        else
-            table.insert( sortedIndexInt, key )
-        end
+        table.insert(sortedIndex, key)
     end
-    table.sort( sortedIndexInt )
-    table.sort( sortedIndexStr )
-    for _,value in ipairs(sortedIndexInt) do
-        table.insert( sortedIndex, value )
-    end
-    for _,value in ipairs(sortedIndexStr) do
-        table.insert( sortedIndex, value )
-    end
+
+    table.sort(sortedIndex, crossTypeSort)
     return sortedIndex
 end
 M.private.__genSortedIndex = __genSortedIndex
@@ -103,11 +118,24 @@ local function sortedNext(state, control)
     -- normally, we expect the control variable to match the last key used
     if control ~= state.sortedIdx[state.lastIdx] then
         -- strange, we have to find the next value by ourselves
-        state.lastIdx = 0
+        -- the key table is sorted in crossTypeSort() order! -> use bisection
+        local count = #state.sortedIdx
+        local lower, upper = 1, count
         repeat
-            state.lastIdx = state.lastIdx + 1
+            state.lastIdx = math.modf((lower + upper) / 2)
             key = state.sortedIdx[state.lastIdx]
-        until key == control or key == nil
+            if key == control then break; end -- key found (and thus prev index)
+            if crossTypeSort(key, control) then
+                -- key < control, continue search "right" (towards upper bound)
+                lower = state.lastIdx + 1
+            else
+                -- key > control, continue search "left" (towards lower bound)
+                upper = state.lastIdx - 1
+            end
+        until lower > upper
+        if lower > upper then -- only true if the key wasn't found, ...
+            state.lastIdx = count -- ... so ensure no match for the code below
+        end
     end
 
     -- proceed by retrieving the next value (or nil) from the sorted keys
@@ -377,32 +405,26 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
     recursionTable = recursionTable or {}
     recursionTable[tbl] = true
 
-    local result, done = {}, {}
-    local dispOnMultLines = false
+    local result, dispOnMultLines = {}, false
 
-    for k, v in ipairs( tbl ) do
-        if recursionTable[v] then
-            -- recursion detected!
-            recursionTable.recursionDetected = true
-            table.insert( result, "<"..tostring(v)..">" )
-        else
-            table.insert( result, prettystr_sub( v, indentLevel+1, false, printTableRefs, recursionTable ) )
-        end
-
-        done[ k ] = true
-    end
-
+    local entry, count, seq_index = nil, 0, 1
     for k, v in sortedPairs( tbl ) do
-        if not done[ k ] then
-            if recursionTable[v] then
-                -- recursion detected!
-                recursionTable.recursionDetected = true
-                table.insert( result, _table_keytostring( k ) .. "=" .. "<"..tostring(v)..">" )
-            else
-                table.insert( result,
-                    _table_keytostring( k ) .. "=" .. prettystr_sub( v, indentLevel+1, true, printTableRefs, recursionTable ) )
-            end
+        if k == seq_index then
+            -- for the sequential part of tables, we'll skip the "<key>=" output
+            entry = ''
+            seq_index = seq_index + 1
+        else
+            entry = _table_keytostring( k ) .. "="
         end
+        if recursionTable[v] then -- recursion detected!
+            recursionTable.recursionDetected = true
+            entry = entry .. "<"..tostring(v)..">"
+        else
+            entry = entry ..
+                prettystr_sub( v, indentLevel+1, true, printTableRefs, recursionTable )
+        end
+        count = count + 1
+        result[count] = entry
     end
 
     -- set dispOnMultLines if the maximum LINE_LENGTH would be exceeded
@@ -416,10 +438,12 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
     end
 
     if not dispOnMultLines then
-        -- adjust with length of separator:
+        -- adjust with length of separator(s):
         -- two items need 1 sep, three items two seps, ... plus len of '{}'
-        totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * math.max(0, #result - 1) + 2
-        dispOnMultLines = totalLength >= M.LINE_LENGTH
+        if count > 0 then
+            totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * (count - 1)
+        end
+        dispOnMultLines = totalLength + 2 >= M.LINE_LENGTH
     end
 
     -- now reformat the result table (currently holding element strings)
@@ -432,7 +456,7 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
         result = {"{", table.concat(result, TABLE_TOSTRING_SEP), "}"}
     end
     if printTableRefs then
-        table.insert(result, 1, "<"..tostring(tbl).."> ")
+        table.insert(result, 1, "<"..tostring(tbl).."> ") -- prepend table ref
     end
     return table.concat(result)
 end
@@ -587,25 +611,30 @@ function M.assertEquals(actual, expected)
     end
 end
 
-function M.assertAlmostEquals( actual, expected, margin )
-    -- check that two floats are close by margin
+-- Help Lua in corner cases like almostEquals(1.1, 1.0, 0.1), which by default
+-- may not work. We need to give margin a small boost; EPSILON defines the
+-- default value to use for this:
+local EPSILON = 0.00000000001
+function M.almostEquals( actual, expected, margin, margin_boost )
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
-        error_fmt(2, 'assertAlmostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
+        error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
             prettystr(actual), prettystr(expected), prettystr(margin))
     end
     if margin <= 0 then
-        error( 'assertAlmostEquals: margin must be positive, current value is '..margin, 2)
+        error('almostEquals: margin must be positive, current value is ' .. margin, 3)
     end
+    local realmargin = margin + (margin_boost or EPSILON)
+    return math.abs(expected - actual) <= realmargin
+end
 
-    if not M.ORDER_ACTUAL_EXPECTED then
-        expected, actual = actual, expected
-    end
-
-    -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
-    -- which by default does not work. We need to give margin a small boost
-    local realmargin = margin + 0.00000000001
-    if math.abs(expected - actual) > realmargin then
-        failure( 'Values are not almost equal\nExpected: '..expected..' with margin of '..margin..', received: '..actual, 2)
+function M.assertAlmostEquals( actual, expected, margin )
+    -- check that two floats are close by margin
+    if not M.almostEquals(actual, expected, margin) then
+        if not M.ORDER_ACTUAL_EXPECTED then
+            expected, actual = actual, expected
+        end
+        fail_fmt(2, 'Values are not almost equal\nExpected: %s with margin of %s, received: %s',
+                 expected, margin, actual)
     end
 end
 
@@ -626,23 +655,12 @@ end
 
 function M.assertNotAlmostEquals( actual, expected, margin )
     -- check that two floats are not close by margin
-    if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
-        error_fmt(2, 'assertAlmostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
-            prettystr(actual), prettystr(expected), prettystr(margin))
-    end
-    if margin <= 0 then
-        error( 'assertNotAlmostEquals: margin must be positive, current value is '..margin, 2)
-    end
-
-    if not M.ORDER_ACTUAL_EXPECTED then
-        expected, actual = actual, expected
-    end
-
-    -- help lua in limit cases like assertAlmostEquals( 1.1, 1.0, 0.1)
-    -- which by default does not work. We need to give margin a small boost
-    local realmargin = margin + 0.00000000001
-    if math.abs(expected - actual) <= realmargin then
-        failure( 'Values are almost equal\nExpected: '..expected..' with a difference above margin of '..margin..', received: '..actual, 2)
+    if M.almostEquals(actual, expected, margin) then
+        if not M.ORDER_ACTUAL_EXPECTED then
+            expected, actual = actual, expected
+        end
+        fail_fmt(2, 'Values are almost equal\nExpected: %s with a difference above margin of %s, received: %s',
+                 expected, margin, actual)
     end
 end
 
