@@ -175,10 +175,6 @@ function check_tap_output( fileToRun, options, output, refOutput, refExitCode )
 
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
-    if options == '--verbose' then
-        -- For Lua 5.1 / 5.2 compatibility
-        adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)', true )
-    end
     -- For Lua 5.3: stack trace uses "method" instead of "function"
     adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
 
@@ -199,10 +195,6 @@ function check_text_output( fileToRun, options, output, refOutput, refExitCode )
         adjustFile( output, refOutput, 'Started on (.*)')
     end
     adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
-    if options ~= '--quiet' then
-        -- For Lua 5.1 / 5.2 compatibility
-        adjustFile( output, refOutput, '(%s+%[C%]: i?n? ?%?)', true )
-    end
     -- For Lua 5.3: stack trace uses "method" instead of "function"
     adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
 
@@ -238,9 +230,7 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     adjustFile( xmlOutput, refXmlOutput, '.*<testsuite.*(timestamp=".-" time=".-").*')
     adjustFile( xmlOutput, refXmlOutput, '.*<testcase .*(time=".-").*' )
     -- For Lua 5.1 / 5.2 compatibility
-    adjustFile( xmlOutput, refXmlOutput, '.*<property name="Lua Version" value="(Lua 5..)"/>')
-    adjustFile( output, refOutput, '(.+%[C%]: i?n? ?%?)', true )
-    adjustFile( xmlOutput, refXmlOutput, '(.+%[C%]: i?n? ?%?.*)', true )
+    adjustFile( xmlOutput, refXmlOutput, '.*<property name="Lua Version" value="(Lua 5%..)"/>')
     -- For Lua 5.3: stack trace uses "method" instead of "function"
     adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
     adjustFile( xmlOutput, refXmlOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
