@@ -282,6 +282,10 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     return retcode
 end
 
+-- test selection patterns
+local EXAMPLE_PATTERN = '--pattern "Toto[^_]*$"' -- 7 tests from example_with_luaunit.lua: 1 success, 4 failures, 2 errors
+local UNITTEST_PATTERN = '--pattern "[Ss]tr"' -- 23 tests from run_unit_tests.lua: all successful
+
 -- check tap output
 
 function testTapDefault()
@@ -289,6 +293,13 @@ function testTapDefault()
         check_tap_output('example_with_luaunit.lua', '',          'test/exampleTapDefault.txt', 'test/ref/exampleTapDefault.txt', 12) )
     lu.assertEquals( 0,
         check_tap_output('run_unit_tests.lua', '',          'test/unitTestsTapDefault.txt', 'test/ref/unitTestsTapDefault.txt', 0 ) )
+end
+
+function testTapPattern()
+    lu.assertEquals( 0,
+        check_tap_output('example_with_luaunit.lua', EXAMPLE_PATTERN, 'test/exampleTapPattern.txt', 'test/ref/exampleTapPattern.txt', 6) )
+    lu.assertEquals( 0,
+        check_tap_output('run_unit_tests.lua', UNITTEST_PATTERN, 'test/unitTestsTapPattern.txt', 'test/ref/unitTestsTapPattern.txt', 0 ) )
 end
 
 function testTapVerbose()
@@ -312,6 +323,13 @@ function testTextDefault()
         check_text_output('example_with_luaunit.lua', '',          'test/exampleTextDefault.txt', 'test/ref/exampleTextDefault.txt', 12 ) )
     lu.assertEquals( 0,
         check_text_output('run_unit_tests.lua', '',          'test/unitTestsTextDefault.txt', 'test/ref/unitTestsTextDefault.txt', 0 ) )
+end
+
+function testTextPattern()
+    lu.assertEquals( 0,
+        check_text_output('example_with_luaunit.lua', EXAMPLE_PATTERN, 'test/exampleTextPattern.txt', 'test/ref/exampleTextPattern.txt', 6 ) )
+    lu.assertEquals( 0,
+        check_text_output('run_unit_tests.lua', UNITTEST_PATTERN, 'test/unitTestsTextPattern.txt', 'test/ref/unitTestsTextPattern.txt', 0 ) )
 end
 
 function testTextVerbose()
@@ -346,6 +364,15 @@ function testXmlDefault()
     lu.assertEquals( 0,
         check_xml_output('run_unit_tests.lua', '',          'test/unitTestsXmlDefault.txt', 'test/unitTestsXmlDefault.xml',
         'test/unitTestsXmllintDefault.xml', 'test/ref/unitTestsXmlDefault.txt', 'test/ref/unitTestsXmlDefault.xml', 0 ) )
+end
+
+function testXmlPattern()
+    lu.assertEquals( 0,
+        check_xml_output('example_with_luaunit.lua', EXAMPLE_PATTERN, 'test/exampleXmlPattern.txt', 'test/exampleXmlPattern.xml',
+        'test/exampleXmllintPattern.xml', 'test/ref/exampleXmlPattern.txt', 'test/ref/exampleXmlPattern.xml', 6 ) )
+    lu.assertEquals( 0,
+        check_xml_output('run_unit_tests.lua', UNITTEST_PATTERN, 'test/unitTestsXmlPattern.txt', 'test/unitTestsXmlPattern.xml',
+        'test/unitTestsXmllintPattern.xml', 'test/ref/unitTestsXmlPattern.txt', 'test/ref/unitTestsXmlPattern.xml', 0 ) )
 end
 
 function testXmlVerbose()
@@ -391,22 +418,35 @@ function testLegacyLuaunitUsage()
                        "test/legacyExample.txt")
 end
 
+function testBasicLuaunitOptions()
+    osExpectedCodeExec(0, '%s run_unit_tests.lua --help > test/null.txt', LUA)
+    osExpectedCodeExec(0, '%s run_unit_tests.lua --version > test/null.txt', LUA)
+    -- test invalid syntax
+    osExpectedCodeExec(-1, '%s run_unit_tests.lua --foobar > test/null.txt', LUA) -- invalid option
+    osExpectedCodeExec(-1, '%s run_unit_tests.lua --output foobar > test/null.txt', LUA) -- invalid format
+    osExpectedCodeExec(-1, '%s run_unit_tests.lua --output junit > test/null.txt', LUA) -- missing output name
+    os.remove('test/null.txt')
+end
+
 filesToGenerateExampleXml = {
     { 'example_with_luaunit.lua', '', '--output junit --name test/ref/exampleXmlDefault.xml', 'test/ref/exampleXmlDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output junit --name test/ref/exampleXmlQuiet.xml', 'test/ref/exampleXmlQuiet.txt' },
     { 'example_with_luaunit.lua', '--verbose', '--output junit --name test/ref/exampleXmlVerbose.xml', 'test/ref/exampleXmlVerbose.txt' },
+    { 'example_with_luaunit.lua', EXAMPLE_PATTERN, '--output junit --name test/ref/exampleXmlPattern.xml', 'test/ref/exampleXmlPattern.txt' },
 }
 
 filesToGenerateExampleTap = {
     { 'example_with_luaunit.lua', '', '--output tap', 'test/ref/exampleTapDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output tap', 'test/ref/exampleTapQuiet.txt' },
     { 'example_with_luaunit.lua', '--verbose', '--output tap', 'test/ref/exampleTapVerbose.txt' },
+    { 'example_with_luaunit.lua', EXAMPLE_PATTERN, '--output tap', 'test/ref/exampleTapPattern.txt' },
 }
 
 filesToGenerateExampleText = {
     { 'example_with_luaunit.lua', '', '--output text', 'test/ref/exampleTextDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output text', 'test/ref/exampleTextQuiet.txt' },
     { 'example_with_luaunit.lua', '--verbose', '--output text', 'test/ref/exampleTextVerbose.txt' },
+    { 'example_with_luaunit.lua', EXAMPLE_PATTERN, '--output text', 'test/ref/exampleTextPattern.txt' },
 }
 
 filesToGenerateExampleNil = {
@@ -417,18 +457,21 @@ filesToGenerateUnitXml = {
     { 'run_unit_tests.lua', '', '--output junit --name test/ref/unitTestsXmlDefault.xml', 'test/ref/unitTestsXmlDefault.txt' },
     { 'run_unit_tests.lua', '--quiet', '--output junit --name test/ref/unitTestsXmlQuiet.xml', 'test/ref/unitTestsXmlQuiet.txt' },
     { 'run_unit_tests.lua', '--verbose', '--output junit --name test/ref/unitTestsXmlVerbose.xml', 'test/ref/unitTestsXmlVerbose.txt' },
+    { 'run_unit_tests.lua', UNITTEST_PATTERN, '--output junit --name test/ref/unitTestsXmlPattern.xml', 'test/ref/unitTestsXmlPattern.txt' },
 }
 
 filesToGenerateUnitTap = {
     { 'run_unit_tests.lua', '', '--output tap', 'test/ref/unitTestsTapDefault.txt' },
     { 'run_unit_tests.lua', '--quiet', '--output tap', 'test/ref/unitTestsTapQuiet.txt' },
     { 'run_unit_tests.lua', '--verbose', '--output tap', 'test/ref/unitTestsTapVerbose.txt' },
+    { 'run_unit_tests.lua', UNITTEST_PATTERN, '--output tap', 'test/ref/unitTestsTapPattern.txt' },
 }
 
 filesToGenerateUnitText = {
     { 'run_unit_tests.lua', '', '--output text', 'test/ref/unitTestsTextDefault.txt' },
     { 'run_unit_tests.lua', '--quiet', '--output text', 'test/ref/unitTestsTextQuiet.txt' },
     { 'run_unit_tests.lua', '--verbose', '--output text', 'test/ref/unitTestsTextVerbose.txt' },
+    { 'run_unit_tests.lua', UNITTEST_PATTERN, '--output text', 'test/ref/unitTestsTextPattern.txt' },
 }
 
 filesToGenerateTestXml = {

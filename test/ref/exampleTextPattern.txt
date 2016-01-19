@@ -1,0 +1,39 @@
+.FFFFFF
+Failed tests:
+-------------
+1) TestToto.test4
+example_with_luaunit.lua:43: Received the not expected value: 1
+stack traceback:
+	example_with_luaunit.lua:43: in function 'TestToto.test4'
+
+2) TestToto.test5
+example_with_luaunit.lua:49: expected: false, actual: 1
+stack traceback:
+	example_with_luaunit.lua:49: in function 'TestToto.test5'
+
+3) TestToto.test6
+example_with_luaunit.lua:54: expected: true, actual: false
+stack traceback:
+	example_with_luaunit.lua:54: in function 'TestToto.test6'
+
+4) TestToto.test7
+example_with_luaunit.lua:60: expected: {1, 2, three=3}
+actual: {1, 2}
+stack traceback:
+	example_with_luaunit.lua:60: in function 'TestToto.test7'
+
+5) TestToto.test8a
+example_with_luaunit.lua:78: Bouhouhoum error!
+stack traceback:
+	example_with_luaunit.lua:78: in function 'funcWithError'
+	example_with_luaunit.lua:65: in function 'TestToto.test8a'
+
+6) TestToto.test8b
+example_with_luaunit.lua:78: Bouhouhoum error!
+stack traceback:
+	example_with_luaunit.lua:78: in function 'funcWithError'
+	example_with_luaunit.lua:74: in function 'funcWithFuncWithError'
+	example_with_luaunit.lua:70: in function 'TestToto.test8b'
+
+Ran 7 tests in 0.001 seconds
+FAILED (failures=6, )

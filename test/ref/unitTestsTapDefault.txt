@@ -1,5 +1,5 @@
-1..110
-# Started on 01/14/16 11:26:59
+1..111
+# Started on 01/19/16 12:07:26
 # Starting class: TestLuaUnitAssertions
 ok     1	TestLuaUnitAssertions.test_assertAlmostEquals
 ok     2	TestLuaUnitAssertions.test_assertEquals
@@ -67,54 +67,55 @@ ok     61	TestLuaUnitErrorMsg.test_assertStrMatches
 ok     62	TestLuaUnitErrorMsg.test_assertTrueFalse
 ok     63	TestLuaUnitErrorMsg.test_printTableWithRef
 # Starting class: TestLuaUnitExecution
-ok     64	TestLuaUnitExecution.testOutputInterface
-ok     65	TestLuaUnitExecution.testRunReturnsNumberOfFailures
-ok     66	TestLuaUnitExecution.testRunSetupAndTeardown
-ok     67	TestLuaUnitExecution.testRunSomeTestByGlobalInstance
-ok     68	TestLuaUnitExecution.testRunSomeTestByLocalInstance
-ok     69	TestLuaUnitExecution.testTestCountAndFailCount
-ok     70	TestLuaUnitExecution.testWithSetupTeardownErrors1
-ok     71	TestLuaUnitExecution.testWithSetupTeardownErrors2
-ok     72	TestLuaUnitExecution.testWithSetupTeardownErrors3
-ok     73	TestLuaUnitExecution.testWithSetupTeardownErrors4
-ok     74	TestLuaUnitExecution.testWithSetupTeardownErrors5
-ok     75	TestLuaUnitExecution.test_MethodsAreExecutedInRightOrder
-ok     76	TestLuaUnitExecution.test_collectTests
-ok     77	TestLuaUnitExecution.test_filterWithPattern
-ok     78	TestLuaUnitExecution.test_runSuiteByNames
+ok     64	TestLuaUnitExecution.testInvocation
+ok     65	TestLuaUnitExecution.testOutputInterface
+ok     66	TestLuaUnitExecution.testRunReturnsNumberOfFailures
+ok     67	TestLuaUnitExecution.testRunSetupAndTeardown
+ok     68	TestLuaUnitExecution.testRunSomeTestByGlobalInstance
+ok     69	TestLuaUnitExecution.testRunSomeTestByLocalInstance
+ok     70	TestLuaUnitExecution.testTestCountAndFailCount
+ok     71	TestLuaUnitExecution.testWithSetupTeardownErrors1
+ok     72	TestLuaUnitExecution.testWithSetupTeardownErrors2
+ok     73	TestLuaUnitExecution.testWithSetupTeardownErrors3
+ok     74	TestLuaUnitExecution.testWithSetupTeardownErrors4
+ok     75	TestLuaUnitExecution.testWithSetupTeardownErrors5
+ok     76	TestLuaUnitExecution.test_MethodsAreExecutedInRightOrder
+ok     77	TestLuaUnitExecution.test_collectTests
+ok     78	TestLuaUnitExecution.test_filterWithPattern
+ok     79	TestLuaUnitExecution.test_runSuiteByNames
 # Starting class: TestLuaUnitResults
-ok     79	TestLuaUnitResults.test_nodeStatus
-ok     80	TestLuaUnitResults.test_resultsWhileTestInProgress
-ok     81	TestLuaUnitResults.test_runSuiteOk
-ok     82	TestLuaUnitResults.test_runSuiteWithFailures
+ok     80	TestLuaUnitResults.test_nodeStatus
+ok     81	TestLuaUnitResults.test_resultsWhileTestInProgress
+ok     82	TestLuaUnitResults.test_runSuiteOk
+ok     83	TestLuaUnitResults.test_runSuiteWithFailures
 # Starting class: TestLuaUnitUtilities
-ok     83	TestLuaUnitUtilities.test_FailFmt
-ok     84	TestLuaUnitUtilities.test_IsClassMethod
-ok     85	TestLuaUnitUtilities.test_IsFunction
-ok     86	TestLuaUnitUtilities.test_applyPatternFilter
-ok     87	TestLuaUnitUtilities.test_expandClasses
-ok     88	TestLuaUnitUtilities.test_expandOneClass
-ok     89	TestLuaUnitUtilities.test_genSortedIndex
-ok     90	TestLuaUnitUtilities.test_hasNewline
-ok     91	TestLuaUnitUtilities.test_includePattern
-ok     92	TestLuaUnitUtilities.test_isTestName
-ok     93	TestLuaUnitUtilities.test_parseCmdLine
-ok     94	TestLuaUnitUtilities.test_prefixString
-ok     95	TestLuaUnitUtilities.test_prettystr
-ok     96	TestLuaUnitUtilities.test_prettystrPadded
-ok     97	TestLuaUnitUtilities.test_prettystrTableRecursion
-ok     98	TestLuaUnitUtilities.test_prettystr_adv_tables
-ok     99	TestLuaUnitUtilities.test_protectedCall
-ok     100	TestLuaUnitUtilities.test_sortedNextWorks
-ok     101	TestLuaUnitUtilities.test_sortedNextWorksOnTwoTables
-ok     102	TestLuaUnitUtilities.test_splitClassMethod
-ok     103	TestLuaUnitUtilities.test_strMatch
-ok     104	TestLuaUnitUtilities.test_strSplit3CharDelim
-ok     105	TestLuaUnitUtilities.test_strSplitOneCharDelim
-ok     106	TestLuaUnitUtilities.test_stripStackTrace
-ok     107	TestLuaUnitUtilities.test_table_keytostring
-ok     108	TestLuaUnitUtilities.test_xmlCDataEscape
-ok     109	TestLuaUnitUtilities.test_xmlEscape
+ok     84	TestLuaUnitUtilities.test_FailFmt
+ok     85	TestLuaUnitUtilities.test_IsClassMethod
+ok     86	TestLuaUnitUtilities.test_IsFunction
+ok     87	TestLuaUnitUtilities.test_applyPatternFilter
+ok     88	TestLuaUnitUtilities.test_expandClasses
+ok     89	TestLuaUnitUtilities.test_expandOneClass
+ok     90	TestLuaUnitUtilities.test_genSortedIndex
+ok     91	TestLuaUnitUtilities.test_hasNewline
+ok     92	TestLuaUnitUtilities.test_includePattern
+ok     93	TestLuaUnitUtilities.test_isTestName
+ok     94	TestLuaUnitUtilities.test_parseCmdLine
+ok     95	TestLuaUnitUtilities.test_prefixString
+ok     96	TestLuaUnitUtilities.test_prettystr
+ok     97	TestLuaUnitUtilities.test_prettystrPadded
+ok     98	TestLuaUnitUtilities.test_prettystrTableRecursion
+ok     99	TestLuaUnitUtilities.test_prettystr_adv_tables
+ok     100	TestLuaUnitUtilities.test_protectedCall
+ok     101	TestLuaUnitUtilities.test_sortedNextWorks
+ok     102	TestLuaUnitUtilities.test_sortedNextWorksOnTwoTables
+ok     103	TestLuaUnitUtilities.test_splitClassMethod
+ok     104	TestLuaUnitUtilities.test_strMatch
+ok     105	TestLuaUnitUtilities.test_strSplit3CharDelim
+ok     106	TestLuaUnitUtilities.test_strSplitOneCharDelim
+ok     107	TestLuaUnitUtilities.test_stripStackTrace
+ok     108	TestLuaUnitUtilities.test_table_keytostring
+ok     109	TestLuaUnitUtilities.test_xmlCDataEscape
+ok     110	TestLuaUnitUtilities.test_xmlEscape
 # Starting class: TestMock
-ok     110	TestMock.testMock
-# Ran 110 tests in 0.023 seconds, 110 successes, 0 failures
+ok     111	TestMock.testMock
+# Ran 111 tests in 0.023 seconds, 111 successes, 0 failures

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="110" timestamp="2016-01-14T11:27:04" time="0.023" errors="0" failures="0">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="111" timestamp="2016-01-19T12:07:30" time="0.023" errors="0" failures="0">
         <properties>
             <property name="Lua Version" value="Lua 5.1"/>
             <property name="LuaUnit Version" value="3.2"/>
@@ -130,6 +130,8 @@
         <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertTrueFalse" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_printTableWithRef" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.testInvocation" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.testOutputInterface" time="0.000">
         </testcase>

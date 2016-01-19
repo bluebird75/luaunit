@@ -157,6 +157,9 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( t[3], '333')
         lu.assertEquals( t[4], '')
         lu.assertEquals( #t, 4 )
+        -- test invalid (empty) delimiter
+        lu.assertErrorMsgContains('delimiter matches empty string!',
+                                  lu.private.strsplit, '', '1\n22\n333\n')
     end
 
     function TestLuaUnitUtilities:test_strSplit3CharDelim()
@@ -1415,10 +1418,15 @@ TestLuaUnitErrorMsg = {} --class
     function TestLuaUnitErrorMsg:test_assertNotIs()
         local v = {1,2}
         assertFailureMatches( 'Expected object and actual object are the same object: {1, 2}', lu.assertNotIs, v, v )
+        lu.ORDER_ACTUAL_EXPECTED = false -- order shouldn't matter here, but let's cover it
+        assertFailureMatches( 'Expected object and actual object are the same object: {1, 2}', lu.assertNotIs, v, v )
     end 
 
     function TestLuaUnitErrorMsg:test_assertItemsEquals()
         assertFailureMatches('Contents of the tables are not identical:\nExpected: {one=2, two=3}\nActual: {1, 2}' , lu.assertItemsEquals, {1,2}, {one=2, two=3} )
+        assertFailureContains('Contents of the tables are not identical' , lu.assertItemsEquals, {}, {1} ) -- actual table empty, = doesn't contain expected value
+        assertFailureContains('Contents of the tables are not identical' , lu.assertItemsEquals, nil, 'foobar' ) -- type mismatch
+        assertFailureContains('Contents of the tables are not identical' , lu.assertItemsEquals, 'foo', 'bar' ) -- value mismatch
     end 
 
     function TestLuaUnitErrorMsg:test_assertError()
@@ -1819,6 +1827,32 @@ TestLuaUnitExecution = {} --class
 
         lu.assertEquals( m.calls[19], nil )
 
+    end
+
+    function TestLuaUnitExecution:testInvocation()
+
+        local runner = lu.LuaUnit:new()
+
+        -- test alternative "object" syntax for run(), passing self
+        runner:run('--output', 'nil', 'MyTestOk')
+        -- select class instance by name
+        runner.run('--output', 'nil', 'MyTestOk.testOk2')
+
+        -- check error handling
+        lu.assertErrorMsgContains('No such name in global space',
+                                  runner.runSuite, runner, 'foobar')
+        lu.assertErrorMsgContains('Name must match a function or a table',
+                                  runner.runSuite, runner, '_VERSION')
+        lu.assertErrorMsgContains('No such name in global space',
+                                  runner.runSuite, runner, 'foo.bar')
+        lu.assertErrorMsgContains('must be a function, not',
+                                  runner.runSuite, runner, '_G._VERSION')
+        lu.assertErrorMsgContains('Could not find method in class',
+                                  runner.runSuite, runner, 'MyTestOk.foobar')
+        lu.assertErrorMsgContains('Instance must be a table or a function',
+                                  runner.expandClasses, {{'foobar', 'INVALID'}})
+        lu.assertErrorMsgContains('Could not find method in class',
+                                  runner.expandClasses, {{'MyTestOk.foobar', {}}})
     end
 
     function TestLuaUnitExecution:test_filterWithPattern()
