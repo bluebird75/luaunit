@@ -1,0 +1,29 @@
+# XML output to test/ref/unitTestsXmlPattern.xml
+# Started on 01/19/16 20:35:38
+# Starting class: TestLuaUnitAssertions
+# Starting test: TestLuaUnitAssertions.test_assertIsString
+# Starting test: TestLuaUnitAssertions.test_assertNotStrContains
+# Starting test: TestLuaUnitAssertions.test_assertNotStrIContains
+# Starting test: TestLuaUnitAssertions.test_assertStrContains
+# Starting test: TestLuaUnitAssertions.test_assertStrIContains
+# Starting test: TestLuaUnitAssertions.test_assertStrMatches
+# Starting test: TestLuaUnitAssertions.test_assertTableStr
+# Starting class: TestLuaUnitErrorMsg
+# Starting test: TestLuaUnitErrorMsg.test_assertIsString
+# Starting test: TestLuaUnitErrorMsg.test_assertNotStrContains
+# Starting test: TestLuaUnitErrorMsg.test_assertNotStrIContains
+# Starting test: TestLuaUnitErrorMsg.test_assertStrContains
+# Starting test: TestLuaUnitErrorMsg.test_assertStrIContains
+# Starting test: TestLuaUnitErrorMsg.test_assertStrMatches
+# Starting class: TestLuaUnitUtilities
+# Starting test: TestLuaUnitUtilities.test_prefixString
+# Starting test: TestLuaUnitUtilities.test_prettystr
+# Starting test: TestLuaUnitUtilities.test_prettystrPadded
+# Starting test: TestLuaUnitUtilities.test_prettystrTableRecursion
+# Starting test: TestLuaUnitUtilities.test_prettystr_adv_tables
+# Starting test: TestLuaUnitUtilities.test_strMatch
+# Starting test: TestLuaUnitUtilities.test_strSplit3CharDelim
+# Starting test: TestLuaUnitUtilities.test_strSplitOneCharDelim
+# Starting test: TestLuaUnitUtilities.test_stripStackTrace
+# Starting test: TestLuaUnitUtilities.test_table_keytostring
+# Ran 23 tests in 0.004 seconds, 23 successes, 0 failures, 88 non selected tests

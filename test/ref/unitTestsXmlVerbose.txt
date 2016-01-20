@@ -1,5 +1,5 @@
 # XML output to test/ref/unitTestsXmlVerbose.xml
-# Started on 01/14/16 11:27:04
+# Started on 01/19/16 12:07:30
 # Starting class: TestLuaUnitAssertions
 # Starting test: TestLuaUnitAssertions.test_assertAlmostEquals
 # Starting test: TestLuaUnitAssertions.test_assertEquals
@@ -67,6 +67,7 @@
 # Starting test: TestLuaUnitErrorMsg.test_assertTrueFalse
 # Starting test: TestLuaUnitErrorMsg.test_printTableWithRef
 # Starting class: TestLuaUnitExecution
+# Starting test: TestLuaUnitExecution.testInvocation
 # Starting test: TestLuaUnitExecution.testOutputInterface
 # Starting test: TestLuaUnitExecution.testRunReturnsNumberOfFailures
 # Starting test: TestLuaUnitExecution.testRunSetupAndTeardown
@@ -117,4 +118,4 @@
 # Starting test: TestLuaUnitUtilities.test_xmlEscape
 # Starting class: TestMock
 # Starting test: TestMock.testMock
-# Ran 110 tests in 0.023 seconds, 110 successes, 0 failures
+# Ran 111 tests in 0.023 seconds, 111 successes, 0 failures

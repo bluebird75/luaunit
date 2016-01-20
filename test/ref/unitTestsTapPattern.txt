@@ -1,0 +1,29 @@
+1..23
+# Started on 01/19/16 20:35:37
+# Starting class: TestLuaUnitAssertions
+ok     1	TestLuaUnitAssertions.test_assertIsString
+ok     2	TestLuaUnitAssertions.test_assertNotStrContains
+ok     3	TestLuaUnitAssertions.test_assertNotStrIContains
+ok     4	TestLuaUnitAssertions.test_assertStrContains
+ok     5	TestLuaUnitAssertions.test_assertStrIContains
+ok     6	TestLuaUnitAssertions.test_assertStrMatches
+ok     7	TestLuaUnitAssertions.test_assertTableStr
+# Starting class: TestLuaUnitErrorMsg
+ok     8	TestLuaUnitErrorMsg.test_assertIsString
+ok     9	TestLuaUnitErrorMsg.test_assertNotStrContains
+ok     10	TestLuaUnitErrorMsg.test_assertNotStrIContains
+ok     11	TestLuaUnitErrorMsg.test_assertStrContains
+ok     12	TestLuaUnitErrorMsg.test_assertStrIContains
+ok     13	TestLuaUnitErrorMsg.test_assertStrMatches
+# Starting class: TestLuaUnitUtilities
+ok     14	TestLuaUnitUtilities.test_prefixString
+ok     15	TestLuaUnitUtilities.test_prettystr
+ok     16	TestLuaUnitUtilities.test_prettystrPadded
+ok     17	TestLuaUnitUtilities.test_prettystrTableRecursion
+ok     18	TestLuaUnitUtilities.test_prettystr_adv_tables
+ok     19	TestLuaUnitUtilities.test_strMatch
+ok     20	TestLuaUnitUtilities.test_strSplit3CharDelim
+ok     21	TestLuaUnitUtilities.test_strSplitOneCharDelim
+ok     22	TestLuaUnitUtilities.test_stripStackTrace
+ok     23	TestLuaUnitUtilities.test_table_keytostring
+# Ran 23 tests in 0.004 seconds, 23 successes, 0 failures, 88 non selected tests
