@@ -1528,10 +1528,6 @@ TestLuaUnitErrorMsg = {} --class
         assertFailureEquals( 'Not expected: a boolean type, actual: value false', lu.assertNotIsBoolean, false )
     end 
 
-    function TestLuaUnitErrorMsg:test_assertNotIsNil()
-        assertFailureEquals( 'Not expected: a nil type, actual: value nil', lu.assertNotIsNil, nil )
-    end 
-
     function TestLuaUnitErrorMsg:test_assertNotIsFunction()
         assertFailureContains( 'Not expected: a function type, actual: value function:', lu.assertNotIsFunction, function() return true end )
     end 
