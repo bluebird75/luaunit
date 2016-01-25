@@ -1507,7 +1507,6 @@ TestLuaUnitErrorMsg = {} --class
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsUserdata()
-
         assertFailureEquals( 'Expected: a userdata value, actual: type number, value 1.2', lu.assertIsUserdata, 1.2 )
         assertFailureEquals( 'Expected: a userdata value, actual: type nil, value nil', lu.assertIsUserdata, nil )
     end 
