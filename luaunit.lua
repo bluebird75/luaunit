@@ -16,6 +16,7 @@ local M={}
 M.private = {}
 
 M.VERSION='3.2'
+M._VERSION='3.2'
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
 assertEquals( expected, actual ).
@@ -587,13 +588,13 @@ function M.assertFalse(value)
     end
 end
 
-function M.assertNil(value)
+function M.assertIsNil(value)
     if value ~= nil then
         failure("expected: nil, actual: " ..prettystr(value), 2)
     end
 end
 
-function M.assertNotNil(value)
+function M.assertNotIsNil(value)
     if value == nil then
         failure("expected non nil value, received nil", 2)
     end
@@ -765,7 +766,7 @@ M.assertIsXxx(value) -> ensure that type(value) conforms to "xxx"
 ]]
 for _, funcName in ipairs(
     {'assertIsNumber', 'assertIsString', 'assertIsTable', 'assertIsBoolean',
-     'assertIsNil', 'assertIsFunction', 'assertIsUserdata', 'assertIsThread'}
+     'assertIsFunction', 'assertIsUserdata', 'assertIsThread'}
 ) do
     local typeExpected = funcName:match("^assertIs([A-Z]%a*)$")
     -- Lua type() always returns lowercase, also make sure the match() succeeded
@@ -789,7 +790,7 @@ M.assertNotIsXxx(value) -> ensure that type(value) is not "xxx"
 ]]
 for _, funcName in ipairs(
     {'assertNotIsNumber', 'assertNotIsString', 'assertNotIsTable', 'assertNotIsBoolean',
-     'assertNotIsNil', 'assertNotIsFunction', 'assertNotIsUserdata', 'assertNotIsThread'}
+     'assertNotIsFunction', 'assertNotIsUserdata', 'assertNotIsThread'}
 ) do
     local typeUnexpected = funcName:match("^assertNotIs([A-Z]%a*)$")
     -- Lua type() always returns lowercase, also make sure the match() succeeded
@@ -836,71 +837,140 @@ function M.assertItemsEquals(actual, expected)
     end
 end
 
-M.assert_equals = M.assertEquals
-M.assert_not_equals = M.assertNotEquals
-M.assert_error = M.assertError
-M.assert_true = M.assertTrue
-M.assert_false = M.assertFalse
-M.assert_is_number = M.assertIsNumber
-M.assert_is_string = M.assertIsString
-M.assert_is_table = M.assertIsTable
-M.assert_is_boolean = M.assertIsBoolean
-M.assert_is_nil = M.assertIsNil
-M.assert_is_function = M.assertIsFunction
-M.assert_is_thread      = M.assertIsThread
+----------------------------------------------------------------
+--                     Compability layer
+----------------------------------------------------------------
 
--- all assertions with Coroutine duplicate Thread assertions
-M.assertIsCoroutine     = M.assertIsThread
-M.assert_is_coroutine   = M.assertIsThread
+-- for compatibility with LuaUnit v2.x
+function M.wrapFunctions(...)
+    io.stderr:write( [[Use of WrapFunction() is no longer needed. 
+Just prefix your test function names with "test" or "Test" and they
+will be picked up and run by LuaUnit.]] )
+    -- In LuaUnit version <= 2.1 , this function was necessary to include
+    -- a test function inside the global test suite. Nowadays, the functions
+    -- are simply run directly as part of the test discovery process.
+    -- so just do nothing !
 
-M.assert_is = M.assertIs
-M.assert_not_is = M.assertNotIs
+    --[[
+    local testClass, testFunction
+    testClass = {}
+    local function storeAsMethod(idx, testName)
+        testFunction = _G[testName]
+        testClass[testName] = testFunction
+    end
+    for i,v in ipairs({...}) do
+        storeAsMethod( i, v )
+    end
 
+    return testClass
+    ]]
+end
 
-if EXPORT_ASSERT_TO_GLOBALS then
-    assertError            = M.assertError
-    assertTrue             = M.assertTrue
-    assertFalse            = M.assertFalse
-    assertNil              = M.assertNil
-    assertNotNil           = M.assertNotNil
-    assertEquals           = M.assertEquals
-    assertAlmostEquals     = M.assertAlmostEquals
-    assertNotEquals        = M.assertNotEquals
-    assertNotAlmostEquals  = M.assertNotAlmostEquals
-    assertStrContains      = M.assertStrContains
-    assertStrIContains     = M.assertStrIContains
-    assertNotStrContains   = M.assertNotStrContains
-    assertNotStrIContains  = M.assertNotStrIContains
-    assertStrMatches       = M.assertStrMatches
-    assertErrorMsgEquals   = M.assertErrorMsgEquals
-    assertErrorMsgContains = M.assertErrorMsgContains
-    assertErrorMsgMatches  = M.assertErrorMsgMatches
-    assertIsNumber         = M.assertIsNumber
-    assertIsString         = M.assertIsString
-    assertIsTable          = M.assertIsTable
-    assertIsBoolean        = M.assertIsBoolean
-    assertIsNil            = M.assertIsNil
-    assertIsFunction       = M.assertIsFunction
-    assertIsUserdata       = M.assertIsUserdata
-    assertIsThread         = M.assertIsThread
-    assertIsCoroutine      = M.assertIsCoroutine
-    assertIs               = M.assertIs
-    assertNotIs            = M.assertNotIs
-    assertItemsEquals      = M.assertItemsEquals
-    -- aliases
-    assert_equals          = M.assertEquals
-    assert_not_equals      = M.assertNotEquals
-    assert_error           = M.assertError
-    assert_true            = M.assertTrue
-    assert_false           = M.assertFalse
-    assert_is_number       = M.assertIsNumber
-    assert_is_string       = M.assertIsString
-    assert_is_table        = M.assertIsTable
-    assert_is_boolean      = M.assertIsBoolean
-    assert_is_nil          = M.assertIsNil
-    assert_is_function     = M.assertIsFunction
-    assert_is              = M.assertIs
-    assert_not_is          = M.assertNotIs
+local list_of_funcs = {
+    -- { official function name , alias }
+
+    -- general assertions
+    { 'assertEquals'            , 'assert_equals' },
+    { 'assertItemsEquals'       , 'assert_items_equals' },
+    { 'assertNotEquals'         , 'assert_not_equals' },
+    { 'assertAlmostEquals'      , 'assert_almost_equals' },
+    { 'assertNotAlmostEquals'   , 'assert_not_almost_equals' },
+    { 'assertTrue'              , 'assert_true' },
+    { 'assertFalse'             , 'assert_false' },
+    { 'assertStrContains'       , 'assert_str_contains' },
+    { 'assertStrIContains'      , 'assert_str_icontains' },
+    { 'assertNotStrContains'    , 'assert_not_str_contains' },
+    { 'assertNotStrIContains'   , 'assert_not_str_icontains' },
+    { 'assertStrMatches'        , 'assert_str_matches' },
+    { 'assertError'             , 'assert_error' },
+    { 'assertErrorMsgEquals'    , 'assert_error_msg_equals' },
+    { 'assertErrorMsgContains'  , 'assert_error_msg_contains' },
+    { 'assertErrorMsgMatches'   , 'assert_error_msg_matches' },
+    { 'assertIs'                , 'assert_is' },
+    { 'assertNotIs'             , 'assert_not_is' },
+    { 'wrapFunctions'           , 'WrapFunctions' },
+    { 'wrapFunctions'           , 'wrap_functions' },
+
+    -- type assertions: assertIsXXX -> assert_is_xxx
+    { 'assertIsNumber'          , 'assert_is_number' },
+    { 'assertIsString'          , 'assert_is_string' },
+    { 'assertIsTable'           , 'assert_is_table' },
+    { 'assertIsBoolean'         , 'assert_is_boolean' },
+    { 'assertIsNil'             , 'assert_is_nil' },
+    { 'assertIsFunction'        , 'assert_is_function' },
+    { 'assertIsThread'          , 'assert_is_thread' },
+    { 'assertIsUserdata'        , 'assert_is_userdata' },
+
+    -- type assertions: assertIsXXX -> assertXxx
+    { 'assertIsNumber'          , 'assertNumber' },
+    { 'assertIsString'          , 'assertString' },
+    { 'assertIsTable'           , 'assertTable' },
+    { 'assertIsBoolean'         , 'assertBoolean' },
+    { 'assertIsNil'             , 'assertNil' },
+    { 'assertIsFunction'        , 'assertFunction' },
+    { 'assertIsThread'          , 'assertThread' },
+    { 'assertIsUserdata'        , 'assertUserdata' },
+
+    -- type assertions: assertIsXXX -> assert_xxx (luaunit v2 compat)
+    { 'assertIsNumber'          , 'assert_number' },
+    { 'assertIsString'          , 'assert_string' },
+    { 'assertIsTable'           , 'assert_table' },
+    { 'assertIsBoolean'         , 'assert_boolean' },
+    { 'assertIsNil'             , 'assert_nil' },
+    { 'assertIsFunction'        , 'assert_function' },
+    { 'assertIsThread'          , 'assert_thread' },
+    { 'assertIsUserdata'        , 'assert_userdata' },
+
+    -- type assertions: assertNotIsXXX -> assert_not_is_xxx
+    { 'assertNotIsNumber'       , 'assert_not_is_number' },
+    { 'assertNotIsString'       , 'assert_not_is_string' },
+    { 'assertNotIsTable'        , 'assert_not_is_table' },
+    { 'assertNotIsBoolean'      , 'assert_not_is_boolean' },
+    { 'assertNotIsNil'          , 'assert_not_is_nil' },
+    { 'assertNotIsFunction'     , 'assert_not_is_function' },
+    { 'assertNotIsThread'       , 'assert_not_is_thread' },
+    { 'assertNotIsUserdata'     , 'assert_not_is_userdata' },
+
+    -- type assertions: assertNotIsXXX -> assertNotXxx (luaunit v2 compat)
+    { 'assertNotIsNumber'       , 'assertNotNumber' },
+    { 'assertNotIsString'       , 'assertNotString' },
+    { 'assertNotIsTable'        , 'assertNotTable' },
+    { 'assertNotIsBoolean'      , 'assertNotBoolean' },
+    { 'assertNotIsNil'          , 'assertNotNil' },
+    { 'assertNotIsFunction'     , 'assertNotFunction' },
+    { 'assertNotIsThread'       , 'assertNotThread' },
+    { 'assertNotIsUserdata'     , 'assertNotUserdata' },
+
+    -- type assertions: assertNotIsXXX -> assert_not_xxx
+    { 'assertNotIsNumber'       , 'assert_not_number' },
+    { 'assertNotIsString'       , 'assert_not_string' },
+    { 'assertNotIsTable'        , 'assert_not_table' },
+    { 'assertNotIsBoolean'      , 'assert_not_boolean' },
+    { 'assertNotIsNil'          , 'assert_not_nil' },
+    { 'assertNotIsFunction'     , 'assert_not_function' },
+    { 'assertNotIsThread'       , 'assert_not_thread' },
+    { 'assertNotIsUserdata'     , 'assert_not_userdata' },
+
+    -- all assertions with Coroutine duplicate Thread assertions
+    { 'assertIsThread'          , 'assertIsCoroutine' },
+    { 'assertIsThread'          , 'assertCoroutine' },
+    { 'assertIsThread'          , 'assert_is_coroutine' },
+    { 'assertIsThread'          , 'assert_coroutine' },
+    { 'assertNotIsThread'       , 'assertNotIsCoroutine' },
+    { 'assertNotIsThread'       , 'assertNotCoroutine' },
+    { 'assertNotIsThread'       , 'assert_not_is_coroutine' },
+    { 'assertNotIsThread'       , 'assert_not_coroutine' },
+}
+
+-- Create all aliases in M
+for _,v in ipairs( list_of_funcs ) do
+    funcname, alias = table.unpack( v )
+    M[alias] = M[funcname]
+
+    if EXPORT_ASSERT_TO_GLOBALS then
+        _G[funcname] = M[funcname]
+        _G[alias] = M[funcname]
+    end
 end
 
 ----------------------------------------------------------------
@@ -2009,7 +2079,17 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
         return self.result.failureCount
     end
-
 -- class LuaUnit
+
+-- For compatbility with LuaUnit v2
+M.run = M.LuaUnit.run
+M.Run = M.LuaUnit.run
+
+function M:setVerbosity( verbosity )
+    M.LuaUnit.verbosity = verbosity
+end
+M.set_verbosity = M.setVerbosity
+M.SetVerbosity = M.setVerbosity
+
 
 return M
