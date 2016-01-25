@@ -50,6 +50,7 @@ test/testWithXml*.txt
 test/unitTests*.xml
 test/unitTests*.txt
 test/legacyExample.txt
+test/compat_luaunit_v2x.txt
 
 *.diff
 
