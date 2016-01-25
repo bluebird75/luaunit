@@ -423,11 +423,11 @@ function testLegacyLuaunitUsage()
 end
 
 function testLuaunitV2Usage()
-    local ret, exitCode, refExitCode, fileToRun
-    fileToRun = "test/compat_luaunit_v2x.lua"
-    fileOutput = "test/compat_luaunit_v2x.txt"
-    refExitCode = 0
-    ret, exitCode = osExec(string.format( '%s %s  --output text 1> %s 2>&1', LUA,  fileToRun, fileOutput)  )
+    osExpectedCodeExec( 0, '%s %s  --output text 1> %s 2>&1', LUA,  
+    "test/compat_luaunit_v2x.lua", "test/compat_luaunit_v2x.txt" )
+    if refExitCode ~= nil and exitCode ~= refExitCode then
+        error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
+    end 
 end
 
 function testBasicLuaunitOptions()
