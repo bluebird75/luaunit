@@ -57,7 +57,7 @@ function TestLuaUnitV2Compat:testAssertType()
     }
 
     for _,v in ipairs( typesToVerify ) do 
-        goodType, badType, goodAsserter, badAsserter = table.unpack( v )
+        goodType, badType, goodAsserter, badAsserter = v[1], v[2], v[3], v[4]
         typeAsserter( goodType, badType, goodAsserter, badAsserter )
     end
 
