@@ -1,3 +1,4 @@
+EXPORT_ASSERT_TO_GLOBALS = true
 lu = require('luaunit')
 
 --[[
@@ -27,72 +28,13 @@ TestLuaUnitV2Compat = {}
 function TestLuaUnitV2Compat:testRunAliases()
     -- some old function
     assertFunction( lu.run )
-    assertEquals( lu.run, lu.Run )
+    assertEquals( lu.Run, lu.run )
 end
 
 function TestLuaUnitV2Compat:testWrapFunctionsAliases()
     assertFunction( lu.wrapFunctions )
     assertEquals( lu.wrapFunctions, lu.WrapFunctions )
     assertEquals( lu.wrapFunctions, lu.wrap_functions )
-end
-
-function TestLuaUnitV2Compat:testIsXXX()
-    local goodType, badType
-
-    -- isBoolean
-    goodType = true
-    badType = "toto"
-    assertEquals( lu.is_boolean( goodType), true )
-    assertEquals( lu.is_boolean( badType), false )
-    assertEquals( lu.is_boolean, lu.isBoolean )
-
-    -- isNumber
-    goodType = true
-    goodType = 1
-    badType = "toto"
-    assertEquals( lu.is_number( goodType ), true )
-    assertEquals( lu.is_number( badType ), false )
-    assertEquals( is_number, isNumber )
-
-    -- isString
-    goodType = "toto"
-    badType = 1.0
-    assertEquals( lu.is_string( goodType ), true )
-    assertEquals( lu.is_string( badType ), false )
-    assertEquals( is_string, isString )
-
-    -- isNil
-    goodType = nil
-    badType = "toto"
-    assertEquals( lu.is_nil( goodType ), true )
-    assertEquals( lu.is_nil( badType ), false )
-    assertEquals( isNil, is_nil )
-
-    -- isTable
-    goodType = {1,2,3}
-    badType = "toto"
-    assertEquals( lu.is_table( goodType ), true )
-    assertEquals( lu.is_table( badType ), false )
-    assertEquals( is_table, isTable )
-
-    -- isFunction
-    goodType = function (v) return v*2 end
-    badType = "toto"
-    assertEquals( lu.is_function( goodType ), true )
-    assertEquals( lu.is_function( badType ), false )
-    assertEquals( is_function, isFunction )
-
-    -- isUserData
-    badType = "toto"
-    assertEquals( lu.is_userdata( badType ), false )
-    assertEquals( is_userdata, isUserdata )
-
-    -- isThread
-    goodType = coroutine.create( function(v) local y=v+1 end )
-    badType = "toto"
-    assertEquals( lu.is_thread( goodType ), true )
-    assertEquals( lu.is_thread( badType ), false )
-    assertEquals( isThread, is_thread )
 end
 
 function typeAsserter( goodType, badType, goodAsserter, badAsserter )
