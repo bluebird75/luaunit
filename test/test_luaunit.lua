@@ -1041,6 +1041,108 @@ TestLuaUnitAssertions = {} --class
         assertFailure(lu.assertIsUserdata, coroutine.create( function(v) local y=v+1 end ) )
     end
 
+    function TestLuaUnitAssertions:test_assertNotIsNumber()
+        assertFailure(lu.assertNotIsNumber, 1 )
+        assertFailure(lu.assertNotIsNumber, 1.4 )
+        lu.assertNotIsNumber( "hi there!")
+        lu.assertNotIsNumber( nil)
+        lu.assertNotIsNumber( {})
+        lu.assertNotIsNumber( {1,2,3})
+        lu.assertNotIsNumber( {1})
+        lu.assertNotIsNumber( coroutine.create( function(v) local y=v+1 end ) )
+        lu.assertNotIsNumber( true)
+    end
+
+    function TestLuaUnitAssertions:test_assertNotIsString()
+        lu.assertNotIsString( 1)
+        lu.assertNotIsString( 1.4)
+        assertFailure( lu.assertNotIsString, "hi there!")
+        lu.assertNotIsString( nil)
+        lu.assertNotIsString( {})
+        lu.assertNotIsString( {1,2,3})
+        lu.assertNotIsString( {1})
+        lu.assertNotIsString( coroutine.create( function(v) local y=v+1 end ) )
+        lu.assertNotIsString( true)
+    end
+
+    function TestLuaUnitAssertions:test_assertNotIsTable()
+        lu.assertNotIsTable( 1)
+        lu.assertNotIsTable( 1.4)
+        lu.assertNotIsTable( "hi there!")
+        lu.assertNotIsTable( nil)
+        assertFailure( lu.assertNotIsTable, {})
+        assertFailure( lu.assertNotIsTable, {1,2,3})
+        assertFailure( lu.assertNotIsTable, {1})
+        lu.assertNotIsTable( true)
+        lu.assertNotIsTable( coroutine.create( function(v) local y=v+1 end ) )
+    end
+
+    function TestLuaUnitAssertions:test_assertNotIsBoolean()
+        lu.assertNotIsBoolean( 1)
+        lu.assertNotIsBoolean( 1.4)
+        lu.assertNotIsBoolean( "hi there!")
+        lu.assertNotIsBoolean( nil)
+        lu.assertNotIsBoolean( {})
+        lu.assertNotIsBoolean( {1,2,3})
+        lu.assertNotIsBoolean( {1})
+        lu.assertNotIsBoolean( coroutine.create( function(v) local y=v+1 end ) )
+        assertFailure( lu.assertNotIsBoolean, true)
+        assertFailure( lu.assertNotIsBoolean, false)
+    end
+
+    function TestLuaUnitAssertions:test_assertNotIsNil()
+        lu.assertNotIsNil( 1)
+        lu.assertNotIsNil( 1.4)
+        lu.assertNotIsNil( "hi there!")
+        assertFailure( lu.assertNotIsNil, nil)
+        lu.assertNotIsNil( {})
+        lu.assertNotIsNil( {1,2,3})
+        lu.assertNotIsNil( {1})
+        lu.assertNotIsNil( false)
+        lu.assertNotIsNil( coroutine.create( function(v) local y=v+1 end ) )
+    end
+
+    function TestLuaUnitAssertions:test_assertNotIsFunction()
+        f = function() return true end
+
+        lu.assertNotIsFunction( 1)
+        lu.assertNotIsFunction( 1.4)
+        lu.assertNotIsFunction( "hi there!")
+        lu.assertNotIsFunction( nil)
+        lu.assertNotIsFunction( {})
+        lu.assertNotIsFunction( {1,2,3})
+        lu.assertNotIsFunction( {1})
+        lu.assertNotIsFunction( false)
+        lu.assertNotIsFunction( coroutine.create( function(v) local y=v+1 end ) )
+        assertFailure( lu.assertNotIsFunction, f)
+    end
+
+    function TestLuaUnitAssertions:test_assertNotIsThread()
+        lu.assertNotIsThread( 1)
+        lu.assertNotIsThread( 1.4)
+        lu.assertNotIsThread( "hi there!")
+        lu.assertNotIsThread( nil)
+        lu.assertNotIsThread( {})
+        lu.assertNotIsThread( {1,2,3})
+        lu.assertNotIsThread( {1})
+        lu.assertNotIsThread( false)
+        lu.assertNotIsThread( function(v) local y=v+1 end )
+        assertFailure( lu.assertNotIsThread, coroutine.create( function(v) local y=v+1 end ) )
+    end
+
+    function TestLuaUnitAssertions:test_assertNotIsUserdata()
+        lu.assertNotIsUserdata( 1)
+        lu.assertNotIsUserdata( 1.4)
+        lu.assertNotIsUserdata( "hi there!")
+        lu.assertNotIsUserdata( nil)
+        lu.assertNotIsUserdata( {})
+        lu.assertNotIsUserdata( {1,2,3})
+        lu.assertNotIsUserdata( {1})
+        lu.assertNotIsUserdata( false)
+        lu.assertNotIsUserdata( function(v) local y=v+1 end )
+        lu.assertNotIsUserdata( coroutine.create( function(v) local y=v+1 end ) )
+    end
+
     function TestLuaUnitAssertions:test_assertIs()
         local f = function() return true end
         local g = function() return true end
@@ -1405,9 +1507,44 @@ TestLuaUnitErrorMsg = {} --class
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsUserdata()
+
         assertFailureEquals( 'Expected: a userdata value, actual: type number, value 1.2', lu.assertIsUserdata, 1.2 )
         assertFailureEquals( 'Expected: a userdata value, actual: type nil, value nil', lu.assertIsUserdata, nil )
     end 
+
+    function TestLuaUnitErrorMsg:test_assertNotIsNumber()
+        assertFailureEquals( 'Not expected: a number type, actual: value 123', lu.assertNotIsNumber, 123 )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertNotIsString()
+        assertFailureEquals( 'Not expected: a string type, actual: value "abc"', lu.assertNotIsString, "abc" )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertNotIsTable()
+        assertFailureEquals( 'Not expected: a table type, actual: value {1, 2, 3}', lu.assertNotIsTable, {1,2,3} )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertNotIsBoolean()
+        assertFailureEquals( 'Not expected: a boolean type, actual: value false', lu.assertNotIsBoolean, false )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertNotIsNil()
+        assertFailureEquals( 'Not expected: a nil type, actual: value nil', lu.assertNotIsNil, nil )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertNotIsFunction()
+        assertFailureContains( 'Not expected: a function type, actual: value function:', lu.assertNotIsFunction, function() return true end )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertNotIsThread()
+        assertFailureContains( 'Not expected: a thread type, actual: value thread:', lu.assertNotIsThread, coroutine.create( function(v) local y=v+1 end ) )
+    end 
+
+    --[[ How do you create UserData ?
+    function TestLuaUnitErrorMsg:test_assertIsNotUserdata()
+        assertFailureEquals( 'Not expected: a userdata type, actual: value XXX ???', lu.assertIsNotUserdata, XXX ??? )
+    end 
+    ]]
 
     function TestLuaUnitErrorMsg:test_assertIs()
         assertFailureEquals( 'Expected object and actual object are not the same\nExpected: 1, actual: 2', lu.assertIs, 2, 1 )

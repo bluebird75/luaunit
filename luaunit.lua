@@ -780,6 +780,30 @@ for _, funcName in ipairs(
     end
 end
 
+--[[
+Add non-type assertion functions to the module table M. Each of these functions
+takes a single parameter "value", and checks that its Lua type differs from the
+expected string (derived from the function name):
+
+M.assertNotIsXxx(value) -> ensure that type(value) is not "xxx"
+]]
+for _, funcName in ipairs(
+    {'assertNotIsNumber', 'assertNotIsString', 'assertNotIsTable', 'assertNotIsBoolean',
+     'assertNotIsNil', 'assertNotIsFunction', 'assertNotIsUserdata', 'assertNotIsThread'}
+) do
+    local typeUnexpected = funcName:match("^assertNotIs([A-Z]%a*)$")
+    -- Lua type() always returns lowercase, also make sure the match() succeeded
+    typeUnexpected = typeUnexpected and typeUnexpected:lower()
+                   or error("bad function name '"..funcName.."' for type assertion")
+
+    M[funcName] = function(value)
+        if type(value) == typeUnexpected then
+            fail_fmt(2, 'Not expected: a %s type, actual: value %s',
+                     typeUnexpected, prettystrPadded(value))
+        end
+    end
+end
+
 function M.assertIs(actual, expected)
     if not M.ORDER_ACTUAL_EXPECTED then
         actual, expected = expected, actual
