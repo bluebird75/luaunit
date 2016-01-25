@@ -1,7 +1,6 @@
 
 TODO Future:
 ============
-- travis lua 5.3
 - add the ability to count the number of assertions that should have been executed in the test
 - mention that general error are correctly handled by luaunit as failures
 - detect if a functions creates new global variables.
@@ -11,7 +10,6 @@ TODO Future:
 - make a difference between errors and failures
 - randomized testing
 - provide a luarock package. See: https://rocks.moonscript.org/modules/rjpcomputing/luaunit
-- compatibility with LuaUnit v2.0 of rjbcomputing
 - coloured output
 - global setup / teardown
 - class setup / teardown
@@ -21,7 +19,6 @@ TODO Future:
 	+ keys differing in table 1 and 2
 - XML: report system information
 - better error messages for string differences
-- provide a legacy wrapFunction()
 
 Nice to have: 
 ============
@@ -30,6 +27,9 @@ Nice to have:
 Done since 3.1:
 ===============
 x lua 5.3 
+x travis lua 5.3
+x compatibility with LuaUnit v2.0 of rjbcomputing
+x provide a legacy wrapFunction()
 
 Done since 3.0:
 ===============
