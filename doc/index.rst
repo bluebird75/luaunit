@@ -993,7 +993,6 @@ Functional tests perform the following actions:
 
     * adjustment of the file separator to use the same output on Windows and Unix
     * date and test duration is zeroed so that it does not impact the comparison
-    * Lua 5.1 has a special set of files for the test_with_xml suite
     * adjust the stack trace format which has changed between Lua 5.1, 5.2 and 5.3
 
 For functional tests to run, *diff* must be available on the command line. *xmllint* is needed to perform the xml validation but
@@ -1047,26 +1046,6 @@ For example to record a change in the unit-tests:
     >>>>>>> Generating test/ref/unitTestsTextQuiet.txt
     >>>>>>> Generating test/ref/unitTestsTextVerbose.txt
     $
-
-
-To record a change to the XML output, you must record the output for both lua 5.1 and lua above 5.1 for file TestXml. Practically, this translates into:
-
-.. code-block:: shell
-
-    $ lua52 run_functional_tests.lua --update TestXml ExampleXml UnitXml
-    >>>>>>> Generating test/ref/testWithXmlDefault.txt
-    >>>>>>> Generating test/ref/testWithXmlVerbose.txt
-    >>>>>>> Generating test/ref/testWithXmlQuiet.txt
-    >>>>>>> Generating test/ref/exampleXmlDefault.txt
-    >>>>>>> Generating test/ref/exampleXmlQuiet.txt
-    >>>>>>> Generating test/ref/exampleXmlVerbose.txt
-    >>>>>>> Generating test/ref/unitTestsXmlDefault.txt
-    >>>>>>> Generating test/ref/unitTestsXmlQuiet.txt
-    >>>>>>> Generating test/ref/unitTestsXmlVerbose.txt
-    $ lua51 run_functional_tests.lua --update TestXml 
-    >>>>>>> Generating test/ref/testWithXmlDefault51.txt
-    >>>>>>> Generating test/ref/testWithXmlVerbose51.txt
-    >>>>>>> Generating test/ref/testWithXmlQuiet51.txt
 
 You can then commit the new files into git.
 
