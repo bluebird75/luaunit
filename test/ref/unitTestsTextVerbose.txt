@@ -1,15 +1,15 @@
-Started on 01/19/16 12:07:17
+Started on 01/25/16 19:42:28
     TestLuaUnitAssertions.test_assertAlmostEquals ... Ok
     TestLuaUnitAssertions.test_assertEquals ... Ok
     TestLuaUnitAssertions.test_assertFalse ... Ok
     TestLuaUnitAssertions.test_assertIs ... Ok
     TestLuaUnitAssertions.test_assertIsBoolean ... Ok
-    TestLuaUnitAssertions.test_assertIsCoroutine ... Ok
     TestLuaUnitAssertions.test_assertIsFunction ... Ok
     TestLuaUnitAssertions.test_assertIsNil ... Ok
     TestLuaUnitAssertions.test_assertIsNumber ... Ok
     TestLuaUnitAssertions.test_assertIsString ... Ok
     TestLuaUnitAssertions.test_assertIsTable ... Ok
+    TestLuaUnitAssertions.test_assertIsThread ... Ok
     TestLuaUnitAssertions.test_assertIsUserdata ... Ok
     TestLuaUnitAssertions.test_assertItemsEquals ... Ok
     TestLuaUnitAssertions.test_assertNil ... Ok
@@ -17,6 +17,14 @@ Started on 01/19/16 12:07:17
     TestLuaUnitAssertions.test_assertNotEquals ... Ok
     TestLuaUnitAssertions.test_assertNotEqualsDifferentTypes2 ... Ok
     TestLuaUnitAssertions.test_assertNotIs ... Ok
+    TestLuaUnitAssertions.test_assertNotIsBoolean ... Ok
+    TestLuaUnitAssertions.test_assertNotIsFunction ... Ok
+    TestLuaUnitAssertions.test_assertNotIsNil ... Ok
+    TestLuaUnitAssertions.test_assertNotIsNumber ... Ok
+    TestLuaUnitAssertions.test_assertNotIsString ... Ok
+    TestLuaUnitAssertions.test_assertNotIsTable ... Ok
+    TestLuaUnitAssertions.test_assertNotIsThread ... Ok
+    TestLuaUnitAssertions.test_assertNotIsUserdata ... Ok
     TestLuaUnitAssertions.test_assertNotNil ... Ok
     TestLuaUnitAssertions.test_assertNotStrContains ... Ok
     TestLuaUnitAssertions.test_assertNotStrIContains ... Ok
@@ -43,11 +51,11 @@ Started on 01/19/16 12:07:17
     TestLuaUnitErrorMsg.test_assertErrorMsg ... Ok
     TestLuaUnitErrorMsg.test_assertIs ... Ok
     TestLuaUnitErrorMsg.test_assertIsBoolean ... Ok
-    TestLuaUnitErrorMsg.test_assertIsCoroutine ... Ok
     TestLuaUnitErrorMsg.test_assertIsFunction ... Ok
     TestLuaUnitErrorMsg.test_assertIsNumber ... Ok
     TestLuaUnitErrorMsg.test_assertIsString ... Ok
     TestLuaUnitErrorMsg.test_assertIsTable ... Ok
+    TestLuaUnitErrorMsg.test_assertIsThread ... Ok
     TestLuaUnitErrorMsg.test_assertIsUserdata ... Ok
     TestLuaUnitErrorMsg.test_assertItemsEquals ... Ok
     TestLuaUnitErrorMsg.test_assertNil ... Ok
@@ -55,6 +63,12 @@ Started on 01/19/16 12:07:17
     TestLuaUnitErrorMsg.test_assertNotEqualsMsg ... Ok
     TestLuaUnitErrorMsg.test_assertNotEqualsOrderReversedMsg ... Ok
     TestLuaUnitErrorMsg.test_assertNotIs ... Ok
+    TestLuaUnitErrorMsg.test_assertNotIsBoolean ... Ok
+    TestLuaUnitErrorMsg.test_assertNotIsFunction ... Ok
+    TestLuaUnitErrorMsg.test_assertNotIsNumber ... Ok
+    TestLuaUnitErrorMsg.test_assertNotIsString ... Ok
+    TestLuaUnitErrorMsg.test_assertNotIsTable ... Ok
+    TestLuaUnitErrorMsg.test_assertNotIsThread ... Ok
     TestLuaUnitErrorMsg.test_assertNotStrContains ... Ok
     TestLuaUnitErrorMsg.test_assertNotStrIContains ... Ok
     TestLuaUnitErrorMsg.test_assertStrContains ... Ok
@@ -111,5 +125,5 @@ Started on 01/19/16 12:07:17
     TestLuaUnitUtilities.test_xmlEscape ... Ok
     TestMock.testMock ... Ok
 =========================================================
-Ran 111 tests in 0.023 seconds
+Ran 125 tests in 0.023 seconds
 OK 

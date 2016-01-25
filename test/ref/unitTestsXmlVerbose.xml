@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="111" timestamp="2016-01-19T12:07:30" time="0.023" errors="0" failures="0">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="125" timestamp="2016-01-25T19:42:28" time="0.030" errors="0" failures="0">
         <properties>
-            <property name="Lua Version" value="Lua 5.1"/>
+            <property name="Lua Version" value="Lua 5.2"/>
             <property name="LuaUnit Version" value="3.2"/>
         </properties>
         <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertAlmostEquals" time="0.000">
@@ -15,8 +15,6 @@
         </testcase>
         <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertIsBoolean" time="0.000">
         </testcase>
-        <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertIsCoroutine" time="0.000">
-        </testcase>
         <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertIsFunction" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertIsNil" time="0.000">
@@ -26,6 +24,8 @@
         <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertIsString" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertIsTable" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertIsThread" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertIsUserdata" time="0.000">
         </testcase>
@@ -40,6 +40,22 @@
         <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertNotEqualsDifferentTypes2" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertNotIs" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertNotIsBoolean" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertNotIsFunction" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertNotIsNil" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertNotIsNumber" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertNotIsString" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertNotIsTable" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertNotIsThread" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertNotIsUserdata" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitAssertions" name="TestLuaUnitAssertions.test_assertNotNil" time="0.000">
         </testcase>
@@ -93,8 +109,6 @@
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertIsBoolean" time="0.000">
         </testcase>
-        <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertIsCoroutine" time="0.000">
-        </testcase>
         <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertIsFunction" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertIsNumber" time="0.000">
@@ -102,6 +116,8 @@
         <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertIsString" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertIsTable" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertIsThread" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertIsUserdata" time="0.000">
         </testcase>
@@ -116,6 +132,18 @@
         <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertNotEqualsOrderReversedMsg" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertNotIs" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertNotIsBoolean" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertNotIsFunction" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertNotIsNumber" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertNotIsString" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertNotIsTable" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertNotIsThread" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitErrorMsg" name="TestLuaUnitErrorMsg.test_assertNotStrContains" time="0.000">
         </testcase>
