@@ -361,6 +361,13 @@ log file name, and erase the log filename after every test::
     *Errors generated during execution of setUp() or tearDown()
     functions are considered test failures.*
 
+
+.. Note::
+
+    *For compatibility with luaunit v2 and other lua unit-test frameworks, 
+    setUp() and tearDown() may also be named setup(), SetUp(), Setup(), teardown(), TearDown(), Teardown().*
+
+
 Using the command-line
 ======================
 
