@@ -1,5 +1,5 @@
 ## LuaUnit  
-	by Philippe Fremy
+	by Philippe Fremy, contributions from [N1iteHawk](https://github.com/n1tehawk), 
 
 [![Build status](https://ci.appveyor.com/api/projects/status/us6uh4e5q597jj54?svg=true&passingText=Windows%20Build%20passing&failingText=Windows%20Build%20failed)](https://ci.appveyor.com/project/bluebird75/luaunit)
 [![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
@@ -65,8 +65,12 @@ LuaUnit has a mailing list with low activity (a few emails per months). To subsc
 
 ### History 
 
-#### Version 3.2
-* lua 5.3 and luajit (1, 2.0, 2.1) support, validated on Travis CI
+#### Version 3.2 (in progress)
+* Support for new versions: lua 5.3 and luajit (2.0, 2.1), validated on Travis CI and AppVeyor
+* Compatibility layer with forked luaunit v2.x added
+* added documentation about development process
+* improved support for table containing keys of type table
+* small bug fixes, several internal improvements
 
 #### Version 3.1 - 10 Mar. 2015
 * luaunit no longer pollutes global namespace, unless defining EXPORT_ASSERT_TO_GLOBALS to true
