@@ -1019,7 +1019,7 @@ local TapOutput_MT = { __index = TapOutput }
     end
 
     function TapOutput:endTest( node )
-        if node:passed() then
+        if node:isPassed() then
             io.stdout:write("ok     ", self.result.currentTestNumber, "\t", node.testName, "\n")
         end
     end
@@ -1029,12 +1029,12 @@ local TapOutput_MT = { __index = TapOutput }
     function TapOutput:endSuite()
         local t = {}
         table.insert(t, string.format('# Ran %d tests in %0.3f seconds, %d successes, %d failures',
-            self.result.testCount, self.result.duration, self.result.testCount-self.result.failureCount, self.result.failureCount ) )
+            self.result.testCount, self.result.duration, self.result.testCount-self.result.notPassedCount, self.result.notPassedCount ) )
         if self.result.nonSelectedCount > 0 then
             table.insert(t, string.format(", %d non selected tests", self.result.nonSelectedCount ) )
         end
         print( table.concat(t) )
-        return self.result.failureCount
+        return self.result.notPassedCount
     end
 
 
@@ -1101,7 +1101,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
     function JUnitOutput:endSuite()
         local t = {}
         table.insert(t, string.format('# Ran %d tests in %0.3f seconds, %d successes, %d failures',
-            self.result.testCount, self.result.duration, self.result.testCount-self.result.failureCount, self.result.failureCount ) )
+            self.result.testCount, self.result.duration, self.result.testCount-self.result.notPassedCount, self.result.notPassedCount ) )
         if self.result.nonSelectedCount > 0 then
             table.insert(t, string.format(", %d non selected tests", self.result.nonSelectedCount ) )
         end
@@ -1112,7 +1112,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         self.fd:write('<testsuites>\n')
         self.fd:write(string.format(
             '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s" time="%0.3f" errors="0" failures="%d">\n',
-            self.result.testCount, self.result.startIsodate, self.result.duration, self.result.failureCount ))
+            self.result.testCount, self.result.startIsodate, self.result.duration, self.result.notPassedCount ))
         self.fd:write("        <properties>\n")
         self.fd:write(string.format('            <property name="Lua Version" value="%s"/>\n', _VERSION ) )
         self.fd:write(string.format('            <property name="LuaUnit Version" value="%s"/>\n', M.VERSION) )
@@ -1122,7 +1122,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         for i,node in ipairs(self.result.tests) do
             self.fd:write(string.format('        <testcase classname="%s" name="%s" time="%0.3f">\n',
                 node.className, node.testName, node.duration ) )
-            if node:failed() then
+            if node:isNotPassed() then
                 self.fd:write(node:statusXML())
             end
             self.fd:write('        </testcase>\n')
@@ -1135,7 +1135,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         self.fd:write('    </testsuite>\n')
         self.fd:write('</testsuites>\n')
         self.fd:close()
-        return self.result.failureCount
+        return self.result.notPassedCount
     end
 
 
@@ -1281,7 +1281,7 @@ local TextOutput_MT = { -- class
     end
 
     function TextOutput:endTest( node )
-        if node:passed() then
+        if node:isPassed() then
             if self.verbosity > M.VERBOSITY_DEFAULT then
                 io.stdout:write("Ok\n")
             else
@@ -1316,7 +1316,7 @@ local TextOutput_MT = { -- class
     end
 
     function TextOutput:displayFailedTests()
-        if self.result.failureCount == 0 then return end
+        if self.result.notPassedCount == 0 then return end
         print("Failed tests:")
         print("-------------")
         for i,v in ipairs(self.result.failures) do
@@ -1333,7 +1333,7 @@ local TextOutput_MT = { -- class
         self:displayFailedTests()
         local ignoredString = ""
         print( string.format("Ran %d tests in %0.3f seconds", self.result.testCount, self.result.duration ) )
-        if self.result.failureCount == 0 then
+        if self.result.notPassedCount == 0 then
             if self.result.nonSelectedCount > 0 then
                 ignoredString = string.format('(ignored=%d)', self.result.nonSelectedCount )
             end
@@ -1342,7 +1342,7 @@ local TextOutput_MT = { -- class
             if self.result.nonSelectedCount > 0 then
                 ignoredString = ', '..ignoredString
             end
-            print(string.format('FAILED (failures=%d%s)', self.result.failureCount, ignoredString ) )
+            print(string.format('FAILED (failures=%d%s)', self.result.notPassedCount, ignoredString ) )
         end
     end
 
@@ -1619,11 +1619,11 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         self.stackTrace = stackTrace
     end
 
-    function NodeStatus:passed()
+    function NodeStatus:isPassed()
         return self.status == NodeStatus.PASS
     end
 
-    function NodeStatus:failed()
+    function NodeStatus:isNotPassed()
         -- print('hasFailure: '..prettystr(self))
         return self.status ~= NodeStatus.PASS
     end
@@ -1657,6 +1657,8 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     function M.LuaUnit:startSuite(testCount, nonSelectedCount)
         self.result = {}
         self.result.failureCount = 0
+        self.result.errorCount = 0
+        self.result.notPassedCount = 0
         self.result.testCount = testCount
         self.result.nonSelectedCount = nonSelectedCount
         self.result.currentTestNumber = 0
@@ -1669,6 +1671,8 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         self.result.patternFilter = self.patternFilter
         self.result.tests = {}
         self.result.failures = {}
+        self.result.errors = {}
+        self.result.notPassed = {}
 
         self.outputType = self.outputType or TextOutput
         self.output = self.outputType:new()
@@ -1701,18 +1705,42 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         if err.status == NodeStatus.PASS then return end
 
         local node = self.result.currentNode
-        if node.status == NodeStatus.PASS then
+
+        --[[ As a first approach, we will report only one error or one failure for one test.
+
+        However, we can have the case where the test is in failure, and the teardown is in error.
+        In such case, it's a good idea to report both a failure and an error in the test suite. This is
+        what Python unittest does for example. However, it mixes up counts so need to be handled carefully: for
+        example, there could be more (failures + errors) count that tests. What happens to the current node ?
+
+        We will do this more intelligent version later.
+        ]]
+
+        -- if the node is already in failure/error, just don't report the new error (see above)
+        if node.status ~= NodeStatus.PASS then return end
+
+        self.result.notPassedCount = self.result.notPassedCount + 1
+        table.insert( self.result.notPassed, node )
+
+        -- if node.status == NodeStatus.FAIL then
             self.result.failureCount = self.result.failureCount + 1
             node:fail( err.msg, err.trace )
             table.insert( self.result.failures, node )
-        end
-        self.output:addFailure( node )
+            self.output:addFailure( node )
+        --[[
+        elseif node.status == NodeStatus.ERROR then
+            self.result.errorCount = self.result.errorCount + 1
+            node:error( err.msg, err.trace )
+            table.insert( self.result.errors, node )
+            self.output:addError( node )
+        ]]
+        -- end
     end
 
     function M.LuaUnit:endTest()
         local node = self.result.currentNode
         -- print( 'endTest() '..prettystr(node))
-        -- print( 'endTest() '..prettystr(node:failed()))
+        -- print( 'endTest() '..prettystr(node:isNotPassed()))
         node.duration = os.clock() - node.startTime
         node.startTime = nil
         self.output:endTest( node )
@@ -1847,7 +1875,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         end
 
         -- run testMethod()
-        if self.result.currentNode:passed() then
+        if self.result.currentNode:isPassed() then
             self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
         end
 
@@ -2076,7 +2104,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
         self:runSuiteByNames( testNames )
 
-        return self.result.failureCount
+        return self.result.notPassedCount
     end
 -- class LuaUnit
 
