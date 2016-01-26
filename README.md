@@ -1,5 +1,5 @@
 ## LuaUnit  
-	by Philippe Fremy, contributions from [N1iteHawk](https://github.com/n1tehawk), 
+*by Philippe Fremy, with contributions from [N1iteHawk](https://github.com/n1tehawk)*
 
 [![Build status](https://ci.appveyor.com/api/projects/status/us6uh4e5q597jj54?svg=true&passingText=Windows%20Build%20passing&failingText=Windows%20Build%20failed)](https://ci.appveyor.com/project/bluebird75/luaunit)
 [![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
