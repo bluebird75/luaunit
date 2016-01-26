@@ -1319,7 +1319,7 @@ local TextOutput_MT = { -- class
         if self.result.notPassedCount == 0 then return end
         print("Failed tests:")
         print("-------------")
-        for i,v in ipairs(self.result.failures) do
+        for i,v in ipairs(self.result.notPassed) do
             self:displayOneFailedTest( i, v )
         end
     end
@@ -1722,19 +1722,17 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         self.result.notPassedCount = self.result.notPassedCount + 1
         table.insert( self.result.notPassed, node )
 
-        -- if node.status == NodeStatus.FAIL then
+        if err.status == NodeStatus.FAIL then
             self.result.failureCount = self.result.failureCount + 1
             node:fail( err.msg, err.trace )
             table.insert( self.result.failures, node )
             self.output:addFailure( node )
-        --[[
-        elseif node.status == NodeStatus.ERROR then
+        elseif err.status == NodeStatus.ERROR then
             self.result.errorCount = self.result.errorCount + 1
             node:error( err.msg, err.trace )
             table.insert( self.result.errors, node )
-            self.output:addError( node )
-        ]]
-        -- end
+            self.output:addFailure( node )
+        end
     end
 
     function M.LuaUnit:endTest()

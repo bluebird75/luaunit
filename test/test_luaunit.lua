@@ -2070,7 +2070,7 @@ TestLuaUnitResults = {} -- class
         runner:setOutputType( "NIL" )
         runner:runSuiteByNames( { 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' } )
         lu.assertEquals( #runner.result.tests, 7 )
-        lu.assertEquals( #runner.result.failures, 0 )
+        lu.assertEquals( #runner.result.notPassed, 0 )
 
         lu.assertEquals( runner.result.tests[1].testName,"MyTestToto2.test1" )
         lu.assertEquals( runner.result.tests[1].number, 1 )
@@ -2115,7 +2115,7 @@ TestLuaUnitResults = {} -- class
         runner:runSuite( 'MyTestWithFailures' )
 
         lu.assertEquals( #runner.result.tests, 3 )
-        lu.assertEquals( #runner.result.failures, 2 )
+        lu.assertEquals( #runner.result.notPassed, 2 )
 
         lu.assertEquals( runner.result.tests[1].number, 1 )
         lu.assertEquals( runner.result.tests[1].testName, "MyTestWithFailures.testOk" )
@@ -2137,17 +2137,17 @@ TestLuaUnitResults = {} -- class
         lu.assertIsString( runner.result.tests[3].msg )
         lu.assertIsString( runner.result.tests[3].stackTrace )
 
-        lu.assertEquals( runner.result.failures[1].testName, 'MyTestWithFailures.testWithFailure1' )
-        lu.assertEquals( runner.result.failures[1].className, 'MyTestWithFailures' )
-        lu.assertEquals( runner.result.failures[1].status, lu.NodeStatus.FAIL )
-        lu.assertIsString( runner.result.failures[1].msg )
-        lu.assertIsString( runner.result.failures[1].stackTrace )
+        lu.assertEquals( runner.result.notPassed[1].testName, 'MyTestWithFailures.testWithFailure1' )
+        lu.assertEquals( runner.result.notPassed[1].className, 'MyTestWithFailures' )
+        lu.assertEquals( runner.result.notPassed[1].status, lu.NodeStatus.FAIL )
+        lu.assertIsString( runner.result.notPassed[1].msg )
+        lu.assertIsString( runner.result.notPassed[1].stackTrace )
 
-        lu.assertEquals( runner.result.failures[2].testName, 'MyTestWithFailures.testWithFailure2' )
-        lu.assertEquals( runner.result.failures[2].className, 'MyTestWithFailures' )
-        lu.assertEquals( runner.result.failures[2].status, lu.NodeStatus.FAIL )
-        lu.assertIsString( runner.result.failures[2].msg )
-        lu.assertIsString( runner.result.failures[2].stackTrace )
+        lu.assertEquals( runner.result.notPassed[2].testName, 'MyTestWithFailures.testWithFailure2' )
+        lu.assertEquals( runner.result.notPassed[2].className, 'MyTestWithFailures' )
+        lu.assertEquals( runner.result.notPassed[2].status, lu.NodeStatus.FAIL )
+        lu.assertIsString( runner.result.notPassed[2].msg )
+        lu.assertIsString( runner.result.notPassed[2].stackTrace )
     end
 
     function TestLuaUnitResults:test_resultsWhileTestInProgress()
