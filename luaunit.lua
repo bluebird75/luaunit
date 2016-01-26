@@ -16,7 +16,6 @@ local M={}
 M.private = {}
 
 M.VERSION='3.2'
-M._VERSION='3.2'
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
 assertEquals( expected, actual ).

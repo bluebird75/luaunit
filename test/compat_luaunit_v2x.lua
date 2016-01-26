@@ -65,8 +65,8 @@ function TestLuaUnitV2Compat:testAssertType()
 end
 
 function TestLuaUnitV2Compat:testHasVersionKey()
-    assertNotNil( lu._VERSION )
-    assertString( lu._VERSION )
+    assertNotNil( lu.VERSION )
+    assertString( lu.VERSION )
 end
 
 function TestLuaUnitV2Compat:testTableEquality()
