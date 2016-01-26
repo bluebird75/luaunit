@@ -1017,6 +1017,7 @@ local TapOutput_MT = { __index = TapOutput }
            print( prefixString( '    ', node.stackTrace ) )
         end
     end
+    TapOutput.addError = TapOutput.addFailure
 
     function TapOutput:endTest( node )
         if node:isPassed() then
@@ -1089,6 +1090,11 @@ local JUnitOutput_MT = { __index = JUnitOutput }
 
     function JUnitOutput:addFailure( node )
         print('# Failure: ' .. node.msg)
+        -- print('# ' .. node.stackTrace)
+    end
+
+    function JUnitOutput:addError( node )
+        print('# Error: ' .. node.msg)
         -- print('# ' .. node.stackTrace)
     end
 
@@ -1277,6 +1283,10 @@ local TextOutput_MT = { -- class
     end
 
     function TextOutput:addFailure( node )
+        -- nothing
+    end
+
+    function TextOutput:addError( node )
         -- nothing
     end
 
@@ -1642,8 +1652,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
                 {'            <error type="', xmlEscape(self.msg), '">\n',
                  '                <![CDATA[', xmlCDataEscape(self.stackTrace),
                  ']]></error>\n'})
-        end
-        if self:isFailure() then
+        elseif self:isFailure() then
             return table.concat(
                 {'            <failure type="', xmlEscape(self.msg), '">\n',
                  '                <![CDATA[', xmlCDataEscape(self.stackTrace),
@@ -1731,7 +1740,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             self.result.errorCount = self.result.errorCount + 1
             node:error( err.msg, err.trace )
             table.insert( self.result.errors, node )
-            self.output:addFailure( node )
+            self.output:addError( node )
         end
     end
 
