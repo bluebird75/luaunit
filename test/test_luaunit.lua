@@ -1608,10 +1608,11 @@ MyTestToto1 = {} --class
 MyTestToto2 = {} --class
     function MyTestToto2:test1() table.insert( executedTests, "MyTestToto2:test1" ) end
 
-MyTestWithFailures = {} --class
-    function MyTestWithFailures:testWithFailure1() lu.assertEquals(1, 2) end
-    function MyTestWithFailures:testWithFailure2() lu.assertError( function() end ) end
-    function MyTestWithFailures:testOk() end
+MyTestWithErrorsAndFailures = {} --class
+    function MyTestWithErrorsAndFailures:testWithFailure1() lu.assertEquals(1, 2) end
+    function MyTestWithErrorsAndFailures:testWithFailure2() lu.assertError( function() end ) end
+    function MyTestWithErrorsAndFailures:testWithError1() error('some error') end
+    function MyTestWithErrorsAndFailures:testOk() end
 
 MyTestOk = {} --class
     function MyTestOk:testOk1() end
@@ -1638,7 +1639,7 @@ TestLuaUnitExecution = {} --class
 
     function TestLuaUnitExecution:test_collectTests()
         allTests = lu.LuaUnit.collectTests()
-        lu.assertEquals( allTests, {"MyTestFunction", "MyTestOk", "MyTestToto1", "MyTestToto2","MyTestWithFailures"})
+        lu.assertEquals( allTests, {"MyTestFunction", "MyTestOk", "MyTestToto1", "MyTestToto2","MyTestWithErrorsAndFailures"})
     end
 
     function TestLuaUnitExecution:test_MethodsAreExecutedInRightOrder()
@@ -1701,8 +1702,8 @@ TestLuaUnitExecution = {} --class
     function TestLuaUnitExecution:testRunReturnsNumberOfFailures()
         local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
-        ret = runner:runSuite( 'MyTestWithFailures' )
-        lu.assertEquals(ret, 2)
+        ret = runner:runSuite( 'MyTestWithErrorsAndFailures' )
+        lu.assertEquals(ret, 3)
 
         ret = runner:runSuite( 'MyTestToto1' )
         lu.assertEquals(ret, 0)
@@ -1711,9 +1712,9 @@ TestLuaUnitExecution = {} --class
     function TestLuaUnitExecution:testTestCountAndFailCount()
         local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSuite( 'MyTestWithFailures' )
-        lu.assertEquals( runner.result.testCount, 3)
-        lu.assertEquals( runner.result.notPassedCount, 2)
+        runner:runSuite( 'MyTestWithErrorsAndFailures' )
+        lu.assertEquals( runner.result.testCount, 4)
+        lu.assertEquals( runner.result.notPassedCount, 3)
 
         runner:runSuite( 'MyTestToto1' )
         lu.assertEquals( runner.result.testCount, 5)
@@ -1882,18 +1883,18 @@ TestLuaUnitExecution = {} --class
     function TestLuaUnitExecution:testOutputInterface()
         local runner = lu.LuaUnit:new()
         runner.outputType = Mock
-        runner:runSuite( 'MyTestWithFailures', 'MyTestOk' )
+        runner:runSuite( 'MyTestWithErrorsAndFailures', 'MyTestOk' )
         m = runner.output
 
         lu.assertEquals( m.calls[1][1], 'startSuite' )
         lu.assertEquals(#m.calls[1], 2 )
 
         lu.assertEquals( m.calls[2][1], 'startClass' )
-        lu.assertEquals( m.calls[2][3], 'MyTestWithFailures' )
+        lu.assertEquals( m.calls[2][3], 'MyTestWithErrorsAndFailures' )
         lu.assertEquals(#m.calls[2], 3 )
 
         lu.assertEquals( m.calls[3][1], 'startTest' )
-        lu.assertEquals( m.calls[3][3], 'MyTestWithFailures.testOk' )
+        lu.assertEquals( m.calls[3][3], 'MyTestWithErrorsAndFailures.testOk' )
         lu.assertEquals(#m.calls[3], 3 )
 
         lu.assertEquals( m.calls[4][1], 'endTest' )
@@ -1902,20 +1903,20 @@ TestLuaUnitExecution = {} --class
         lu.assertEquals( m.calls[4][3].status, lu.NodeStatus.PASS )
 
         lu.assertEquals( m.calls[5][1], 'startTest' )
-        lu.assertEquals( m.calls[5][3], 'MyTestWithFailures.testWithFailure1' )
+        lu.assertEquals( m.calls[5][3], 'MyTestWithErrorsAndFailures.testWithError1' )
         lu.assertEquals(#m.calls[5], 3 )
 
-        lu.assertEquals( m.calls[6][1], 'addFailure' )
+        lu.assertEquals( m.calls[6][1], 'addError' )
         lu.assertEquals(#m.calls[6], 3 )
 
         lu.assertEquals( m.calls[7][1], 'endTest' )
         lu.assertEquals(#m.calls[7], 3 )
         lu.assertIsTable( m.calls[7][3] )
-        lu.assertEquals( m.calls[7][3].status, lu.NodeStatus.FAIL )
+        lu.assertEquals( m.calls[7][3].status, lu.NodeStatus.ERROR )
 
 
         lu.assertEquals( m.calls[8][1], 'startTest' )
-        lu.assertEquals( m.calls[8][3], 'MyTestWithFailures.testWithFailure2' )
+        lu.assertEquals( m.calls[8][3], 'MyTestWithErrorsAndFailures.testWithFailure1' )
         lu.assertEquals(#m.calls[8], 3 )
 
         lu.assertEquals( m.calls[9][1], 'addFailure' )
@@ -1926,38 +1927,50 @@ TestLuaUnitExecution = {} --class
         lu.assertIsTable( m.calls[10][3] )
         lu.assertEquals( m.calls[10][3].status, lu.NodeStatus.FAIL )
 
-        lu.assertEquals( m.calls[11][1], 'endClass' )
-        lu.assertEquals(#m.calls[11], 2 )
+        lu.assertEquals( m.calls[11][1], 'startTest' )
+        lu.assertEquals( m.calls[11][3], 'MyTestWithErrorsAndFailures.testWithFailure2' )
+        lu.assertEquals(#m.calls[11], 3 )
 
-        lu.assertEquals( m.calls[12][1], 'startClass' )
-        lu.assertEquals( m.calls[12][3], 'MyTestOk' )
+        lu.assertEquals( m.calls[12][1], 'addFailure' )
         lu.assertEquals(#m.calls[12], 3 )
 
-        lu.assertEquals( m.calls[13][1], 'startTest' )
-        lu.assertEquals( m.calls[13][3], 'MyTestOk.testOk1' )
+        lu.assertEquals( m.calls[13][1], 'endTest' )
         lu.assertEquals(#m.calls[13], 3 )
+        lu.assertIsTable(m.calls[13][3] )
+        lu.assertEquals( m.calls[13][3].status, lu.NodeStatus.FAIL )
 
-        lu.assertEquals( m.calls[14][1], 'endTest' )
-        lu.assertEquals(#m.calls[14], 3 )
-        lu.assertIsTable( m.calls[14][3] )
-        lu.assertEquals( m.calls[14][3].status, lu.NodeStatus.PASS )
+        lu.assertEquals( m.calls[14][1], 'endClass' )
+        lu.assertEquals(#m.calls[14], 2 )
 
-        lu.assertEquals( m.calls[15][1], 'startTest' )
-        lu.assertEquals( m.calls[15][3], 'MyTestOk.testOk2' )
+        lu.assertEquals( m.calls[15][1], 'startClass' )
+        lu.assertEquals( m.calls[15][3], 'MyTestOk' )
         lu.assertEquals(#m.calls[15], 3 )
 
-        lu.assertEquals( m.calls[16][1], 'endTest' )
+        lu.assertEquals( m.calls[16][1], 'startTest' )
+        lu.assertEquals( m.calls[16][3], 'MyTestOk.testOk1' )
         lu.assertEquals(#m.calls[16], 3 )
-        lu.assertIsTable( m.calls[16][3] )
-        lu.assertEquals( m.calls[16][3].status, lu.NodeStatus.PASS )
 
-        lu.assertEquals( m.calls[17][1], 'endClass' )
-        lu.assertEquals(#m.calls[17], 2 )
+        lu.assertEquals( m.calls[17][1], 'endTest' )
+        lu.assertEquals(#m.calls[17], 3 )
+        lu.assertIsTable( m.calls[17][3] )
+        lu.assertEquals( m.calls[17][3].status, lu.NodeStatus.PASS )
 
-        lu.assertEquals( m.calls[18][1], 'endSuite' )
-        lu.assertEquals(#m.calls[18], 2 )
+        lu.assertEquals( m.calls[18][1], 'startTest' )
+        lu.assertEquals( m.calls[18][3], 'MyTestOk.testOk2' )
+        lu.assertEquals(#m.calls[18], 3 )
 
-        lu.assertEquals( m.calls[19], nil )
+        lu.assertEquals( m.calls[19][1], 'endTest' )
+        lu.assertEquals(#m.calls[19], 3 )
+        lu.assertIsTable( m.calls[19][3] )
+        lu.assertEquals( m.calls[19][3].status, lu.NodeStatus.PASS )
+
+        lu.assertEquals( m.calls[20][1], 'endClass' )
+        lu.assertEquals(#m.calls[20], 2 )
+
+        lu.assertEquals( m.calls[21][1], 'endSuite' )
+        lu.assertEquals(#m.calls[21], 2 )
+
+        lu.assertEquals( m.calls[22], nil )
 
     end
 
@@ -2112,42 +2125,55 @@ TestLuaUnitResults = {} -- class
     function TestLuaUnitResults:test_runSuiteWithFailures()
         local runner = lu.LuaUnit:new()
         runner:setOutputType( "NIL" )
-        runner:runSuite( 'MyTestWithFailures' )
+        runner:runSuite( 'MyTestWithErrorsAndFailures' )
 
-        lu.assertEquals( #runner.result.tests, 3 )
-        lu.assertEquals( #runner.result.notPassed, 2 )
+        lu.assertEquals( #runner.result.tests, 4 )
+        lu.assertEquals( #runner.result.notPassed, 3 )
 
         lu.assertEquals( runner.result.tests[1].number, 1 )
-        lu.assertEquals( runner.result.tests[1].testName, "MyTestWithFailures.testOk" )
-        lu.assertEquals( runner.result.tests[1].className, 'MyTestWithFailures' )
+        lu.assertEquals( runner.result.tests[1].testName, "MyTestWithErrorsAndFailures.testOk" )
+        lu.assertEquals( runner.result.tests[1].className, 'MyTestWithErrorsAndFailures' )
         lu.assertEquals( runner.result.tests[1].status, lu.NodeStatus.PASS )
         lu.assertIsNumber( runner.result.tests[1].duration )
         lu.assertIsNil( runner.result.tests[1].msg )
         lu.assertIsNil( runner.result.tests[1].stackTrace )
 
-        lu.assertEquals( runner.result.tests[2].testName, 'MyTestWithFailures.testWithFailure1' )
-        lu.assertEquals( runner.result.tests[2].className, 'MyTestWithFailures' )
-        lu.assertEquals( runner.result.tests[2].status, lu.NodeStatus.FAIL )
+        lu.assertEquals( runner.result.tests[2].testName, 'MyTestWithErrorsAndFailures.testWithError1' )
+        lu.assertEquals( runner.result.tests[2].className, 'MyTestWithErrorsAndFailures' )
+        lu.assertEquals( runner.result.tests[2].status, lu.NodeStatus.ERROR )
         lu.assertIsString( runner.result.tests[2].msg )
         lu.assertIsString( runner.result.tests[2].stackTrace )
 
-        lu.assertEquals( runner.result.tests[3].testName, 'MyTestWithFailures.testWithFailure2' )
-        lu.assertEquals( runner.result.tests[3].className, 'MyTestWithFailures' )
+        lu.assertEquals( runner.result.tests[3].testName, 'MyTestWithErrorsAndFailures.testWithFailure1' )
+        lu.assertEquals( runner.result.tests[3].className, 'MyTestWithErrorsAndFailures' )
         lu.assertEquals( runner.result.tests[3].status, lu.NodeStatus.FAIL )
         lu.assertIsString( runner.result.tests[3].msg )
         lu.assertIsString( runner.result.tests[3].stackTrace )
 
-        lu.assertEquals( runner.result.notPassed[1].testName, 'MyTestWithFailures.testWithFailure1' )
-        lu.assertEquals( runner.result.notPassed[1].className, 'MyTestWithFailures' )
-        lu.assertEquals( runner.result.notPassed[1].status, lu.NodeStatus.FAIL )
+        lu.assertEquals( runner.result.tests[4].testName, 'MyTestWithErrorsAndFailures.testWithFailure2' )
+        lu.assertEquals( runner.result.tests[4].className, 'MyTestWithErrorsAndFailures' )
+        lu.assertEquals( runner.result.tests[4].status, lu.NodeStatus.FAIL )
+        lu.assertIsString( runner.result.tests[4].msg )
+        lu.assertIsString( runner.result.tests[4].stackTrace )
+
+        lu.assertEquals( runner.result.notPassed[1].testName, 'MyTestWithErrorsAndFailures.testWithError1' )
+        lu.assertEquals( runner.result.notPassed[1].className, 'MyTestWithErrorsAndFailures' )
+        lu.assertEquals( runner.result.notPassed[1].status, lu.NodeStatus.ERROR )
         lu.assertIsString( runner.result.notPassed[1].msg )
         lu.assertIsString( runner.result.notPassed[1].stackTrace )
 
-        lu.assertEquals( runner.result.notPassed[2].testName, 'MyTestWithFailures.testWithFailure2' )
-        lu.assertEquals( runner.result.notPassed[2].className, 'MyTestWithFailures' )
+        lu.assertEquals( runner.result.notPassed[2].testName, 'MyTestWithErrorsAndFailures.testWithFailure1' )
+        lu.assertEquals( runner.result.notPassed[2].className, 'MyTestWithErrorsAndFailures' )
         lu.assertEquals( runner.result.notPassed[2].status, lu.NodeStatus.FAIL )
         lu.assertIsString( runner.result.notPassed[2].msg )
         lu.assertIsString( runner.result.notPassed[2].stackTrace )
+
+        lu.assertEquals( runner.result.notPassed[3].testName, 'MyTestWithErrorsAndFailures.testWithFailure2' )
+        lu.assertEquals( runner.result.notPassed[3].className, 'MyTestWithErrorsAndFailures' )
+        lu.assertEquals( runner.result.notPassed[3].status, lu.NodeStatus.FAIL )
+        lu.assertIsString( runner.result.notPassed[3].msg )
+        lu.assertIsString( runner.result.notPassed[3].stackTrace )
+
     end
 
     function TestLuaUnitResults:test_resultsWhileTestInProgress()
@@ -2158,13 +2184,13 @@ TestLuaUnitResults = {} -- class
             t.startTest = function(self, testName ) 
                 if self.result.currentNode.number == 1 then
                     lu.assertEquals( self.result.currentNode.number, 1 )
-                    lu.assertEquals( self.result.currentNode.testName, 'MyTestWithFailures.testOk' )
-                    lu.assertEquals( self.result.currentNode.className, 'MyTestWithFailures' )
+                    lu.assertEquals( self.result.currentNode.testName, 'MyTestWithErrorsAndFailures.testOk' )
+                    lu.assertEquals( self.result.currentNode.className, 'MyTestWithErrorsAndFailures' )
                     lu.assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
                 elseif self.result.currentNode.number == 2 then
                     lu.assertEquals( self.result.currentNode.number, 2 )
-                    lu.assertEquals( self.result.currentNode.testName, 'MyTestWithFailures.testWithFailure1' )
-                    lu.assertEquals( self.result.currentNode.className, 'MyTestWithFailures' )
+                    lu.assertEquals( self.result.currentNode.testName, 'MyTestWithErrorsAndFailures.testWithError1' )
+                    lu.assertEquals( self.result.currentNode.className, 'MyTestWithErrorsAndFailures' )
                     lu.assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
                 end
             end
@@ -2172,13 +2198,13 @@ TestLuaUnitResults = {} -- class
                 if self.result.currentNode.number == 1 then
                     lu.assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
                 elseif self.result.currentNode.number == 2 then
-                    lu.assertEquals( self.result.currentNode.status, lu.NodeStatus.FAIL )
+                    lu.assertEquals( self.result.currentNode.status, lu.NodeStatus.ERROR )
                 end
             end
             return t
         end
         runner.outputType = MyMocker
-        runner:runSuite( 'MyTestWithFailures' )
+        runner:runSuite( 'MyTestWithErrorsAndFailures' )
         m = runner.output
 
         lu.assertEquals( m.calls[1][1], 'startSuite' )
