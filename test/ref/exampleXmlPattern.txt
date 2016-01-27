@@ -1,5 +1,5 @@
 # XML output to test/ref/exampleXmlPattern.xml
-# Started on 01/19/16 20:35:37
+# Started on 01/27/16 21:35:24
 # Starting class: TestToto
 # Starting test: TestToto.test3
 # Starting test: TestToto.test4
@@ -12,7 +12,7 @@
 # Failure: example_with_luaunit.lua:60: expected: {1, 2, three=3}
 actual: {1, 2}
 # Starting test: TestToto.test8a
-# Failure: example_with_luaunit.lua:78: Bouhouhoum error!
+# Error: example_with_luaunit.lua:78: Bouhouhoum error!
 # Starting test: TestToto.test8b
-# Failure: example_with_luaunit.lua:78: Bouhouhoum error!
-# Ran 7 tests in 0.001 seconds, 1 successes, 6 failures, 8 non selected tests
+# Error: example_with_luaunit.lua:78: Bouhouhoum error!
+# Ran 7 tests in 0.000 seconds, 1 successes, 6 failures, 8 non selected tests

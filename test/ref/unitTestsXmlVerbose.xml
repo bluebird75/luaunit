@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="125" timestamp="2016-01-25T19:42:28" time="0.030" errors="0" failures="0">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="134" timestamp="2016-01-27T21:35:24" time="0.020" errors="0" failures="0">
         <properties>
             <property name="Lua Version" value="Lua 5.2"/>
             <property name="LuaUnit Version" value="3.2"/>
@@ -182,6 +182,24 @@
         <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.testWithSetupTeardownErrors4" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.testWithSetupTeardownErrors5" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.testWithSetupTeardownErrorsAndFailures1" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.testWithSetupTeardownErrorsAndFailures2" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.testWithSetupTeardownErrorsAndFailures3" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.testWithSetupTeardownErrorsAndFailures4" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.testWithSetupTeardownFailure1" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.testWithSetupTeardownFailure2" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.testWithSetupTeardownFailure3" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.testWithSetupTeardownFailure4" time="0.000">
+        </testcase>
+        <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.testWithSetupTeardownFailure5" time="0.000">
         </testcase>
         <testcase classname="TestLuaUnitExecution" name="TestLuaUnitExecution.test_MethodsAreExecutedInRightOrder" time="0.000">
         </testcase>

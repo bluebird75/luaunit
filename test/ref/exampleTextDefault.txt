@@ -1,4 +1,4 @@
-FF.FF.FFFFFFFF.
+FF.FF.FFFFEEEE.
 Failed tests:
 -------------
 1) TestTiti.test1_withFailure
@@ -67,5 +67,5 @@ example_with_luaunit.lua:132: assertion failed!
 stack traceback:
 	example_with_luaunit.lua:132: in function 'test2_withFailure'
 
-Ran 15 tests in 0.004 seconds
+Ran 15 tests in 0.000 seconds
 FAILED (failures=12)

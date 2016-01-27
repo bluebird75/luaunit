@@ -1,4 +1,4 @@
-.FFFFFF
+.FFFFEE
 Failed tests:
 -------------
 1) TestToto.test4
@@ -35,5 +35,5 @@ stack traceback:
 	example_with_luaunit.lua:74: in function 'funcWithFuncWithError'
 	example_with_luaunit.lua:70: in function 'TestToto.test8b'
 
-Ran 7 tests in 0.001 seconds
+Ran 7 tests in 0.010 seconds
 FAILED (failures=6, )

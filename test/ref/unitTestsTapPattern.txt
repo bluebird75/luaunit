@@ -1,5 +1,5 @@
 1..25
-# Started on 01/25/16 19:42:28
+# Started on 01/27/16 21:35:20
 # Starting class: TestLuaUnitAssertions
 ok     1	TestLuaUnitAssertions.test_assertIsString
 ok     2	TestLuaUnitAssertions.test_assertNotIsString
@@ -28,4 +28,4 @@ ok     22	TestLuaUnitUtilities.test_strSplit3CharDelim
 ok     23	TestLuaUnitUtilities.test_strSplitOneCharDelim
 ok     24	TestLuaUnitUtilities.test_stripStackTrace
 ok     25	TestLuaUnitUtilities.test_table_keytostring
-# Ran 25 tests in 0.004 seconds, 25 successes, 0 failures, 100 non selected tests
+# Ran 25 tests in 0.003 seconds, 25 successes, 0 failures, 109 non selected tests

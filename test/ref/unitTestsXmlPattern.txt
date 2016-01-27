@@ -1,5 +1,5 @@
 # XML output to test/ref/unitTestsXmlPattern.xml
-# Started on 01/25/16 19:42:28
+# Started on 01/27/16 21:35:24
 # Starting class: TestLuaUnitAssertions
 # Starting test: TestLuaUnitAssertions.test_assertIsString
 # Starting test: TestLuaUnitAssertions.test_assertNotIsString
@@ -28,4 +28,4 @@
 # Starting test: TestLuaUnitUtilities.test_strSplitOneCharDelim
 # Starting test: TestLuaUnitUtilities.test_stripStackTrace
 # Starting test: TestLuaUnitUtilities.test_table_keytostring
-# Ran 25 tests in 0.005 seconds, 25 successes, 0 failures, 100 non selected tests
+# Ran 25 tests in 0.000 seconds, 25 successes, 0 failures, 109 non selected tests

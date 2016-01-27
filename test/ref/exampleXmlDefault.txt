@@ -1,5 +1,5 @@
 # XML output to test/ref/exampleXmlDefault.xml
-# Started on 01/01/16 22:13:01
+# Started on 01/27/16 21:35:24
 # Starting class: TestTiti
 # Starting test: TestTiti.test1_withFailure
 # Failure: example_with_luaunit.lua:101: expected: 2, actual: 1
@@ -24,12 +24,12 @@ actual: "hop"
 # Failure: example_with_luaunit.lua:60: expected: {1, 2, three=3}
 actual: {1, 2}
 # Starting test: TestToto.test8a
-# Failure: example_with_luaunit.lua:78: Bouhouhoum error!
+# Error: example_with_luaunit.lua:78: Bouhouhoum error!
 # Starting test: TestToto.test8b
-# Failure: example_with_luaunit.lua:78: Bouhouhoum error!
+# Error: example_with_luaunit.lua:78: Bouhouhoum error!
 # Starting test: test1_withFailure
-# Failure: example_with_luaunit.lua:126: assertion failed!
+# Error: example_with_luaunit.lua:126: assertion failed!
 # Starting test: test2_withFailure
-# Failure: example_with_luaunit.lua:132: assertion failed!
+# Error: example_with_luaunit.lua:132: assertion failed!
 # Starting test: test3
-# Ran 15 tests in 0.015 seconds, 3 successes, 12 failures
+# Ran 15 tests in 0.020 seconds, 3 successes, 12 failures

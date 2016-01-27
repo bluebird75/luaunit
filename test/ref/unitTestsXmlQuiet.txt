@@ -1,5 +1,5 @@
 # XML output to test/ref/unitTestsXmlQuiet.xml
-# Started on 01/25/16 19:42:27
+# Started on 01/27/16 21:35:24
 # Starting class: TestLuaUnitAssertions
 # Starting test: TestLuaUnitAssertions.test_assertAlmostEquals
 # Starting test: TestLuaUnitAssertions.test_assertEquals
@@ -93,6 +93,15 @@
 # Starting test: TestLuaUnitExecution.testWithSetupTeardownErrors3
 # Starting test: TestLuaUnitExecution.testWithSetupTeardownErrors4
 # Starting test: TestLuaUnitExecution.testWithSetupTeardownErrors5
+# Starting test: TestLuaUnitExecution.testWithSetupTeardownErrorsAndFailures1
+# Starting test: TestLuaUnitExecution.testWithSetupTeardownErrorsAndFailures2
+# Starting test: TestLuaUnitExecution.testWithSetupTeardownErrorsAndFailures3
+# Starting test: TestLuaUnitExecution.testWithSetupTeardownErrorsAndFailures4
+# Starting test: TestLuaUnitExecution.testWithSetupTeardownFailure1
+# Starting test: TestLuaUnitExecution.testWithSetupTeardownFailure2
+# Starting test: TestLuaUnitExecution.testWithSetupTeardownFailure3
+# Starting test: TestLuaUnitExecution.testWithSetupTeardownFailure4
+# Starting test: TestLuaUnitExecution.testWithSetupTeardownFailure5
 # Starting test: TestLuaUnitExecution.test_MethodsAreExecutedInRightOrder
 # Starting test: TestLuaUnitExecution.test_collectTests
 # Starting test: TestLuaUnitExecution.test_filterWithPattern
@@ -132,4 +141,4 @@
 # Starting test: TestLuaUnitUtilities.test_xmlEscape
 # Starting class: TestMock
 # Starting test: TestMock.testMock
-# Ran 125 tests in 0.031 seconds, 125 successes, 0 failures
+# Ran 134 tests in 0.020 seconds, 134 successes, 0 failures
