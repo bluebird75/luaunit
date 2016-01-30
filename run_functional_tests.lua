@@ -414,20 +414,12 @@ end
 function testLegacyLuaunitUsage()
     -- run test/legacy_example_usage and check exit status (expecting 12 failures)
     osExpectedCodeExec(12, '%s %s  --output text > %s', LUA,
-                       "test/legacy_example_with_luaunit.lua",
-                       "test/legacyExample.txt")
-    if refExitCode ~= nil and exitCode ~= refExitCode then
-        error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
-    end 
-
+        "test/legacy_example_with_luaunit.lua", "test/legacyExample.txt")
 end
 
 function testLuaunitV2Usage()
-    osExpectedCodeExec( 0, '%s %s  --output text 1> %s 2>&1', LUA,  
-    "test/compat_luaunit_v2x.lua", "test/compat_luaunit_v2x.txt" )
-    if refExitCode ~= nil and exitCode ~= refExitCode then
-        error(string.format('Expected exit code %d but got %d for file %s', refExitCode, exitCode, fileToRun ) )
-    end 
+    osExpectedCodeExec(0, '%s %s  --output text 1> %s 2>&1', LUA,
+        "test/compat_luaunit_v2x.lua", "test/compat_luaunit_v2x.txt")
 end
 
 function testBasicLuaunitOptions()
