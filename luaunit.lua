@@ -1653,8 +1653,18 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     function M.LuaUnit.statusLine(result)
         -- return status line string according to results
-        s = string.format('# Ran %d tests in %0.3f seconds, %d successes, %d failures',
-            result.testCount, result.duration, result.testCount-result.notPassedCount, result.notPassedCount )
+        s = string.format('# Ran %d tests in %0.3f seconds, %d successes',
+            result.testCount, result.duration, result.testCount-result.notPassedCount )
+        if result.notPassedCount > 0 then
+            if result.failureCount > 0 then
+                s = s..string.format(', %d failures', result.failureCount )
+            end
+            if result.errorCount > 0 then
+                s = s..string.format(', %d errors', result.errorCount )
+            end
+        else
+            s = s..', 0 failures'
+        end
         if result.nonSelectedCount > 0 then
             s = s..string.format(", %d non selected tests", result.nonSelectedCount )
         end
