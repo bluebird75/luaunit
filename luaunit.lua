@@ -1028,13 +1028,7 @@ local TapOutput_MT = { __index = TapOutput }
     function TapOutput:endClass() end
 
     function TapOutput:endSuite()
-        local t = {}
-        table.insert(t, string.format('# Ran %d tests in %0.3f seconds, %d successes, %d failures',
-            self.result.testCount, self.result.duration, self.result.testCount-self.result.notPassedCount, self.result.notPassedCount ) )
-        if self.result.nonSelectedCount > 0 then
-            table.insert(t, string.format(", %d non selected tests", self.result.nonSelectedCount ) )
-        end
-        print( table.concat(t) )
+        print( M.LuaUnit.statusLine( self.result ) )
         return self.result.notPassedCount
     end
 
@@ -1105,13 +1099,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
     end
 
     function JUnitOutput:endSuite()
-        local t = {}
-        table.insert(t, string.format('# Ran %d tests in %0.3f seconds, %d successes, %d failures',
-            self.result.testCount, self.result.duration, self.result.testCount-self.result.notPassedCount, self.result.notPassedCount ) )
-        if self.result.nonSelectedCount > 0 then
-            table.insert(t, string.format(", %d non selected tests", self.result.nonSelectedCount ) )
-        end
-        print( table.concat(t) )
+        print( M.LuaUnit.statusLine(self.result))
 
         -- XML file writing
         self.fd:write('<?xml version="1.0" encoding="UTF-8" ?>\n')
@@ -1662,6 +1650,16 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     end
 
     --------------[[ Output methods ]]-------------------------
+
+    function M.LuaUnit.statusLine(result)
+        -- return status line string according to results
+        s = string.format('# Ran %d tests in %0.3f seconds, %d successes, %d failures',
+            result.testCount, result.duration, result.testCount-result.notPassedCount, result.notPassedCount )
+        if result.nonSelectedCount > 0 then
+            s = s..string.format(", %d non selected tests", result.nonSelectedCount )
+        end
+        return s
+    end
 
     function M.LuaUnit:startSuite(testCount, nonSelectedCount)
         self.result = {}
