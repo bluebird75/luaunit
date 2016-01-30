@@ -1,5 +1,5 @@
 1..7
-# Started on 01/19/16 20:35:37
+# Started on 01/30/16 22:19:36
 # Starting class: TestToto
 ok     1	TestToto.test3
 not ok 2	TestToto.test4
@@ -15,4 +15,4 @@ not ok 6	TestToto.test8a
     example_with_luaunit.lua:78: Bouhouhoum error!
 not ok 7	TestToto.test8b
     example_with_luaunit.lua:78: Bouhouhoum error!
-# Ran 7 tests in 0.001 seconds, 1 successes, 6 failures, 8 non selected tests
+# Ran 7 tests in 0.015 seconds, 1 successes, 4 failures, 2 errors, 8 non selected tests
