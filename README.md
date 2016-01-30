@@ -1,5 +1,5 @@
 ## LuaUnit  
-*by Philippe Fremy, with contributions from [N1iteHawk](https://github.com/n1tehawk)*
+*by Philippe Fremy
 
 [![Build status](https://ci.appveyor.com/api/projects/status/us6uh4e5q597jj54?svg=true&passingText=Windows%20Build%20passing&failingText=Windows%20Build%20failed)](https://ci.appveyor.com/project/bluebird75/luaunit)
 [![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
@@ -49,23 +49,22 @@ fails. It uses, by default, Linux paths that depend on the version.
 
 **bower**
 
-You can also install it zith bower :
+You can also install it with bower :
 
     bower install https://github.com/bluebird75/luaunit.git.
-
 
 **LuaRock**
 
 The version on LuaRock is outdated. Uploading a new version is planned in the future.
 
-
-**Community**
-
-LuaUnit has a mailing list with low activity (a few emails per months). To subscribe or read the archives, please go to: [LuaUnit Mailing-list](http://lists.freehackers.org/list/luaunit%40freehackers.org/). If you are using LuaUnit, please drop us a note, we are always happy to hear from new users.
+##Contributors
+* [N1teHawk](https://github.com/n1tehawk)
+* [AbigailBuccaneer](https://github.com/AbigailBuccaneer)
 
 ### History 
 
 #### Version 3.2 (in progress)
+* distinguish between failures (failed assertion) and errors
 * Support for new versions: lua 5.3 and luajit (2.0, 2.1), validated on Travis CI and AppVeyor
 * Compatibility layer with forked luaunit v2.x added
 * added documentation about development process
@@ -122,6 +121,7 @@ Unofficial fork from version 1.3
 
 
 #### Version 1.4 - 26. Jul 2012
+- table deep comparison
 - switch from X11 to more popular BSD license
 - add TAP output format for integration into Jenkins
 - official repository now on github
