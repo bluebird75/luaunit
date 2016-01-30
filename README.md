@@ -5,18 +5,18 @@
 [![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
 [![Documentation Status](https://readthedocs.org/projects/luaunit/badge/?version=latest)](https://readthedocs.org/projects/luaunit/?badge=latest)
 
-Luaunit is a unit-testing framework for Lua. It allows you 
+LuaUnit is a unit-testing framework for Lua. It allows you 
 to write test functions and test classes with test methods, combined with 
 setup/teardown functionality. A wide range of assertions are supported.
 
-Luaunit supports several output format, like Junit or TAP, for easier integration
-into Continuous Integration platforms (Jenkins, Maven, ...) . The integrated command-line 
+LuaUnit supports several output formats, like JUnit or TAP, for easier integration
+into Continuous Integration platforms (Jenkins, Maven, ...). The integrated command-line 
 options provide a flexible interface to select tests by name or patterns, control output 
 format, set verbosity, ...
 
 LuaUnit works with Lua 5.1, 5.2 and 5.3 . It was tested on Windows XP, Windows Server 2012 R2 (x64) and Ubuntu 14.04 (see 
-continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) and [AppVeyor](https://ci.appveyor.com/project/bluebird75/luaunit) ) and should work on all platforms supported by lua.
-It has no other dependency than lua itself. 
+continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) and [AppVeyor](https://ci.appveyor.com/project/bluebird75/luaunit) ) and should work on all platforms supported by Lua.
+It has no other dependency than Lua itself. 
 
 LuaUnit is packed into a single-file. To make start using it, just add the file to your project.
 
@@ -40,7 +40,7 @@ The simplest way to install LuaUnit is to fetch the github version:
 
 Then copy it into your project or the Lua libs directory.
 
-On Linux, you can also install it into your lua directories
+On Linux, you can also install it into your Lua directories
 
     sudo python doit.py install
 
@@ -53,12 +53,12 @@ You can also install it with bower :
 
     bower install https://github.com/bluebird75/luaunit.git.
 
-**LuaRock**
+**LuaRocks**
 
-The version on LuaRock is outdated. Uploading a new version is planned in the future.
+The version on LuaRocks is outdated. Uploading a new version is planned in the future.
 
 ##Contributors
-* [N1tehawk](https://github.com/n1tehawk)
+* [NiteHawk](https://github.com/n1tehawk)
 * [AbigailBuccaneer](https://github.com/AbigailBuccaneer)
 * [Juan Julián Merelo Guervós](https://github.com/JJ)
 * [Naoyuki Totani](https://github.com/ntotani)
@@ -70,7 +70,7 @@ The version on LuaRock is outdated. Uploading a new version is planned in the fu
 
 #### Version 3.2 (in progress)
 * distinguish between failures (failed assertion) and errors
-* Support for new versions: lua 5.3 and luajit (2.0, 2.1), validated on Travis CI and AppVeyor
+* Support for new versions: Lua 5.3 and LuaJIT (2.0, 2.1), validated on Travis CI and AppVeyor
 * Compatibility layer with forked luaunit v2.x added
 * added documentation about development process
 * improved support for table containing keys of type table
