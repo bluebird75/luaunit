@@ -1694,7 +1694,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     function M.LuaUnit.statusLine(result)
         -- return status line string according to results
         s = string.format('# Ran %d tests in %0.3f seconds, %d successes',
-            result.testCount, result.duration, result.testCount-result.notPassedCount )
+            result.testCount, result.duration, result.passedCount )
         if result.notPassedCount > 0 then
             if result.failureCount > 0 then
                 s = s..string.format(', %d failures', result.failureCount )
@@ -1713,11 +1713,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     function M.LuaUnit:startSuite(testCount, nonSelectedCount)
         self.result = {}
-        self.result.failureCount = 0
-        self.result.errorCount = 0
-        self.result.notPassedCount = 0
         self.result.testCount = testCount
         self.result.nonSelectedCount = nonSelectedCount
+        self.result.passedCount = 0
         self.result.currentTestNumber = 0
         self.result.currentClassName = ""
         self.result.currentNode = nil
@@ -1776,16 +1774,13 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         -- if the node is already in failure/error, just don't report the new error (see above)
         if node.status ~= NodeStatus.PASS then return end
 
-        self.result.notPassedCount = self.result.notPassedCount + 1
         table.insert( self.result.notPassed, node )
 
         if err.status == NodeStatus.FAIL then
-            self.result.failureCount = self.result.failureCount + 1
             node:fail( err.msg, err.trace )
             table.insert( self.result.failures, node )
             self.output:addFailure( node )
         elseif err.status == NodeStatus.ERROR then
-            self.result.errorCount = self.result.errorCount + 1
             node:error( err.msg, err.trace )
             table.insert( self.result.errors, node )
             self.output:addError( node )
@@ -1799,6 +1794,10 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         node.duration = os.clock() - node.startTime
         node.startTime = nil
         self.output:endTest( node )
+
+        if node:isPassed() then
+            self.result.passedCount = self.result.passedCount + 1
+        end
         self.result.currentNode = nil
     end
 
@@ -1812,6 +1811,14 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         end
         self.result.duration = os.clock()-self.result.startTime
         self.result.suiteStarted = false
+
+        -- Expose test counts for outputter's endSuite(). This could be managed
+        -- internally instead, but unit tests (and existing use cases) might
+        -- rely on these fields being present.
+        self.result.notPassedCount = #self.result.notPassed
+        self.result.failureCount = #self.result.failures
+        self.result.errorCount = #self.result.errors
+
         self.output:endSuite()
     end
 
