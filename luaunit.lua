@@ -846,10 +846,10 @@ for _, funcName in ipairs(
 end
 
 function M.assertIs(actual, expected)
-    if not M.ORDER_ACTUAL_EXPECTED then
-        actual, expected = expected, actual
-    end
     if actual ~= expected then
+        if not M.ORDER_ACTUAL_EXPECTED then
+            actual, expected = expected, actual
+        end
         expected, actual = prettystrPadded(expected, actual, '\n', ', ')
         fail_fmt(2, 'Expected object and actual object are not the same\nExpected: %sactual: %s',
                  expected, actual)
@@ -857,10 +857,10 @@ function M.assertIs(actual, expected)
 end
 
 function M.assertNotIs(actual, expected)
-    if not M.ORDER_ACTUAL_EXPECTED then
-        actual, expected = expected, actual
-    end
     if actual == expected then
+        if not M.ORDER_ACTUAL_EXPECTED then
+            expected = actual
+        end
         fail_fmt(2, 'Expected object and actual object are the same object: %s',
                  prettystrPadded(expected))
     end
