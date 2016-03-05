@@ -7,9 +7,7 @@ TODO Future:
 - validate output with ignored tests (0 failures or some failures)
 - report test duration everywhere
 - allow to skip tests
-- make a difference between errors and failures
 - randomized testing
-- provide a luarock package. See: https://rocks.moonscript.org/modules/rjpcomputing/luaunit
 - coloured output
 - global setup / teardown
 - class setup / teardown
@@ -26,6 +24,8 @@ Nice to have:
 
 Done since 3.1:
 ===============
+x provide a luarock package. See: https://rocks.moonscript.org/modules/rjpcomputing/luaunit
+x make a difference between errors and failures
 x lua 5.3 
 x travis lua 5.3
 x compatibility with LuaUnit v2.0 of rjbcomputing
