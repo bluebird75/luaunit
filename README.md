@@ -58,8 +58,13 @@ You can also install it with bower :
 The version on LuaRock is outdated. Uploading a new version is planned in the future.
 
 ##Contributors
-* [N1teHawk](https://github.com/n1tehawk)
+* [N1tehawk](https://github.com/n1tehawk)
 * [AbigailBuccaneer](https://github.com/AbigailBuccaneer)
+* [Juan Julián Merelo Guervós](https://github.com/JJ)
+* [Naoyuki Totani](https://github.com/ntotani)
+* [Jennal](https://github.com/Jennal)
+* [Victor Seva](https://github.com/linuxmaniac)
+* [Urs Breu](https://github.com/ubreu)
 
 ### History 
 
