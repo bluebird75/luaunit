@@ -22,6 +22,7 @@ assertEquals( expected, actual ).
 ]]--
 M.ORDER_ACTUAL_EXPECTED = true
 M.PRINT_TABLE_REF_IN_ERROR_MSG = false
+M.TABLE_EQUALS_KEYBYCONTENT = true
 M.LINE_LENGTH=80
 
 -- set this to false to debug luaunit
@@ -510,17 +511,56 @@ local function _is_table_equals(actual, expected)
         if (#actual ~= #expected) then
             return false
         end
-        local k,v
+
+        local actualTableKeys = {}
         for k,v in pairs(actual) do
-            if not _is_table_equals(v, expected[k]) then
-                return false
+            if M.TABLE_EQUALS_KEYBYCONTENT and type(k) == "table" then
+                -- If the keys are tables, things get a bit tricky here as we
+                -- can have _is_table_equals(k1, k2) and t[k1] ~= t[k2]. So we
+                -- collect actual's table keys, group them by length for
+                -- performance, and then for each table key in expected we look
+                -- it up in actualTableKeys.
+                if not actualTableKeys[#k] then actualTableKeys[#k] = {} end
+                table.insert(actualTableKeys[#k], k)
+            else
+                if not _is_table_equals(v, expected[k]) then
+                    return false
+                end
             end
         end
+
         for k,v in pairs(expected) do
-            if not _is_table_equals(v, actual[k]) then
-                return false
+            if M.TABLE_EQUALS_KEYBYCONTENT and type(k) == "table" then
+                local candidates = actualTableKeys[#k]
+                if not candidates then return false end
+                local found
+                for i, candidate in pairs(candidates) do
+                    if _is_table_equals(candidate, k) then
+                        found = candidate
+                        -- Remove the candidate we matched against from the list
+                        -- of candidates, so each key in actual can only match
+                        -- one key in expected.
+                        candidates[i] = nil
+                        break
+                    end
+                end
+                if not(found and _is_table_equals(actual[found], v)) then return false end
+            else
+                if not _is_table_equals(v, actual[k]) then
+                    return false
+                end
             end
         end
+
+        if M.TABLE_EQUALS_KEYBYCONTENT then
+            for _, keys in pairs(actualTableKeys) do
+                -- if there are any keys left in any actualTableKeys[i] then
+                -- that is a key in actual with no matching key in expected,
+                -- and so the tables aren't equal.
+                if next(keys) then return false end
+            end
+        end
+
         return true
     elseif type(actual) ~= type(expected) then
         return false

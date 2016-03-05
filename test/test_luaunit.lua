@@ -670,7 +670,7 @@ TestLuaUnitAssertions = {} --class
     function TestLuaUnitAssertions:test_assertEquals()
         f = function() return true end
         g = function() return true end
-        
+
         lu.assertEquals( 1, 1 )
         lu.assertEquals( "abc", "abc" )
         lu.assertEquals( nil, nil )
@@ -682,6 +682,13 @@ TestLuaUnitAssertions = {} --class
         lu.assertEquals( {one=1,two={1,2},three=3}, {two={1,2},three=3,one=1})
         lu.assertEquals( {one=1,two={1,{2,nil}},three=3}, {two={1,{2,nil}},three=3,one=1})
         lu.assertEquals( {nil}, {nil} )
+        local config_saved = lu.TABLE_EQUALS_KEYBYCONTENT
+        lu.TABLE_EQUALS_KEYBYCONTENT = false
+        assertFailure( lu.assertEquals, {[{}] = 1}, { [{}] = 1})
+        assertFailure( lu.assertEquals, {[{one=1, two=2}] = 1}, { [{two=2, one=1}] = 1})
+        lu.TABLE_EQUALS_KEYBYCONTENT = true
+        lu.assertEquals( {[{}] = 1}, { [{}] = 1})
+        lu.assertEquals( {[{one=1, two=2}] = 1}, { [{two=2, one=1}] = 1})
 
         assertFailure( lu.assertEquals, 1, 2)
         assertFailure( lu.assertEquals, 1, "abc" )
@@ -702,6 +709,12 @@ TestLuaUnitAssertions = {} --class
         assertFailure( lu.assertEquals, {one=1,two=2,three=3}, true )
         assertFailure( lu.assertEquals, {one=1,two=2,three=3}, {1,2,3} )
         assertFailure( lu.assertEquals, {one=1,two={1,2},three=3}, {two={2,1},three=3,one=1})
+        lu.TABLE_EQUALS_KEYBYCONTENT = true -- without it, these tests won't pass anyway
+        assertFailure( lu.assertEquals, {[{}] = 1}, {[{}] = 2})
+        assertFailure( lu.assertEquals, {[{}] = 1}, {[{one=1}] = 2})
+        assertFailure( lu.assertEquals, {[{}] = 1}, {[{}] = 1, 2})
+        assertFailure( lu.assertEquals, {[{}] = 1}, {[{}] = 1, [{}] = 1})
+        lu.TABLE_EQUALS_KEYBYCONTENT = config_saved
     end
 
     function TestLuaUnitAssertions:test_assertAlmostEquals()
