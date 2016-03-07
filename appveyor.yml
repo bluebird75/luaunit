@@ -1,3 +1,4 @@
+os: MinGW
 shallow_clone: true
 
 # create a build matrix to use various Lua and LuaJIT versions
