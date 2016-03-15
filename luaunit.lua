@@ -47,6 +47,7 @@ Options:
   --version:              Print version information
   -v, --verbose:          Increase verbosity
   -q, --quiet:            Set verbosity to minimum
+  -e, --error:            Make actual errors fatal (= abort execution)
   -o, --output OUTPUT:    Set output type to OUTPUT
                           Possible values: text, tap, junit, nil
   -n, --name NAME:        For junit only, mandatory name of xml file
@@ -845,10 +846,10 @@ for _, funcName in ipairs(
 end
 
 function M.assertIs(actual, expected)
-    if not M.ORDER_ACTUAL_EXPECTED then
-        actual, expected = expected, actual
-    end
     if actual ~= expected then
+        if not M.ORDER_ACTUAL_EXPECTED then
+            actual, expected = expected, actual
+        end
         expected, actual = prettystrPadded(expected, actual, '\n', ', ')
         fail_fmt(2, 'Expected object and actual object are not the same\nExpected: %sactual: %s',
                  expected, actual)
@@ -856,10 +857,10 @@ function M.assertIs(actual, expected)
 end
 
 function M.assertNotIs(actual, expected)
-    if not M.ORDER_ACTUAL_EXPECTED then
-        actual, expected = expected, actual
-    end
     if actual == expected then
+        if not M.ORDER_ACTUAL_EXPECTED then
+            expected = actual
+        end
         fail_fmt(2, 'Expected object and actual object are the same object: %s',
                  prettystrPadded(expected))
     end
@@ -1488,6 +1489,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         -- Supported command line parameters:
         -- --verbose, -v: increase verbosity
         -- --quiet, -q: silence output
+        -- --error, -e: treat errors as fatal (quit program)
         -- --output, -o, + name: select output type
         -- --pattern, -p, + pattern: run test matching pattern, may be repeated
         -- --name, -n, + fname: name of output file for junit, default to stdout
@@ -1521,6 +1523,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
                 return
             elseif option == '--quiet' or option == '-q' then
                 result['verbosity'] = M.VERBOSITY_QUIET
+                return
+            elseif option == '--error' or option == '-e' then
+                result['quitOnError'] = true
                 return
             elseif option == '--output' or option == '-o' then
                 state = SET_OUTPUT
@@ -1694,7 +1699,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     function M.LuaUnit.statusLine(result)
         -- return status line string according to results
         s = string.format('# Ran %d tests in %0.3f seconds, %d successes',
-            result.testCount, result.duration, result.testCount-result.notPassedCount )
+            result.testCount, result.duration, result.passedCount )
         if result.notPassedCount > 0 then
             if result.failureCount > 0 then
                 s = s..string.format(', %d failures', result.failureCount )
@@ -1713,11 +1718,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     function M.LuaUnit:startSuite(testCount, nonSelectedCount)
         self.result = {}
-        self.result.failureCount = 0
-        self.result.errorCount = 0
-        self.result.notPassedCount = 0
         self.result.testCount = testCount
         self.result.nonSelectedCount = nonSelectedCount
+        self.result.passedCount = 0
         self.result.currentTestNumber = 0
         self.result.currentClassName = ""
         self.result.currentNode = nil
@@ -1776,16 +1779,13 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         -- if the node is already in failure/error, just don't report the new error (see above)
         if node.status ~= NodeStatus.PASS then return end
 
-        self.result.notPassedCount = self.result.notPassedCount + 1
         table.insert( self.result.notPassed, node )
 
         if err.status == NodeStatus.FAIL then
-            self.result.failureCount = self.result.failureCount + 1
             node:fail( err.msg, err.trace )
             table.insert( self.result.failures, node )
             self.output:addFailure( node )
         elseif err.status == NodeStatus.ERROR then
-            self.result.errorCount = self.result.errorCount + 1
             node:error( err.msg, err.trace )
             table.insert( self.result.errors, node )
             self.output:addError( node )
@@ -1799,6 +1799,18 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         node.duration = os.clock() - node.startTime
         node.startTime = nil
         self.output:endTest( node )
+
+        if node:isPassed() then
+            self.result.passedCount = self.result.passedCount + 1
+        elseif node:isError() then
+            if self.quitOnError then
+                -- Runtime error - abort test execution as requested by
+                -- "--error" option. This is done by setting a special
+                -- flag that gets handled in runSuiteByInstances().
+                print("\nERROR during LuaUnit test execution:\n" .. node.msg)
+                self.result.aborted = true
+            end
+        end
         self.result.currentNode = nil
     end
 
@@ -1812,6 +1824,14 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         end
         self.result.duration = os.clock()-self.result.startTime
         self.result.suiteStarted = false
+
+        -- Expose test counts for outputter's endSuite(). This could be managed
+        -- internally instead, but unit tests (and existing use cases) might
+        -- rely on these fields being present.
+        self.result.notPassedCount = #self.result.notPassed
+        self.result.failureCount = #self.result.failures
+        self.result.errorCount = #self.result.errors
+
         self.output:endSuite()
     end
 
@@ -1843,6 +1863,10 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     function M.LuaUnit:setFname( fname )
         self.fname = fname
+    end
+
+    function M.LuaUnit:setQuitOnError( value )
+        self.quitOnError = value
     end
 
     --------------[[ Runner ]]-----------------
@@ -2030,6 +2054,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
                     self:execOneFunction( className, methodName, instance, methodInstance )
                 end
             end
+            if self.result.aborted then break end -- "--error" option triggered
         end
 
         if self.lastClassName ~= nil then
@@ -2037,6 +2062,11 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         end
 
         self:endSuite()
+
+        if self.result.aborted then
+            print("LuaUnit ABORTED (as requested by --error option)")
+            os.exit(-2)
+        end
     end
 
     function M.LuaUnit:runSuiteByNames( listOfName )
@@ -2126,6 +2156,8 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         if options.verbosity then
             self:setVerbosity( options.verbosity )
         end
+
+        self:setQuitOnError( options.quitOnError )
 
         if options.output and options.output:lower() == 'junit' and options.fname == nil then
             print('With junit output, a filename must be supplied with -n or --name')
