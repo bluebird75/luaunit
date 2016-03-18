@@ -32,13 +32,15 @@ Documentation is available on
 
 ##Install
 
+The version in development on github is always stable and can be used safely.
+
 **github** 
 
 The simplest way to install LuaUnit is to fetch the github version:
 
     git clone git@github.com:bluebird75/luaunit.git
 
-Then copy it into your project or the Lua libs directory.
+Then copy the file luaunit.lua into your project or the Lua libs directory.
 
 On Linux, you can also install it into your Lua directories
 
@@ -55,7 +57,7 @@ You can also install it with bower :
 
 **LuaRocks**
 
-The version on LuaRocks is outdated. Uploading a new version is planned in the future.
+A rocks is being worked on.
 
 ##Contributors
 * [NiteHawk](https://github.com/n1tehawk)
@@ -70,7 +72,8 @@ The version on LuaRocks is outdated. Uploading a new version is planned in the f
 
 #### Version 3.2 (in progress)
 * distinguish between failures (failed assertion) and errors
-* Support for new versions: Lua 5.3 and LuaJIT (2.0, 2.1), validated on Travis CI and AppVeyor
+* Support for new versions: Lua 5.3 and LuaJIT (2.0, 2.1 beta)
+* Validation of all lua versions on Travis CI and AppVeyor
 * Compatibility layer with forked luaunit v2.x added
 * added documentation about development process
 * improved support for table containing keys of type table
