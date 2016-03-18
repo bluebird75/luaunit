@@ -689,6 +689,8 @@ not influence the test itself.
 
 .. function:: assertEquals(actual, expected)
 
+    **Alias**: *assert_equals()*
+
     Assert that two values are equal. 
 
     For tables, the comparison is a deep comparison :
@@ -702,12 +704,16 @@ not influence the test itself.
 
 .. function:: assertNotEquals(actual, expected)
 
+    **Alias**: *assert_not_equals()*
+
     Assert that two values are different. The assertion
     fails if the two values are identical.
 
     It also uses table deep comparison.
 
 .. function:: assertAlmostEquals( actual, expected, margin )
+
+    **Alias**: *assert_almost_equals()*
 
     Assert that two floating point numbers are almost equal.
 
@@ -718,6 +724,8 @@ not influence the test itself.
     
 .. function:: assertNotAlmostEquals( actual, expected, margin )
 
+    **Alias**: *assert_not_almost_equals()*
+
     Assert that two floating point numbers are not almost equal.
     
 .. _assert-value:
@@ -726,24 +734,34 @@ Value assertions
 ----------------------
 .. function:: assertTrue(value)
 
+    **Alias**: *assert_true()*
+
     Assert that a given value compares to true. Lua coercion rules are applied
     so that values like ``0``, ``""``, ``1.17`` all compare to *true*.
     
 .. function:: assertFalse(value)
+
+    **Alias**: *assert_false()*
 
     Assert that a given value compares to false. Lua coercion rules are applied
     so that only *nil* and *false* all compare to *false*.
     
 .. function:: assertNil(value)
 
+    **Aliases**: *assert_nil()*, *assertIsNil()*, *assert_is_nil()*
+
     Assert that a given value is *nil* .
     
 .. function:: assertNotNil(value)
+
+    **Aliases**: *assert_not_nil()*, *assertNotIsNil()*, *assert_not_is_nil()*
 
     Assert that a given value is not *nil* . Lua coercion rules are applied
     so that values like ``0``, ``""``, ``false`` all validate the assertion.
     
 .. function:: assertIs(actual, expected)
+
+    **Alias**: *assert_is()*
 
     Assert that two variables are identical. For string, numbers, boolean and for nil, 
     this gives the same result as :func:`assertEquals` . For the other types, identity
@@ -765,6 +783,8 @@ Value assertions
     
 .. function:: assertNotIs(actual, expected)
 
+    **Alias**: *assert_not_is()*
+
     Assert that two variables are not identical, in the sense that they do not
     refer to the same value. See :func:`assertIs` for more details.
     
@@ -777,6 +797,8 @@ Assertions related to string and patterns.
 
 .. function:: assertStrContains( str, sub [, useRe] )
 
+    **Alias**: *assert_str_contains()*
+
     Assert that a string contains the given substring or pattern. 
 
     By default, substring is searched in the string. If *useRe*
@@ -785,12 +807,16 @@ Assertions related to string and patterns.
     
 .. function:: assertStrIContains( str, sub )
 
+    **Alias**: *assert_str_icontains()*
+
     Assert that a string contains the given substring, irrespective of the case. 
 
     Not that unlike :func:`assertStrcontains`, you can not search for a pattern.
 
 
 .. function:: assertNotStrContains( str, sub, useRe )
+
+    **Alias**: *assert_not_str_contains()*
 
     Assert that a string does not contain a given substring or pattern.
 
@@ -800,11 +826,15 @@ Assertions related to string and patterns.
     
 .. function:: assertNotStrIContains( str, sub )
 
+    **Alias**: *assert_not_str_icontains()*
+
     Assert that a string does not contain the given substring, irrespective of the case. 
 
     Not that unlike :func:`assertNotStrcontains`, you can not search for a pattern.
 
 .. function:: assertStrMatches( str, pattern [, start [, final] ] )
+
+    **Alias**: *assert_str_matches()*
 
     Assert that a string matches the full pattern *pattern*.
 
@@ -819,6 +849,8 @@ Error assertions
 Error related assertions, to verify error generation and error messages.
 
 .. function:: assertError( func, ...)
+
+    **Alias**: *assert_error()*
 
     Assert that calling functions *func* with the arguments yields an error. If the
     function does not yield an error, the assertion fails.
@@ -837,6 +869,8 @@ Error related assertions, to verify error generation and error messages.
     
 .. function:: assertErrorMsgEquals( expectedMsg, func, ... )
 
+    **Alias**: *assert_error_msg_equals()*
+
     Assert that calling function *func* will generate exactly the given error message. If the
     function does not yield an error, or if the error message is not identical, the assertion fails.
 
@@ -847,11 +881,15 @@ Error related assertions, to verify error generation and error messages.
     
 .. function:: assertErrorMsgContains( partialMsg, func, ... )
 
+    **Alias**: *assert_error_msg_contains()*
+
     Assert that calling function *func* will generate an error message containing *partialMsg* . If the
     function does not yield an error, or if the expected message is not contained in the error message, the 
     assertion fails.
     
 .. function:: assertErrorMsgMatches( expectedPattern, func, ... )
+
+    **Alias**: *assert_error_msg_matches()*
 
     Assert that calling function *func* will generate an error message matching *expectedPattern* . If the
     function does not yield an error, or if the error message does not match the provided patternm the
@@ -873,46 +911,60 @@ Type assertions
 
 .. function:: assertIsNumber(value)
 
+    **Aliases**: *assertNumber()*, *assert_is_number()*, *assert_number()*
+
     Assert that the argument is a number (integer or float)
     
 .. function:: assertIsString(value)
+
+    **Aliases**: *assertString()*, *assert_is_string()*, *assert_string()*
 
     Assert that the argument is a string.
     
 .. function:: assertIsTable(value)
 
+    **Aliases**: *assertTable()*, *assert_is_table()*, *assert_table()*
+
     Assert that the argument is a table.
     
 .. function:: assertIsBoolean(value)
+
+    **Aliases**: *assertBoolean()*, *assert_is_boolean()*, *assert_boolean()*
 
     Assert that the argument is a boolean.
     
 .. function:: assertIsNil(value)
 
+    **Aliases**: *assertNil()*, *assert_is_nil()*, *assert_nil()*
+
     Assert that the argument is a nil.
     
 .. function:: assertIsFunction(value)
+
+    **Aliases**: *assertFunction()*, *assert_is_function()*, *assert_function()*
 
     Assert that the argument is a function.
     
 .. function:: assertIsUserdata(value)
 
+    **Aliases**: *assertUserdata()*, *assert_is_userdata()*, *assert_userdata()*
+
     Assert that the argument is a userdata.
     
 .. function:: assertIsCoroutine(value)
 
+    **Aliases**: *assertCoroutine()*, *assert_is_coroutine()*, *assert_coroutine()*, *assertIsThread()*, *assertThread()*, *assert_is_thread()*, *assert_thread()*
+
     Assert that the argument is a coroutine (an object with type *thread* ).
     
-.. function:: assertIsThread(value)
-
-    An alias for :func:`assertIsCoroutine`.
-
 .. _assert-table:
 
 Table assertions
 --------------------------
 
 .. function:: assertItemsEquals(actual, expected)
+
+    **Alias**: *assert_items_equals()*
 
     Assert that two tables contain the same items, irrespective of their keys.
 
