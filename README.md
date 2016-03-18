@@ -1,5 +1,5 @@
 ## LuaUnit  
-*by Philippe Fremy
+by Philippe Fremy
 
 [![Build status](https://ci.appveyor.com/api/projects/status/us6uh4e5q597jj54?svg=true&passingText=Windows%20Build%20passing&failingText=Windows%20Build%20failed)](https://ci.appveyor.com/project/bluebird75/luaunit)
 [![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
@@ -65,8 +65,11 @@ A rocks is being worked on.
 * [Juan Julián Merelo Guervós](https://github.com/JJ)
 * [Naoyuki Totani](https://github.com/ntotani)
 * [Jennal](https://github.com/Jennal)
+* [George Zhao](https://github.com/zhaozg)
+* kbuschelman
 * [Victor Seva](https://github.com/linuxmaniac)
 * [Urs Breu](https://github.com/ubreu)
+* Jim Anderson
 
 ### History 
 
