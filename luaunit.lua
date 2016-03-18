@@ -6,7 +6,7 @@ Homepage: https://github.com/bluebird75/luaunit
 Development by Philippe Fremy <phil@freehackers.org>
 Based on initial work of Ryu, Gwang (http://www.gpgstudy.com/gpgiki/LuaUnit)
 License: BSD License, see LICENSE.txt
-Version: 3.0
+Version: 3.2
 ]]--
 
 require("math")
@@ -1147,7 +1147,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         self.fd:write('<testsuites>\n')
         self.fd:write(string.format(
             '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s" time="%0.3f" errors="%d" failures="%d">\n',
-            self.result.testCount, self.result.startIsodate, self.result.duration, self.result.errorCount, self.result.failureCount ))
+            self.result.runCount, self.result.startIsodate, self.result.duration, self.result.errorCount, self.result.failureCount ))
         self.fd:write("        <properties>\n")
         self.fd:write(string.format('            <property name="Lua Version" value="%s"/>\n', _VERSION ) )
         self.fd:write(string.format('            <property name="LuaUnit Version" value="%s"/>\n', M.VERSION) )
@@ -1371,7 +1371,7 @@ local TextOutput_MT = { -- class
         end
         self:displayFailedTests()
         local ignoredString = ""
-        print( string.format("Ran %d tests in %0.3f seconds", self.result.testCount, self.result.duration ) )
+        print( string.format("Ran %d tests in %0.3f seconds", self.result.runCount, self.result.duration ) )
         if self.result.notPassedCount == 0 then
             if self.result.nonSelectedCount > 0 then
                 ignoredString = string.format('(ignored=%d)', self.result.nonSelectedCount )
@@ -1699,7 +1699,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     function M.LuaUnit.statusLine(result)
         -- return status line string according to results
         s = string.format('# Ran %d tests in %0.3f seconds, %d successes',
-            result.testCount, result.duration, result.passedCount )
+            result.runCount, result.duration, result.passedCount )
         if result.notPassedCount > 0 then
             if result.failureCount > 0 then
                 s = s..string.format(', %d failures', result.failureCount )
@@ -1721,6 +1721,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         self.result.testCount = testCount
         self.result.nonSelectedCount = nonSelectedCount
         self.result.passedCount = 0
+        self.result.runCount = 0
         self.result.currentTestNumber = 0
         self.result.currentClassName = ""
         self.result.currentNode = nil
@@ -1750,6 +1751,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     function M.LuaUnit:startTest( testName  )
         self.result.currentTestNumber = self.result.currentTestNumber + 1
+        self.result.runCount = self.result.runCount + 1
         self.result.currentNode = NodeStatus:new(
             self.result.currentTestNumber,
             testName,
