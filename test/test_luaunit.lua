@@ -2147,7 +2147,7 @@ TestLuaUnitExecution = {} --class
         lu.assertEquals( m.calls[5][3], 'MyTestWithErrorsAndFailures.testWithError1' )
         lu.assertEquals(#m.calls[5], 3 )
 
-        lu.assertEquals( m.calls[6][1], 'addError' )
+        lu.assertEquals( m.calls[6][1], 'addStatus' )
         lu.assertEquals(#m.calls[6], 3 )
 
         lu.assertEquals( m.calls[7][1], 'endTest' )
@@ -2160,7 +2160,7 @@ TestLuaUnitExecution = {} --class
         lu.assertEquals( m.calls[8][3], 'MyTestWithErrorsAndFailures.testWithFailure1' )
         lu.assertEquals(#m.calls[8], 3 )
 
-        lu.assertEquals( m.calls[9][1], 'addFailure' )
+        lu.assertEquals( m.calls[9][1], 'addStatus' )
         lu.assertEquals(#m.calls[9], 3 )
 
         lu.assertEquals( m.calls[10][1], 'endTest' )
@@ -2172,7 +2172,7 @@ TestLuaUnitExecution = {} --class
         lu.assertEquals( m.calls[11][3], 'MyTestWithErrorsAndFailures.testWithFailure2' )
         lu.assertEquals(#m.calls[11], 3 )
 
-        lu.assertEquals( m.calls[12][1], 'addFailure' )
+        lu.assertEquals( m.calls[12][1], 'addStatus' )
         lu.assertEquals(#m.calls[12], 3 )
 
         lu.assertEquals( m.calls[13][1], 'endTest' )
