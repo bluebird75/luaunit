@@ -33,11 +33,23 @@ LuaUnit works with Lua 5.1, 5.2, 5.3 and luajit (v1 and v2.1). It is tested on W
 continuous build results on `Travis-CI`_  and `AppVeyor`_ ) and should work on all platforms supported by lua.
 It has no other dependency than lua itself. 
 
+
+LuaUnit works with Lua 5.1, LuaJIT 2.0, LuaJIT 2.1 beta, Lua 5.2 and Lua 5.3 . It is tested on Windows Seven, Windows Server 2012 R2 (x64) and Ubuntu 14.04 (see 
+continuous build results on `Travis-CI`_  and `AppVeyor`_  ) and should work on all platforms supported by Lua.
+It has no other dependency than Lua itself.
+
+
 .. _Travis-CI: https://travis-ci.org/bluebird75/luaunit
 .. _AppVeyor: https://ci.appveyor.com/project/bluebird75/luaunit/history
 
-LuaUnit is packed into a single-file. To make start using it, just add the file to your project.
+LuaUnit is packed into a single-file. To make start using it, just add the file to your project. Other installation methods are described in the `README.md`_ file.
 
+.. _README.md: https://github.com/bluebird75/luaunit
+
+LuaUnit is maintained on github:
+https://github.com/bluebird75/luaunit
+
+It is released under the BSD license.
 
 LuaUnit development
 ===================
@@ -46,7 +58,17 @@ See :ref:`developing-luaunit`
 
 Version and Changelog
 =====================
-This documentation describes the functionality of LuaUnit v3.1 .
+This documentation describes the functionality of LuaUnit v3.2 .
+
+New in version 3.2 - (in progress)
+------------------------------------
+* distinguish between failures (failed assertion) and errors
+* Support for new versions: Lua 5.3 and LuaJIT (2.0, 2.1 beta)
+* Validation of all lua versions on Travis CI and AppVeyor
+* Compatibility layer with forked luaunit v2.x added
+* added documentation about development process
+* improved support for table containing keys of type table
+* small bug fixes, several internal improvements
 
 New in version 3.1 - 10. Mar 2015
 ---------------------------------
