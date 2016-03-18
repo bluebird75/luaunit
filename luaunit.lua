@@ -1049,7 +1049,7 @@ local TapOutput_MT = { __index = TapOutput }
     end
     function TapOutput:startTest(testName) end
 
-    function TapOutput:addFailure( node )
+    function TapOutput:addStatus( node )
         io.write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
         if self.verbosity > M.VERBOSITY_LOW then
            print( prefixString( '    ', node.msg ) )
@@ -1058,7 +1058,6 @@ local TapOutput_MT = { __index = TapOutput }
            print( prefixString( '    ', node.stackTrace ) )
         end
     end
-    TapOutput.addError = TapOutput.addFailure
 
     function TapOutput:endTest( node )
         if node:isPassed() then
@@ -1123,14 +1122,14 @@ local JUnitOutput_MT = { __index = JUnitOutput }
         print('# Starting test: '..testName)
     end
 
-    function JUnitOutput:addFailure( node )
-        print('# Failure: ' .. node.msg)
-        -- print('# ' .. node.stackTrace)
-    end
-
-    function JUnitOutput:addError( node )
-        print('# Error: ' .. node.msg)
-        -- print('# ' .. node.stackTrace)
+    function JUnitOutput:addStatus( node )
+        if node:isFailure() then
+            print('# Failure: ' .. node.msg)
+            -- print('# ' .. node.stackTrace)
+        elseif node:isError() then
+            print('# Error: ' .. node.msg)
+            -- print('# ' .. node.stackTrace)
+        end
     end
 
     function JUnitOutput:endTest( node )
@@ -1311,11 +1310,7 @@ local TextOutput_MT = { -- class
         end
     end
 
-    function TextOutput:addFailure( node )
-        -- nothing
-    end
-
-    function TextOutput:addError( node )
+    function TextOutput:addStatus( node )
         -- nothing
     end
 
@@ -1775,17 +1770,19 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         -- if the node is already in failure/error, just don't report the new error (see above)
         if node.status ~= NodeStatus.PASS then return end
 
-        table.insert( self.result.notPassed, node )
-
         if err.status == NodeStatus.FAIL then
             node:fail( err.msg, err.trace )
             table.insert( self.result.failures, node )
-            self.output:addFailure( node )
         elseif err.status == NodeStatus.ERROR then
             node:error( err.msg, err.trace )
             table.insert( self.result.errors, node )
-            self.output:addError( node )
         end
+
+        if node:isFailure() or node:isError() then
+            -- add to the list of failed tests (gets printed separately)
+            table.insert( self.result.notPassed, node )
+        end
+        self.output:addStatus( node )
     end
 
     function M.LuaUnit:endTest()
