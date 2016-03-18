@@ -8,6 +8,7 @@ TODO Future:
 - report test duration everywhere
 - allow to skip tests
 - randomized testing
+- parametrize tests
 - coloured output
 - global setup / teardown
 - class setup / teardown
@@ -21,6 +22,13 @@ TODO Future:
 Nice to have: 
 ============
 - stack unwrapping like in py.test
+
+TODO for 3.2 release:
+====================
+- update doc with all new assertion
+- integrate latest pull requests
+- document new config: table with key of type table
+- luarock package
 
 Done since 3.1:
 ===============
