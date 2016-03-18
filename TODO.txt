@@ -25,10 +25,8 @@ Nice to have:
 
 TODO for 3.2 release:
 ====================
-- update doc with all new assertion
-- integrate latest pull requests
 - document new config: table with key of type table
-- luarock package
+- document --error
 
 Done since 3.1:
 ===============
