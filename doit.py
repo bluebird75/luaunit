@@ -1,6 +1,6 @@
 import subprocess, sys, os, shutil, os.path, optparse
 
-VERSION='3.1'
+VERSION='3.2'
 RELEASE_NAME='luaunit-%s' % VERSION
 RELEASE_DIR='release/' + RELEASE_NAME + '/'
 TARGET_ZIP=RELEASE_NAME + '.zip'
