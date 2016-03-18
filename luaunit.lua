@@ -1050,7 +1050,7 @@ local TapOutput_MT = { __index = TapOutput }
     function TapOutput:startTest(testName) end
 
     function TapOutput:addFailure( node )
-        io.stdout:write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
+        io.write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
         if self.verbosity > M.VERBOSITY_LOW then
            print( prefixString( '    ', node.msg ) )
         end
@@ -1062,7 +1062,7 @@ local TapOutput_MT = { __index = TapOutput }
 
     function TapOutput:endTest( node )
         if node:isPassed() then
-            io.stdout:write("ok     ", self.result.currentTestNumber, "\t", node.testName, "\n")
+            io.write("ok     ", self.result.currentTestNumber, "\t", node.testName, "\n")
         end
     end
 
@@ -1307,7 +1307,7 @@ local TextOutput_MT = { -- class
 
     function TextOutput:startTest(testName)
         if self.verbosity > M.VERBOSITY_DEFAULT then
-            io.stdout:write( "    ", self.result.currentNode.testName, " ... " )
+            io.write( "    ", self.result.currentNode.testName, " ... " )
         end
     end
 
@@ -1322,9 +1322,9 @@ local TextOutput_MT = { -- class
     function TextOutput:endTest( node )
         if node:isPassed() then
             if self.verbosity > M.VERBOSITY_DEFAULT then
-                io.stdout:write("Ok\n")
+                io.write("Ok\n")
             else
-                io.stdout:write(".")
+                io.write(".")
             end
         else
             if self.verbosity > M.VERBOSITY_DEFAULT then
@@ -1338,7 +1338,7 @@ local TextOutput_MT = { -- class
                 ]]
             else
                 -- write only the first character of status
-                io.stdout:write(string.sub(node.status, 1, 1))
+                io.write(string.sub(node.status, 1, 1))
             end
         end
     end
