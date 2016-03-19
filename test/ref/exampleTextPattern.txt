@@ -35,5 +35,4 @@ stack traceback:
 	example_with_luaunit.lua:74: in function 'funcWithFuncWithError'
 	example_with_luaunit.lua:70: in function 'TestToto.test8b'
 
-Ran 7 tests in 0.010 seconds
-FAILED (failures=6, )
+Ran 7 tests in 0.010 seconds, 1 successes, 4 failures, 2 errors, 8 non selected tests

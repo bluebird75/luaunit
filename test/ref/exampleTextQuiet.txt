@@ -67,5 +67,4 @@ example_with_luaunit.lua:132: assertion failed!
 stack traceback:
 	example_with_luaunit.lua:132: in function 'test2_withFailure'
 
-Ran 15 tests in 0.012 seconds
-FAILED (failures=12)
+Ran 15 tests in 0.012 seconds, 3 successes, 8 failures, 4 errors
