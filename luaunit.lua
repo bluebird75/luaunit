@@ -1069,7 +1069,7 @@ local TapOutput_MT = { __index = TapOutput }
     function TapOutput:endClass() end
 
     function TapOutput:endSuite()
-        print( M.LuaUnit.statusLine( self.result ) )
+        print( '# '..M.LuaUnit.statusLine( self.result ) )
         return self.result.notPassedCount
     end
 
@@ -1140,7 +1140,7 @@ local JUnitOutput_MT = { __index = JUnitOutput }
     end
 
     function JUnitOutput:endSuite()
-        print( M.LuaUnit.statusLine(self.result))
+        print( '# '..M.LuaUnit.statusLine(self.result))
 
         -- XML file writing
         self.fd:write('<?xml version="1.0" encoding="UTF-8" ?>\n')
@@ -1370,21 +1370,12 @@ local TextOutput_MT = { -- class
             print()
         end
         self:displayFailedTests()
+        print( M.LuaUnit.statusLine( self.result ) )
         local ignoredString = ""
-        print( string.format("Ran %d tests in %0.3f seconds", self.result.runCount, self.result.duration ) )
         if self.result.notPassedCount == 0 then
-            if self.result.nonSelectedCount > 0 then
-                ignoredString = string.format('(ignored=%d)', self.result.nonSelectedCount )
-            end
-            print('OK '.. ignoredString)
-        else
-            if self.result.nonSelectedCount > 0 then
-                ignoredString = ', '..ignoredString
-            end
-            print(string.format('FAILED (failures=%d%s)', self.result.notPassedCount, ignoredString ) )
+            print('OK')
         end
     end
-
 
 -- class TextOutput end
 
@@ -1698,7 +1689,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     function M.LuaUnit.statusLine(result)
         -- return status line string according to results
-        s = string.format('# Ran %d tests in %0.3f seconds, %d successes',
+        s = string.format('Ran %d tests in %0.3f seconds, %d successes',
             result.runCount, result.duration, result.passedCount )
         if result.notPassedCount > 0 then
             if result.failureCount > 0 then
