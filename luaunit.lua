@@ -1518,6 +1518,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             elseif option == '--error' or option == '-e' then
                 result['quitOnError'] = true
                 return
+            elseif option == '--failure' or option == '-f' then
+                result['quitOnFailure'] = true
+                return
             elseif option == '--output' or option == '-o' then
                 state = SET_OUTPUT
                 return state
@@ -1796,11 +1799,19 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         if node:isPassed() then
             self.result.passedCount = self.result.passedCount + 1
         elseif node:isError() then
-            if self.quitOnError then
+            if self.quitOnError or self.quitOnFailure then
                 -- Runtime error - abort test execution as requested by
                 -- "--error" option. This is done by setting a special
                 -- flag that gets handled in runSuiteByInstances().
                 print("\nERROR during LuaUnit test execution:\n" .. node.msg)
+                self.result.aborted = true
+            end
+        elseif node:isFailure() then
+            if self.quitOnFailure then
+                -- Failure - abort test execution as requested by
+                -- "--failure" option. This is done by setting a special
+                -- flag that gets handled in runSuiteByInstances().
+                print("\nFailure during LuaUnit test execution:\n" .. node.msg)
                 self.result.aborted = true
             end
         end
@@ -1860,6 +1871,10 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     function M.LuaUnit:setQuitOnError( value )
         self.quitOnError = value
+    end
+
+    function M.LuaUnit:setQuitOnFailure( value )
+        self.quitOnFailure = value
     end
 
     --------------[[ Runner ]]-----------------
@@ -2047,7 +2062,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
                     self:execOneFunction( className, methodName, instance, methodInstance )
                 end
             end
-            if self.result.aborted then break end -- "--error" option triggered
+            if self.result.aborted then break end -- "--error" or "--failure" option triggered
         end
 
         if self.lastClassName ~= nil then
@@ -2057,7 +2072,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         self:endSuite()
 
         if self.result.aborted then
-            print("LuaUnit ABORTED (as requested by --error option)")
+            print("LuaUnit ABORTED (as requested by --error or --failure option)")
             os.exit(-2)
         end
     end
@@ -2151,6 +2166,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         end
 
         self:setQuitOnError( options.quitOnError )
+        self:setQuitOnFailure( options.quitOnFailure )
 
         if options.output and options.output:lower() == 'junit' and options.fname == nil then
             print('With junit output, a filename must be supplied with -n or --name')
