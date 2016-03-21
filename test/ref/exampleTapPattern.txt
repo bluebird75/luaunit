@@ -15,4 +15,4 @@ not ok 6	TestToto.test8a
     example_with_luaunit.lua:78: Bouhouhoum error!
 not ok 7	TestToto.test8b
     example_with_luaunit.lua:78: Bouhouhoum error!
-# Ran 7 tests in 0.015 seconds, 1 successes, 4 failures, 2 errors, 8 non selected tests
+# Ran 7 tests in 0.015 seconds, 1 successes, 4 failures, 2 errors, 8 non-selected

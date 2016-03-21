@@ -15,4 +15,4 @@ actual: {1, 2}
 # Error: example_with_luaunit.lua:78: Bouhouhoum error!
 # Starting test: TestToto.test8b
 # Error: example_with_luaunit.lua:78: Bouhouhoum error!
-# Ran 7 tests in 0.000 seconds, 1 successes, 4 failures, 2 errors, 8 non selected tests
+# Ran 7 tests in 0.000 seconds, 1 successes, 4 failures, 2 errors, 8 non-selected

@@ -111,6 +111,7 @@
 # Starting test: TestLuaUnitResults.test_resultsWhileTestInProgress
 # Starting test: TestLuaUnitResults.test_runSuiteOk
 # Starting test: TestLuaUnitResults.test_runSuiteWithFailures
+# Starting test: TestLuaUnitResults.test_statusLine
 # Starting class: TestLuaUnitUtilities
 # Starting test: TestLuaUnitUtilities.test_FailFmt
 # Starting test: TestLuaUnitUtilities.test_IsClassMethod
@@ -141,4 +142,4 @@
 # Starting test: TestLuaUnitUtilities.test_xmlEscape
 # Starting class: TestMock
 # Starting test: TestMock.testMock
-# Ran 134 tests in 0.020 seconds, 134 successes, 0 failures
+# Ran 135 tests in 0.020 seconds, 135 successes, 0 failures

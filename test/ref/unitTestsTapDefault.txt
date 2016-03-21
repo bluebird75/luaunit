@@ -1,4 +1,4 @@
-1..134
+1..135
 # Started on 01/27/16 21:35:20
 # Starting class: TestLuaUnitAssertions
 ok     1	TestLuaUnitAssertions.test_assertAlmostEquals
@@ -111,34 +111,35 @@ ok     103	TestLuaUnitResults.test_nodeStatus
 ok     104	TestLuaUnitResults.test_resultsWhileTestInProgress
 ok     105	TestLuaUnitResults.test_runSuiteOk
 ok     106	TestLuaUnitResults.test_runSuiteWithFailures
+ok     107	TestLuaUnitResults.test_statusLine
 # Starting class: TestLuaUnitUtilities
-ok     107	TestLuaUnitUtilities.test_FailFmt
-ok     108	TestLuaUnitUtilities.test_IsClassMethod
-ok     109	TestLuaUnitUtilities.test_IsFunction
-ok     110	TestLuaUnitUtilities.test_applyPatternFilter
-ok     111	TestLuaUnitUtilities.test_expandClasses
-ok     112	TestLuaUnitUtilities.test_expandOneClass
-ok     113	TestLuaUnitUtilities.test_genSortedIndex
-ok     114	TestLuaUnitUtilities.test_hasNewline
-ok     115	TestLuaUnitUtilities.test_includePattern
-ok     116	TestLuaUnitUtilities.test_isTestName
-ok     117	TestLuaUnitUtilities.test_parseCmdLine
-ok     118	TestLuaUnitUtilities.test_prefixString
-ok     119	TestLuaUnitUtilities.test_prettystr
-ok     120	TestLuaUnitUtilities.test_prettystrPadded
-ok     121	TestLuaUnitUtilities.test_prettystrTableRecursion
-ok     122	TestLuaUnitUtilities.test_prettystr_adv_tables
-ok     123	TestLuaUnitUtilities.test_protectedCall
-ok     124	TestLuaUnitUtilities.test_sortedNextWorks
-ok     125	TestLuaUnitUtilities.test_sortedNextWorksOnTwoTables
-ok     126	TestLuaUnitUtilities.test_splitClassMethod
-ok     127	TestLuaUnitUtilities.test_strMatch
-ok     128	TestLuaUnitUtilities.test_strSplit3CharDelim
-ok     129	TestLuaUnitUtilities.test_strSplitOneCharDelim
-ok     130	TestLuaUnitUtilities.test_stripStackTrace
-ok     131	TestLuaUnitUtilities.test_table_keytostring
-ok     132	TestLuaUnitUtilities.test_xmlCDataEscape
-ok     133	TestLuaUnitUtilities.test_xmlEscape
+ok     108	TestLuaUnitUtilities.test_FailFmt
+ok     109	TestLuaUnitUtilities.test_IsClassMethod
+ok     110	TestLuaUnitUtilities.test_IsFunction
+ok     111	TestLuaUnitUtilities.test_applyPatternFilter
+ok     112	TestLuaUnitUtilities.test_expandClasses
+ok     113	TestLuaUnitUtilities.test_expandOneClass
+ok     114	TestLuaUnitUtilities.test_genSortedIndex
+ok     115	TestLuaUnitUtilities.test_hasNewline
+ok     116	TestLuaUnitUtilities.test_includePattern
+ok     117	TestLuaUnitUtilities.test_isTestName
+ok     118	TestLuaUnitUtilities.test_parseCmdLine
+ok     119	TestLuaUnitUtilities.test_prefixString
+ok     120	TestLuaUnitUtilities.test_prettystr
+ok     121	TestLuaUnitUtilities.test_prettystrPadded
+ok     122	TestLuaUnitUtilities.test_prettystrTableRecursion
+ok     123	TestLuaUnitUtilities.test_prettystr_adv_tables
+ok     124	TestLuaUnitUtilities.test_protectedCall
+ok     125	TestLuaUnitUtilities.test_sortedNextWorks
+ok     126	TestLuaUnitUtilities.test_sortedNextWorksOnTwoTables
+ok     127	TestLuaUnitUtilities.test_splitClassMethod
+ok     128	TestLuaUnitUtilities.test_strMatch
+ok     129	TestLuaUnitUtilities.test_strSplit3CharDelim
+ok     130	TestLuaUnitUtilities.test_strSplitOneCharDelim
+ok     131	TestLuaUnitUtilities.test_stripStackTrace
+ok     132	TestLuaUnitUtilities.test_table_keytostring
+ok     133	TestLuaUnitUtilities.test_xmlCDataEscape
+ok     134	TestLuaUnitUtilities.test_xmlEscape
 # Starting class: TestMock
-ok     134	TestMock.testMock
-# Ran 134 tests in 0.043 seconds, 134 successes, 0 failures
+ok     135	TestMock.testMock
+# Ran 135 tests in 0.043 seconds, 135 successes, 0 failures
