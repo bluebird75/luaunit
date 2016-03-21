@@ -1,0 +1,80 @@
+Started on 03/21/16 22:32:47
+    TestAnotherThing.testErr1 ... ERROR
+test/test_with_err_fail_pass.lua:49: attempt to perform arithmetic on a table value
+    TestAnotherThing.testErr2 ... ERROR
+test/test_with_err_fail_pass.lua:53: attempt to perform arithmetic on a table value
+    TestAnotherThing.testFail1 ... FAIL
+test/test_with_err_fail_pass.lua:41: expected: 0, actual: 2
+    TestAnotherThing.testFail2 ... FAIL
+test/test_with_err_fail_pass.lua:45: expected: 0, actual: 3
+    TestAnotherThing.testSuccess1 ... Ok
+    TestAnotherThing.testSuccess2 ... Ok
+    TestSomething.testErr1 ... ERROR
+test/test_with_err_fail_pass.lua:23: attempt to perform arithmetic on a table value
+    TestSomething.testErr2 ... ERROR
+test/test_with_err_fail_pass.lua:27: attempt to perform arithmetic on a table value
+    TestSomething.testFail1 ... FAIL
+test/test_with_err_fail_pass.lua:15: expected: 0, actual: 2
+    TestSomething.testFail2 ... FAIL
+test/test_with_err_fail_pass.lua:19: expected: 0, actual: 3
+    TestSomething.testSuccess1 ... Ok
+    TestSomething.testSuccess2 ... Ok
+    testFuncErr1 ... ERROR
+test/test_with_err_fail_pass.lua:66: attempt to perform arithmetic on a table value
+    testFuncFail1 ... FAIL
+test/test_with_err_fail_pass.lua:62: expected: 0, actual: 3
+    testFuncSuccess1 ... Ok
+=========================================================
+Failed tests:
+-------------
+1) TestAnotherThing.testErr1
+test/test_with_err_fail_pass.lua:49: attempt to perform arithmetic on a table value
+stack traceback:
+	[C]: in function 'xpcall'
+
+2) TestAnotherThing.testErr2
+test/test_with_err_fail_pass.lua:53: attempt to perform arithmetic on a table value
+stack traceback:
+	[C]: in function 'xpcall'
+
+3) TestAnotherThing.testFail1
+test/test_with_err_fail_pass.lua:41: expected: 0, actual: 2
+stack traceback:
+	test/test_with_err_fail_pass.lua:41: in function 'TestAnotherThing.testFail1'
+
+4) TestAnotherThing.testFail2
+test/test_with_err_fail_pass.lua:45: expected: 0, actual: 3
+stack traceback:
+	test/test_with_err_fail_pass.lua:45: in function 'TestAnotherThing.testFail2'
+
+5) TestSomething.testErr1
+test/test_with_err_fail_pass.lua:23: attempt to perform arithmetic on a table value
+stack traceback:
+	[C]: in function 'xpcall'
+
+6) TestSomething.testErr2
+test/test_with_err_fail_pass.lua:27: attempt to perform arithmetic on a table value
+stack traceback:
+	[C]: in function 'xpcall'
+
+7) TestSomething.testFail1
+test/test_with_err_fail_pass.lua:15: expected: 0, actual: 2
+stack traceback:
+	test/test_with_err_fail_pass.lua:15: in function 'TestSomething.testFail1'
+
+8) TestSomething.testFail2
+test/test_with_err_fail_pass.lua:19: expected: 0, actual: 3
+stack traceback:
+	test/test_with_err_fail_pass.lua:19: in function 'TestSomething.testFail2'
+
+9) testFuncErr1
+test/test_with_err_fail_pass.lua:66: attempt to perform arithmetic on a table value
+stack traceback:
+	[C]: in function 'xpcall'
+
+10) testFuncFail1
+test/test_with_err_fail_pass.lua:62: expected: 0, actual: 3
+stack traceback:
+	test/test_with_err_fail_pass.lua:62: in function 'testFuncFail1'
+
+Ran 15 tests in 0.010 seconds, 5 successes, 5 failures, 5 errors

@@ -1,0 +1,9 @@
+Started on 03/21/16 22:33:35
+    TestAnotherThing.testSuccess1 ... Ok
+    TestAnotherThing.testSuccess2 ... Ok
+    TestSomething.testSuccess1 ... Ok
+    TestSomething.testSuccess2 ... Ok
+    testFuncSuccess1 ... Ok
+=========================================================
+Ran 5 tests in 0.000 seconds, 5 successes, 0 failures, 10 non-selected
+OK

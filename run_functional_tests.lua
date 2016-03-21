@@ -191,7 +191,7 @@ function check_text_output( fileToRun, options, output, refOutput, refExitCode )
     osExpectedCodeExec(refExitCode, '%s %s --output text %s > %s',
                        LUA, fileToRun, options, output)
 
-    if options == '--verbose' then
+    if options:find( '--verbose' ) then
         adjustFile( output, refOutput, 'Started on (.*)')
     end
     adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
@@ -290,60 +290,114 @@ local UNITTEST_PATTERN = '--pattern "[Ss]tr"' -- 23 tests from run_unit_tests.lu
 
 function testTapDefault()
     lu.assertEquals( 0,
-        check_tap_output('example_with_luaunit.lua', '',          'test/exampleTapDefault.txt', 'test/ref/exampleTapDefault.txt', 12) )
+        check_tap_output('example_with_luaunit.lua', '',
+            'test/exampleTapDefault.txt', 
+            'test/ref/exampleTapDefault.txt', 12) )
     lu.assertEquals( 0,
-        check_tap_output('run_unit_tests.lua', '',          'test/unitTestsTapDefault.txt', 'test/ref/unitTestsTapDefault.txt', 0 ) )
-end
-
-function testTapPattern()
+        check_tap_output('test/test_with_err_fail_pass.lua', '',
+            'test/errFailPassTapDefault.txt', 
+            'test/ref/errFailPassTapDefault.txt', 10 ) )
     lu.assertEquals( 0,
-        check_tap_output('example_with_luaunit.lua', EXAMPLE_PATTERN, 'test/exampleTapPattern.txt', 'test/ref/exampleTapPattern.txt', 6) )
+        check_tap_output('test/test_with_err_fail_pass.lua', '-p Succ',
+            'test/errFailPassTapDefault-success.txt', 
+            'test/ref/errFailPassTapDefault-success.txt', 0 ) )
     lu.assertEquals( 0,
-        check_tap_output('run_unit_tests.lua', UNITTEST_PATTERN, 'test/unitTestsTapPattern.txt', 'test/ref/unitTestsTapPattern.txt', 0 ) )
+        check_tap_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
+            'test/errFailPassTapDefault-failures.txt', 
+            'test/ref/errFailPassTapDefault-failures.txt', 5 ) )
 end
 
 function testTapVerbose()
     lu.assertEquals( 0,
-        check_tap_output('example_with_luaunit.lua', '--verbose', 'test/exampleTapVerbose.txt', 'test/ref/exampleTapVerbose.txt', 12 ) )
+        check_tap_output('example_with_luaunit.lua', '--verbose', 
+            'test/exampleTapVerbose.txt', 
+            'test/ref/exampleTapVerbose.txt', 12 ) )
     lu.assertEquals( 0,
-        check_tap_output('run_unit_tests.lua', '--verbose', 'test/unitTestsVerbose.txt', 'test/ref/unitTestsTapVerbose.txt', 0 ) )
+        check_tap_output('test/test_with_err_fail_pass.lua', '--verbose',
+            'test/errFailPassTapVerbose.txt', 
+            'test/ref/errFailPassTapVerbose.txt', 10 ) )
+    lu.assertEquals( 0,
+        check_tap_output('test/test_with_err_fail_pass.lua', '--verbose -p Succ',
+            'test/errFailPassTapVerbose-success.txt', 
+            'test/ref/errFailPassTapVerbose-success.txt', 0 ) )
+    lu.assertEquals( 0,
+        check_tap_output('test/test_with_err_fail_pass.lua', '--verbose -p Succ -p Fail',
+            'test/errFailPassTapVerbose-failures.txt', 
+            'test/ref/errFailPassTapVerbose-failures.txt', 5 ) )
 end
 
 function testTapQuiet()
     lu.assertEquals( 0,
         check_tap_output('example_with_luaunit.lua', '--quiet',   'test/exampleTapQuiet.txt',   'test/ref/exampleTapQuiet.txt', 12 ) )
     lu.assertEquals( 0,
-        check_tap_output('run_unit_tests.lua', '--quiet',   'test/unitTestsTapQuiet.txt',   'test/ref/unitTestsTapQuiet.txt', 0 ) )
+        check_tap_output('test/test_with_err_fail_pass.lua', '--quiet',
+            'test/errFailPassTapQuiet.txt', 
+            'test/ref/errFailPassTapQuiet.txt', 10 ) )
+    lu.assertEquals( 0,
+        check_tap_output('test/test_with_err_fail_pass.lua', '--quiet -p Succ',
+            'test/errFailPassTapQuiet-success.txt', 
+            'test/ref/errFailPassTapQuiet-success.txt', 0 ) )
+    lu.assertEquals( 0,
+        check_tap_output('test/test_with_err_fail_pass.lua', '--quiet -p Succ -p Fail',
+            'test/errFailPassTapQuiet-failures.txt', 
+            'test/ref/errFailPassTapQuiet-failures.txt', 5 ) )
 end
 
 -- check text output
 
 function testTextDefault()
     lu.assertEquals( 0,
-        check_text_output('example_with_luaunit.lua', '',          'test/exampleTextDefault.txt', 'test/ref/exampleTextDefault.txt', 12 ) )
+        check_text_output('example_with_luaunit.lua', '',
+            'test/exampleTextDefault.txt', 
+            'test/ref/exampleTextDefault.txt', 12 ) )
     lu.assertEquals( 0,
-        check_text_output('run_unit_tests.lua', '',          'test/unitTestsTextDefault.txt', 'test/ref/unitTestsTextDefault.txt', 0 ) )
-end
-
-function testTextPattern()
+        check_text_output('test/test_with_err_fail_pass.lua', '',
+            'test/errFailPassTextDefault.txt', 
+            'test/ref/errFailPassTextDefault.txt', 10 ) )
     lu.assertEquals( 0,
-        check_text_output('example_with_luaunit.lua', EXAMPLE_PATTERN, 'test/exampleTextPattern.txt', 'test/ref/exampleTextPattern.txt', 6 ) )
+        check_text_output('test/test_with_err_fail_pass.lua', '-p Succ',
+            'test/errFailPassTextDefault-success.txt', 
+            'test/ref/errFailPassTextDefault-success.txt', 0 ) )
     lu.assertEquals( 0,
-        check_text_output('run_unit_tests.lua', UNITTEST_PATTERN, 'test/unitTestsTextPattern.txt', 'test/ref/unitTestsTextPattern.txt', 0 ) )
+        check_text_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
+            'test/errFailPassTextDefault-failures.txt', 
+            'test/ref/errFailPassTextDefault-failures.txt', 5 ) )
 end
 
 function testTextVerbose()
     lu.assertEquals( 0,
         check_text_output('example_with_luaunit.lua', '--verbose', 'test/exampleTextVerbose.txt', 'test/ref/exampleTextVerbose.txt', 12 ) )
     lu.assertEquals( 0,
-        check_text_output('run_unit_tests.lua', '--verbose', 'test/unitTestsTextVerbose.txt', 'test/ref/unitTestsTextVerbose.txt', 0 ) )
+        check_text_output('test/test_with_err_fail_pass.lua', '--verbose',
+            'test/errFailPassTextVerbose.txt', 
+            'test/ref/errFailPassTextVerbose.txt', 10 ) )
+    lu.assertEquals( 0,
+        check_text_output('test/test_with_err_fail_pass.lua', '--verbose -p Succ',
+            'test/errFailPassTextVerbose-success.txt', 
+            'test/ref/errFailPassTextVerbose-success.txt', 0 ) )
+    lu.assertEquals( 0,
+        check_text_output('test/test_with_err_fail_pass.lua', '--verbose -p Succ -p Fail',
+            'test/errFailPassTextVerbose-failures.txt', 
+            'test/ref/errFailPassTextVerbose-failures.txt', 5 ) )
 end
 
 function testTextQuiet()
     lu.assertEquals( 0,
-        check_text_output('example_with_luaunit.lua', '--quiet',   'test/exampleTextQuiet.txt',   'test/ref/exampleTextQuiet.txt', 12 ) )
+        check_text_output('example_with_luaunit.lua', '--quiet',   
+            'test/exampleTextQuiet.txt',   
+            'test/ref/exampleTextQuiet.txt', 12 ) )
     lu.assertEquals( 0,
-        check_text_output('run_unit_tests.lua', '--quiet',   'test/unitTestsTextQuiet.txt',   'test/ref/unitTestsTextQuiet.txt', 0 ) )
+        check_text_output('test/test_with_err_fail_pass.lua', '--quiet',
+            'test/errFailPassTextQuiet.txt', 
+            'test/ref/errFailPassTextQuiet.txt', 10 ) )
+    lu.assertEquals( 0,
+        check_text_output('test/test_with_err_fail_pass.lua', '--quiet -p Succ',
+            'test/errFailPassTextQuiet-success.txt', 
+            'test/ref/errFailPassTextQuiet-success.txt', 0 ) )
+    lu.assertEquals( 0,
+        check_text_output('test/test_with_err_fail_pass.lua', '--quiet -p Succ -p Fail',
+            'test/errFailPassTextQuiet-failures.txt', 
+            'test/ref/errFailPassTextQuiet-failures.txt', 5 ) )
 end
 
 -- check nil output
@@ -352,36 +406,57 @@ function testNilDefault()
     lu.assertEquals( 0,
         check_nil_output('example_with_luaunit.lua', '', 'test/exampleNilDefault.txt', 'test/ref/exampleNilDefault.txt', 12 ) )
     lu.assertEquals( 0,
-        check_nil_output('run_unit_tests.lua', '', 'test/unitTestseNilDefault.txt', 'test/ref/unitTestsNilDefault.txt', 0 ) )
+        check_nil_output('test/test_with_err_fail_pass.lua', '',
+            'test/errFailPassNilDefault.txt', 
+            'test/ref/errFailPassNilDefault.txt', 10 ) )
+    lu.assertEquals( 0,
+        check_nil_output('test/test_with_err_fail_pass.lua', ' -p Succ',
+            'test/errFailPassNilDefault-success.txt', 
+            'test/ref/errFailPassNilDefault-success.txt', 0 ) )
+    lu.assertEquals( 0,
+        check_nil_output('test/test_with_err_fail_pass.lua', ' -p Succ -p Fail',
+            'test/errFailPassNilDefault-failures.txt', 
+            'test/ref/errFailPassNilDefault-failures.txt', 5 ) )
 end
 
 -- check xml output
 
 function testXmlDefault()
     lu.assertEquals( 0,
-        check_xml_output('example_with_luaunit.lua', '',          'test/exampleXmlDefault.txt', 'test/exampleXmlDefault.xml',
-        'test/exampleXmllintDefault.xml', 'test/ref/exampleXmlDefault.txt', 'test/ref/exampleXmlDefault.xml', 12 ) )
+        check_xml_output('example_with_luaunit.lua', '',
+            'test/exampleXmlDefault.txt', 'test/exampleXmlDefault.xml', 'test/exampleXmllintDefault.xml', 
+            'test/ref/exampleXmlDefault.txt', 'test/ref/exampleXmlDefault.xml', 12 ) )
     lu.assertEquals( 0,
-        check_xml_output('run_unit_tests.lua', '',          'test/unitTestsXmlDefault.txt', 'test/unitTestsXmlDefault.xml',
-        'test/unitTestsXmllintDefault.xml', 'test/ref/unitTestsXmlDefault.txt', 'test/ref/unitTestsXmlDefault.xml', 0 ) )
-end
-
-function testXmlPattern()
+        check_xml_output('test/test_with_err_fail_pass.lua', '',
+            'test/errFailPassXmlDefault.txt', 'test/errFailPassXmlDefault.xml', 'test/errFailPassXmllintDefault.xml',
+            'test/ref/errFailPassXmlDefault.txt', 'test/ref/errFailPassXmlDefault.xml', 10 ) )
     lu.assertEquals( 0,
-        check_xml_output('example_with_luaunit.lua', EXAMPLE_PATTERN, 'test/exampleXmlPattern.txt', 'test/exampleXmlPattern.xml',
-        'test/exampleXmllintPattern.xml', 'test/ref/exampleXmlPattern.txt', 'test/ref/exampleXmlPattern.xml', 6 ) )
+        check_xml_output('test/test_with_err_fail_pass.lua', '-p Succ',
+            'test/errFailPassXmlDefault-success.txt', 'test/errFailPassXmlDefault-success.xml', 'test/errFailPassXmllintDefault.xml',
+            'test/ref/errFailPassXmlDefault-success.txt', 'test/ref/errFailPassXmlDefault-success.xml', 0 ) )
     lu.assertEquals( 0,
-        check_xml_output('run_unit_tests.lua', UNITTEST_PATTERN, 'test/unitTestsXmlPattern.txt', 'test/unitTestsXmlPattern.xml',
-        'test/unitTestsXmllintPattern.xml', 'test/ref/unitTestsXmlPattern.txt', 'test/ref/unitTestsXmlPattern.xml', 0 ) )
+        check_xml_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
+            'test/errFailPassXmlDefault-failures.txt', 'test/errFailPassXmlDefault-failures.xml', 'test/errFailPassXmllintDefault.xml',
+            'test/ref/errFailPassXmlDefault-failures.txt', 'test/ref/errFailPassXmlDefault-failures.xml', 5 ) )
 end
 
 function testXmlVerbose()
     lu.assertEquals( 0,
-        check_xml_output('example_with_luaunit.lua', '--verbose', 'test/exampleXmlVerbose.txt', 'test/exampleXmlVerbose.xml',
-        'test/exampleXmllintVerbose.xml', 'test/ref/exampleXmlVerbose.txt', 'test/ref/exampleXmlVerbose.xml', 12 ) )
+        check_xml_output('example_with_luaunit.lua', '--verbose', 
+            'test/exampleXmlVerbose.txt', 'test/exampleXmlVerbose.xml', 'test/exampleXmllintVerbose.xml', 
+            'test/ref/exampleXmlVerbose.txt', 'test/ref/exampleXmlVerbose.xml', 12 ) )
     lu.assertEquals( 0,
-        check_xml_output('run_unit_tests.lua', '--verbose', 'test/unitTestsXmlVerbose.txt', 'test/unitTestsXmlVerbose.xml',
-        'test/unitTestsXmllintVerbose.xml', 'test/ref/unitTestsXmlVerbose.txt', 'test/ref/unitTestsXmlVerbose.xml', 0 ) )
+        check_xml_output('test/test_with_err_fail_pass.lua', '--verbose ',
+            'test/errFailPassXmlVerbose.txt', 'test/errFailPassXmlVerbose.xml', 'test/errFailPassXmllintVerbose.xml',
+            'test/ref/errFailPassXmlVerbose.txt', 'test/ref/errFailPassXmlVerbose.xml', 10 ) )
+    lu.assertEquals( 0,
+        check_xml_output('test/test_with_err_fail_pass.lua', '--verbose -p Succ',
+            'test/errFailPassXmlVerbose-success.txt', 'test/errFailPassXmlVerbose-success.xml', 'test/errFailPassXmllintVerbose.xml',
+            'test/ref/errFailPassXmlVerbose-success.txt', 'test/ref/errFailPassXmlVerbose-success.xml', 0 ) )
+    lu.assertEquals( 0,
+        check_xml_output('test/test_with_err_fail_pass.lua', '--verbose -p Succ -p Fail',
+            'test/errFailPassXmlVerbose-failures.txt', 'test/errFailPassXmlVerbose-failures.xml', 'test/errFailPassXmllintVerbose.xml',
+            'test/ref/errFailPassXmlVerbose-failures.txt', 'test/ref/errFailPassXmlVerbose-failures.xml', 5 ) )
 end
 
 function testXmlQuiet()
@@ -389,23 +464,32 @@ function testXmlQuiet()
         check_xml_output('example_with_luaunit.lua', '--quiet',   'test/exampleXmlQuiet.txt', 'test/exampleXmlQuiet.xml',
         'test/exampleXmllintQuiet.xml', 'test/ref/exampleXmlQuiet.txt', 'test/ref/exampleXmlQuiet.xml', 12 ) )
     lu.assertEquals( 0,
-        check_xml_output('run_unit_tests.lua', '--quiet',   'test/unitTestsXmlQuiet.txt', 'test/unitTestsXmlQuiet.xml',
-        'test/unitTestsXmllintQuiet.xml', 'test/ref/unitTestsXmlQuiet.txt', 'test/ref/unitTestsXmlQuiet.xml', 0 ) )
+        check_xml_output('test/test_with_err_fail_pass.lua', '--quiet ',
+            'test/errFailPassXmlQuiet.txt', 'test/errFailPassXmlQuiet.xml', 'test/errFailPassXmllintQuiet.xml',
+            'test/ref/errFailPassXmlQuiet.txt', 'test/ref/errFailPassXmlQuiet.xml', 10 ) )
+    lu.assertEquals( 0,
+        check_xml_output('test/test_with_err_fail_pass.lua', '--quiet -p Succ',
+            'test/errFailPassXmlQuiet-success.txt', 'test/errFailPassXmlQuiet-success.xml', 'test/errFailPassXmllintQuiet.xml',
+            'test/ref/errFailPassXmlQuiet-success.txt', 'test/ref/errFailPassXmlQuiet-success.xml', 0 ) )
+    lu.assertEquals( 0,
+        check_xml_output('test/test_with_err_fail_pass.lua', '--quiet -p Succ -p Fail',
+            'test/errFailPassXmlQuiet-failures.txt', 'test/errFailPassXmlQuiet-failures.xml', 'test/errFailPassXmllintQuiet.xml',
+            'test/ref/errFailPassXmlQuiet-failures.txt', 'test/ref/errFailPassXmlQuiet-failures.xml', 5 ) )
 end
 
-function testTestXmlDefault()
+function testTestWithXmlDefault()
     lu.assertEquals( 0,
         check_xml_output('test/test_with_xml.lua', '', 'test/testWithXmlDefault.txt', 'test/testWithXmlDefault.xml',
         'test/testWithXmlLintDefault.txt', 'test/ref/testWithXmlDefault.txt', 'test/ref/testWithXmlDefault.xml', 2 ) )
 end
 
-function testTestXmlVerbose()
+function testTestWithXmlVerbose()
     lu.assertEquals( 0,
         check_xml_output('test/test_with_xml.lua', '--verbose', 'test/testWithXmlVerbose.txt', 'test/testWithXmlVerbose.xml',
         'test/testWithXmlLintVerbose.txt', 'test/ref/testWithXmlVerbose.txt', 'test/ref/testWithXmlVerbose.xml', 2 ) )
 end
 
-function testTestXmlQuiet()
+function testTestWithXmlQuiet()
     lu.assertEquals( 0,
         check_xml_output('test/test_with_xml.lua', '--quiet', 'test/testWithXmlQuiet.txt', 'test/testWithXmlQuiet.xml',
         'test/testWithXmlLintQuiet.txt', 'test/ref/testWithXmlQuiet.txt', 'test/ref/testWithXmlQuiet.xml', 2 ) )

@@ -1,0 +1,30 @@
+1..15
+# Started on 03/21/16 22:15:20
+# Starting class: TestAnotherThing
+not ok 1	TestAnotherThing.testErr1
+    test/test_with_err_fail_pass.lua:49: attempt to perform arithmetic on a table value
+not ok 2	TestAnotherThing.testErr2
+    test/test_with_err_fail_pass.lua:53: attempt to perform arithmetic on a table value
+not ok 3	TestAnotherThing.testFail1
+    test/test_with_err_fail_pass.lua:41: expected: 0, actual: 2
+not ok 4	TestAnotherThing.testFail2
+    test/test_with_err_fail_pass.lua:45: expected: 0, actual: 3
+ok     5	TestAnotherThing.testSuccess1
+ok     6	TestAnotherThing.testSuccess2
+# Starting class: TestSomething
+not ok 7	TestSomething.testErr1
+    test/test_with_err_fail_pass.lua:23: attempt to perform arithmetic on a table value
+not ok 8	TestSomething.testErr2
+    test/test_with_err_fail_pass.lua:27: attempt to perform arithmetic on a table value
+not ok 9	TestSomething.testFail1
+    test/test_with_err_fail_pass.lua:15: expected: 0, actual: 2
+not ok 10	TestSomething.testFail2
+    test/test_with_err_fail_pass.lua:19: expected: 0, actual: 3
+ok     11	TestSomething.testSuccess1
+ok     12	TestSomething.testSuccess2
+not ok 13	testFuncErr1
+    test/test_with_err_fail_pass.lua:66: attempt to perform arithmetic on a table value
+not ok 14	testFuncFail1
+    test/test_with_err_fail_pass.lua:62: expected: 0, actual: 3
+ok     15	testFuncSuccess1
+# Ran 15 tests in 0.000 seconds, 5 successes, 5 failures, 5 errors
