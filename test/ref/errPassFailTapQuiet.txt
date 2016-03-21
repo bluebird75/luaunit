@@ -1,0 +1,20 @@
+1..15
+# Started on 03/21/16 23:26:22
+# Starting class: TestAnotherThing
+not ok 1	TestAnotherThing.testErr1
+not ok 2	TestAnotherThing.testErr2
+not ok 3	TestAnotherThing.testFail1
+not ok 4	TestAnotherThing.testFail2
+ok     5	TestAnotherThing.testSuccess1
+ok     6	TestAnotherThing.testSuccess2
+# Starting class: TestSomething
+not ok 7	TestSomething.testErr1
+not ok 8	TestSomething.testErr2
+not ok 9	TestSomething.testFail1
+not ok 10	TestSomething.testFail2
+ok     11	TestSomething.testSuccess1
+ok     12	TestSomething.testSuccess2
+not ok 13	testFuncErr1
+not ok 14	testFuncFail1
+ok     15	testFuncSuccess1
+# Ran 15 tests in 0.000 seconds, 5 successes, 5 failures, 5 errors

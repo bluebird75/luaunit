@@ -282,10 +282,6 @@ function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput,
     return retcode
 end
 
--- test selection patterns
-local EXAMPLE_PATTERN = '--pattern "Toto[^_]*$"' -- 7 tests from example_with_luaunit.lua: 1 success, 4 failures, 2 errors
-local UNITTEST_PATTERN = '--pattern "[Ss]tr"' -- 23 tests from run_unit_tests.lua: all successful
-
 -- check tap output
 
 function testTapDefault()
@@ -513,12 +509,12 @@ function testLuaunitV2Usage()
 end
 
 function testBasicLuaunitOptions()
-    osExpectedCodeExec(0, '%s run_unit_tests.lua --help > test/null.txt', LUA)
-    osExpectedCodeExec(0, '%s run_unit_tests.lua --version > test/null.txt', LUA)
+    osExpectedCodeExec(0, '%s example_with_luaunit.lua --help > test/null.txt', LUA)
+    osExpectedCodeExec(0, '%s example_with_luaunit.lua --version > test/null.txt', LUA)
     -- test invalid syntax
-    osExpectedCodeExec(-1, '%s run_unit_tests.lua --foobar > test/null.txt', LUA) -- invalid option
-    osExpectedCodeExec(-1, '%s run_unit_tests.lua --output foobar > test/null.txt', LUA) -- invalid format
-    osExpectedCodeExec(-1, '%s run_unit_tests.lua --output junit > test/null.txt', LUA) -- missing output name
+    osExpectedCodeExec(-1, '%s example_with_luaunit.lua --foobar > test/null.txt', LUA) -- invalid option
+    osExpectedCodeExec(-1, '%s example_with_luaunit.lua --output foobar > test/null.txt', LUA) -- invalid format
+    osExpectedCodeExec(-1, '%s example_with_luaunit.lua --output junit > test/null.txt', LUA) -- missing output name
     os.remove('test/null.txt')
 end
 
@@ -526,46 +522,80 @@ filesToGenerateExampleXml = {
     { 'example_with_luaunit.lua', '', '--output junit --name test/ref/exampleXmlDefault.xml', 'test/ref/exampleXmlDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output junit --name test/ref/exampleXmlQuiet.xml', 'test/ref/exampleXmlQuiet.txt' },
     { 'example_with_luaunit.lua', '--verbose', '--output junit --name test/ref/exampleXmlVerbose.xml', 'test/ref/exampleXmlVerbose.txt' },
-    { 'example_with_luaunit.lua', EXAMPLE_PATTERN, '--output junit --name test/ref/exampleXmlPattern.xml', 'test/ref/exampleXmlPattern.txt' },
 }
 
 filesToGenerateExampleTap = {
     { 'example_with_luaunit.lua', '', '--output tap', 'test/ref/exampleTapDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output tap', 'test/ref/exampleTapQuiet.txt' },
     { 'example_with_luaunit.lua', '--verbose', '--output tap', 'test/ref/exampleTapVerbose.txt' },
-    { 'example_with_luaunit.lua', EXAMPLE_PATTERN, '--output tap', 'test/ref/exampleTapPattern.txt' },
 }
 
 filesToGenerateExampleText = {
     { 'example_with_luaunit.lua', '', '--output text', 'test/ref/exampleTextDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output text', 'test/ref/exampleTextQuiet.txt' },
     { 'example_with_luaunit.lua', '--verbose', '--output text', 'test/ref/exampleTextVerbose.txt' },
-    { 'example_with_luaunit.lua', EXAMPLE_PATTERN, '--output text', 'test/ref/exampleTextPattern.txt' },
 }
 
 filesToGenerateExampleNil = {
     { 'example_with_luaunit.lua', '', '--output nil', 'test/ref/exampleNilDefault.txt' },
 }
 
-filesToGenerateUnitXml = {
-    { 'run_unit_tests.lua', '', '--output junit --name test/ref/unitTestsXmlDefault.xml', 'test/ref/unitTestsXmlDefault.txt' },
-    { 'run_unit_tests.lua', '--quiet', '--output junit --name test/ref/unitTestsXmlQuiet.xml', 'test/ref/unitTestsXmlQuiet.txt' },
-    { 'run_unit_tests.lua', '--verbose', '--output junit --name test/ref/unitTestsXmlVerbose.xml', 'test/ref/unitTestsXmlVerbose.txt' },
-    { 'run_unit_tests.lua', UNITTEST_PATTERN, '--output junit --name test/ref/unitTestsXmlPattern.xml', 'test/ref/unitTestsXmlPattern.txt' },
+filesToGenerateErrFailPassXml = {
+    { 'test/test_with_err_fail_pass.lua', '', 
+        '--output junit --name test/ref/errFailPassXmlDefault.xml', 
+        'test/ref/errFailPassXmlDefault.txt' },
+    { 'test/test_with_err_fail_pass.lua', '', 
+        '-p Succ --output junit --name test/ref/errFailPassXmlDefault-success.xml', 
+        'test/ref/errFailPassXmlDefault-success.txt' },
+    { 'test/test_with_err_fail_pass.lua', '', 
+        '-p Succ -p Fail --output junit --name test/ref/errFailPassXmlDefault-failures.xml', 
+        'test/ref/errFailPassXmlDefault-failures.txt' },
+    { 'test/test_with_err_fail_pass.lua', '', '--quiet --output junit --name test/ref/errFailPassXmlQuiet.xml',
+        'test/ref/errFailPassXmlQuiet.txt' },
+    { 'test/test_with_err_fail_pass.lua', '', 
+        '-p Succ --quiet --output junit --name test/ref/errFailPassXmlQuiet-success.xml', 
+        'test/ref/errFailPassXmlQuiet-success.txt' },
+    { 'test/test_with_err_fail_pass.lua', '', 
+        '-p Succ -p Fail --quiet --output junit --name test/ref/errFailPassXmlQuiet-failures.xml', 
+        'test/ref/errFailPassXmlQuiet-failures.txt' },
+    { 'test/test_with_err_fail_pass.lua', '', '--verbose --output junit --name test/ref/errFailPassXmlVerbose.xml', 'test/ref/errFailPassXmlVerbose.txt' },
+    { 'test/test_with_err_fail_pass.lua', '', 
+        '-p Succ --verbose --output junit --name test/ref/errFailPassXmlVerbose-success.xml', 
+        'test/ref/errFailPassXmlVerbose-success.txt' },
+    { 'test/test_with_err_fail_pass.lua', '', 
+        '-p Succ -p Fail --verbose --output junit --name test/ref/errFailPassXmlVerbose-failures.xml', 
+        'test/ref/errFailPassXmlVerbose-failures.txt' },
 }
 
-filesToGenerateUnitTap = {
-    { 'run_unit_tests.lua', '', '--output tap', 'test/ref/unitTestsTapDefault.txt' },
-    { 'run_unit_tests.lua', '--quiet', '--output tap', 'test/ref/unitTestsTapQuiet.txt' },
-    { 'run_unit_tests.lua', '--verbose', '--output tap', 'test/ref/unitTestsTapVerbose.txt' },
-    { 'run_unit_tests.lua', UNITTEST_PATTERN, '--output tap', 'test/ref/unitTestsTapPattern.txt' },
+filesToGenerateErrFailPassTap = {
+    { 'test/test_with_err_fail_pass.lua', '', '--output tap', 'test/ref/errFailPassTapDefault.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ', '--output tap', 'test/ref/errFailPassTapDefault-success.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail', '--output tap', 'test/ref/errFailPassTapDefault-failures.txt' },
+    { 'test/test_with_err_fail_pass.lua', '--quiet', '--output tap', 'test/ref/errPassFailTapQuiet.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ --quiet', 
+        '--output tap', 'test/ref/errFailPassTapQuiet-success.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail --quiet', 
+        '--output tap', 'test/ref/errFailPassTapQuiet-failures.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ --verbose', 
+        '--output tap', 'test/ref/errFailPassTapVerbose-success.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail --verbose', 
+        '--output tap', 'test/ref/errFailPassTapVerbose-failures.txt' },
 }
 
-filesToGenerateUnitText = {
-    { 'run_unit_tests.lua', '', '--output text', 'test/ref/unitTestsTextDefault.txt' },
-    { 'run_unit_tests.lua', '--quiet', '--output text', 'test/ref/unitTestsTextQuiet.txt' },
-    { 'run_unit_tests.lua', '--verbose', '--output text', 'test/ref/unitTestsTextVerbose.txt' },
-    { 'run_unit_tests.lua', UNITTEST_PATTERN, '--output text', 'test/ref/unitTestsTextPattern.txt' },
+filesToGenerateErrFailPassText = {
+    { 'test/test_with_err_fail_pass.lua', '', '--output text', 'test/ref/errFailPassTextDefault.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ', '--output text', 'test/ref/errFailPassTextDefault-success.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail', '--output text', 'test/ref/errFailPassTextDefault-failures.txt' },
+    { 'test/test_with_err_fail_pass.lua', '--quiet', '--output text', 'test/ref/errFailPassTextQuiet.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ --quiet', 
+        '--output text', 'test/ref/errFailPassTextQuiet-success.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail --quiet', 
+        '--output text', 'test/ref/errFailPassTextQuiet-failures.txt' },
+    { 'test/test_with_err_fail_pass.lua', '--verbose', '--output text', 'test/ref/errFailPassTextVerbose.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ --verbose', 
+        '--output text', 'test/ref/errFailPassTextVerbose-success.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail --verbose', 
+        '--output text', 'test/ref/errFailPassTextVerbose-failures.txt' },
 }
 
 filesToGenerateTestXml = {
@@ -575,17 +605,15 @@ filesToGenerateTestXml = {
 }
 
 filesSetIndex = {
-    UnitText=filesToGenerateUnitText,
-    UnitTap=filesToGenerateUnitTap,
-    UnitXml=filesToGenerateUnitXml,
+    ErrFailPassText=filesToGenerateErrFailPassText,
+    ErrFailPassTap=filesToGenerateErrFailPassTap,
+    ErrFailPassXml=filesToGenerateErrFailPassXml,
     ExampleNil=filesToGenerateExampleNil,
     ExampleText=filesToGenerateExampleText,
     ExampleTap=filesToGenerateExampleTap,
     ExampleXml=filesToGenerateExampleXml,
     TestXml=filesToGenerateTestXml,
 }
-
-
 
 function updateRefFiles( filesToGenerate )
     local ret
