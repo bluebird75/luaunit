@@ -1705,7 +1705,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             s = s..', 0 failures'
         end
         if result.nonSelectedCount > 0 then
-            s = s..string.format(", %d non selected tests", result.nonSelectedCount )
+            s = s..string.format(", %d non-selected", result.nonSelectedCount )
         end
         return s
     end
