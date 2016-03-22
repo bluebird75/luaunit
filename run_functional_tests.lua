@@ -518,6 +518,25 @@ function testBasicLuaunitOptions()
     os.remove('test/null.txt')
 end
 
+function testStopOnError()
+    lu.assertEquals( 0,
+        check_text_output('test/test_with_err_fail_pass.lua', '--quiet -p Succ --error --failure',
+            'test/errFailPassTextStopOnError-1.txt', 
+            'test/ref/errFailPassTextStopOnError-1.txt', 0 ) )
+    lu.assertEquals( 0,
+        check_text_output('test/test_with_err_fail_pass.lua', '--quiet -p TestSome --error',
+            'test/errFailPassTextStopOnError-2.txt', 
+            'test/ref/errFailPassTextStopOnError-2.txt', -2 ) )
+    lu.assertEquals( 0,
+        check_text_output('test/test_with_err_fail_pass.lua', '--quiet -p TestAnoth --failure',
+            'test/errFailPassTextStopOnError-3.txt', 
+            'test/ref/errFailPassTextStopOnError-3.txt', -2 ) )
+    lu.assertEquals( 0,
+        check_text_output('test/test_with_err_fail_pass.lua', '--quiet -p TestSome --failure',
+            'test/errFailPassTextStopOnError-4.txt', 
+            'test/ref/errFailPassTextStopOnError-4.txt', -2 ) )
+end
+
 filesToGenerateExampleXml = {
     { 'example_with_luaunit.lua', '', '--output junit --name test/ref/exampleXmlDefault.xml', 'test/ref/exampleXmlDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output junit --name test/ref/exampleXmlQuiet.xml', 'test/ref/exampleXmlQuiet.txt' },
@@ -607,6 +626,17 @@ filesToGenerateTestXml = {
     { 'test/test_with_xml.lua', '--quiet', '--output junit --name test/ref/testWithXmlQuiet.xml', 'test/ref/testWithXmlQuiet.txt' },
 }
 
+filesToGenerateStopOnError = {
+    { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p Succ --error -- failure', 
+        'test/errFailPassTextStopOnError-1.txt'}, 
+    { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p TestSome --error', 
+        'test/errFailPassTextStopOnError-2.txt'}, 
+    { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p TestAnoth --failure', 
+        'test/errFailPassTextStopOnError-3.txt'}, 
+    { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p TestSome --failure', 
+        'test/errFailPassTextStopOnError-4.txt'}, 
+}
+
 filesSetIndex = {
     ErrFailPassText=filesToGenerateErrFailPassText,
     ErrFailPassTap=filesToGenerateErrFailPassTap,
@@ -616,6 +646,7 @@ filesSetIndex = {
     ExampleTap=filesToGenerateExampleTap,
     ExampleXml=filesToGenerateExampleXml,
     TestXml=filesToGenerateTestXml,
+    StopOnError=filesToGenerateStopOnError,
 }
 
 function updateRefFiles( filesToGenerate )

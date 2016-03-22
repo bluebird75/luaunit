@@ -1,0 +1,23 @@
+..FFE
+ERROR during LuaUnit test execution:
+test/test_with_err_fail_pass.lua:23: attempt to perform arithmetic on a table value
+
+Failed tests:
+-------------
+1) TestSomething.test2_Fail1
+test/test_with_err_fail_pass.lua:15: expected: 0, actual: 2
+stack traceback:
+	test/test_with_err_fail_pass.lua:15: in function 'TestSomething.test2_Fail1'
+
+2) TestSomething.test2_Fail2
+test/test_with_err_fail_pass.lua:19: expected: 0, actual: 3
+stack traceback:
+	test/test_with_err_fail_pass.lua:19: in function 'TestSomething.test2_Fail2'
+
+3) TestSomething.test3_Err1
+test/test_with_err_fail_pass.lua:23: attempt to perform arithmetic on a table value
+stack traceback:
+	[C]: in function 'xpcall'
+
+Ran 5 tests in 0.000 seconds, 2 successes, 2 failures, 1 errors, 9 non-selected
+LuaUnit ABORTED (as requested by --error or --failure option)
