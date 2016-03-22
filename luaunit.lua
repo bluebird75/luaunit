@@ -47,7 +47,8 @@ Options:
   --version:              Print version information
   -v, --verbose:          Increase verbosity
   -q, --quiet:            Set verbosity to minimum
-  -e, --error:            Make actual errors fatal (= abort execution)
+  -e, --error:            Stop on first error
+  -f, --failure:          Stop on first failure or error
   -o, --output OUTPUT:    Set output type to OUTPUT
                           Possible values: text, tap, junit, nil
   -n, --name NAME:        For junit only, mandatory name of xml file
