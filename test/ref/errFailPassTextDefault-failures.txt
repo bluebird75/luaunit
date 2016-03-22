@@ -1,29 +1,29 @@
-FF..FF..F.
+..FF..FFF.
 Failed tests:
 -------------
-1) TestAnotherThing.testFail1
-test/test_with_err_fail_pass.lua:41: expected: 0, actual: 2
+1) TestAnotherThing.test3_Fail1
+test/test_with_err_fail_pass.lua:49: expected: 0, actual: 2
 stack traceback:
-	test/test_with_err_fail_pass.lua:41: in function 'TestAnotherThing.testFail1'
+	test/test_with_err_fail_pass.lua:49: in function 'TestAnotherThing.test3_Fail1'
 
-2) TestAnotherThing.testFail2
-test/test_with_err_fail_pass.lua:45: expected: 0, actual: 3
+2) TestAnotherThing.test3_Fail2
+test/test_with_err_fail_pass.lua:53: expected: 0, actual: 3
 stack traceback:
-	test/test_with_err_fail_pass.lua:45: in function 'TestAnotherThing.testFail2'
+	test/test_with_err_fail_pass.lua:53: in function 'TestAnotherThing.test3_Fail2'
 
-3) TestSomething.testFail1
+3) TestSomething.test2_Fail1
 test/test_with_err_fail_pass.lua:15: expected: 0, actual: 2
 stack traceback:
-	test/test_with_err_fail_pass.lua:15: in function 'TestSomething.testFail1'
+	test/test_with_err_fail_pass.lua:15: in function 'TestSomething.test2_Fail1'
 
-4) TestSomething.testFail2
+4) TestSomething.test2_Fail2
 test/test_with_err_fail_pass.lua:19: expected: 0, actual: 3
 stack traceback:
-	test/test_with_err_fail_pass.lua:19: in function 'TestSomething.testFail2'
+	test/test_with_err_fail_pass.lua:19: in function 'TestSomething.test2_Fail2'
 
 5) testFuncFail1
 test/test_with_err_fail_pass.lua:62: expected: 0, actual: 3
 stack traceback:
 	test/test_with_err_fail_pass.lua:62: in function 'testFuncFail1'
 
-Ran 10 tests in 0.000 seconds, 5 successes, 5 failures, 5 non-selected
+Ran 10 tests in 0.001 seconds, 5 successes, 5 failures, 5 non-selected

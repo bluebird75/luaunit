@@ -1,10 +1,10 @@
-# XML output to test/errFailPassXmlDefault-success.xml
-# Started on 03/21/16 22:51:43
+# XML output to test/ref/errFailPassXmlDefault-success.xml
+# Started on 03/22/16 21:29:18
 # Starting class: TestAnotherThing
-# Starting test: TestAnotherThing.testSuccess1
-# Starting test: TestAnotherThing.testSuccess2
+# Starting test: TestAnotherThing.test1_Success1
+# Starting test: TestAnotherThing.test1_Success2
 # Starting class: TestSomething
-# Starting test: TestSomething.testSuccess1
-# Starting test: TestSomething.testSuccess2
+# Starting test: TestSomething.test1_Success1
+# Starting test: TestSomething.test1_Success2
 # Starting test: testFuncSuccess1
 # Ran 5 tests in 0.001 seconds, 5 successes, 0 failures, 10 non-selected

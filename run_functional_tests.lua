@@ -571,11 +571,14 @@ filesToGenerateErrFailPassTap = {
     { 'test/test_with_err_fail_pass.lua', '', '--output tap', 'test/ref/errFailPassTapDefault.txt' },
     { 'test/test_with_err_fail_pass.lua', '-p Succ', '--output tap', 'test/ref/errFailPassTapDefault-success.txt' },
     { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail', '--output tap', 'test/ref/errFailPassTapDefault-failures.txt' },
-    { 'test/test_with_err_fail_pass.lua', '--quiet', '--output tap', 'test/ref/errPassFailTapQuiet.txt' },
+
+    { 'test/test_with_err_fail_pass.lua', '--quiet', '--output tap', 'test/ref/errFailPassTapQuiet.txt' },
     { 'test/test_with_err_fail_pass.lua', '-p Succ --quiet', 
         '--output tap', 'test/ref/errFailPassTapQuiet-success.txt' },
     { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail --quiet', 
         '--output tap', 'test/ref/errFailPassTapQuiet-failures.txt' },
+
+    { 'test/test_with_err_fail_pass.lua', '--verbose', '--output tap', 'test/ref/errFailPassTapVerbose.txt' },
     { 'test/test_with_err_fail_pass.lua', '-p Succ --verbose', 
         '--output tap', 'test/ref/errFailPassTapVerbose-success.txt' },
     { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail --verbose', 

@@ -1,15 +1,15 @@
 1..10
-# Started on 03/21/16 22:25:47
+# Started on 03/22/16 21:58:32
 # Starting class: TestAnotherThing
-not ok 1	TestAnotherThing.testFail1
-not ok 2	TestAnotherThing.testFail2
-ok     3	TestAnotherThing.testSuccess1
-ok     4	TestAnotherThing.testSuccess2
+ok     1	TestAnotherThing.test1_Success1
+ok     2	TestAnotherThing.test1_Success2
+not ok 3	TestAnotherThing.test3_Fail1
+not ok 4	TestAnotherThing.test3_Fail2
 # Starting class: TestSomething
-not ok 5	TestSomething.testFail1
-not ok 6	TestSomething.testFail2
-ok     7	TestSomething.testSuccess1
-ok     8	TestSomething.testSuccess2
+ok     5	TestSomething.test1_Success1
+ok     6	TestSomething.test1_Success2
+not ok 7	TestSomething.test2_Fail1
+not ok 8	TestSomething.test2_Fail2
 not ok 9	testFuncFail1
 ok     10	testFuncSuccess1
-# Ran 10 tests in 0.000 seconds, 5 successes, 5 failures, 5 non-selected
+# Ran 10 tests in 0.002 seconds, 5 successes, 5 failures, 5 non-selected

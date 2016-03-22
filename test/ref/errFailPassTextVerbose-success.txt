@@ -1,8 +1,8 @@
-Started on 03/21/16 22:33:35
-    TestAnotherThing.testSuccess1 ... Ok
-    TestAnotherThing.testSuccess2 ... Ok
-    TestSomething.testSuccess1 ... Ok
-    TestSomething.testSuccess2 ... Ok
+Started on 03/22/16 21:29:18
+    TestAnotherThing.test1_Success1 ... Ok
+    TestAnotherThing.test1_Success2 ... Ok
+    TestSomething.test1_Success1 ... Ok
+    TestSomething.test1_Success2 ... Ok
     testFuncSuccess1 ... Ok
 =========================================================
 Ran 5 tests in 0.000 seconds, 5 successes, 0 failures, 10 non-selected

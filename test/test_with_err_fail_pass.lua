@@ -3,54 +3,54 @@ lu = require('luaunit')
 --[[ Test used by functional tests ]]
 TestSomething = {} --class
 
-    function TestSomething:testSuccess1()
+    function TestSomething:test1_Success1()
         lu.assertEquals( 1+1, 2 )
     end
 
-    function TestSomething:testSuccess2()
+    function TestSomething:test1_Success2()
         lu.assertEquals( 1+2, 3 )
     end
 
-    function TestSomething:testFail1()
+    function TestSomething:test2_Fail1()
         lu.assertEquals( 1+1, 0 )
     end
 
-    function TestSomething:testFail2()
+    function TestSomething:test2_Fail2()
         lu.assertEquals( 1+2, 0 )
     end
 
-    function TestSomething:testErr1()
+    function TestSomething:test3_Err1()
         v = 1 + { 1,2 }
     end
 
-    function TestSomething:testErr2()
+    function TestSomething:test3_Err2()
         v = 1 + { 1,2 }
     end
 
 TestAnotherThing = {} --class
 
-    function TestAnotherThing:testSuccess1()
+    function TestAnotherThing:test1_Success1()
         lu.assertEquals( 1+1, 2 )
     end
 
-    function TestAnotherThing:testSuccess2()
+    function TestAnotherThing:test1_Success2()
         lu.assertEquals( 1+2, 3 )
     end
 
-    function TestAnotherThing:testFail1()
+    function TestAnotherThing:test2_Err1()
+        v = 1 + { 1,2 }
+    end
+
+    function TestAnotherThing:test2_Err2()
+        v = 1 + { 1,2 }
+    end
+
+    function TestAnotherThing:test3_Fail1()
         lu.assertEquals( 1+1, 0 )
     end
 
-    function TestAnotherThing:testFail2()
+    function TestAnotherThing:test3_Fail2()
         lu.assertEquals( 1+2, 0 )
-    end
-
-    function TestAnotherThing:testErr1()
-        v = 1 + { 1,2 }
-    end
-
-    function TestAnotherThing:testErr2()
-        v = 1 + { 1,2 }
     end
 
 

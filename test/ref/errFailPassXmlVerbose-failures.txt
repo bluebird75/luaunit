@@ -1,20 +1,20 @@
-# XML output to test/errFailPassXmlVerbose-failures.xml
-# Started on 03/21/16 22:58:50
+# XML output to test/ref/errFailPassXmlVerbose-failures.xml
+# Started on 03/22/16 21:29:18
 # Starting class: TestAnotherThing
-# Starting test: TestAnotherThing.testFail1
-# Failure: test/test_with_err_fail_pass.lua:41: expected: 0, actual: 2
-# Starting test: TestAnotherThing.testFail2
-# Failure: test/test_with_err_fail_pass.lua:45: expected: 0, actual: 3
-# Starting test: TestAnotherThing.testSuccess1
-# Starting test: TestAnotherThing.testSuccess2
+# Starting test: TestAnotherThing.test1_Success1
+# Starting test: TestAnotherThing.test1_Success2
+# Starting test: TestAnotherThing.test3_Fail1
+# Failure: test/test_with_err_fail_pass.lua:49: expected: 0, actual: 2
+# Starting test: TestAnotherThing.test3_Fail2
+# Failure: test/test_with_err_fail_pass.lua:53: expected: 0, actual: 3
 # Starting class: TestSomething
-# Starting test: TestSomething.testFail1
+# Starting test: TestSomething.test1_Success1
+# Starting test: TestSomething.test1_Success2
+# Starting test: TestSomething.test2_Fail1
 # Failure: test/test_with_err_fail_pass.lua:15: expected: 0, actual: 2
-# Starting test: TestSomething.testFail2
+# Starting test: TestSomething.test2_Fail2
 # Failure: test/test_with_err_fail_pass.lua:19: expected: 0, actual: 3
-# Starting test: TestSomething.testSuccess1
-# Starting test: TestSomething.testSuccess2
 # Starting test: testFuncFail1
 # Failure: test/test_with_err_fail_pass.lua:62: expected: 0, actual: 3
 # Starting test: testFuncSuccess1
-# Ran 10 tests in 0.010 seconds, 5 successes, 5 failures, 5 non-selected
+# Ran 10 tests in 0.002 seconds, 5 successes, 5 failures, 5 non-selected
