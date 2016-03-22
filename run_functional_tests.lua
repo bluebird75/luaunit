@@ -503,6 +503,12 @@ function testLegacyLuaunitError()
         "test/legacy_example_with_luaunit.lua", "test/legacyExampleError.txt")
 end
 
+function testLegacyLuaunitFailure()
+    -- run test/legacy_example_usage with "-f" option, and check exit status (-2)
+    osExpectedCodeExec(-2, '%s %s  --failure --output text > %s', LUA,
+        "test/legacy_example_with_luaunit.lua", "test/legacyExampleFailure.txt")
+end
+
 function testLuaunitV2Usage()
     osExpectedCodeExec(0, '%s %s  --output text 1> %s 2>&1', LUA,
         "test/compat_luaunit_v2x.lua", "test/compat_luaunit_v2x.txt")
