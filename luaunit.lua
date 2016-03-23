@@ -1685,24 +1685,36 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
     --------------[[ Output methods ]]-------------------------
 
+    local function conditional_plural(number, singular)
+        -- returns a grammatically well-formed string "%d <singular/plural>"
+        local suffix = ''
+        if number ~= 1 then -- use plural
+            suffix = (singular:sub(-2) == 'ss') and 'es' or 's'
+        end
+        return string.format('%d %s%s', number, singular, suffix)
+    end
+
     function M.LuaUnit.statusLine(result)
         -- return status line string according to results
-        s = string.format('Ran %d tests in %0.3f seconds, %d successes',
-            result.runCount, result.duration, result.passedCount )
+        local s = {
+            string.format('Ran %d tests in %0.3f seconds',
+                          result.runCount, result.duration),
+            conditional_plural(result.passedCount, 'success'),
+        }
         if result.notPassedCount > 0 then
             if result.failureCount > 0 then
-                s = s..string.format(', %d failures', result.failureCount )
+                table.insert(s, conditional_plural(result.failureCount, 'failure'))
             end
             if result.errorCount > 0 then
-                s = s..string.format(', %d errors', result.errorCount )
+                table.insert(s, conditional_plural(result.errorCount, 'error'))
             end
         else
-            s = s..', 0 failures'
+            table.insert(s, '0 failures')
         end
         if result.nonSelectedCount > 0 then
-            s = s..string.format(", %d non-selected", result.nonSelectedCount )
+            table.insert(s, string.format("%d non-selected", result.nonSelectedCount))
         end
-        return s
+        return table.concat(s, ', ')
     end
 
     function M.LuaUnit:startSuite(testCount, nonSelectedCount)
