@@ -2150,17 +2150,15 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             args = cmdline_argv
         end
 
-        local no_error, error_msg, options, val
-        no_error, val = pcall( M.LuaUnit.parseCmdLine, args )
+        local no_error, val = pcall( M.LuaUnit.parseCmdLine, args )
         if not no_error then
-            error_msg = val
-            print(error_msg)
+            print(val) -- error message
             print()
             print(M.USAGE)
             os.exit(-1)
         end
 
-        options = val
+        local options = val
 
         if options.verbosity then
             self:setVerbosity( options.verbosity )
@@ -2175,10 +2173,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         end
 
         if options.output then
-            no_error, val = pcall(self.setOutputType,self,options.output)
+            no_error, val = pcall(self.setOutputType, self, options.output)
             if not no_error then
-                error_msg = val
-                print(error_msg)
+                print(val) -- error message
                 print()
                 print(M.USAGE)
                 os.exit(-1)
@@ -2193,13 +2190,7 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             self.patternFilter = options.pattern
         end
 
-        local testNames = options['testNames']
-
-        if testNames == nil then
-            testNames = M.LuaUnit.collectTests()
-        end
-
-        self:runSuiteByNames( testNames )
+        self:runSuiteByNames( options.testNames or M.LuaUnit.collectTests() )
 
         return self.result.notPassedCount
     end
