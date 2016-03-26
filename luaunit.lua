@@ -1862,22 +1862,6 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         error( 'No such format: '..outputType,2)
     end
 
-    function M.LuaUnit:setVerbosity( verbosity )
-        self.verbosity = verbosity
-    end
-
-    function M.LuaUnit:setFname( fname )
-        self.fname = fname
-    end
-
-    function M.LuaUnit:setQuitOnError( value )
-        self.quitOnError = value
-    end
-
-    function M.LuaUnit:setQuitOnFailure( value )
-        self.quitOnFailure = value
-    end
-
     --------------[[ Runner ]]-----------------
 
     function M.LuaUnit:protectedCall(classInstance, methodInstance, prettyFuncName)
@@ -2160,12 +2144,13 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 
         local options = val
 
-        if options.verbosity then
-            self:setVerbosity( options.verbosity )
-        end
-
-        self:setQuitOnError( options.quitOnError )
-        self:setQuitOnFailure( options.quitOnFailure )
+        -- We expect these option fields to be either `nil` or contain
+        -- valid values, so it's safe to always copy them directly.
+        self.verbosity     = options.verbosity
+        self.quitOnError   = options.quitOnError
+        self.quitOnFailure = options.quitOnFailure
+        self.fname         = options.fname
+        self.patternFilter = options.pattern
 
         if options.output and options.output:lower() == 'junit' and options.fname == nil then
             print('With junit output, a filename must be supplied with -n or --name')
@@ -2180,14 +2165,6 @@ local LuaUnit_MT = { __index = M.LuaUnit }
                 print(M.USAGE)
                 os.exit(-1)
             end
-        end
-
-        if options.fname then
-            self:setFname( options.fname )
-        end
-
-        if options.pattern then
-            self.patternFilter = options.pattern
         end
 
         self:runSuiteByNames( options.testNames or M.LuaUnit.collectTests() )
