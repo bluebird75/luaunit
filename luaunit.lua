@@ -1022,20 +1022,14 @@ end
 --                     class TapOutput
 ----------------------------------------------------------------
 
-local TapOutput = { -- class
-    __class__ = 'TapOutput',
-    runner = nil,
-    result = nil,
-}
-local TapOutput_MT = { __index = TapOutput }
+
+local TapOutput = { __class__ = 'TapOutput' } -- class
+local TapOutput_MT = { __index = TapOutput } -- metatable
 
     -- For a good reference for TAP format, check: http://testanything.org/tap-specification.html
 
     function TapOutput:new()
-        local t = {}
-        t.verbosity = M.VERBOSITY_LOW
-        setmetatable( t, TapOutput_MT )
-        return t
+        return setmetatable( { verbosity = M.VERBOSITY_LOW }, TapOutput_MT)
     end
     function TapOutput:startSuite()
         print("1.."..self.result.testCount)
@@ -1080,21 +1074,12 @@ local TapOutput_MT = { __index = TapOutput }
 ----------------------------------------------------------------
 
 -- See directory junitxml for more information about the junit format
-local JUnitOutput = { -- class
-    __class__ = 'JUnitOutput',
-    runner = nil,
-    result = nil,
-}
-local JUnitOutput_MT = { __index = JUnitOutput }
+local JUnitOutput = { __class__ = 'JUnitOutput' } -- class
+local JUnitOutput_MT = { __index = JUnitOutput } -- metatable
 
     function JUnitOutput:new()
-        local t = {}
-        t.testList = {}
-        t.verbosity = M.VERBOSITY_LOW
-        t.fd = nil
-        t.fname = nil
-        setmetatable( t, JUnitOutput_MT )
-        return t
+        return setmetatable(
+            { testList = {}, verbosity = M.VERBOSITY_LOW }, JUnitOutput_MT)
     end
     function JUnitOutput:startSuite()
 
@@ -1279,19 +1264,12 @@ then OK or FAILED (failures=1, error=1)
 
 ]]
 
-local TextOutput = { __class__ = 'TextOutput' }
-local TextOutput_MT = { -- class
-    __index = TextOutput
-}
+local TextOutput = { __class__ = 'TextOutput' } -- class
+local TextOutput_MT = { __index = TextOutput } -- metatable
 
     function TextOutput:new()
-        local t = {}
-        t.runner = nil
-        t.result = nil
-        t.errorList ={}
-        t.verbosity = M.VERBOSITY_DEFAULT
-        setmetatable( t, TextOutput_MT )
-        return t
+        return setmetatable(
+            { errorList = {}, verbosity = M.VERBOSITY_DEFAULT }, TextOutput_MT )
     end
 
     function TextOutput:startSuite()
@@ -1388,17 +1366,11 @@ local function nopCallable()
     return nopCallable
 end
 
-local NilOutput = {
-    __class__ = 'NilOuptut',
-}
-local NilOutput_MT = {
-    __index = nopCallable,
-}
+local NilOutput = { __class__ = 'NilOuptut' } -- class
+local NilOutput_MT = { __index = nopCallable } -- metatable
+
 function NilOutput:new()
-    local t = {}
-    t.__class__ = 'NilOutput'
-    setmetatable( t, NilOutput_MT )
-    return t
+    return setmetatable( { __class__ = 'NilOutput' }, NilOutput_MT )
 end
 
 ----------------------------------------------------------------
@@ -1412,16 +1384,14 @@ M.LuaUnit = {
     verbosity = M.VERBOSITY_DEFAULT,
     __class__ = 'LuaUnit'
 }
+local LuaUnit_MT = { __index = M.LuaUnit }
 
 if EXPORT_ASSERT_TO_GLOBALS then
     LuaUnit = M.LuaUnit
 end
-local LuaUnit_MT = { __index = M.LuaUnit }
 
     function M.LuaUnit:new()
-        local t = {}
-        setmetatable( t, LuaUnit_MT )
-        return t
+        return setmetatable( {}, LuaUnit_MT )
     end
 
     -----------------[[ Utility methods ]]---------------------
@@ -1615,11 +1585,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 --                     class NodeStatus
 ----------------------------------------------------------------
 
-    local NodeStatus = { -- class
-        __class__ = 'NodeStatus',
-    }
+    local NodeStatus = { __class__ = 'NodeStatus' } -- class
+    local NodeStatus_MT = { __index = NodeStatus } -- metatable
     M.NodeStatus = NodeStatus
-    local NodeStatus_MT = { __index = NodeStatus }
 
     -- values of status
     NodeStatus.PASS  = 'PASS'
@@ -1627,12 +1595,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     NodeStatus.ERROR = 'ERROR'
 
     function NodeStatus:new( number, testName, className )
-        local t = {}
-        t.number = number
-        t.testName = testName
-        t.className = className
-        self:pass()
+        local t = { number = number, testName = testName, className = className }
         setmetatable( t, NodeStatus_MT )
+        t:pass()
         return t
     end
 
