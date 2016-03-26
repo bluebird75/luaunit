@@ -190,8 +190,7 @@ M.private.hasNewLine = hasNewLine
 
 local function prefixString( prefix, s )
     -- Prefix all the lines of s with prefix
-    local t = strsplit('\n', s)
-    return prefix..table.concat(t, '\n'..prefix)
+    return prefix .. table.concat(strsplit('\n', s), '\n' .. prefix)
 end
 M.private.prefixString = prefixString
 
@@ -199,7 +198,7 @@ local function strMatch(s, pattern, start, final )
     -- return true if s matches completely the pattern from index start to index end
     -- return false in every other cases
     -- if start is nil, matches from the beginning of the string
-    -- if end is nil, matches to the end of the string
+    -- if final is nil, matches to the end of the string
     start = start or 1
     final = final or string.len(s)
 
@@ -228,8 +227,7 @@ end
 M.private.xmlEscape = xmlEscape
 
 local function xmlCDataEscape( s )
-    -- Return s escaped for CData section
-    -- escapes: "]]>"
+    -- Return s escaped for CData section, escapes: "]]>"
     return string.gsub( s, ']]>', ']]&gt;' )
 end
 M.private.xmlCDataEscape = xmlCDataEscape
@@ -879,7 +877,7 @@ function M.assertItemsEquals(actual, expected)
 end
 
 ----------------------------------------------------------------
---                     Compability layer
+--                     Compatibility layer
 ----------------------------------------------------------------
 
 -- for compatibility with LuaUnit v2.x
