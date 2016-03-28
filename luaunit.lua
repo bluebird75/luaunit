@@ -1005,18 +1005,49 @@ end
 --
 ----------------------------------------------------------------
 
+-- A common "base" class for outputters
+-- For concepts involved (class inheritance) see http://www.lua.org/pil/16.2.html
+
+local genericOutput = { __class__ = 'genericOutput' } -- class
+local genericOutput_MT = { __index = genericOutput } -- metatable
+M.genericOutput = genericOutput -- publish, so that custom classes may derive from it
+
+function genericOutput:new(runner, default_verbosity)
+    -- runner is the "parent" object controlling the output, usually a LuaUnit instance
+    local t = { runner = runner }
+    if runner then
+        t.result = runner.result
+        t.verbosity = runner.verbosity or default_verbosity
+        t.fname = runner.fname
+    else
+        t.verbosity = default_verbosity
+    end
+    return setmetatable( t, genericOutput_MT)
+end
+
+-- abstract ("empty") methods
+function genericOutput:startSuite() end
+function genericOutput:startClass(className) end
+function genericOutput:startTest(testName) end
+function genericOutput:addStatus(node) end
+function genericOutput:endTest(node) end
+function genericOutput:endClass() end
+function genericOutput:endSuite() end
+
+
 ----------------------------------------------------------------
 --                     class TapOutput
 ----------------------------------------------------------------
 
-
-local TapOutput = { __class__ = 'TapOutput' } -- class
+local TapOutput = genericOutput:new() -- derived class
 local TapOutput_MT = { __index = TapOutput } -- metatable
+TapOutput.__class__ = 'TapOutput'
 
     -- For a good reference for TAP format, check: http://testanything.org/tap-specification.html
 
-    function TapOutput:new()
-        return setmetatable( { verbosity = M.VERBOSITY_LOW }, TapOutput_MT)
+    function TapOutput:new(runner)
+        local t = genericOutput:new(runner, M.VERBOSITY_LOW)
+        return setmetatable( t, TapOutput_MT)
     end
     function TapOutput:startSuite()
         print("1.."..self.result.testCount)
@@ -1027,7 +1058,6 @@ local TapOutput_MT = { __index = TapOutput } -- metatable
             print('# Starting class: '..className)
         end
     end
-    function TapOutput:startTest(testName) end
 
     function TapOutput:addStatus( node )
         io.stdout:write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
@@ -1045,8 +1075,6 @@ local TapOutput_MT = { __index = TapOutput } -- metatable
         end
     end
 
-    function TapOutput:endClass() end
-
     function TapOutput:endSuite()
         print( '# '..M.LuaUnit.statusLine( self.result ) )
         return self.result.notPassedCount
@@ -1060,15 +1088,17 @@ local TapOutput_MT = { __index = TapOutput } -- metatable
 ----------------------------------------------------------------
 
 -- See directory junitxml for more information about the junit format
-local JUnitOutput = { __class__ = 'JUnitOutput' } -- class
+local JUnitOutput = genericOutput:new() -- derived class
 local JUnitOutput_MT = { __index = JUnitOutput } -- metatable
+JUnitOutput.__class__ = 'JUnitOutput'
 
-    function JUnitOutput:new()
-        return setmetatable(
-            { testList = {}, verbosity = M.VERBOSITY_LOW }, JUnitOutput_MT)
+    function JUnitOutput:new(runner)
+        local t = genericOutput:new(runner, M.VERBOSITY_LOW)
+        t.testList = {}
+        return setmetatable( t, JUnitOutput_MT )
     end
-    function JUnitOutput:startSuite()
 
+    function JUnitOutput:startSuite()
         -- open xml file early to deal with errors
         if self.fname == nil then
             error('With Junit, an output filename must be supplied with --name!')
@@ -1101,12 +1131,6 @@ local JUnitOutput_MT = { __index = JUnitOutput } -- metatable
             print('# Error: ' .. node.msg)
             -- print('# ' .. node.stackTrace)
         end
-    end
-
-    function JUnitOutput:endTest( node )
-    end
-
-    function JUnitOutput:endClass()
     end
 
     function JUnitOutput:endSuite()
@@ -1250,12 +1274,14 @@ then OK or FAILED (failures=1, error=1)
 
 ]]
 
-local TextOutput = { __class__ = 'TextOutput' } -- class
+local TextOutput = genericOutput:new() -- derived class
 local TextOutput_MT = { __index = TextOutput } -- metatable
+TextOutput.__class__ = 'TextOutput'
 
-    function TextOutput:new()
-        return setmetatable(
-            { errorList = {}, verbosity = M.VERBOSITY_DEFAULT }, TextOutput_MT )
+    function TextOutput:new(runner)
+        local t = genericOutput:new(runner, M.VERBOSITY_DEFAULT)
+        t.errorList = {}
+        return setmetatable( t, TextOutput_MT )
     end
 
     function TextOutput:startSuite()
@@ -1264,18 +1290,10 @@ local TextOutput_MT = { __index = TextOutput } -- metatable
         end
     end
 
-    function TextOutput:startClass(className)
-        -- display nothing when starting a new class
-    end
-
     function TextOutput:startTest(testName)
         if self.verbosity > M.VERBOSITY_DEFAULT then
             io.stdout:write( "    ", self.result.currentNode.testName, " ... " )
         end
-    end
-
-    function TextOutput:addStatus( node )
-        -- nothing
     end
 
     function TextOutput:endTest( node )
@@ -1300,10 +1318,6 @@ local TextOutput_MT = { __index = TextOutput } -- metatable
                 io.stdout:write(string.sub(node.status, 1, 1))
             end
         end
-    end
-
-    function TextOutput:endClass()
-        -- nothing
     end
 
     function TextOutput:displayOneFailedTest( index, failure )
@@ -1351,7 +1365,7 @@ end
 local NilOutput = { __class__ = 'NilOuptut' } -- class
 local NilOutput_MT = { __index = nopCallable } -- metatable
 
-function NilOutput:new()
+function NilOutput:new(runner)
     return setmetatable( { __class__ = 'NilOutput' }, NilOutput_MT )
 end
 
@@ -1669,30 +1683,31 @@ end
     end
 
     function M.LuaUnit:startSuite(testCount, nonSelectedCount)
-        self.result = {}
-        self.result.testCount = testCount
-        self.result.nonSelectedCount = nonSelectedCount
-        self.result.passedCount = 0
-        self.result.runCount = 0
-        self.result.currentTestNumber = 0
-        self.result.currentClassName = ""
-        self.result.currentNode = nil
-        self.result.suiteStarted = true
-        self.result.startTime = os.clock()
-        self.result.startDate = os.date(os.getenv('LUAUNIT_DATEFMT'))
-        self.result.startIsodate = os.date('%Y-%m-%dT%H:%M:%S')
-        self.result.patternFilter = self.patternFilter
-        self.result.tests = {}
-        self.result.failures = {}
-        self.result.errors = {}
-        self.result.notPassed = {}
+        self.result = {
+            testCount = testCount,
+            nonSelectedCount = nonSelectedCount,
+            passedCount = 0,
+            runCount = 0,
+            currentTestNumber = 0,
+            currentClassName = "",
+            currentNode = nil,
+            suiteStarted = true,
+            startTime = os.clock(),
+            startDate = os.date(os.getenv('LUAUNIT_DATEFMT')),
+            startIsodate = os.date('%Y-%m-%dT%H:%M:%S'),
+            patternFilter = self.patternFilter,
+            tests = {},
+            failures = {},
+            errors = {},
+            notPassed = {},
+        }
 
         self.outputType = self.outputType or TextOutput
-        self.output = self.outputType:new()
-        self.output.runner = self
+        self.output = self.outputType:new(self)
+        --self.output.runner = self
         self.output.result = self.result
-        self.output.verbosity = self.verbosity
-        self.output.fname = self.fname
+        --self.output.verbosity = self.verbosity
+        --self.output.fname = self.fname
         self.output:startSuite()
     end
 
