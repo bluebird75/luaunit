@@ -19,8 +19,9 @@ lu = require('luaunit')
 
 Mock = { __class__ = 'Mock' }
 
-function Mock.new()
-    local t = { calls = {} }
+function Mock.new(runner)
+    local t = lu.genericOutput.new(runner)
+    t.calls = {}
     local t_MT = {
         __index = function( t, key )
             local callInfo = { key }
@@ -2436,36 +2437,40 @@ TestLuaUnitResults = {} -- class
     end
 
     function TestLuaUnitResults:test_resultsWhileTestInProgress()
-        local runner = lu.LuaUnit.new()
-        local MyMocker = {}
-        MyMocker.new = function()
-            local t = Mock.new()
-            t.startTest = function(self, testName ) 
-                if self.result.currentNode.number == 1 then
-                    lu.assertEquals( self.result.currentNode.number, 1 )
-                    lu.assertEquals( self.result.currentNode.testName, 'MyTestWithErrorsAndFailures.testOk' )
-                    lu.assertEquals( self.result.currentNode.className, 'MyTestWithErrorsAndFailures' )
-                    lu.assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
-                elseif self.result.currentNode.number == 2 then
-                    lu.assertEquals( self.result.currentNode.number, 2 )
-                    lu.assertEquals( self.result.currentNode.testName, 'MyTestWithErrorsAndFailures.testWithError1' )
-                    lu.assertEquals( self.result.currentNode.className, 'MyTestWithErrorsAndFailures' )
-                    lu.assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
+        local MyMocker = { __class__ = "MyMocker" }
+        -- MyMocker is an outputter that creates a customized "Mock" instance
+        function MyMocker.new(runner)
+            local t = Mock.new(runner)
+            function t:startTest( testName )
+                local node = self.result.currentNode
+                if node.number == 1 then
+                    lu.assertEquals( node.number, 1 )
+                    lu.assertEquals( node.testName, 'MyTestWithErrorsAndFailures.testOk' )
+                    lu.assertEquals( node.className, 'MyTestWithErrorsAndFailures' )
+                    lu.assertEquals( node.status, lu.NodeStatus.PASS )
+                elseif node.number == 2 then
+                    lu.assertEquals( node.number, 2 )
+                    lu.assertEquals( node.testName, 'MyTestWithErrorsAndFailures.testWithError1' )
+                    lu.assertEquals( node.className, 'MyTestWithErrorsAndFailures' )
+                    lu.assertEquals( node.status, lu.NodeStatus.PASS )
                 end
             end
-            t.endTest = function(self, status)
-                if self.result.currentNode.number == 1 then
-                    lu.assertEquals( self.result.currentNode.status, lu.NodeStatus.PASS )
-                elseif self.result.currentNode.number == 2 then
-                    lu.assertEquals( self.result.currentNode.status, lu.NodeStatus.ERROR )
+            function t:endTest( node )
+                lu.assertEquals( node, self.result.currentNode )
+                if node.number == 1 then
+                    lu.assertEquals( node.status, lu.NodeStatus.PASS )
+                elseif node.number == 2 then
+                    lu.assertEquals( node.status, lu.NodeStatus.ERROR )
                 end
             end
             return t
         end
+
+        local runner = lu.LuaUnit.new()
         runner.outputType = MyMocker
         runner:runSuite( 'MyTestWithErrorsAndFailures' )
-        m = runner.output
 
+        m = runner.output
         lu.assertEquals( m.calls[1][1], 'startSuite' )
         lu.assertEquals(#m.calls[1], 2 )
     end

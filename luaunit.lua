@@ -1704,10 +1704,6 @@ end
 
         self.outputType = self.outputType or TextOutput
         self.output = self.outputType.new(self)
-        --self.output.runner = self
-        self.output.result = self.result
-        --self.output.verbosity = self.verbosity
-        --self.output.fname = self.fname
         self.output:startSuite()
     end
 
