@@ -51,6 +51,7 @@ test/unitTests*.xml
 test/unitTests*.txt
 test/legacyExample.txt
 test/legacyExampleError.txt
+test/legacyExampleFailure.txt
 test/compat_luaunit_v2x.txt
 test/errFailPass*.txt
 

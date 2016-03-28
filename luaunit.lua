@@ -1042,8 +1042,8 @@ local TapOutput_MT = { __index = TapOutput } -- metatable
     end
     function TapOutput:startTest(testName) end
 
-    function TapOutput:addFailure( node )
-        io.stdout:write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
+    function TapOutput:addStatus( node )
+        io.write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
         if self.verbosity > M.VERBOSITY_LOW then
            print( prefixString( '    ', node.msg ) )
         end
@@ -1051,11 +1051,10 @@ local TapOutput_MT = { __index = TapOutput } -- metatable
            print( prefixString( '    ', node.stackTrace ) )
         end
     end
-    TapOutput.addError = TapOutput.addFailure
 
     function TapOutput:endTest( node )
         if node:isPassed() then
-            io.stdout:write("ok     ", self.result.currentTestNumber, "\t", node.testName, "\n")
+            io.write("ok     ", self.result.currentTestNumber, "\t", node.testName, "\n")
         end
     end
 
@@ -1107,14 +1106,14 @@ local JUnitOutput_MT = { __index = JUnitOutput } -- metatable
         print('# Starting test: '..testName)
     end
 
-    function JUnitOutput:addFailure( node )
-        print('# Failure: ' .. node.msg)
-        -- print('# ' .. node.stackTrace)
-    end
-
-    function JUnitOutput:addError( node )
-        print('# Error: ' .. node.msg)
-        -- print('# ' .. node.stackTrace)
+    function JUnitOutput:addStatus( node )
+        if node:isFailure() then
+            print('# Failure: ' .. node.msg)
+            -- print('# ' .. node.stackTrace)
+        elseif node:isError() then
+            print('# Error: ' .. node.msg)
+            -- print('# ' .. node.stackTrace)
+        end
     end
 
     function JUnitOutput:endTest( node )
@@ -1284,24 +1283,20 @@ local TextOutput_MT = { __index = TextOutput } -- metatable
 
     function TextOutput:startTest(testName)
         if self.verbosity > M.VERBOSITY_DEFAULT then
-            io.stdout:write( "    ", self.result.currentNode.testName, " ... " )
+            io.write( "    ", self.result.currentNode.testName, " ... " )
         end
     end
 
-    function TextOutput:addFailure( node )
-        -- nothing
-    end
-
-    function TextOutput:addError( node )
+    function TextOutput:addStatus( node )
         -- nothing
     end
 
     function TextOutput:endTest( node )
         if node:isPassed() then
             if self.verbosity > M.VERBOSITY_DEFAULT then
-                io.stdout:write("Ok\n")
+                io.write("Ok\n")
             else
-                io.stdout:write(".")
+                io.write(".")
             end
         else
             if self.verbosity > M.VERBOSITY_DEFAULT then
@@ -1315,7 +1310,7 @@ local TextOutput_MT = { __index = TextOutput } -- metatable
                 ]]
             else
                 -- write only the first character of status
-                io.stdout:write(string.sub(node.status, 1, 1))
+                io.write(string.sub(node.status, 1, 1))
             end
         end
     end
@@ -1654,24 +1649,36 @@ end
 
     --------------[[ Output methods ]]-------------------------
 
+    local function conditional_plural(number, singular)
+        -- returns a grammatically well-formed string "%d <singular/plural>"
+        local suffix = ''
+        if number ~= 1 then -- use plural
+            suffix = (singular:sub(-2) == 'ss') and 'es' or 's'
+        end
+        return string.format('%d %s%s', number, singular, suffix)
+    end
+
     function M.LuaUnit.statusLine(result)
         -- return status line string according to results
-        s = string.format('Ran %d tests in %0.3f seconds, %d successes',
-            result.runCount, result.duration, result.passedCount )
+        local s = {
+            string.format('Ran %d tests in %0.3f seconds',
+                          result.runCount, result.duration),
+            conditional_plural(result.passedCount, 'success'),
+        }
         if result.notPassedCount > 0 then
             if result.failureCount > 0 then
-                s = s..string.format(', %d failures', result.failureCount )
+                table.insert(s, conditional_plural(result.failureCount, 'failure'))
             end
             if result.errorCount > 0 then
-                s = s..string.format(', %d errors', result.errorCount )
+                table.insert(s, conditional_plural(result.errorCount, 'error'))
             end
         else
-            s = s..', 0 failures'
+            table.insert(s, '0 failures')
         end
         if result.nonSelectedCount > 0 then
-            s = s..string.format(", %d non-selected", result.nonSelectedCount )
+            table.insert(s, string.format("%d non-selected", result.nonSelectedCount))
         end
-        return s
+        return table.concat(s, ', ')
     end
 
     function M.LuaUnit:startSuite(testCount, nonSelectedCount)
@@ -1739,17 +1746,19 @@ end
         -- if the node is already in failure/error, just don't report the new error (see above)
         if node.status ~= NodeStatus.PASS then return end
 
-        table.insert( self.result.notPassed, node )
-
         if err.status == NodeStatus.FAIL then
             node:fail( err.msg, err.trace )
             table.insert( self.result.failures, node )
-            self.output:addFailure( node )
         elseif err.status == NodeStatus.ERROR then
             node:error( err.msg, err.trace )
             table.insert( self.result.errors, node )
-            self.output:addError( node )
         end
+
+        if node:isFailure() or node:isError() then
+            -- add to the list of failed tests (gets printed separately)
+            table.insert( self.result.notPassed, node )
+        end
+        self.output:addStatus( node )
     end
 
     function M.LuaUnit:endTest()
