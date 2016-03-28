@@ -883,27 +883,13 @@ end
 
 -- for compatibility with LuaUnit v2.x
 function M.wrapFunctions(...)
-    io.stderr:write( [[Use of WrapFunction() is no longer needed. 
-Just prefix your test function names with "test" or "Test" and they
-will be picked up and run by LuaUnit.]] )
     -- In LuaUnit version <= 2.1 , this function was necessary to include
     -- a test function inside the global test suite. Nowadays, the functions
     -- are simply run directly as part of the test discovery process.
     -- so just do nothing !
-
-    --[[
-    local testClass, testFunction
-    testClass = {}
-    local function storeAsMethod(idx, testName)
-        testFunction = _G[testName]
-        testClass[testName] = testFunction
-    end
-    for i,v in ipairs({...}) do
-        storeAsMethod( i, v )
-    end
-
-    return testClass
-    ]]
+    io.stderr:write[[Use of WrapFunctions() is no longer needed.
+Just prefix your test function names with "test" or "Test" and they
+will be picked up and run by LuaUnit.]]
 end
 
 local list_of_funcs = {
