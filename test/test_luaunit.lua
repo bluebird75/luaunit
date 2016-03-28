@@ -19,7 +19,7 @@ lu = require('luaunit')
 
 Mock = { __class__ = 'Mock' }
 
-function Mock:new()
+function Mock.new()
     local t = { calls = {} }
     local t_MT = {
         __index = function( t, key )
@@ -34,7 +34,7 @@ end
 
 TestMock = {}
     function TestMock:testMock()
-        m = Mock:new()
+        local m = Mock.new()
         m.titi( 42 )
         m.toto( 33, "abc", { 21} )
         lu.assertEquals(  m.calls[1][1], 'titi' )
@@ -1646,7 +1646,7 @@ TestLuaUnitExecution = {} --class
     end
 
     function TestLuaUnitExecution:test_MethodsAreExecutedInRightOrder()
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuite( 'MyTestToto1' )
         lu.assertEquals( #executedTests, 5 )
@@ -1659,7 +1659,7 @@ TestLuaUnitExecution = {} --class
 
     function TestLuaUnitExecution:test_runSuiteByNames()
         -- note: this also test that names are executed in explicit order
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByNames( { 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' } )
         lu.assertEquals( #executedTests, 7 )
@@ -1670,7 +1670,7 @@ TestLuaUnitExecution = {} --class
 
     function TestLuaUnitExecution:testRunSomeTestByGlobalInstance( )
         lu.assertEquals( #executedTests, 0 )
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'Toto', MyTestToto1 } }  )
         lu.assertEquals( #executedTests, 5 )
@@ -1689,7 +1689,7 @@ TestLuaUnitExecution = {} --class
         function MyLocalTestFunction() table.insert( executedTests, "MyLocalTestFunction" ) end
  
         lu.assertEquals( #executedTests, 0 )
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { 
             { 'MyLocalTestToto1', MyLocalTestToto1 },
@@ -1703,7 +1703,7 @@ TestLuaUnitExecution = {} --class
     end
 
     function TestLuaUnitExecution:testRunReturnsNumberOfFailures()
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         ret = runner:runSuite( 'MyTestWithErrorsAndFailures' )
         lu.assertEquals(ret, 3)
@@ -1713,7 +1713,7 @@ TestLuaUnitExecution = {} --class
     end
 
     function TestLuaUnitExecution:testTestCountAndFailCount()
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuite( 'MyTestWithErrorsAndFailures' )
         lu.assertEquals( runner.result.testCount, 4)
@@ -1756,7 +1756,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupTeardown5:test1()    table.insert( myExecutedTests, '5test1' ) end
             function MyTestWithSetupTeardown5:TearDown() table.insert( myExecutedTests, '5TearDown' )  end
 
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupTeardown.test1', MyTestWithSetupTeardown } } )
         lu.assertEquals( runner.result.notPassedCount, 0 )
@@ -1803,7 +1803,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupFailure:test1()    table.insert( myExecutedTests, 'test1' ) end
             function MyTestWithSetupFailure:tearDown() table.insert( myExecutedTests, 'tearDown' )  end
 
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -1824,7 +1824,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupFailure:test1()    table.insert( myExecutedTests, 'test1' ) end
             function MyTestWithSetupFailure:tearDown() table.insert( myExecutedTests, 'tearDown' ) lu.assertEquals( 'b', 'c')   end
 
-        runner = lu.LuaUnit:new()
+        runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -1846,7 +1846,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupFailure:test1()    table.insert( myExecutedTests, 'test1' ) end
             function MyTestWithSetupFailure:tearDown() table.insert( myExecutedTests, 'tearDown' ) lu.assertEquals( 'b', 'c')   end
 
-        runner = lu.LuaUnit:new()
+        runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -1868,7 +1868,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupFailure:test1()    table.insert( myExecutedTests, 'test1' ) lu.assertEquals( 'b', 'c')  end
             function MyTestWithSetupFailure:tearDown() table.insert( myExecutedTests, 'tearDown' ) lu.assertEquals( 'b', 'c')   end
 
-        runner = lu.LuaUnit:new()
+        runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -1890,7 +1890,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupFailure:test1()    table.insert( myExecutedTests, 'test1' ) lu.assertEquals( 'b', 'c')  end
             function MyTestWithSetupFailure:tearDown() table.insert( myExecutedTests, 'tearDown' ) lu.assertEquals( 'b', 'c')   end
 
-        runner = lu.LuaUnit:new()
+        runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -1913,7 +1913,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) end
             function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' )  end
 
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -1934,7 +1934,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) end
             function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ) error('teardown error')   end
 
-        runner = lu.LuaUnit:new()
+        runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -1956,7 +1956,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) end
             function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ) error('teardown error')   end
 
-        runner = lu.LuaUnit:new()
+        runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -1978,7 +1978,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) error('test error')  end
             function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ) error('teardown error')   end
 
-        runner = lu.LuaUnit:new()
+        runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -2000,7 +2000,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) error('test error') end
             function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ) error('teardown error')   end
 
-        runner = lu.LuaUnit:new()
+        runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -2023,7 +2023,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) end
             function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ) error('teardown error')   end
 
-        runner = lu.LuaUnit:new()
+        runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -2046,7 +2046,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) end
             function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ) lu.assertEquals( 'a', 'b')   end
 
-        runner = lu.LuaUnit:new()
+        runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -2069,7 +2069,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) error('test error') end
             function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ) lu.assertEquals( 'a', 'b')   end
 
-        runner = lu.LuaUnit:new()
+        runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -2093,7 +2093,7 @@ TestLuaUnitExecution = {} --class
             function MyTestWithSetupError:test1()    table.insert( myExecutedTests, 'test1' ) lu.assertEquals( 'a', 'b') end
             function MyTestWithSetupError:tearDown() table.insert( myExecutedTests, 'tearDown' ) error('teardown error')   end
 
-        runner = lu.LuaUnit:new()
+        runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notPassedCount, 1 )
@@ -2112,7 +2112,7 @@ TestLuaUnitExecution = {} --class
 
 
     function TestLuaUnitExecution:testOutputInterface()
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
         runner.outputType = Mock
         runner:runSuite( 'MyTestWithErrorsAndFailures', 'MyTestOk' )
         m = runner.output
@@ -2207,7 +2207,7 @@ TestLuaUnitExecution = {} --class
 
     function TestLuaUnitExecution:testInvocation()
 
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
 
         -- test alternative "object" syntax for run(), passing self
         runner:run('--output', 'nil', 'MyTestOk')
@@ -2233,7 +2233,7 @@ TestLuaUnitExecution = {} --class
 
     function TestLuaUnitExecution:test_filterWithPattern()
 
-        runner = lu.LuaUnit:new()
+        runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuite('-p', 'Function', '-p', 'Toto.' )
         lu.assertEquals( executedTests[1], "MyTestFunction" )
@@ -2296,7 +2296,7 @@ TestLuaUnitResults = {} -- class
     end
 
     function TestLuaUnitResults:test_nodeStatus()
-        es = lu.NodeStatus:new()
+        es = lu.NodeStatus.new()
         lu.assertEquals( es.status, lu.NodeStatus.PASS )
         lu.assertTrue( es:isPassed() )
         lu.assertNil( es.msg )
@@ -2312,7 +2312,7 @@ TestLuaUnitResults = {} -- class
         lu.assertEquals( es.stackTrace, 'stackTraceToto' )
         lu.assertStrContains( es:statusXML(), "<failure" )
 
-        es2 = lu.NodeStatus:new()
+        es2 = lu.NodeStatus.new()
         lu.assertEquals( es2.status, lu.NodeStatus.PASS )
         lu.assertNil( es2.msg )
         lu.assertNil( es2.stackTrace )
@@ -2338,7 +2338,7 @@ TestLuaUnitResults = {} -- class
     end
 
     function TestLuaUnitResults:test_runSuiteOk()
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuiteByNames( { 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' } )
         lu.assertEquals( #runner.result.tests, 7 )
@@ -2382,7 +2382,7 @@ TestLuaUnitResults = {} -- class
     end
 
     function TestLuaUnitResults:test_runSuiteWithFailures()
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
         runner:runSuite( 'MyTestWithErrorsAndFailures' )
 
@@ -2436,10 +2436,10 @@ TestLuaUnitResults = {} -- class
     end
 
     function TestLuaUnitResults:test_resultsWhileTestInProgress()
-        local runner = lu.LuaUnit:new()
+        local runner = lu.LuaUnit.new()
         local MyMocker = {}
         MyMocker.new = function()
-            local t = Mock:new()
+            local t = Mock.new()
             t.startTest = function(self, testName ) 
                 if self.result.currentNode.number == 1 then
                     lu.assertEquals( self.result.currentNode.number, 1 )

@@ -1012,7 +1012,7 @@ local genericOutput = { __class__ = 'genericOutput' } -- class
 local genericOutput_MT = { __index = genericOutput } -- metatable
 M.genericOutput = genericOutput -- publish, so that custom classes may derive from it
 
-function genericOutput:new(runner, default_verbosity)
+function genericOutput.new(runner, default_verbosity)
     -- runner is the "parent" object controlling the output, usually a LuaUnit instance
     local t = { runner = runner }
     if runner then
@@ -1039,14 +1039,14 @@ function genericOutput:endSuite() end
 --                     class TapOutput
 ----------------------------------------------------------------
 
-local TapOutput = genericOutput:new() -- derived class
+local TapOutput = genericOutput.new() -- derived class
 local TapOutput_MT = { __index = TapOutput } -- metatable
 TapOutput.__class__ = 'TapOutput'
 
     -- For a good reference for TAP format, check: http://testanything.org/tap-specification.html
 
-    function TapOutput:new(runner)
-        local t = genericOutput:new(runner, M.VERBOSITY_LOW)
+    function TapOutput.new(runner)
+        local t = genericOutput.new(runner, M.VERBOSITY_LOW)
         return setmetatable( t, TapOutput_MT)
     end
     function TapOutput:startSuite()
@@ -1088,12 +1088,12 @@ TapOutput.__class__ = 'TapOutput'
 ----------------------------------------------------------------
 
 -- See directory junitxml for more information about the junit format
-local JUnitOutput = genericOutput:new() -- derived class
+local JUnitOutput = genericOutput.new() -- derived class
 local JUnitOutput_MT = { __index = JUnitOutput } -- metatable
 JUnitOutput.__class__ = 'JUnitOutput'
 
-    function JUnitOutput:new(runner)
-        local t = genericOutput:new(runner, M.VERBOSITY_LOW)
+    function JUnitOutput.new(runner)
+        local t = genericOutput.new(runner, M.VERBOSITY_LOW)
         t.testList = {}
         return setmetatable( t, JUnitOutput_MT )
     end
@@ -1274,12 +1274,12 @@ then OK or FAILED (failures=1, error=1)
 
 ]]
 
-local TextOutput = genericOutput:new() -- derived class
+local TextOutput = genericOutput.new() -- derived class
 local TextOutput_MT = { __index = TextOutput } -- metatable
 TextOutput.__class__ = 'TextOutput'
 
-    function TextOutput:new(runner)
-        local t = genericOutput:new(runner, M.VERBOSITY_DEFAULT)
+    function TextOutput.new(runner)
+        local t = genericOutput.new(runner, M.VERBOSITY_DEFAULT)
         t.errorList = {}
         return setmetatable( t, TextOutput_MT )
     end
@@ -1365,7 +1365,7 @@ end
 local NilOutput = { __class__ = 'NilOuptut' } -- class
 local NilOutput_MT = { __index = nopCallable } -- metatable
 
-function NilOutput:new(runner)
+function NilOutput.new(runner)
     return setmetatable( { __class__ = 'NilOutput' }, NilOutput_MT )
 end
 
@@ -1386,7 +1386,7 @@ if EXPORT_ASSERT_TO_GLOBALS then
     LuaUnit = M.LuaUnit
 end
 
-    function M.LuaUnit:new()
+    function M.LuaUnit.new()
         return setmetatable( {}, LuaUnit_MT )
     end
 
@@ -1590,7 +1590,7 @@ end
     NodeStatus.FAIL  = 'FAIL'
     NodeStatus.ERROR = 'ERROR'
 
-    function NodeStatus:new( number, testName, className )
+    function NodeStatus.new( number, testName, className )
         local t = { number = number, testName = testName, className = className }
         setmetatable( t, NodeStatus_MT )
         t:pass()
@@ -1703,7 +1703,7 @@ end
         }
 
         self.outputType = self.outputType or TextOutput
-        self.output = self.outputType:new(self)
+        self.output = self.outputType.new(self)
         --self.output.runner = self
         self.output.result = self.result
         --self.output.verbosity = self.verbosity
@@ -1719,7 +1719,7 @@ end
     function M.LuaUnit:startTest( testName  )
         self.result.currentTestNumber = self.result.currentTestNumber + 1
         self.result.runCount = self.result.runCount + 1
-        self.result.currentNode = NodeStatus:new(
+        self.result.currentNode = NodeStatus.new(
             self.result.currentTestNumber,
             testName,
             self.result.currentClassName
