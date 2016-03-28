@@ -4,41 +4,31 @@ License: BSD License, see LICENSE.txt
 
 ]]--
 
+-- Return a function that appends its arguments to the `callInfo` table
+local function callRecorder( callInfo )
+    return function( ... )
+        for i, v in pairs({...}) do
+            table.insert( callInfo, v )
+        end
+    end
+end
+
 -- This is a bit tricky since the test uses the features that it tests.
 
 lu = require('luaunit')
 
-Mock = {
-    __class__ = 'Mock',
-    calls = {}    
-}
+Mock = { __class__ = 'Mock' }
 
 function Mock:new()
-    local t = {}
-    t.__class__ = 'Mock'
-    t.calls = {}
-
-    function t.callRecorder( callInfo )
-        -- Return a function that stores its arguments in callInfo
-        function f( ... )
-            -- Not lua 5.0 compliant:
-            args ={...}
-            for i,v in pairs(args) do
-                table.insert( callInfo, v )
-            end
+    local t = { calls = {} }
+    local t_MT = {
+        __index = function( t, key )
+            local callInfo = { key }
+            table.insert( t.calls, callInfo )
+            return callRecorder( callInfo )
         end
-        return f
-    end
-
-    local t_MT = {}
-    function t_MT.__index( t, key ) 
-        local callInfo = { key }
-        table.insert( t.calls, callInfo )
-        return t.callRecorder( callInfo )
-    end
-
-    setmetatable( t, t_MT )
-    return t 
+    }
+    return setmetatable( t, t_MT )
 end
 
 
