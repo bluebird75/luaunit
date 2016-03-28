@@ -190,8 +190,7 @@ M.private.hasNewLine = hasNewLine
 
 local function prefixString( prefix, s )
     -- Prefix all the lines of s with prefix
-    local t = strsplit('\n', s)
-    return prefix..table.concat(t, '\n'..prefix)
+    return prefix .. table.concat(strsplit('\n', s), '\n' .. prefix)
 end
 M.private.prefixString = prefixString
 
@@ -199,7 +198,7 @@ local function strMatch(s, pattern, start, final )
     -- return true if s matches completely the pattern from index start to index end
     -- return false in every other cases
     -- if start is nil, matches from the beginning of the string
-    -- if end is nil, matches to the end of the string
+    -- if final is nil, matches to the end of the string
     start = start or 1
     final = final or string.len(s)
 
@@ -228,8 +227,7 @@ end
 M.private.xmlEscape = xmlEscape
 
 local function xmlCDataEscape( s )
-    -- Return s escaped for CData section
-    -- escapes: "]]>"
+    -- Return s escaped for CData section, escapes: "]]>"
     return string.gsub( s, ']]>', ']]&gt;' )
 end
 M.private.xmlCDataEscape = xmlCDataEscape
@@ -879,7 +877,7 @@ function M.assertItemsEquals(actual, expected)
 end
 
 ----------------------------------------------------------------
---                     Compability layer
+--                     Compatibility layer
 ----------------------------------------------------------------
 
 -- for compatibility with LuaUnit v2.x
@@ -1024,20 +1022,14 @@ end
 --                     class TapOutput
 ----------------------------------------------------------------
 
-local TapOutput = { -- class
-    __class__ = 'TapOutput',
-    runner = nil,
-    result = nil,
-}
-local TapOutput_MT = { __index = TapOutput }
+
+local TapOutput = { __class__ = 'TapOutput' } -- class
+local TapOutput_MT = { __index = TapOutput } -- metatable
 
     -- For a good reference for TAP format, check: http://testanything.org/tap-specification.html
 
     function TapOutput:new()
-        local t = {}
-        t.verbosity = M.VERBOSITY_LOW
-        setmetatable( t, TapOutput_MT )
-        return t
+        return setmetatable( { verbosity = M.VERBOSITY_LOW }, TapOutput_MT)
     end
     function TapOutput:startSuite()
         print("1.."..self.result.testCount)
@@ -1082,21 +1074,12 @@ local TapOutput_MT = { __index = TapOutput }
 ----------------------------------------------------------------
 
 -- See directory junitxml for more information about the junit format
-local JUnitOutput = { -- class
-    __class__ = 'JUnitOutput',
-    runner = nil,
-    result = nil,
-}
-local JUnitOutput_MT = { __index = JUnitOutput }
+local JUnitOutput = { __class__ = 'JUnitOutput' } -- class
+local JUnitOutput_MT = { __index = JUnitOutput } -- metatable
 
     function JUnitOutput:new()
-        local t = {}
-        t.testList = {}
-        t.verbosity = M.VERBOSITY_LOW
-        t.fd = nil
-        t.fname = nil
-        setmetatable( t, JUnitOutput_MT )
-        return t
+        return setmetatable(
+            { testList = {}, verbosity = M.VERBOSITY_LOW }, JUnitOutput_MT)
     end
     function JUnitOutput:startSuite()
 
@@ -1281,19 +1264,12 @@ then OK or FAILED (failures=1, error=1)
 
 ]]
 
-local TextOutput = { __class__ = 'TextOutput' }
-local TextOutput_MT = { -- class
-    __index = TextOutput
-}
+local TextOutput = { __class__ = 'TextOutput' } -- class
+local TextOutput_MT = { __index = TextOutput } -- metatable
 
     function TextOutput:new()
-        local t = {}
-        t.runner = nil
-        t.result = nil
-        t.errorList ={}
-        t.verbosity = M.VERBOSITY_DEFAULT
-        setmetatable( t, TextOutput_MT )
-        return t
+        return setmetatable(
+            { errorList = {}, verbosity = M.VERBOSITY_DEFAULT }, TextOutput_MT )
     end
 
     function TextOutput:startSuite()
@@ -1390,17 +1366,11 @@ local function nopCallable()
     return nopCallable
 end
 
-local NilOutput = {
-    __class__ = 'NilOuptut',
-}
-local NilOutput_MT = {
-    __index = nopCallable,
-}
+local NilOutput = { __class__ = 'NilOuptut' } -- class
+local NilOutput_MT = { __index = nopCallable } -- metatable
+
 function NilOutput:new()
-    local t = {}
-    t.__class__ = 'NilOutput'
-    setmetatable( t, NilOutput_MT )
-    return t
+    return setmetatable( { __class__ = 'NilOutput' }, NilOutput_MT )
 end
 
 ----------------------------------------------------------------
@@ -1414,16 +1384,14 @@ M.LuaUnit = {
     verbosity = M.VERBOSITY_DEFAULT,
     __class__ = 'LuaUnit'
 }
+local LuaUnit_MT = { __index = M.LuaUnit }
 
 if EXPORT_ASSERT_TO_GLOBALS then
     LuaUnit = M.LuaUnit
 end
-local LuaUnit_MT = { __index = M.LuaUnit }
 
     function M.LuaUnit:new()
-        local t = {}
-        setmetatable( t, LuaUnit_MT )
-        return t
+        return setmetatable( {}, LuaUnit_MT )
     end
 
     -----------------[[ Utility methods ]]---------------------
@@ -1617,11 +1585,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
 --                     class NodeStatus
 ----------------------------------------------------------------
 
-    local NodeStatus = { -- class
-        __class__ = 'NodeStatus',
-    }
+    local NodeStatus = { __class__ = 'NodeStatus' } -- class
+    local NodeStatus_MT = { __index = NodeStatus } -- metatable
     M.NodeStatus = NodeStatus
-    local NodeStatus_MT = { __index = NodeStatus }
 
     -- values of status
     NodeStatus.PASS  = 'PASS'
@@ -1629,12 +1595,9 @@ local LuaUnit_MT = { __index = M.LuaUnit }
     NodeStatus.ERROR = 'ERROR'
 
     function NodeStatus:new( number, testName, className )
-        local t = {}
-        t.number = number
-        t.testName = testName
-        t.className = className
-        self:pass()
+        local t = { number = number, testName = testName, className = className }
         setmetatable( t, NodeStatus_MT )
+        t:pass()
         return t
     end
 
@@ -1860,22 +1823,6 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             return
         end
         error( 'No such format: '..outputType,2)
-    end
-
-    function M.LuaUnit:setVerbosity( verbosity )
-        self.verbosity = verbosity
-    end
-
-    function M.LuaUnit:setFname( fname )
-        self.fname = fname
-    end
-
-    function M.LuaUnit:setQuitOnError( value )
-        self.quitOnError = value
-    end
-
-    function M.LuaUnit:setQuitOnFailure( value )
-        self.quitOnFailure = value
     end
 
     --------------[[ Runner ]]-----------------
@@ -2150,24 +2097,23 @@ local LuaUnit_MT = { __index = M.LuaUnit }
             args = cmdline_argv
         end
 
-        local no_error, error_msg, options, val
-        no_error, val = pcall( M.LuaUnit.parseCmdLine, args )
+        local no_error, val = pcall( M.LuaUnit.parseCmdLine, args )
         if not no_error then
-            error_msg = val
-            print(error_msg)
+            print(val) -- error message
             print()
             print(M.USAGE)
             os.exit(-1)
         end
 
-        options = val
+        local options = val
 
-        if options.verbosity then
-            self:setVerbosity( options.verbosity )
-        end
-
-        self:setQuitOnError( options.quitOnError )
-        self:setQuitOnFailure( options.quitOnFailure )
+        -- We expect these option fields to be either `nil` or contain
+        -- valid values, so it's safe to always copy them directly.
+        self.verbosity     = options.verbosity
+        self.quitOnError   = options.quitOnError
+        self.quitOnFailure = options.quitOnFailure
+        self.fname         = options.fname
+        self.patternFilter = options.pattern
 
         if options.output and options.output:lower() == 'junit' and options.fname == nil then
             print('With junit output, a filename must be supplied with -n or --name')
@@ -2175,31 +2121,16 @@ local LuaUnit_MT = { __index = M.LuaUnit }
         end
 
         if options.output then
-            no_error, val = pcall(self.setOutputType,self,options.output)
+            no_error, val = pcall(self.setOutputType, self, options.output)
             if not no_error then
-                error_msg = val
-                print(error_msg)
+                print(val) -- error message
                 print()
                 print(M.USAGE)
                 os.exit(-1)
             end
         end
 
-        if options.fname then
-            self:setFname( options.fname )
-        end
-
-        if options.pattern then
-            self.patternFilter = options.pattern
-        end
-
-        local testNames = options['testNames']
-
-        if testNames == nil then
-            testNames = M.LuaUnit.collectTests()
-        end
-
-        self:runSuiteByNames( testNames )
+        self:runSuiteByNames( options.testNames or M.LuaUnit.collectTests() )
 
         return self.result.notPassedCount
     end
