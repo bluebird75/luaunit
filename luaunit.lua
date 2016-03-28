@@ -464,10 +464,11 @@ end
 M.private._table_tostring = _table_tostring -- prettystr_sub() needs it
 
 local function _table_contains(t, element)
-    if t then
+    if type(t) == "table" then
+        local type_e = type(element)
         for _, value in pairs(t) do
-            if type(value) == type(element) then
-                if type(element) == 'table' then
+            if type(value) == type_e then
+                if type_e == 'table' then
                     -- if we wanted recursive items content comparison, we could use
                     -- _is_table_items_equals(v, expected) but one level of just comparing
                     -- items is sufficient
