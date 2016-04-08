@@ -497,12 +497,6 @@ function testLegacyLuaunitUsage()
         "test/legacy_example_with_luaunit.lua", "test/legacyExample.txt")
 end
 
-function testLegacyLuaunitError()
-    -- run test/legacy_example_usage with "-e" option, and check exit status (-2)
-    osExpectedCodeExec(-2, '%s %s  --error --output text > %s', LUA,
-        "test/legacy_example_with_luaunit.lua", "test/legacyExampleError.txt")
-end
-
 function testLuaunitV2Usage()
     osExpectedCodeExec(0, '%s %s  --output text 1> %s 2>&1', LUA,
         "test/compat_luaunit_v2x.lua", "test/compat_luaunit_v2x.txt")
