@@ -464,10 +464,11 @@ end
 M.private._table_tostring = _table_tostring -- prettystr_sub() needs it
 
 local function _table_contains(t, element)
-    if t then
+    if type(t) == "table" then
+        local type_e = type(element)
         for _, value in pairs(t) do
-            if type(value) == type(element) then
-                if type(element) == 'table' then
+            if type(value) == type_e then
+                if type_e == 'table' then
                     -- if we wanted recursive items content comparison, we could use
                     -- _is_table_items_equals(v, expected) but one level of just comparing
                     -- items is sufficient
@@ -882,27 +883,13 @@ end
 
 -- for compatibility with LuaUnit v2.x
 function M.wrapFunctions(...)
-    io.stderr:write( [[Use of WrapFunction() is no longer needed. 
-Just prefix your test function names with "test" or "Test" and they
-will be picked up and run by LuaUnit.]] )
     -- In LuaUnit version <= 2.1 , this function was necessary to include
     -- a test function inside the global test suite. Nowadays, the functions
     -- are simply run directly as part of the test discovery process.
     -- so just do nothing !
-
-    --[[
-    local testClass, testFunction
-    testClass = {}
-    local function storeAsMethod(idx, testName)
-        testFunction = _G[testName]
-        testClass[testName] = testFunction
-    end
-    for i,v in ipairs({...}) do
-        storeAsMethod( i, v )
-    end
-
-    return testClass
-    ]]
+    io.stderr:write[[Use of WrapFunctions() is no longer needed.
+Just prefix your test function names with "test" or "Test" and they
+will be picked up and run by LuaUnit.]]
 end
 
 local list_of_funcs = {
@@ -1018,18 +1005,49 @@ end
 --
 ----------------------------------------------------------------
 
+-- A common "base" class for outputters
+-- For concepts involved (class inheritance) see http://www.lua.org/pil/16.2.html
+
+local genericOutput = { __class__ = 'genericOutput' } -- class
+local genericOutput_MT = { __index = genericOutput } -- metatable
+M.genericOutput = genericOutput -- publish, so that custom classes may derive from it
+
+function genericOutput.new(runner, default_verbosity)
+    -- runner is the "parent" object controlling the output, usually a LuaUnit instance
+    local t = { runner = runner }
+    if runner then
+        t.result = runner.result
+        t.verbosity = runner.verbosity or default_verbosity
+        t.fname = runner.fname
+    else
+        t.verbosity = default_verbosity
+    end
+    return setmetatable( t, genericOutput_MT)
+end
+
+-- abstract ("empty") methods
+function genericOutput:startSuite() end
+function genericOutput:startClass(className) end
+function genericOutput:startTest(testName) end
+function genericOutput:addStatus(node) end
+function genericOutput:endTest(node) end
+function genericOutput:endClass() end
+function genericOutput:endSuite() end
+
+
 ----------------------------------------------------------------
 --                     class TapOutput
 ----------------------------------------------------------------
 
-
-local TapOutput = { __class__ = 'TapOutput' } -- class
+local TapOutput = genericOutput.new() -- derived class
 local TapOutput_MT = { __index = TapOutput } -- metatable
+TapOutput.__class__ = 'TapOutput'
 
     -- For a good reference for TAP format, check: http://testanything.org/tap-specification.html
 
-    function TapOutput:new()
-        return setmetatable( { verbosity = M.VERBOSITY_LOW }, TapOutput_MT)
+    function TapOutput.new(runner)
+        local t = genericOutput.new(runner, M.VERBOSITY_LOW)
+        return setmetatable( t, TapOutput_MT)
     end
     function TapOutput:startSuite()
         print("1.."..self.result.testCount)
@@ -1040,9 +1058,8 @@ local TapOutput_MT = { __index = TapOutput } -- metatable
             print('# Starting class: '..className)
         end
     end
-    function TapOutput:startTest(testName) end
 
-    function TapOutput:addFailure( node )
+    function TapOutput:addStatus( node )
         io.stdout:write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
         if self.verbosity > M.VERBOSITY_LOW then
            print( prefixString( '    ', node.msg ) )
@@ -1051,15 +1068,12 @@ local TapOutput_MT = { __index = TapOutput } -- metatable
            print( prefixString( '    ', node.stackTrace ) )
         end
     end
-    TapOutput.addError = TapOutput.addFailure
 
     function TapOutput:endTest( node )
         if node:isPassed() then
             io.stdout:write("ok     ", self.result.currentTestNumber, "\t", node.testName, "\n")
         end
     end
-
-    function TapOutput:endClass() end
 
     function TapOutput:endSuite()
         print( '# '..M.LuaUnit.statusLine( self.result ) )
@@ -1074,15 +1088,17 @@ local TapOutput_MT = { __index = TapOutput } -- metatable
 ----------------------------------------------------------------
 
 -- See directory junitxml for more information about the junit format
-local JUnitOutput = { __class__ = 'JUnitOutput' } -- class
+local JUnitOutput = genericOutput.new() -- derived class
 local JUnitOutput_MT = { __index = JUnitOutput } -- metatable
+JUnitOutput.__class__ = 'JUnitOutput'
 
-    function JUnitOutput:new()
-        return setmetatable(
-            { testList = {}, verbosity = M.VERBOSITY_LOW }, JUnitOutput_MT)
+    function JUnitOutput.new(runner)
+        local t = genericOutput.new(runner, M.VERBOSITY_LOW)
+        t.testList = {}
+        return setmetatable( t, JUnitOutput_MT )
     end
-    function JUnitOutput:startSuite()
 
+    function JUnitOutput:startSuite()
         -- open xml file early to deal with errors
         if self.fname == nil then
             error('With Junit, an output filename must be supplied with --name!')
@@ -1107,20 +1123,14 @@ local JUnitOutput_MT = { __index = JUnitOutput } -- metatable
         print('# Starting test: '..testName)
     end
 
-    function JUnitOutput:addFailure( node )
-        print('# Failure: ' .. node.msg)
-        -- print('# ' .. node.stackTrace)
-    end
-
-    function JUnitOutput:addError( node )
-        print('# Error: ' .. node.msg)
-        -- print('# ' .. node.stackTrace)
-    end
-
-    function JUnitOutput:endTest( node )
-    end
-
-    function JUnitOutput:endClass()
+    function JUnitOutput:addStatus( node )
+        if node:isFailure() then
+            print('# Failure: ' .. node.msg)
+            -- print('# ' .. node.stackTrace)
+        elseif node:isError() then
+            print('# Error: ' .. node.msg)
+            -- print('# ' .. node.stackTrace)
+        end
     end
 
     function JUnitOutput:endSuite()
@@ -1264,12 +1274,14 @@ then OK or FAILED (failures=1, error=1)
 
 ]]
 
-local TextOutput = { __class__ = 'TextOutput' } -- class
+local TextOutput = genericOutput.new() -- derived class
 local TextOutput_MT = { __index = TextOutput } -- metatable
+TextOutput.__class__ = 'TextOutput'
 
-    function TextOutput:new()
-        return setmetatable(
-            { errorList = {}, verbosity = M.VERBOSITY_DEFAULT }, TextOutput_MT )
+    function TextOutput.new(runner)
+        local t = genericOutput.new(runner, M.VERBOSITY_DEFAULT)
+        t.errorList = {}
+        return setmetatable( t, TextOutput_MT )
     end
 
     function TextOutput:startSuite()
@@ -1278,22 +1290,10 @@ local TextOutput_MT = { __index = TextOutput } -- metatable
         end
     end
 
-    function TextOutput:startClass(className)
-        -- display nothing when starting a new class
-    end
-
     function TextOutput:startTest(testName)
         if self.verbosity > M.VERBOSITY_DEFAULT then
             io.stdout:write( "    ", self.result.currentNode.testName, " ... " )
         end
-    end
-
-    function TextOutput:addFailure( node )
-        -- nothing
-    end
-
-    function TextOutput:addError( node )
-        -- nothing
     end
 
     function TextOutput:endTest( node )
@@ -1318,10 +1318,6 @@ local TextOutput_MT = { __index = TextOutput } -- metatable
                 io.stdout:write(string.sub(node.status, 1, 1))
             end
         end
-    end
-
-    function TextOutput:endClass()
-        -- nothing
     end
 
     function TextOutput:displayOneFailedTest( index, failure )
@@ -1369,7 +1365,7 @@ end
 local NilOutput = { __class__ = 'NilOuptut' } -- class
 local NilOutput_MT = { __index = nopCallable } -- metatable
 
-function NilOutput:new()
+function NilOutput.new(runner)
     return setmetatable( { __class__ = 'NilOutput' }, NilOutput_MT )
 end
 
@@ -1390,7 +1386,7 @@ if EXPORT_ASSERT_TO_GLOBALS then
     LuaUnit = M.LuaUnit
 end
 
-    function M.LuaUnit:new()
+    function M.LuaUnit.new()
         return setmetatable( {}, LuaUnit_MT )
     end
 
@@ -1594,7 +1590,7 @@ end
     NodeStatus.FAIL  = 'FAIL'
     NodeStatus.ERROR = 'ERROR'
 
-    function NodeStatus:new( number, testName, className )
+    function NodeStatus.new( number, testName, className )
         local t = { number = number, testName = testName, className = className }
         setmetatable( t, NodeStatus_MT )
         t:pass()
@@ -1654,51 +1650,60 @@ end
 
     --------------[[ Output methods ]]-------------------------
 
+    local function conditional_plural(number, singular)
+        -- returns a grammatically well-formed string "%d <singular/plural>"
+        local suffix = ''
+        if number ~= 1 then -- use plural
+            suffix = (singular:sub(-2) == 'ss') and 'es' or 's'
+        end
+        return string.format('%d %s%s', number, singular, suffix)
+    end
+
     function M.LuaUnit.statusLine(result)
         -- return status line string according to results
-        s = string.format('Ran %d tests in %0.3f seconds, %d successes',
-            result.runCount, result.duration, result.passedCount )
+        local s = {
+            string.format('Ran %d tests in %0.3f seconds',
+                          result.runCount, result.duration),
+            conditional_plural(result.passedCount, 'success'),
+        }
         if result.notPassedCount > 0 then
             if result.failureCount > 0 then
-                s = s..string.format(', %d failures', result.failureCount )
+                table.insert(s, conditional_plural(result.failureCount, 'failure'))
             end
             if result.errorCount > 0 then
-                s = s..string.format(', %d errors', result.errorCount )
+                table.insert(s, conditional_plural(result.errorCount, 'error'))
             end
         else
-            s = s..', 0 failures'
+            table.insert(s, '0 failures')
         end
         if result.nonSelectedCount > 0 then
-            s = s..string.format(", %d non-selected", result.nonSelectedCount )
+            table.insert(s, string.format("%d non-selected", result.nonSelectedCount))
         end
-        return s
+        return table.concat(s, ', ')
     end
 
     function M.LuaUnit:startSuite(testCount, nonSelectedCount)
-        self.result = {}
-        self.result.testCount = testCount
-        self.result.nonSelectedCount = nonSelectedCount
-        self.result.passedCount = 0
-        self.result.runCount = 0
-        self.result.currentTestNumber = 0
-        self.result.currentClassName = ""
-        self.result.currentNode = nil
-        self.result.suiteStarted = true
-        self.result.startTime = os.clock()
-        self.result.startDate = os.date(os.getenv('LUAUNIT_DATEFMT'))
-        self.result.startIsodate = os.date('%Y-%m-%dT%H:%M:%S')
-        self.result.patternFilter = self.patternFilter
-        self.result.tests = {}
-        self.result.failures = {}
-        self.result.errors = {}
-        self.result.notPassed = {}
+        self.result = {
+            testCount = testCount,
+            nonSelectedCount = nonSelectedCount,
+            passedCount = 0,
+            runCount = 0,
+            currentTestNumber = 0,
+            currentClassName = "",
+            currentNode = nil,
+            suiteStarted = true,
+            startTime = os.clock(),
+            startDate = os.date(os.getenv('LUAUNIT_DATEFMT')),
+            startIsodate = os.date('%Y-%m-%dT%H:%M:%S'),
+            patternFilter = self.patternFilter,
+            tests = {},
+            failures = {},
+            errors = {},
+            notPassed = {},
+        }
 
         self.outputType = self.outputType or TextOutput
-        self.output = self.outputType:new()
-        self.output.runner = self
-        self.output.result = self.result
-        self.output.verbosity = self.verbosity
-        self.output.fname = self.fname
+        self.output = self.outputType.new(self)
         self.output:startSuite()
     end
 
@@ -1710,7 +1715,7 @@ end
     function M.LuaUnit:startTest( testName  )
         self.result.currentTestNumber = self.result.currentTestNumber + 1
         self.result.runCount = self.result.runCount + 1
-        self.result.currentNode = NodeStatus:new(
+        self.result.currentNode = NodeStatus.new(
             self.result.currentTestNumber,
             testName,
             self.result.currentClassName
@@ -1739,17 +1744,19 @@ end
         -- if the node is already in failure/error, just don't report the new error (see above)
         if node.status ~= NodeStatus.PASS then return end
 
-        table.insert( self.result.notPassed, node )
-
         if err.status == NodeStatus.FAIL then
             node:fail( err.msg, err.trace )
             table.insert( self.result.failures, node )
-            self.output:addFailure( node )
         elseif err.status == NodeStatus.ERROR then
             node:error( err.msg, err.trace )
             table.insert( self.result.errors, node )
-            self.output:addError( node )
         end
+
+        if node:isFailure() or node:isError() then
+            -- add to the list of failed tests (gets printed separately)
+            table.insert( self.result.notPassed, node )
+        end
+        self.output:addStatus( node )
     end
 
     function M.LuaUnit:endTest()

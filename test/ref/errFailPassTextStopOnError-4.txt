@@ -9,5 +9,5 @@ test/test_with_err_fail_pass.lua:15: expected: 0, actual: 2
 stack traceback:
 	test/test_with_err_fail_pass.lua:15: in function 'TestSomething.test2_Fail1'
 
-Ran 3 tests in 0.000 seconds, 2 successes, 1 failures, 9 non-selected
+Ran 3 tests in 0.000 seconds, 2 successes, 1 failure, 9 non-selected
 LuaUnit ABORTED (as requested by --error or --failure option)

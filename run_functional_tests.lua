@@ -627,14 +627,14 @@ filesToGenerateTestXml = {
 }
 
 filesToGenerateStopOnError = {
-    { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p Succ --error -- failure', 
-        'test/errFailPassTextStopOnError-1.txt'}, 
-    { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p TestSome --error', 
-        'test/errFailPassTextStopOnError-2.txt'}, 
-    { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p TestAnoth --failure', 
-        'test/errFailPassTextStopOnError-3.txt'}, 
-    { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p TestSome --failure', 
-        'test/errFailPassTextStopOnError-4.txt'}, 
+    { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p Succ --error --failure',
+        'test/ref/errFailPassTextStopOnError-1.txt'},
+    { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p TestSome --error',
+        'test/ref/errFailPassTextStopOnError-2.txt'},
+    { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p TestAnoth --failure',
+        'test/ref/errFailPassTextStopOnError-3.txt'},
+    { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p TestSome --failure',
+        'test/ref/errFailPassTextStopOnError-4.txt'},
 }
 
 filesSetIndex = {

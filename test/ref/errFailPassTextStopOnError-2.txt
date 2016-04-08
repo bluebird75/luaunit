@@ -19,5 +19,5 @@ test/test_with_err_fail_pass.lua:23: attempt to perform arithmetic on a table va
 stack traceback:
 	[C]: in function 'xpcall'
 
-Ran 5 tests in 0.000 seconds, 2 successes, 2 failures, 1 errors, 9 non-selected
+Ran 5 tests in 0.000 seconds, 2 successes, 2 failures, 1 error, 9 non-selected
 LuaUnit ABORTED (as requested by --error or --failure option)
