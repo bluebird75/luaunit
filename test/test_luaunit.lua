@@ -175,6 +175,23 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( lu.private.prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
 
+    function TestLuaUnitUtilities:test_is_table_equals()
+        -- Make sure that _is_table_equals() doesn't fall for these traps
+        -- (See https://github.com/bluebird75/luaunit/issues/48)
+        local A, B, C = {}, {}, {}
+
+        A.self = A
+        B.self = B
+        lu.assertNotEquals(A, B)
+        lu.assertEquals(A, A)
+
+        A, B = {}, {}
+        A.circular = C
+        B.circular = A
+        C.circular = B
+        lu.assertNotEquals(A, B)
+        lu.assertEquals(C, C)
+    end
 
     function TestLuaUnitUtilities:test_table_keytostring()
         lu.assertEquals( lu.private._table_keytostring( 'a' ), 'a' )
