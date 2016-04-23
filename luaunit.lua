@@ -487,54 +487,62 @@ local function _table_contains(t, element)
 end
 
 local function _is_table_items_equals(actual, expected )
-    if (type(actual) == 'table') and (type(expected) == 'table') then
-        for k,v in pairs(actual) do
+    local type_a, type_e = type(actual), type(expected)
+
+    if (type_a == 'table') and (type_e == 'table') then
+        for k, v in pairs(actual) do
             if not _table_contains(expected, v) then
                 return false
             end
         end
-        for k,v in pairs(expected) do
+        for k, v in pairs(expected) do
             if not _table_contains(actual, v) then
                 return false
             end
         end
         return true
-    elseif type(actual) ~= type(expected) then
+
+    elseif type_a ~= type_e then
         return false
-    elseif actual == expected then
-        return true
+
+    elseif actual ~= expected then
+        return false
     end
-    return false
+
+    return true
 end
 
 local function _is_table_equals(actual, expected)
-    if (type(actual) == 'table') and (type(expected) == 'table') then
+    local type_a, type_e = type(actual), type(expected)
+
+    if (type_a == 'table') and (type_e == 'table') then
+        -- Tables must have identical element count, or they can't match.
         if (#actual ~= #expected) then
             return false
         end
 
         local actualTableKeys = {}
-        for k,v in pairs(actual) do
+        for k, v in pairs(actual) do
             if M.TABLE_EQUALS_KEYBYCONTENT and type(k) == "table" then
                 -- If the keys are tables, things get a bit tricky here as we
                 -- can have _is_table_equals(k1, k2) and t[k1] ~= t[k2]. So we
                 -- collect actual's table keys, group them by length for
                 -- performance, and then for each table key in expected we look
                 -- it up in actualTableKeys.
-                if not actualTableKeys[#k] then actualTableKeys[#k] = {} end
-                table.insert(actualTableKeys[#k], k)
+                local count = #k
+                if not actualTableKeys[count] then actualTableKeys[count] = {} end
+                table.insert(actualTableKeys[count], k)
             else
                 if not _is_table_equals(v, expected[k]) then
-                    return false
+                    return false -- Mismatch on value, tables can't be equal
                 end
             end
         end
 
-        for k,v in pairs(expected) do
+        for k, v in pairs(expected) do
             if M.TABLE_EQUALS_KEYBYCONTENT and type(k) == "table" then
-                local candidates = actualTableKeys[#k]
+                local candidates, found = actualTableKeys[#k], nil
                 if not candidates then return false end
-                local found
                 for i, candidate in pairs(candidates) do
                     if _is_table_equals(candidate, k) then
                         found = candidate
@@ -545,7 +553,10 @@ local function _is_table_equals(actual, expected)
                         break
                     end
                 end
-                if not(found and _is_table_equals(actual[found], v)) then return false end
+                if not(found and _is_table_equals(actual[found], v)) then
+                    -- Either no matching key, or a different value
+                    return false
+                end
             else
                 if not _is_table_equals(v, actual[k]) then
                     return false
@@ -563,12 +574,15 @@ local function _is_table_equals(actual, expected)
         end
 
         return true
-    elseif type(actual) ~= type(expected) then
+
+    elseif type_a ~= type_e then
         return false
-    elseif actual == expected then
-        return true
+
+    elseif actual ~= expected then
+        return false
     end
-    return false
+
+    return true
 end
 M.private._is_table_equals = _is_table_equals
 
