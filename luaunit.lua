@@ -521,7 +521,8 @@ local function _is_table_equals(actual, expected)
             return false
         end
 
-        local actualTableKeys = {}
+        local actualKeysMatched, actualTableKeys = {}, {}
+
         for k, v in pairs(actual) do
             if M.TABLE_EQUALS_KEYBYCONTENT and type(k) == "table" then
                 -- If the keys are tables, things get a bit tricky here as we
@@ -536,6 +537,7 @@ local function _is_table_equals(actual, expected)
                 if not _is_table_equals(v, expected[k]) then
                     return false -- Mismatch on value, tables can't be equal
                 end
+                actualKeysMatched[k] = true -- Keep track of matched keys
             end
         end
 
@@ -558,11 +560,19 @@ local function _is_table_equals(actual, expected)
                     return false
                 end
             else
-                if not _is_table_equals(v, actual[k]) then
+                if not actualKeysMatched[k] then
+                    -- Found a key that we did not see in "actual" -> mismatch
                     return false
                 end
+                -- Otherwise we know that actual[k] was already matched
+                -- against v = expected[k]. Remove k from the table again.
+                actualKeysMatched[k] = nil
             end
         end
+
+        -- If we have any keys left in the actualKeysMatched table, then those
+        -- were missing from "expected", meaning the tables are different.
+        if next(actualKeysMatched) then return false end
 
         if M.TABLE_EQUALS_KEYBYCONTENT then
             for _, keys in pairs(actualTableKeys) do
