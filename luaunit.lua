@@ -512,14 +512,18 @@ local function _is_table_items_equals(actual, expected )
     return true
 end
 
-local function _is_table_equals(actual, expected)
+local function _is_table_equals(actual, expected, recursions)
     local type_a, type_e = type(actual), type(expected)
+    recursions = recursions or {}
 
-    if (type_a == 'table') and (type_e == 'table') then
+    if (type_a == 'table') and (type_e == 'table') and not recursions[actual] then
         -- Tables must have identical element count, or they can't match.
         if (#actual ~= #expected) then
             return false
         end
+
+        -- add "actual" to the recursions table, to detect and avoid loops
+        recursions[actual] = true
 
         local actualKeysMatched, actualTableKeys = {}, {}
 
@@ -534,7 +538,7 @@ local function _is_table_equals(actual, expected)
                 if not actualTableKeys[count] then actualTableKeys[count] = {} end
                 table.insert(actualTableKeys[count], k)
             else
-                if not _is_table_equals(v, expected[k]) then
+                if not _is_table_equals(v, expected[k], recursions) then
                     return false -- Mismatch on value, tables can't be equal
                 end
                 actualKeysMatched[k] = true -- Keep track of matched keys
