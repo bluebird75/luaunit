@@ -1986,8 +1986,8 @@ end
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 end
                 if M.LuaUnit.isClassMethod( name ) then
-                    className, methodName = M.LuaUnit.splitClassMethod( name )
-                    methodInstance = instance[methodName]
+                    local className, methodName = M.LuaUnit.splitClassMethod( name )
+                    local methodInstance = instance[methodName]
                     if methodInstance == nil then
                         error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
                     end

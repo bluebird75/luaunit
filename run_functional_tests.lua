@@ -163,7 +163,7 @@ function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
         error_fmt('No line in file %s matching pattern "%s"', fileOut, pattern)
     end
 
-    f = io.open( fileOut, 'w')
+    local f = io.open( fileOut, 'w')
     f:write(table.concat(linesOut, '\n'), '\n')
     f:close()
 end

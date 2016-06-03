@@ -43,9 +43,9 @@ function typeAsserter( goodType, badType, goodAsserter, badAsserter )
 end
 
 function TestLuaUnitV2Compat:testAssertType()
-    f = function (v) return v+1 end
-    t = coroutine.create( function(v) local y=v+1 end )
-    typesToVerify = {
+    local f = function (v) return v+1 end
+    local t = coroutine.create( function(v) local y=v+1 end )
+    local typesToVerify = {
         -- list of: { goodType, badType, goodAsserter, badAsserter }
         { true, "toto", assertBoolean, assertNotBoolean },
         { 1   , "toto", assertNumber, assertNotNumber },
@@ -57,7 +57,7 @@ function TestLuaUnitV2Compat:testAssertType()
     }
 
     for _,v in ipairs( typesToVerify ) do 
-        goodType, badType, goodAsserter, badAsserter = v[1], v[2], v[3], v[4]
+        local goodType, badType, goodAsserter, badAsserter = v[1], v[2], v[3], v[4]
         typeAsserter( goodType, badType, goodAsserter, badAsserter )
     end
 
@@ -70,10 +70,10 @@ function TestLuaUnitV2Compat:testHasVersionKey()
 end
 
 function TestLuaUnitV2Compat:testTableEquality()
-    t1 = {1,2}
-    t2 = t1
-    t3 = {1,2}
-    t4 = {1,2,3}
+    local t1 = {1,2}
+    local t2 = t1
+    local t3 = {1,2}
+    local t4 = {1,2,3}
 
     assertEquals( t1, t1 )
     assertEquals( t1, t2 )
