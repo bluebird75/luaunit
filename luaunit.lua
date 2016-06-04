@@ -623,8 +623,8 @@ local function _is_table_equals(actual, expected, recursions)
                 local found = false
                 -- Note: DON'T use ipairs() here, table may be non-sequential!
                 for i, candidate in pairs(actualTableKeys) do
-                    if _is_table_equals(candidate, k) then
-                        if _is_table_equals(actual[candidate], v) then
+                    if _is_table_equals(candidate, k, recursions) then
+                        if _is_table_equals(actual[candidate], v, recursions) then
                             found = true
                             -- Remove the candidate we matched against from the list
                             -- of table keys, so each key in actual can only match

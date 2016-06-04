@@ -188,6 +188,14 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         C.circular = B
         lu.assertNotEquals(A, B)
         lu.assertEquals(C, C)
+
+        A = {}
+        A[{}] = A
+        lu.assertEquals( A, A )
+
+        A = {}
+        A[A] = 1
+        lu.assertEquals( A, A )
     end
 
     function TestLuaUnitUtilities:test_prettystr()
