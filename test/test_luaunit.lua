@@ -308,23 +308,36 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
     function TestLuaUnitUtilities:test_prettystrTableRecursion()
         local t = {}
         t.__index = t
-        lu.assertStrMatches(lu.prettystr(t), "<table: 0?x?[%x]+> {__index=<table: 0?x?[%x]+>}")
+        lu.assertStrMatches(lu.prettystr(t), "(<table: 0?x?[%x]+>) {__index=%1}")
 
         local t1 = {}
         local t2 = {}
         t1.t2 = t2
         t2.t1 = t1
         local t3 = { t1 = t1, t2 = t2 }
-        lu.assertStrMatches(lu.prettystr(t1), "<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}}")
-        lu.assertStrMatches(lu.prettystr(t3), [[<table: 0?x?[%x]+> {
-    t1=<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}},
-    t2=<table: 0?x?[%x]+>
+        lu.assertStrMatches(lu.prettystr(t1), "(<table: 0?x?[%x]+>) {t2=(<table: 0?x?[%x]+>) {t1=%1}}")
+        lu.assertStrMatches(lu.prettystr(t3), [[(<table: 0?x?[%x]+>) {
+    t1=(<table: 0?x?[%x]+>) {t2=(<table: 0?x?[%x]+>) {t1=%2}},
+    t2=%3
 }]])
 
         local t4 = {1,2}
         local t5 = {3,4,t4}
         t4[3] = t5
-        lu.assertStrMatches(lu.prettystr(t5), "<table: 0?x?[%x]+> {3, 4, <table: 0?x?[%x]+> {1, 2, <table: 0?x?[%x]+>}}")
+        lu.assertStrMatches(lu.prettystr(t5), "(<table: 0?x?[%x]+>) {3, 4, (<table: 0?x?[%x]+>) {1, 2, %1}}")
+
+        local t6 = {}
+        t6[t6] = 1
+        lu.assertStrMatches(lu.prettystr(t6), "(<table: 0?x?[%x]+>) {%1=1}" )
+
+        local t7, t8 = {"t7"}, {"t8"}
+        t7[t8] = 1
+        t8[t7] = 2
+        lu.assertStrMatches(lu.prettystr(t7), '(<table: 0?x?[%x]+>) {"t7", (<table: 0?x?[%x]+>) {"t8", %1=2}=1}')
+
+        local t9 = {"t9", {}}
+        t9[{t9}] = 1
+        lu.assertStrMatches(lu.prettystr(t9, true), '(<table: 0?x?[%x]+>) {"t9", (<table: 0?x?[%x]+>) {}, (<table: 0?x?[%x]+>) {%1}=1}')
     end
 
     function TestLuaUnitUtilities:test_prettystrPadded()

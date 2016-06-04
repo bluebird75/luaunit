@@ -430,10 +430,15 @@ local function _table_tostring( tbl, indentLevel, keeponeline, printTableRefs, r
             -- for the sequential part of tables, we'll skip the "<key>=" output
             entry = ''
             seq_index = seq_index + 1
+        elseif recursionTable[k] then
+            -- recursion in the key detected
+            recursionTable.recursionDetected = true
+            entry = "<"..tostring(k)..">="
         else
             entry = keytostring(k) .. "="
         end
-        if recursionTable[v] then -- recursion detected!
+        if recursionTable[v] then
+            -- recursion in the value detected!
             recursionTable.recursionDetected = true
             entry = entry .. "<"..tostring(v)..">"
         else
