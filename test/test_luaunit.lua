@@ -690,9 +690,13 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.TABLE_EQUALS_KEYBYCONTENT = false
         assertFailure( lu.assertEquals, {[{}] = 1}, { [{}] = 1})
         assertFailure( lu.assertEquals, {[{one=1, two=2}] = 1}, { [{two=2, one=1}] = 1})
+        assertFailure( lu.assertEquals, {[{1}]=2, [{1}]=3}, {[{1}]=3, [{1}]=2} )
         lu.TABLE_EQUALS_KEYBYCONTENT = true
         lu.assertEquals( {[{}] = 1}, { [{}] = 1})
         lu.assertEquals( {[{one=1, two=2}] = 1}, { [{two=2, one=1}] = 1})
+        lu.assertEquals( {[{1}]=2, [{1}]=3}, {[{1}]=3, [{1}]=2} )
+        -- try the other order as well, in case pairs() returns items reversed in the test above
+        lu.assertEquals( {[{1}]=2, [{1}]=3}, {[{1}]=2, [{1}]=3} )
 
         assertFailure( lu.assertEquals, 1, 2)
         assertFailure( lu.assertEquals, 1, "abc" )
@@ -718,6 +722,8 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure( lu.assertEquals, {[{}] = 1}, {[{one=1}] = 2})
         assertFailure( lu.assertEquals, {[{}] = 1}, {[{}] = 1, 2})
         assertFailure( lu.assertEquals, {[{}] = 1}, {[{}] = 1, [{}] = 1})
+        assertFailure( lu.assertEquals, {[{"one"}]=1}, {[{"one", 1}]=2} )
+        assertFailure( lu.assertEquals, {[{"one"}]=1,[{"one"}]=1}, {[{"one"}]=1} )
         lu.TABLE_EQUALS_KEYBYCONTENT = config_saved
     end
 

@@ -615,21 +615,23 @@ local function _is_table_equals(actual, expected, recursions)
 
         for k, v in pairs(expected) do
             if M.TABLE_EQUALS_KEYBYCONTENT and type(k) == "table" then
-                local found
+                local found = false
                 -- Note: DON'T use ipairs() here, table may be non-sequential!
                 for i, candidate in pairs(actualTableKeys) do
                     if _is_table_equals(candidate, k) then
-                        found = candidate
-                        -- Remove the candidate we matched against from the list
-                        -- of table keys, so each key in actual can only match
-                        -- one key in expected.
-                        actualTableKeys[i] = nil
-                        break
+                        if _is_table_equals(actual[candidate], v) then
+                            found = true
+                            -- Remove the candidate we matched against from the list
+                            -- of table keys, so each key in actual can only match
+                            -- one key in expected.
+                            actualTableKeys[i] = nil
+                            break
+                        end
+                        -- keys match but values don't, keep searching
                     end
                 end
-                if not(found and _is_table_equals(actual[found], v)) then
-                    -- Either no matching key, or a different value
-                    return false
+                if not found then
+                    return false -- no matching (key,value) pair
                 end
             else
                 if not actualKeysMatched[k] then
