@@ -414,10 +414,15 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
             -- for the sequential part of tables, we'll skip the "<key>=" output
             entry = ''
             seq_index = seq_index + 1
+        elseif recursionTable[k] then
+            -- recursion in the key detected
+            recursionTable.recursionDetected = true
+            entry = "<"..tostring(k)..">="
         else
             entry = _table_keytostring( k ) .. "="
         end
-        if recursionTable[v] then -- recursion detected!
+        if recursionTable[v] then
+            -- recursion in the value detected!
             recursionTable.recursionDetected = true
             entry = entry .. "<"..tostring(v)..">"
         else
@@ -512,6 +517,14 @@ local function _is_table_items_equals(actual, expected )
     return true
 end
 
+local function _table_copy(tbl)
+    local newtbl = {}
+    for k, v in pairs(tbl) do
+        newtbl[k] = v
+    end
+    return newtbl
+end
+
 local function _is_table_equals(actual, expected, recursions)
     local type_a, type_e = type(actual), type(expected)
     recursions = recursions or {}
@@ -550,13 +563,19 @@ local function _is_table_equals(actual, expected, recursions)
                 local candidates, found = actualTableKeys[#k], nil
                 if not candidates then return false end
                 for i, candidate in pairs(candidates) do
-                    if _is_table_equals(candidate, k) then
-                        if _is_table_equals(actual[candidate], v) then
+                    -- use temporary recursions table for testing, revert to saved version if matching failed
+                    local recursions_temp = _table_copy(recursions)
+                    if _is_table_equals(candidate, k, recursions_temp) then
+                        if _is_table_equals(actual[candidate], v, recursions_temp) then
                             found = candidate
                             -- Remove the candidate we matched against from the list
                             -- of candidates, so each key in actual can only match
                             -- one key in expected.
                             candidates[i] = nil
+                            -- confirm new recursions table
+                            -- note: new table will be used for deeper levels, will not propagate back
+                            --   haven't found counter-example yet where this causes problems
+                            recursions = recursions_temp
                             break
                         end
                         -- keys match but values don't, keep searching
