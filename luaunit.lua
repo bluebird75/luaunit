@@ -551,15 +551,18 @@ local function _is_table_equals(actual, expected, recursions)
                 if not candidates then return false end
                 for i, candidate in pairs(candidates) do
                     if _is_table_equals(candidate, k) then
-                        found = candidate
-                        -- Remove the candidate we matched against from the list
-                        -- of candidates, so each key in actual can only match
-                        -- one key in expected.
-                        candidates[i] = nil
-                        break
+                        if _is_table_equals(actual[candidate], v) then
+                            found = candidate
+                            -- Remove the candidate we matched against from the list
+                            -- of candidates, so each key in actual can only match
+                            -- one key in expected.
+                            candidates[i] = nil
+                            break
+                        end
+                        -- keys match but values don't, keep searching
                     end
                 end
-                if not(found and _is_table_equals(actual[found], v)) then
+                if not found then
                     -- Either no matching key, or a different value
                     return false
                 end
