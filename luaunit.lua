@@ -388,13 +388,13 @@ local function prettystrPadded(value1, value2, suffix_a, suffix_b)
 end
 M.private.prettystrPadded = prettystrPadded
 
-local function _table_keytostring(k)
+local function _table_keytostring(k, indentLevel, keeponeline, printTableRefs, recursionTable)
     -- like prettystr but do not enclose with "" if the string is just alphanumerical
     -- this is better for displaying table keys who are often simple strings
     if "string" == type(k) and k:match("^[_%a][_%w]*$") then
         return k
     end
-    return prettystr(k)
+    return prettystr_sub(k, indentLevel, keeponeline, printTableRefs, recursionTable)
 end
 M.private._table_keytostring = _table_keytostring
 
@@ -419,7 +419,7 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
             recursionTable.recursionDetected = true
             entry = "<"..tostring(k)..">="
         else
-            entry = _table_keytostring( k ) .. "="
+            entry = _table_keytostring( k, indentLevel+1, true, printTableRefs, recursionTable ) .. "="
         end
         if recursionTable[v] then
             -- recursion in the value detected!

@@ -220,6 +220,9 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( lu.prettystr( { [{}] = 1 }), '{{}=1}' )
         lu.assertEquals( lu.prettystr( { 1, [{}] = 1, 2 }), '{1, 2, {}=1}' )
         lu.assertEquals( lu.prettystr( { 1, [{one=1}] = 1, 2, "test", false }), '{1, 2, "test", false, {one=1}=1}' )
+        lu.assertEquals( lu.prettystr( {["foo\nbar"] = 1}), [[{"foo\nbar"=1}]] )
+        lu.assertEquals( lu.prettystr( {["foo'bar"] = 2}), [[{"foo'bar"=2}]] )
+        lu.assertEquals( lu.prettystr( {['foo"bar'] = 3}), [[{'foo"bar'=3}]] )
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
@@ -334,6 +337,20 @@ TestLuaUnitUtilities = {} --class
         local t6 = {}
         t6[t6] = 1
         lu.assertStrMatches(lu.prettystr(t6), "<table: (0?x?[%x]+)> {<table: %1>=1}" )
+
+        local t7, t8 = {"t7"}, {"t8"}
+        t7[t8] = 1
+        t8[t7] = 2
+        lu.assertStrMatches(lu.prettystr(t7), '<table: (0?x?[%x]+)> {"t7", <table: (0?x?[%x]+)> {"t8", <table: %1>=2}=1}')
+
+        local t9 = {"t9", {}}
+        t9[{t9}] = 1
+        -- (table) addresses under 64bit are longer, making the resulting string not fit into default line length of 80, triggering multiline display
+        -- hack the line length temporarily
+        local config_LINE_LENGTH = lu.LINE_LENGTH
+        lu.LINE_LENGTH = 160
+        lu.assertStrMatches(lu.prettystr(t9), '<table: (0?x?[%x]+)> {"t9", <table: (0?x?[%x]+)> {}, <table: (0?x?[%x]+)> {<table: %1>}=1}')
+        lu.LINE_LENGTH = config_LINE_LENGTH
     end
 
     function TestLuaUnitUtilities:test_prettystrPadded()
