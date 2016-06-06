@@ -53,7 +53,7 @@ if [ "$LUAJIT" == "yes" ]; then
     perl -i -pe 's/INSTALL_TNAME=.+/INSTALL_TNAME= luajit/' Makefile
   fi
 
-  make && make install PREFIX="$LUA_HOME_DIR"
+  make PREFIX="$LUA_HOME_DIR" && make install PREFIX="$LUA_HOME_DIR"
 
   ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/luajit
   ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/lua;
