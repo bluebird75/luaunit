@@ -1976,9 +1976,10 @@ end
         -- expand all classes (provided as {className, classInstance}) to a list of {className.methodName, classInstance}
         -- functions and methods remain untouched
         local result = {}
+        local name, instance, className, methodName, methodInstance
 
         for i,v in ipairs( listOfNameAndInst ) do
-            local name, instance = v[1], v[2]
+            name, instance = v[1], v[2]
             if M.LuaUnit.asFunction(instance) then
                 table.insert( result, { name, instance } )
             else
@@ -2021,7 +2022,7 @@ end
         --   * { class name, class instance }
         --   * { class.method name, class instance }
 
-        local expandedList, filteredList, filteredOutList, className, methodName, methodInstance
+        local expandedList, filteredList, filteredOutList, className, methodName, methodInstance, name, instance
         expandedList = self.expandClasses( listOfNameAndInst )
 
         filteredList, filteredOutList = self.applyPatternFilter( self.patternFilter, expandedList )
@@ -2029,7 +2030,7 @@ end
         self:startSuite( #filteredList, #filteredOutList )
 
         for i,v in ipairs( filteredList ) do
-            local name, instance = v[1], v[2]
+            name, instance = v[1], v[2]
             if M.LuaUnit.asFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
             else
