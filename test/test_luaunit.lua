@@ -178,19 +178,80 @@ TestLuaUnitUtilities = {} --class
     function TestLuaUnitUtilities:test_is_table_equals()
         -- Make sure that _is_table_equals() doesn't fall for these traps
         -- (See https://github.com/bluebird75/luaunit/issues/48)
-        local A, B, C = {}, {}, {}
+        local A, B, C, D = {}, {}, {}, {}
 
+        -- (111;1) both are recurring in the same way, other fields are the same
         A.self = A
         B.self = B
-        lu.assertNotEquals(A, B)
         lu.assertEquals(A, A)
+        lu.assertEquals(A, B)
 
-        A, B = {}, {}
+        -- (111;0) both are recurring in the same way, other fields differ
+        A, B = {1}, {-1}
+        A.self = A
+        B.self = B
+        lu.assertEquals(A, A)
+        lu.assertNotEquals(A, B)
+
+        -- (10;1) only one (either actual or expected) is recurring, other fields are the same
+        A, B = {1}, {1}
+        A.ref = A
+        B.ref = B
+        C = {1, ref=B}
+        lu.assertEquals( A, A )
+        lu.assertEquals( B, B )
+        lu.assertEquals( C, C )
+        lu.assertEquals( A.ref, C.ref )
+        lu.assertEquals( C.ref, A.ref )
+        lu.assertNotEquals( A, C )
+        lu.assertNotEquals( C, A )
+
+        -- (10;0) only one (either actual or expected) is recurring, other fields differ
+        A, B = {1}, {-1}
+        A.ref = A
+        B.ref = B
+        C = {1, ref=B}
+        lu.assertEquals( A, A )
+        lu.assertEquals( B, B )
+        lu.assertEquals( C, C )
+        lu.assertNotEquals( A.ref, C.ref )
+        lu.assertNotEquals( C.ref, A.ref )
+        lu.assertNotEquals( A, C )
+        lu.assertNotEquals( C, A )
+
+        -- (110;1) both are recurring but are different from each other, other fields are the same
+        A, B, C, D = {1}, {1}, {1}, {1}
+        A.ref = B
+        B.ref = A
+        C.ref = D
+        D.ref = D
+        lu.assertEquals( A, A )
+        lu.assertEquals( B, B )
+        lu.assertEquals( C, C )
+        lu.assertEquals( D, D )
+        lu.assertNotEquals( A, C )
+        lu.assertNotEquals( C, A )
+
+        -- (110;0) both are recurring but are different from each other, other fields differ
+        A, B, C, D = {1}, {-1}, {1}, {-1}
+        A.ref = B
+        B.ref = A
+        C.ref = D
+        D.ref = D
+        lu.assertEquals( A, A )
+        lu.assertEquals( B, B )
+        lu.assertEquals( C, C )
+        lu.assertEquals( D, D )
+        lu.assertNotEquals( A, C )
+        lu.assertNotEquals( C, A )
+
+        A, B, C = {}, {}, {}
         A.circular = C
         B.circular = A
         C.circular = B
-        lu.assertNotEquals(A, B)
         lu.assertEquals(C, C)
+        lu.assertEquals(A, B)
+        lu.assertEquals(B, A)
 
         A = {}
         A[{}] = A

@@ -525,18 +525,21 @@ local function _table_copy(tbl)
     return newtbl
 end
 
-local function _is_table_equals(actual, expected, recursions)
+local function _is_table_equals(actual, expected, recursions_a, recursions_e)
     local type_a, type_e = type(actual), type(expected)
-    recursions = recursions or {}
+    recursions_a = recursions_a or {}
+    recursions_e = recursions_e or {}
 
-    if (type_a == 'table') and (type_e == 'table') and not recursions[actual] then
+    if (type_a == 'table') and (type_e == 'table') and not recursions_a[actual] and not recursions_e[expected] then
         -- Tables must have identical element count, or they can't match.
         if (#actual ~= #expected) then
             return false
         end
 
-        -- add "actual" to the recursions table, to detect and avoid loops
-        recursions[actual] = true
+        -- add "actual" and "expected" to the recursions tables, to detect and avoid loops
+        -- save current pairing, so it can be later decided whether both tables loop in the same way
+        recursions_a[actual] = expected
+        recursions_e[expected] = actual
 
         local actualKeysMatched, actualTableKeys = {}, {}
 
@@ -551,7 +554,7 @@ local function _is_table_equals(actual, expected, recursions)
                 if not actualTableKeys[count] then actualTableKeys[count] = {} end
                 table.insert(actualTableKeys[count], k)
             else
-                if not _is_table_equals(v, expected[k], recursions) then
+                if not _is_table_equals(v, expected[k], recursions_a, recursions_e) then
                     return false -- Mismatch on value, tables can't be equal
                 end
                 actualKeysMatched[k] = true -- Keep track of matched keys
@@ -563,19 +566,21 @@ local function _is_table_equals(actual, expected, recursions)
                 local candidates, found = actualTableKeys[#k], nil
                 if not candidates then return false end
                 for i, candidate in pairs(candidates) do
-                    -- use temporary recursions table for testing, revert to saved version if matching failed
-                    local recursions_temp = _table_copy(recursions)
-                    if _is_table_equals(candidate, k, recursions_temp) then
-                        if _is_table_equals(actual[candidate], v, recursions_temp) then
+                    -- use temporary recursions tables for testing, revert to saved versions if matching failed
+                    local recursions_temp_a = _table_copy(recursions_a)
+                    local recursions_temp_e = _table_copy(recursions_a)
+                    if _is_table_equals(candidate, k, recursions_temp_a, recursions_temp_e) then
+                        if _is_table_equals(actual[candidate], v, recursions_temp_a, recursions_temp_e) then
                             found = candidate
                             -- Remove the candidate we matched against from the list
                             -- of candidates, so each key in actual can only match
                             -- one key in expected.
                             candidates[i] = nil
-                            -- confirm new recursions table
-                            -- note: new table will be used for deeper levels, will not propagate back
-                            --   haven't found counter-example yet where this causes problems
-                            recursions = recursions_temp
+                            -- confirm new recursions tables
+                            -- note: new tables will be used for deeper levels, will not propagate back
+                            --   haven't found a counter-example yet where this causes problems
+                            recursions_a = recursions_temp_a
+                            recursions_e = recursions_temp_e
                             break
                         end
                         -- keys match but values don't, keep searching
@@ -612,6 +617,19 @@ local function _is_table_equals(actual, expected, recursions)
         return true
 
     elseif type_a ~= type_e then
+        return false
+
+    elseif recursions_a[actual] == expected then
+        -- tables loop in the same way, consider them equal
+        return true
+
+    elseif recursions_e[expected] == actual then
+        -- should not get here, recursions tables should be symmetric
+        print("\n\nactual=" .. prettystr(actual))
+        print("expected=" .. prettystr(expected))
+        print("recursions_a=" .. prettystr(recursions_a))
+        print("recursions_e=" .. prettystr(recursions_e))
+        error("Should not get here, please report.")
         return false
 
     elseif actual ~= expected then
