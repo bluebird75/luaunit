@@ -25,6 +25,7 @@ before_install:
 script: 
   - lua -v run_unit_tests.lua
   - lua run_functional_tests.lua
+  - lua run_static_tests.lua
 
 notifications:
   email:

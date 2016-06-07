@@ -1,5 +1,5 @@
 EXPORT_ASSERT_TO_GLOBALS = true
-lu = require('luaunit')
+local lu = require('luaunit')
 
 --[[
 Use Luaunit in the v2.1 fashion and check that it still works. 
@@ -37,7 +37,7 @@ function TestLuaUnitV2Compat:testWrapFunctionsAliases()
     assertEquals( lu.wrapFunctions, lu.wrap_functions )
 end
 
-function typeAsserter( goodType, badType, goodAsserter, badAsserter )
+local function typeAsserter( goodType, badType, goodAsserter, badAsserter )
     goodAsserter( goodType )
     badAsserter( badType )
 end
@@ -83,7 +83,7 @@ function TestLuaUnitV2Compat:testTableEquality()
 end
 
 -- Setup
-called = {}
+local called = {}
 
 function test_w1() called.w1 = true end
 function test_w2() called.w2 = true end
@@ -132,4 +132,3 @@ assert( called.tearDown == true )
 assert( called.TearDown == true )
 
 os.exit( results )
-

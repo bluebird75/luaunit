@@ -1,14 +1,14 @@
 #!/usr/bin/env lua
 
 require('os')
-lu = require('luaunit')
+local lu = require('luaunit')
 
 
-function report( ... )
+local function report( ... )
     print('>>>>>>>', string.format(...))
 end
 
-function error_fmt( ... )
+local function error_fmt( ... )
     error(string.format(...), 2) -- (level 2 = report chunk calling error_fmt)
 end
 
@@ -21,11 +21,11 @@ local LUA='"'..arg[-1]..'"'
 -- with a percent sign. Note: We DON'T expect embedded NUL chars, and thus
 -- won't escape those (%z) for Lua 5.1.
 local LUA_MAGIC_CHARS = "[%^%$%(%)%%%.%[%]%*%+%-%?]"
-function escape_lua_pattern(s)
+local function escape_lua_pattern(s)
     return s:gsub(LUA_MAGIC_CHARS, "%%%1") -- substitute with '%' + matched char
 end
 
-function string_sub(s, orig, repl)
+local function string_sub(s, orig, repl)
     -- replace occurrence of string orig by string repl
     -- just like string.gsub, but with no pattern matching
     return s:gsub( escape_lua_pattern(orig), repl )
@@ -36,7 +36,7 @@ function testStringSub()
     lu.assertEquals( string_sub('aa: ?cc', ': ?', 'xx?'), 'aaxx?cc' )
 end
 
-function osExec( ... )
+local function osExec( ... )
     -- execute a command with os.execute and return true if exit code is 0
     -- false in any other conditions
 
@@ -86,7 +86,7 @@ function osExec( ... )
     return true, exitCode
 end
 
-function osExpectedCodeExec( refExitCode, ... )
+local function osExpectedCodeExec( refExitCode, ... )
     local cmd = string.format(...)
     local ret, exitCode = osExec( cmd )
     if refExitCode and (exitCode ~= refExitCode) then
@@ -97,7 +97,7 @@ end
 
 local HAS_XMLLINT 
 do
-    xmllint_output_fname = 'test/has_xmllint.txt'
+    local xmllint_output_fname = 'test/has_xmllint.txt'
     HAS_XMLLINT = osExec('xmllint --version 2> '..xmllint_output_fname)
     if not HAS_XMLLINT then
         report('WARNING: xmllint absent, can not validate xml validity')
@@ -105,7 +105,7 @@ do
     os.remove(xmllint_output_fname)
 end
 
-function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
+local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
     --[[ Adjust the content of fileOut by copying lines matching pattern from fileIn
 
     fileIn lines are read and the first line matching pattern is analysed. The first pattern
@@ -168,7 +168,7 @@ function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
     f:close()
 end
 
-function check_tap_output( fileToRun, options, output, refOutput, refExitCode )
+local function check_tap_output( fileToRun, options, output, refOutput, refExitCode )
     -- remove output
     osExpectedCodeExec(refExitCode, '%s %s --output TAP %s > %s',
                        LUA, fileToRun, options, output)
@@ -186,7 +186,7 @@ function check_tap_output( fileToRun, options, output, refOutput, refExitCode )
 end
 
 
-function check_text_output( fileToRun, options, output, refOutput, refExitCode )
+local function check_text_output( fileToRun, options, output, refOutput, refExitCode )
     -- remove output
     osExpectedCodeExec(refExitCode, '%s %s --output text %s > %s',
                        LUA, fileToRun, options, output)
@@ -205,7 +205,7 @@ function check_text_output( fileToRun, options, output, refOutput, refExitCode )
     return 0
 end
 
-function check_nil_output( fileToRun, options, output, refOutput, refExitCode )
+local function check_nil_output( fileToRun, options, output, refOutput, refExitCode )
     -- remove output
     osExpectedCodeExec(refExitCode, '%s %s --output nil %s > %s',
                        LUA, fileToRun, options, output)
@@ -217,7 +217,7 @@ function check_nil_output( fileToRun, options, output, refOutput, refExitCode )
     return 0
 end
 
-function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput, refOutput, refXmlOutput, refExitCode )
+local function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput, refOutput, refXmlOutput, refExitCode )
     local retcode = 0
 
     -- remove output
@@ -537,29 +537,29 @@ function testStopOnError()
             'test/ref/errFailPassTextStopOnError-4.txt', -2 ) )
 end
 
-filesToGenerateExampleXml = {
+local filesToGenerateExampleXml = {
     { 'example_with_luaunit.lua', '', '--output junit --name test/ref/exampleXmlDefault.xml', 'test/ref/exampleXmlDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output junit --name test/ref/exampleXmlQuiet.xml', 'test/ref/exampleXmlQuiet.txt' },
     { 'example_with_luaunit.lua', '--verbose', '--output junit --name test/ref/exampleXmlVerbose.xml', 'test/ref/exampleXmlVerbose.txt' },
 }
 
-filesToGenerateExampleTap = {
+local filesToGenerateExampleTap = {
     { 'example_with_luaunit.lua', '', '--output tap', 'test/ref/exampleTapDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output tap', 'test/ref/exampleTapQuiet.txt' },
     { 'example_with_luaunit.lua', '--verbose', '--output tap', 'test/ref/exampleTapVerbose.txt' },
 }
 
-filesToGenerateExampleText = {
+local filesToGenerateExampleText = {
     { 'example_with_luaunit.lua', '', '--output text', 'test/ref/exampleTextDefault.txt' },
     { 'example_with_luaunit.lua', '--quiet', '--output text', 'test/ref/exampleTextQuiet.txt' },
     { 'example_with_luaunit.lua', '--verbose', '--output text', 'test/ref/exampleTextVerbose.txt' },
 }
 
-filesToGenerateExampleNil = {
+local filesToGenerateExampleNil = {
     { 'example_with_luaunit.lua', '', '--output nil', 'test/ref/exampleNilDefault.txt' },
 }
 
-filesToGenerateErrFailPassXml = {
+local filesToGenerateErrFailPassXml = {
     { 'test/test_with_err_fail_pass.lua', '', 
         '--output junit --name test/ref/errFailPassXmlDefault.xml', 
         'test/ref/errFailPassXmlDefault.txt' },
@@ -586,7 +586,7 @@ filesToGenerateErrFailPassXml = {
         'test/ref/errFailPassXmlVerbose-failures.txt' },
 }
 
-filesToGenerateErrFailPassTap = {
+local filesToGenerateErrFailPassTap = {
     { 'test/test_with_err_fail_pass.lua', '', '--output tap', 'test/ref/errFailPassTapDefault.txt' },
     { 'test/test_with_err_fail_pass.lua', '-p Succ', '--output tap', 'test/ref/errFailPassTapDefault-success.txt' },
     { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail', '--output tap', 'test/ref/errFailPassTapDefault-failures.txt' },
@@ -604,7 +604,7 @@ filesToGenerateErrFailPassTap = {
         '--output tap', 'test/ref/errFailPassTapVerbose-failures.txt' },
 }
 
-filesToGenerateErrFailPassText = {
+local filesToGenerateErrFailPassText = {
     { 'test/test_with_err_fail_pass.lua', '', '--output text', 'test/ref/errFailPassTextDefault.txt' },
     { 'test/test_with_err_fail_pass.lua', '-p Succ', '--output text', 'test/ref/errFailPassTextDefault-success.txt' },
     { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail', '--output text', 'test/ref/errFailPassTextDefault-failures.txt' },
@@ -620,13 +620,13 @@ filesToGenerateErrFailPassText = {
         '--output text', 'test/ref/errFailPassTextVerbose-failures.txt' },
 }
 
-filesToGenerateTestXml = {
+local filesToGenerateTestXml = {
     { 'test/test_with_xml.lua', '', '--output junit --name test/ref/testWithXmlDefault.xml', 'test/ref/testWithXmlDefault.txt' },
     { 'test/test_with_xml.lua', '--verbose', '--output junit --name test/ref/testWithXmlVerbose.xml', 'test/ref/testWithXmlVerbose.txt' },
     { 'test/test_with_xml.lua', '--quiet', '--output junit --name test/ref/testWithXmlQuiet.xml', 'test/ref/testWithXmlQuiet.txt' },
 }
 
-filesToGenerateStopOnError = {
+local filesToGenerateStopOnError = {
     { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p Succ --error --failure',
         'test/ref/errFailPassTextStopOnError-1.txt'},
     { 'test/test_with_err_fail_pass.lua', '', '--output text --quiet -p TestSome --error',
@@ -637,7 +637,7 @@ filesToGenerateStopOnError = {
         'test/ref/errFailPassTextStopOnError-4.txt'},
 }
 
-filesSetIndex = {
+local filesSetIndex = {
     ErrFailPassText=filesToGenerateErrFailPassText,
     ErrFailPassTap=filesToGenerateErrFailPassTap,
     ErrFailPassXml=filesToGenerateErrFailPassXml,
@@ -649,7 +649,7 @@ filesSetIndex = {
     StopOnError=filesToGenerateStopOnError,
 }
 
-function updateRefFiles( filesToGenerate )
+local function updateRefFiles( filesToGenerate )
     local ret
 
     for i,v in ipairs(filesToGenerate) do 
@@ -671,7 +671,7 @@ function updateRefFiles( filesToGenerate )
 end
 
 
-function main()
+local function main()
     if arg[1] == '--update' then
         if #arg == 1 then
             -- generate all files
@@ -683,7 +683,7 @@ function main()
         else
             -- generate subset of files
             for i = 2, #arg do
-                fileSet = filesSetIndex[ arg[i] ]
+                local fileSet = filesSetIndex[ arg[i] ]
                 if fileSet == nil then
                     local validTarget = ''
                     for k,v in pairs(filesSetIndex) do

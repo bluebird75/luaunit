@@ -1018,7 +1018,7 @@ local list_of_funcs = {
 
 -- Create all aliases in M
 for _,v in ipairs( list_of_funcs ) do
-    funcname, alias = v[1], v[2]
+    local funcname, alias = v[1], v[2]
     M[alias] = M[funcname]
 
     if EXPORT_ASSERT_TO_GLOBALS then
