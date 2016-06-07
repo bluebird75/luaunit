@@ -1,5 +1,5 @@
 
-lu = require('luaunit')
+local lu = require('luaunit')
 
 TestFailuresWithXml = {} --class
 

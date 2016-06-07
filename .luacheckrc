@@ -6,13 +6,6 @@ Thanks to Peter Melnichenko for providing an example file for LuaUnit.
 
 only = {"1"} -- limit checks to the use of global variables
 std = "max"
--- The files below are still problematic, exclude them for now
-exclude_files = {
-	"test/compat_luaunit_v2x.lua",
-	"test/legacy_example_with_luaunit.lua",
-	"test/test_with_err_fail_pass.lua",
-	"test/test_with_xml.lua"
-}
 
 files = {
     ["luaunit.lua"] = {
