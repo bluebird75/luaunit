@@ -8,7 +8,6 @@ only = {"1"} -- limit checks to the use of global variables
 std = "max"
 -- The files below are still problematic, exclude them for now
 exclude_files = {
-	"run_functional_tests.lua",
 	"test/compat_luaunit_v2x.lua",
 	"test/legacy_example_with_luaunit.lua",
 	"test/test_with_err_fail_pass.lua",
