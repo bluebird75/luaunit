@@ -20,7 +20,7 @@ local files_and_exceptions = {
                  "assertEquals", "assertNotEquals", "assertTrue", "assertFalse"}},
 
     { "run_unit_tests.lua" },
-    --{ "run_functional_tests.lua", allowed = {"test%w+"}},
+    { "run_functional_tests.lua", allowed = {"test%w+"}},
     { "run_static_tests.lua" },
 
     { "test/static_checks.lua" },
