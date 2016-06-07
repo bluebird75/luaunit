@@ -135,6 +135,6 @@ function test3()
     assert( 'a' == 'a')
 end
 
-lu = LuaUnit.new()
+local lu = LuaUnit.new()
 lu:setOutputType("tap")
 os.exit( lu:runSuite() )

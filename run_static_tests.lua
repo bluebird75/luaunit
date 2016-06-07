@@ -23,9 +23,16 @@ local files_and_exceptions = {
     { "run_functional_tests.lua", allowed = {"test%w+"}},
     { "run_static_tests.lua" },
 
+    { "test/compat_luaunit_v2x.lua",
+      allowed = {"EXPORT_ASSERT_TO_GLOBALS", "[Tt]est[%w_]+", "assert%w+"}},
+    { "test/legacy_example_with_luaunit.lua",
+      allowed = {"LuaUnit", "EXPORT_ASSERT_TO_GLOBALS", "[Tt]est[%w_]+",
+                 "assertEquals", "assertNotEquals", "assertTrue", "assertFalse"}},
     { "test/static_checks.lua" },
     { "test/test_luaunit.lua",
       allowed = {"TestMock", "TestLuaUnit%a+", "MyTest%w+"}},
+    { "test/test_with_err_fail_pass.lua", allowed = {"[Tt]est[%w_]+"}},
+    { "test/test_with_xml.lua", allowed = {"Test%w+"}},
 }
 
 local problems = 0
@@ -39,6 +46,4 @@ if problems == 0 then
     os.exit(0)
 end
 print(ANSI_RED .. problems .. " (potential) problems detected!" .. ANSI_RESET)
--- known problems exists, so DON'T report back a failure exit status for now
---os.exit(1)
-os.exit(0)
+os.exit(1)
