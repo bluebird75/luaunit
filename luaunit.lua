@@ -517,13 +517,26 @@ local function _is_table_items_equals(actual, expected )
     return true
 end
 
-local function _table_copy(tbl)
-    local newtbl = {}
-    for k, v in pairs(tbl) do
-        newtbl[k] = v
+-- copy contents of source table into destination table, retaining table reference if possible
+-- if destination table is nil create a new one, otherwise clear destination table first
+-- @param tblsrc table  source table
+-- @param tbldest table  destination table
+-- @return table  tbldest, if tbldest is not nil
+--                new table, if tbldest is nil
+local function _table_copy(tblsrc, tbldest)
+    local tblnew = tbldest or {}
+    if tbldest ~= nil then
+        -- clear destination first
+        for k, v in pairs(tbldest) do
+            tbldest[k] = nil
+        end
     end
-    return newtbl
+    for k, v in pairs(tblsrc) do
+        tblnew[k] = v
+    end
+    return tblnew
 end
+M.private._table_copy = _table_copy
 
 local function _is_table_equals(actual, expected, recursions_a, recursions_e)
     local type_a, type_e = type(actual), type(expected)
@@ -568,7 +581,7 @@ local function _is_table_equals(actual, expected, recursions_a, recursions_e)
                 for i, candidate in pairs(candidates) do
                     -- use temporary recursions tables for testing, revert to saved versions if matching failed
                     local recursions_temp_a = _table_copy(recursions_a)
-                    local recursions_temp_e = _table_copy(recursions_a)
+                    local recursions_temp_e = _table_copy(recursions_e)
                     if _is_table_equals(candidate, k, recursions_temp_a, recursions_temp_e) then
                         if _is_table_equals(actual[candidate], v, recursions_temp_a, recursions_temp_e) then
                             found = candidate
@@ -577,10 +590,8 @@ local function _is_table_equals(actual, expected, recursions_a, recursions_e)
                             -- one key in expected.
                             candidates[i] = nil
                             -- confirm new recursions tables
-                            -- note: new tables will be used for deeper levels, will not propagate back
-                            --   haven't found a counter-example yet where this causes problems
-                            recursions_a = recursions_temp_a
-                            recursions_e = recursions_temp_e
+                            _table_copy(recursions_temp_a, recursions_a)
+                            _table_copy(recursions_temp_e, recursions_e)
                             break
                         end
                         -- keys match but values don't, keep searching

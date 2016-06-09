@@ -175,6 +175,22 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( lu.private.prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
 
+    function TestLuaUnitUtilities:test_tablecopy()
+        local A = {1, "2", true, false, {}, {3}, [{4}]=5}
+        local B = lu.private._table_copy(A)
+        lu.assertItemsEquals(B, A)
+        lu.assertTrue(B ~= A)
+
+        B = {6, 7, "8", false, true, {}, {9}, [{10}]=11}
+        local C = B
+        lu.assertErrorMsgMatches(lu.FAILURE_PREFIX .. "Contents of the tables are not identical:.*", lu.assertItemsEquals, B, A)
+        local D = lu.private._table_copy(A, B)
+        lu.assertItemsEquals(B, A)
+        lu.assertTrue(B == C)
+        lu.assertTrue(D == C)
+        lu.assertTrue(D ~= A)
+    end
+
     function TestLuaUnitUtilities:test_is_table_equals()
         -- Make sure that _is_table_equals() doesn't fall for these traps
         -- (See https://github.com/bluebird75/luaunit/issues/48)
@@ -253,6 +269,9 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals(A, B)
         lu.assertEquals(B, A)
 
+        local config_TABLE_EQUALS_KEYBYCONTENT = lu.TABLE_EQUALS_KEYBYCONTENT
+        lu.TABLE_EQUALS_KEYBYCONTENT = true
+
         A = {}
         A[{}] = A
         lu.assertEquals( A, A )
@@ -260,6 +279,100 @@ TestLuaUnitUtilities = {} --class
         A = {}
         A[A] = 1
         lu.assertEquals( A, A )
+
+        do
+            -- (A.B ~ D.E, A.C ~ D.E) assign two recurring tables to one, first level; tables in values only
+            local B, C, E = {1}, {1}, {1}
+            B.self = B
+            C.self = C
+            E.self = E
+            local A = {-1, B, C}
+            local D = {-1, E, E}
+            lu.assertEquals(A, A)
+            lu.assertEquals(B, B)
+            lu.assertEquals(C, C)
+            lu.assertEquals(D, D)
+            lu.assertEquals(E, E)
+            lu.assertEquals(B, E); lu.assertEquals(A[2], D[2])
+            lu.assertEquals(E, B); lu.assertEquals(D[2], A[2])
+            lu.assertEquals(C, E); lu.assertEquals(A[3], D[3])
+            lu.assertEquals(E, C); lu.assertEquals(D[3], A[3])
+            lu.assertNotEquals(A, D)
+            lu.assertNotEquals(D, A)
+            -- tables in keys (needs TABLE_EQUALS_KEYBYCONTENT=true)
+            A[2] = nil; A[3] = nil; D[2] = nil; D[3] = nil
+            local t2b, t2e, t3c, t3e = {2}, {2}, {3}, {3}
+            A[t2b] = B; D[t2e] = E
+            A[t3c] = C; D[t3e] = E
+            lu.assertEquals(A, A)
+            lu.assertEquals(A[t2b], D[t2e])
+            lu.assertEquals(D[t2e], A[t2b])
+            lu.assertEquals(A[t3c], D[t3e])
+            lu.assertEquals(D[t3e], A[t3c])
+            lu.assertNotEquals(A, D)
+            lu.assertNotEquals(D, A)
+        end
+
+        do
+            -- (A.B.BB ~ D.E.EE, A.C.CC ~ D.F.EE) assign two recurring tables to one, second level; tables in values only
+            local B, C, E, F = {1}, {2}, {1}, {2}
+            local BB, CC, EE = {3}, {3}, {3}
+            local A = {-1, B, C}
+            local D = {-1, E, F}
+            B[2] = BB; C[2] = CC; E[2] = EE; F[2] = EE
+            BB[2] = BB; CC[2] = CC; EE[2] = EE
+            lu.assertEquals(A, A)
+            lu.assertEquals(B, B)
+            lu.assertEquals(C, C)
+            lu.assertEquals(D, D)
+            lu.assertEquals(E, E)
+            lu.assertEquals(F, F)
+            lu.assertEquals(BB, BB)
+            lu.assertEquals(CC, CC)
+            lu.assertEquals(EE, EE)
+            lu.assertEquals(B, E); lu.assertEquals(A[2], D[2])
+            lu.assertEquals(E, B); lu.assertEquals(D[2], A[2])
+            lu.assertEquals(C, F); lu.assertEquals(A[3], D[3])
+            lu.assertEquals(F, C); lu.assertEquals(D[3], A[3])
+            lu.assertEquals(BB, EE); lu.assertEquals(A[2][2], D[2][2])
+            lu.assertEquals(EE, BB); lu.assertEquals(D[2][2], A[2][2])
+            lu.assertEquals(CC, EE); lu.assertEquals(A[3][2], D[3][2])
+            lu.assertEquals(EE, CC); lu.assertEquals(D[3][2], A[3][2])
+            lu.assertNotEquals(A, D)
+            lu.assertNotEquals(D, A)
+            -- tables in keys (needs TABLE_EQUALS_KEYBYCONTENT=true)
+            A[2] = nil; A[3] = nil; D[2] = nil; D[3] = nil
+            local t2b, t2e, t3c, t3f = {2}, {2}, {3}, {3}
+            A[t2b] = B; D[t2e] = E
+            A[t3c] = C; D[t3f] = F
+            B[2] = nil; C[2] = nil; E[2] = nil; F[2] = nil
+            local t2bb, t2cc, t2ee, t2ee_ = {2}, {2}, {2}, {2}
+            B[t2bb] = BB; E[t2ee] = EE
+            C[t2cc] = CC; F[t2ee_] = EE
+            local t2x, t2y, t2z = {2}, {2}, {2}
+            BB[t2x] = BB; CC[t2y] = CC; EE[t2z] = EE
+            lu.assertEquals(A, A)
+            lu.assertEquals(B, B)
+            lu.assertEquals(C, C)
+            lu.assertEquals(D, D)
+            lu.assertEquals(E, E)
+            lu.assertEquals(F, F)
+            lu.assertEquals(BB, BB)
+            lu.assertEquals(CC, CC)
+            lu.assertEquals(EE, EE)
+            lu.assertEquals(B, E); lu.assertEquals(A[t2b], D[t2e])
+            lu.assertEquals(E, B); lu.assertEquals(D[t2e], A[t2b])
+            lu.assertEquals(C, F); lu.assertEquals(A[t3c], D[t3f])
+            lu.assertEquals(F, C); lu.assertEquals(D[t3f], A[t3c])
+            lu.assertEquals(BB, EE); lu.assertEquals(A[t2b][t2bb], D[t2e][t2ee])
+            lu.assertEquals(EE, BB); lu.assertEquals(D[t2e][t2ee], A[t2b][t2bb])
+            lu.assertEquals(CC, EE); lu.assertEquals(A[t3c][t2cc], D[t3f][t2ee_])
+            lu.assertEquals(EE, CC); lu.assertEquals(D[t3f][t2ee_], A[t3c][t2cc])
+            lu.assertNotEquals(A, D)
+            lu.assertNotEquals(D, A)
+        end
+
+        lu.TABLE_EQUALS_KEYBYCONTENT = config_TABLE_EQUALS_KEYBYCONTENT
     end
 
     function TestLuaUnitUtilities:test_table_keytostring()
