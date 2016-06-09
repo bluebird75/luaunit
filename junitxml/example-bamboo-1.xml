@@ -4,7 +4,6 @@
     <properties>
         <property value="Java(TM) 2 Runtime Environment, Standard Edition" name="java.runtime.name"/>
         <property value="UnicodeBig" name="sun.io.unicode.encoding"/>
-    .............
     </properties>
     <testcase time="0.001" name="testGeneratesCorrectP4CommandLine"/>
     <testcase time="0" name="testGettersReturnExpectedStuff"/>

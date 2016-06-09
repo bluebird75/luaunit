@@ -1,4 +1,4 @@
-?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <testsuite errors="0" skipped="0" tests="1" time="0.045" failures="0" name="com.atlassian.bamboo.labels.LabelManagerImplTest">
   <properties>
     <property value="Java(TM) 2 Runtime Environment, Standard Edition" name="java.runtime.name"/>
