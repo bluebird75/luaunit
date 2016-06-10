@@ -66,6 +66,21 @@ Options:
 --
 ----------------------------------------------------------------
 
+local function pcall_or_abort(func, ...)
+    local result = {pcall(func, ...)}
+    if not result[1] then
+        -- an error occurred
+        print(result[2]) -- error message
+        print()
+        print(M.USAGE)
+        os.exit(-1)
+    end
+    if _VERSION == "Lua 5.1" then
+        return unpack(result, 2) -- unpack is a global function for Lua 5.1
+    end
+    return table.unpack(result, 2)
+end
+
 local crossTypeOrdering = {
     number = 1,
     boolean = 2,
@@ -2149,15 +2164,7 @@ end
             args = cmdline_argv
         end
 
-        local no_error, val = pcall( M.LuaUnit.parseCmdLine, args )
-        if not no_error then
-            print(val) -- error message
-            print()
-            print(M.USAGE)
-            os.exit(-1)
-        end
-
-        local options = val
+        local options = pcall_or_abort( M.LuaUnit.parseCmdLine, args )
 
         -- We expect these option fields to be either `nil` or contain
         -- valid values, so it's safe to always copy them directly.
@@ -2167,19 +2174,12 @@ end
         self.fname         = options.fname
         self.patternFilter = options.pattern
 
-        if options.output and options.output:lower() == 'junit' and options.fname == nil then
-            print('With junit output, a filename must be supplied with -n or --name')
-            os.exit(-1)
-        end
-
         if options.output then
-            no_error, val = pcall(self.setOutputType, self, options.output)
-            if not no_error then
-                print(val) -- error message
-                print()
-                print(M.USAGE)
+            if options.output:lower() == 'junit' and options.fname == nil then
+                print('With junit output, a filename must be supplied with -n or --name')
                 os.exit(-1)
             end
+            pcall_or_abort(self.setOutputType, self, options.output)
         end
 
         self:runSuiteByNames( options.testNames or M.LuaUnit.collectTests() )
