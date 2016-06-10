@@ -430,15 +430,10 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertNil( lu.LuaUnit.asFunction( "not a function" ) )
     end
 
-    function TestLuaUnitUtilities:test_IsClassMethod()
-        lu.assertEquals( lu.LuaUnit.isClassMethod( 'toto' ), false )
-        lu.assertEquals( lu.LuaUnit.isClassMethod( 'toto.titi' ), true )
-    end
-
     function TestLuaUnitUtilities:test_splitClassMethod()
         lu.assertEquals( lu.LuaUnit.splitClassMethod( 'toto' ), nil )
-        local v1, v2 = lu.LuaUnit.splitClassMethod( 'toto.titi' )
-        lu.assertEquals( {v1, v2}, {'toto', 'titi'} )
+        lu.assertEquals( {lu.LuaUnit.splitClassMethod( 'toto.titi' )},
+                         {'toto', 'titi'} )
     end
 
     function TestLuaUnitUtilities:test_isTestName()
