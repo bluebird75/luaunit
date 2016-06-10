@@ -129,6 +129,7 @@ local function sortedNext(state, control)
     --print("sortedNext: control = "..tostring(control) )
     if control == nil then
         -- start of iteration
+        state.count = #state.sortedIdx
         state.lastIdx = 1
         key = state.sortedIdx[1]
         return key, state.t[key]
@@ -138,8 +139,7 @@ local function sortedNext(state, control)
     if control ~= state.sortedIdx[state.lastIdx] then
         -- strange, we have to find the next value by ourselves
         -- the key table is sorted in crossTypeSort() order! -> use bisection
-        local count = #state.sortedIdx
-        local lower, upper = 1, count
+        local lower, upper = 1, state.count
         repeat
             state.lastIdx = math.modf((lower + upper) / 2)
             key = state.sortedIdx[state.lastIdx]
@@ -153,7 +153,7 @@ local function sortedNext(state, control)
             end
         until lower > upper
         if lower > upper then -- only true if the key wasn't found, ...
-            state.lastIdx = count -- ... so ensure no match for the code below
+            state.lastIdx = state.count -- ... so ensure no match in code below
         end
     end
 
