@@ -161,10 +161,10 @@ end
 M.private.sortedPairs = sortedPairs
 
 local function strsplit(delimiter, text)
--- Split text into a list consisting of the strings in text,
--- separated by strings matching delimiter (which may be a pattern).
--- example: strsplit(",%s*", "Anna, Bob, Charlie,Dolores")
-    if string.find("", delimiter, 1, true) then -- this would result in endless loops
+-- Split text into a list consisting of the strings in text, separated
+-- by strings matching delimiter (which may _NOT_ be a pattern).
+-- Example: strsplit(", ", "Anna, Bob, Charlie, Dolores")
+    if delimiter == "" then -- this would result in endless loops
         error("delimiter matches empty string!")
     end
     local list, pos, first, last = {}, 1
@@ -190,7 +190,7 @@ M.private.hasNewLine = hasNewLine
 
 local function prefixString( prefix, s )
     -- Prefix all the lines of s with prefix
-    return prefix .. table.concat(strsplit('\n', s), '\n' .. prefix)
+    return prefix .. string.gsub(s, '\n', '\n' .. prefix)
 end
 M.private.prefixString = prefixString
 

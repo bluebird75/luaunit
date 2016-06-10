@@ -57,10 +57,7 @@ TestMock = {}
 --
 ------------------------------------------------------------------
 
-TestLuaUnitUtilities = {} --class
-
-    TestLuaUnitUtilities.__class__ = 'TestLuaUnitUtilities'
-
+TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
     function TestLuaUnitUtilities:test_genSortedIndex()
         lu.assertEquals( lu.private.__genSortedIndex( { 2, 5, 7} ), {1,2,3} )
@@ -671,9 +668,7 @@ local function assertBadMethodNil( ... )
     lu.assertErrorMsgMatches( ".* attempt to call .*a nil value.*", ... )
 end
 
-TestLuaUnitAssertions = {} --class
-
-    TestLuaUnitAssertions.__class__ = 'TestLuaUnitAssertions'
+TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
     function TestLuaUnitAssertions:test_assertEquals()
         local f = function() return true end
@@ -1384,8 +1379,7 @@ TestLuaUnitAssertionsError = {}
 --
 ------------------------------------------------------------------
 
-TestLuaUnitErrorMsg = {} --class
-    TestLuaUnitErrorMsg.__class__ = 'TestLuaUnitErrorMsg'
+TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:setUp()
         self.old_ORDER_ACTUAL_EXPECTED = lu.ORDER_ACTUAL_EXPECTED
@@ -1643,9 +1637,7 @@ function MyTestFunction()
     table.insert( executedTests, "MyTestFunction" ) 
 end
 
-TestLuaUnitExecution = {} --class
-
-    TestLuaUnitExecution.__class__ = 'TestLuaUnitExecution'
+TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
     function TestLuaUnitExecution:tearDown()
         executedTests = {}
@@ -2272,9 +2264,7 @@ TestLuaUnitExecution = {} --class
 --
 ------------------------------------------------------------------
 
-TestLuaUnitResults = {} -- class
-
-    TestLuaUnitResults.__class__ = 'TestLuaUnitResults'
+TestLuaUnitResults = { __class__ = 'TestLuaUnitResults' }
 
     function TestLuaUnitResults:tearDown()
         executedTests = {}
