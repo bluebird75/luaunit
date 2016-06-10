@@ -219,8 +219,8 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( C, C )
         lu.assertEquals( A.ref, C.ref )
         lu.assertEquals( C.ref, A.ref )
-        lu.assertNotEquals( A, C )
-        lu.assertNotEquals( C, A )
+        lu.assertEquals( A, C )
+        lu.assertEquals( C, A )
 
         -- (10;0) only one (either actual or expected) is recurring, other fields differ
         A, B = {1}, {-1}
@@ -245,21 +245,37 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( B, B )
         lu.assertEquals( C, C )
         lu.assertEquals( D, D )
-        lu.assertNotEquals( A, C )
-        lu.assertNotEquals( C, A )
+        lu.assertEquals( A, C )
+        lu.assertEquals( C, A )
 
-        -- (110;0) both are recurring but are different from each other, other fields differ
-        A, B, C, D = {1}, {-1}, {1}, {-1}
-        A.ref = B
-        B.ref = A
-        C.ref = D
-        D.ref = D
-        lu.assertEquals( A, A )
-        lu.assertEquals( B, B )
-        lu.assertEquals( C, C )
-        lu.assertEquals( D, D )
-        lu.assertNotEquals( A, C )
-        lu.assertNotEquals( C, A )
+        local config_TABLE_EQUALS_KEYBYCONTENT = lu.TABLE_EQUALS_KEYBYCONTENT
+        lu.TABLE_EQUALS_KEYBYCONTENT = true
+
+        do
+            -- (110;0) both are recurring but are different from each other, other fields differ; tables in values only
+            local A, B, C, D = {1}, {-1}, {1}, {-1}
+            A.ref = B
+            B.ref = A
+            C.ref = D
+            D.ref = D
+            lu.assertEquals( A, A )
+            lu.assertEquals( B, B )
+            lu.assertEquals( C, C )
+            lu.assertEquals( D, D )
+            lu.assertNotEquals( A, C )
+            lu.assertNotEquals( C, A )
+            -- tables in keys (needs TABLE_EQUALS_KEYBYCONTENT=true)
+            A, B, C, D = {1}, {-1}, {1}, {-1}
+            local t2a, t2b, t2c, t2d = {2}, {2}, {2}, {2}
+            A[t2a] = B; B[t2b] = A
+            C[t2c] = D; D[t2d] = D
+            lu.assertEquals( A, A )
+            lu.assertEquals( B, B )
+            lu.assertEquals( C, C )
+            lu.assertEquals( D, D )
+            lu.assertNotEquals( A, C )
+            lu.assertNotEquals( C, A )
+        end
 
         A, B, C = {}, {}, {}
         A.circular = C
@@ -268,9 +284,6 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals(C, C)
         lu.assertEquals(A, B)
         lu.assertEquals(B, A)
-
-        local config_TABLE_EQUALS_KEYBYCONTENT = lu.TABLE_EQUALS_KEYBYCONTENT
-        lu.TABLE_EQUALS_KEYBYCONTENT = true
 
         A = {}
         A[{}] = A
@@ -297,8 +310,8 @@ TestLuaUnitUtilities = {} --class
             lu.assertEquals(E, B); lu.assertEquals(D[2], A[2])
             lu.assertEquals(C, E); lu.assertEquals(A[3], D[3])
             lu.assertEquals(E, C); lu.assertEquals(D[3], A[3])
-            lu.assertNotEquals(A, D)
-            lu.assertNotEquals(D, A)
+            lu.assertEquals(A, D)
+            lu.assertEquals(D, A)
             -- tables in keys (needs TABLE_EQUALS_KEYBYCONTENT=true)
             A[2] = nil; A[3] = nil; D[2] = nil; D[3] = nil
             local t2b, t2e, t3c, t3e = {2}, {2}, {3}, {3}
@@ -309,8 +322,8 @@ TestLuaUnitUtilities = {} --class
             lu.assertEquals(D[t2e], A[t2b])
             lu.assertEquals(A[t3c], D[t3e])
             lu.assertEquals(D[t3e], A[t3c])
-            lu.assertNotEquals(A, D)
-            lu.assertNotEquals(D, A)
+            lu.assertEquals(A, D)
+            lu.assertEquals(D, A)
         end
 
         do
@@ -338,8 +351,8 @@ TestLuaUnitUtilities = {} --class
             lu.assertEquals(EE, BB); lu.assertEquals(D[2][2], A[2][2])
             lu.assertEquals(CC, EE); lu.assertEquals(A[3][2], D[3][2])
             lu.assertEquals(EE, CC); lu.assertEquals(D[3][2], A[3][2])
-            lu.assertNotEquals(A, D)
-            lu.assertNotEquals(D, A)
+            lu.assertEquals(A, D)
+            lu.assertEquals(D, A)
             -- tables in keys (needs TABLE_EQUALS_KEYBYCONTENT=true)
             A[2] = nil; A[3] = nil; D[2] = nil; D[3] = nil
             local t2b, t2e, t3c, t3f = {2}, {2}, {3}, {3}
@@ -368,8 +381,8 @@ TestLuaUnitUtilities = {} --class
             lu.assertEquals(EE, BB); lu.assertEquals(D[t2e][t2ee], A[t2b][t2bb])
             lu.assertEquals(CC, EE); lu.assertEquals(A[t3c][t2cc], D[t3f][t2ee_])
             lu.assertEquals(EE, CC); lu.assertEquals(D[t3f][t2ee_], A[t3c][t2cc])
-            lu.assertNotEquals(A, D)
-            lu.assertNotEquals(D, A)
+            lu.assertEquals(A, D)
+            lu.assertEquals(D, A)
         end
 
         lu.TABLE_EQUALS_KEYBYCONTENT = config_TABLE_EQUALS_KEYBYCONTENT

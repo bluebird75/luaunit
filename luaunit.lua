@@ -543,7 +543,28 @@ local function _is_table_equals(actual, expected, recursions_a, recursions_e)
     recursions_a = recursions_a or {}
     recursions_e = recursions_e or {}
 
-    if (type_a == 'table') and (type_e == 'table') and not recursions_a[actual] and not recursions_e[expected] then
+    if type_a == type_e and actual == expected then
+        return true
+
+    elseif recursions_a[actual] ~= nil and recursions_a[actual][expected] then
+        -- the pair was already visited, consider them equal
+        --  that is, the pair has already been confirmed equal (and we return the same)
+        --  or we are in the process of deciding it and found a loop (return true so the process can continue)
+        return true
+
+    elseif recursions_e[expected] ~= nil and recursions_e[expected][actual] then
+        -- should not get here, recursions tables should be symmetric
+        print("\n\nactual=" .. prettystr(actual))
+        print("expected=" .. prettystr(expected))
+        print("recursions_a=" .. prettystr(recursions_a))
+        print("recursions_e=" .. prettystr(recursions_e))
+        error("Should not get here, please report.")
+        return false
+
+    elseif (type_a == 'table') and (type_e == 'table') and
+        (not recursions_a[actual] or not recursions_a[actual][expected]) and
+        (not recursions_e[expected] or not recursions_e[expected][actual])
+    then
         -- Tables must have identical element count, or they can't match.
         if (#actual ~= #expected) then
             return false
@@ -551,8 +572,10 @@ local function _is_table_equals(actual, expected, recursions_a, recursions_e)
 
         -- add "actual" and "expected" to the recursions tables, to detect and avoid loops
         -- save current pairing, so it can be later decided whether both tables loop in the same way
-        recursions_a[actual] = expected
-        recursions_e[expected] = actual
+        recursions_a[actual] = recursions_a[actual] or {}
+        recursions_a[actual][expected] = true
+        recursions_e[expected] = recursions_e[expected] or {}
+        recursions_e[expected][actual] = true
 
         local actualKeysMatched, actualTableKeys = {}, {}
 
@@ -626,28 +649,10 @@ local function _is_table_equals(actual, expected, recursions_a, recursions_e)
         end
 
         return true
-
-    elseif type_a ~= type_e then
-        return false
-
-    elseif recursions_a[actual] == expected then
-        -- tables loop in the same way, consider them equal
-        return true
-
-    elseif recursions_e[expected] == actual then
-        -- should not get here, recursions tables should be symmetric
-        print("\n\nactual=" .. prettystr(actual))
-        print("expected=" .. prettystr(expected))
-        print("recursions_a=" .. prettystr(recursions_a))
-        print("recursions_e=" .. prettystr(recursions_e))
-        error("Should not get here, please report.")
-        return false
-
-    elseif actual ~= expected then
-        return false
     end
 
-    return true
+    -- type_a ~= type_e or actual ~= expected
+    return false
 end
 M.private._is_table_equals = _is_table_equals
 
