@@ -1976,10 +1976,9 @@ end
         -- expand all classes (provided as {className, classInstance}) to a list of {className.methodName, classInstance}
         -- functions and methods remain untouched
         local result = {}
-        local name, instance, className, methodName, methodInstance
 
         for i,v in ipairs( listOfNameAndInst ) do
-            name, instance = v[1], v[2]
+            local name, instance = v[1], v[2]
             if M.LuaUnit.asFunction(instance) then
                 table.insert( result, { name, instance } )
             else
@@ -1987,8 +1986,8 @@ end
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 end
                 if M.LuaUnit.isClassMethod( name ) then
-                    className, methodName = M.LuaUnit.splitClassMethod( name )
-                    methodInstance = instance[methodName]
+                    local className, methodName = M.LuaUnit.splitClassMethod( name )
+                    local methodInstance = instance[methodName]
                     if methodInstance == nil then
                         error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
                     end
@@ -2022,15 +2021,14 @@ end
         --   * { class name, class instance }
         --   * { class.method name, class instance }
 
-        local expandedList, filteredList, filteredOutList, className, methodName, methodInstance, name, instance
-        expandedList = self.expandClasses( listOfNameAndInst )
-
-        filteredList, filteredOutList = self.applyPatternFilter( self.patternFilter, expandedList )
+        local expandedList = self.expandClasses( listOfNameAndInst )
+        local filteredList, filteredOutList
+            = self.applyPatternFilter( self.patternFilter, expandedList )
 
         self:startSuite( #filteredList, #filteredOutList )
 
         for i,v in ipairs( filteredList ) do
-            name, instance = v[1], v[2]
+            local name, instance = v[1], v[2]
             if M.LuaUnit.asFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
             else
@@ -2038,8 +2036,8 @@ end
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 else
                     assert( M.LuaUnit.isClassMethod( name ) )
-                    className, methodName = M.LuaUnit.splitClassMethod( name )
-                    methodInstance = instance[methodName]
+                    local className, methodName = M.LuaUnit.splitClassMethod( name )
+                    local methodInstance = instance[methodName]
                     if methodInstance == nil then
                         error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
                     end
@@ -2064,12 +2062,12 @@ end
     function M.LuaUnit:runSuiteByNames( listOfName )
         -- Run an explicit list of test names
 
-        local  className, methodName, instanceName, instance, methodInstance
+        local instanceName, instance
         local listOfNameAndInst = {}
 
         for i,name in ipairs( listOfName ) do
             if M.LuaUnit.isClassMethod( name ) then
-                className, methodName = M.LuaUnit.splitClassMethod( name )
+                local className, methodName = M.LuaUnit.splitClassMethod( name )
                 instanceName = className
                 instance = _G[instanceName]
 
@@ -2081,7 +2079,7 @@ end
                     error( 'Instance of '..instanceName..' must be a table, not '..type(instance))
                 end
 
-                methodInstance = instance[methodName]
+                local methodInstance = instance[methodName]
                 if methodInstance == nil then
                     error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
                 end
