@@ -175,22 +175,232 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( lu.private.prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
 
+    local function _is_table_equals_simple(actual, expected)
+        for k, v in pairs(actual) do
+            if v ~= expected[k] then
+                return false
+            end
+        end
+        for k, v in pairs(expected) do
+            if v ~= actual[k] then
+                return false
+            end
+        end
+        return true
+    end
+
+    function TestLuaUnitUtilities:test_tablecopy()
+        local A = {1, "2", true, false, {}, {3}, [{4}]=5}
+        local B = lu.private._table_copy(A)
+        -- assertItemsEquals ignores keys, assertEquals compares tables by contents, not by reference
+        lu.assertTrue(_is_table_equals_simple(B, A))
+        lu.assertTrue(B ~= A)
+
+        B = {6, 7, "8", false, true, {}, {9}, [{10}]=11}
+        local C = B
+        lu.assertFalse(_is_table_equals_simple(B, A))
+        local D = lu.private._table_copy(A, B)
+        lu.assertTrue(_is_table_equals_simple(B, A))
+        lu.assertTrue(B == C)
+        lu.assertTrue(D == C)
+        lu.assertTrue(D ~= A)
+    end
+
     function TestLuaUnitUtilities:test_is_table_equals()
         -- Make sure that _is_table_equals() doesn't fall for these traps
         -- (See https://github.com/bluebird75/luaunit/issues/48)
-        local A, B, C = {}, {}, {}
+        local A, B, C, D = {}, {}, {}, {}
 
+        -- (111;1) both are recurring in the same way, other fields are the same
         A.self = A
         B.self = B
-        lu.assertNotEquals(A, B)
         lu.assertEquals(A, A)
+        lu.assertEquals(A, B)
 
-        A, B = {}, {}
+        -- (111;0) both are recurring in the same way, other fields differ
+        A, B = {1}, {-1}
+        A.self = A
+        B.self = B
+        lu.assertEquals(A, A)
+        lu.assertNotEquals(A, B)
+
+        -- (10;1) only one (either actual or expected) is recurring, other fields are the same
+        A, B = {1}, {1}
+        A.ref = A
+        B.ref = B
+        C = {1, ref=B}
+        lu.assertEquals( A, A )
+        lu.assertEquals( B, B )
+        lu.assertEquals( C, C )
+        lu.assertEquals( A.ref, C.ref )
+        lu.assertEquals( C.ref, A.ref )
+        lu.assertEquals( A, C )
+        lu.assertEquals( C, A )
+
+        -- (10;0) only one (either actual or expected) is recurring, other fields differ
+        A, B = {1}, {-1}
+        A.ref = A
+        B.ref = B
+        C = {1, ref=B}
+        lu.assertEquals( A, A )
+        lu.assertEquals( B, B )
+        lu.assertEquals( C, C )
+        lu.assertNotEquals( A.ref, C.ref )
+        lu.assertNotEquals( C.ref, A.ref )
+        lu.assertNotEquals( A, C )
+        lu.assertNotEquals( C, A )
+
+        -- (110;1) both are recurring but are different from each other, other fields are the same
+        A, B, C, D = {1}, {1}, {1}, {1}
+        A.ref = B
+        B.ref = A
+        C.ref = D
+        D.ref = D
+        lu.assertEquals( A, A )
+        lu.assertEquals( B, B )
+        lu.assertEquals( C, C )
+        lu.assertEquals( D, D )
+        lu.assertEquals( A, C )
+        lu.assertEquals( C, A )
+
+        local config_TABLE_EQUALS_KEYBYCONTENT = lu.TABLE_EQUALS_KEYBYCONTENT
+        lu.TABLE_EQUALS_KEYBYCONTENT = true
+
+        do
+            -- (110;0) both are recurring but are different from each other, other fields differ; tables in values only
+            local A, B, C, D = {1}, {-1}, {1}, {-1}
+            A.ref = B
+            B.ref = A
+            C.ref = D
+            D.ref = D
+            lu.assertEquals( A, A )
+            lu.assertEquals( B, B )
+            lu.assertEquals( C, C )
+            lu.assertEquals( D, D )
+            lu.assertNotEquals( A, C )
+            lu.assertNotEquals( C, A )
+            -- tables in keys (needs TABLE_EQUALS_KEYBYCONTENT=true)
+            A, B, C, D = {1}, {-1}, {1}, {-1}
+            local t2a, t2b, t2c, t2d = {2}, {2}, {2}, {2}
+            A[t2a] = B; B[t2b] = A
+            C[t2c] = D; D[t2d] = D
+            lu.assertEquals( A, A )
+            lu.assertEquals( B, B )
+            lu.assertEquals( C, C )
+            lu.assertEquals( D, D )
+            lu.assertNotEquals( A, C )
+            lu.assertNotEquals( C, A )
+        end
+
+        A, B, C = {}, {}, {}
         A.circular = C
         B.circular = A
         C.circular = B
-        lu.assertNotEquals(A, B)
         lu.assertEquals(C, C)
+        lu.assertEquals(A, B)
+        lu.assertEquals(B, A)
+
+        A = {}
+        A[{}] = A
+        lu.assertEquals( A, A )
+
+        A = {}
+        A[A] = 1
+        lu.assertEquals( A, A )
+
+        do
+            -- (A.B ~ D.E, A.C ~ D.E) assign two recurring tables to one, first level; tables in values only
+            local B, C, E = {1}, {1}, {1}
+            B.self = B
+            C.self = C
+            E.self = E
+            local A = {-1, B, C}
+            local D = {-1, E, E}
+            lu.assertEquals(A, A)
+            lu.assertEquals(B, B)
+            lu.assertEquals(C, C)
+            lu.assertEquals(D, D)
+            lu.assertEquals(E, E)
+            lu.assertEquals(B, E); lu.assertEquals(A[2], D[2])
+            lu.assertEquals(E, B); lu.assertEquals(D[2], A[2])
+            lu.assertEquals(C, E); lu.assertEquals(A[3], D[3])
+            lu.assertEquals(E, C); lu.assertEquals(D[3], A[3])
+            lu.assertEquals(A, D)
+            lu.assertEquals(D, A)
+            -- tables in keys (needs TABLE_EQUALS_KEYBYCONTENT=true)
+            A[2] = nil; A[3] = nil; D[2] = nil; D[3] = nil
+            local t2b, t2e, t3c, t3e = {2}, {2}, {3}, {3}
+            A[t2b] = B; D[t2e] = E
+            A[t3c] = C; D[t3e] = E
+            lu.assertEquals(A, A)
+            lu.assertEquals(A[t2b], D[t2e])
+            lu.assertEquals(D[t2e], A[t2b])
+            lu.assertEquals(A[t3c], D[t3e])
+            lu.assertEquals(D[t3e], A[t3c])
+            lu.assertEquals(A, D)
+            lu.assertEquals(D, A)
+        end
+
+        do
+            -- (A.B.BB ~ D.E.EE, A.C.CC ~ D.F.EE) assign two recurring tables to one, second level; tables in values only
+            local B, C, E, F = {1}, {2}, {1}, {2}
+            local BB, CC, EE = {3}, {3}, {3}
+            local A = {-1, B, C}
+            local D = {-1, E, F}
+            B[2] = BB; C[2] = CC; E[2] = EE; F[2] = EE
+            BB[2] = BB; CC[2] = CC; EE[2] = EE
+            lu.assertEquals(A, A)
+            lu.assertEquals(B, B)
+            lu.assertEquals(C, C)
+            lu.assertEquals(D, D)
+            lu.assertEquals(E, E)
+            lu.assertEquals(F, F)
+            lu.assertEquals(BB, BB)
+            lu.assertEquals(CC, CC)
+            lu.assertEquals(EE, EE)
+            lu.assertEquals(B, E); lu.assertEquals(A[2], D[2])
+            lu.assertEquals(E, B); lu.assertEquals(D[2], A[2])
+            lu.assertEquals(C, F); lu.assertEquals(A[3], D[3])
+            lu.assertEquals(F, C); lu.assertEquals(D[3], A[3])
+            lu.assertEquals(BB, EE); lu.assertEquals(A[2][2], D[2][2])
+            lu.assertEquals(EE, BB); lu.assertEquals(D[2][2], A[2][2])
+            lu.assertEquals(CC, EE); lu.assertEquals(A[3][2], D[3][2])
+            lu.assertEquals(EE, CC); lu.assertEquals(D[3][2], A[3][2])
+            lu.assertEquals(A, D)
+            lu.assertEquals(D, A)
+            -- tables in keys (needs TABLE_EQUALS_KEYBYCONTENT=true)
+            A[2] = nil; A[3] = nil; D[2] = nil; D[3] = nil
+            local t2b, t2e, t3c, t3f = {2}, {2}, {3}, {3}
+            A[t2b] = B; D[t2e] = E
+            A[t3c] = C; D[t3f] = F
+            B[2] = nil; C[2] = nil; E[2] = nil; F[2] = nil
+            local t2bb, t2cc, t2ee, t2ee_ = {2}, {2}, {2}, {2}
+            B[t2bb] = BB; E[t2ee] = EE
+            C[t2cc] = CC; F[t2ee_] = EE
+            local t2x, t2y, t2z = {2}, {2}, {2}
+            BB[t2x] = BB; CC[t2y] = CC; EE[t2z] = EE
+            lu.assertEquals(A, A)
+            lu.assertEquals(B, B)
+            lu.assertEquals(C, C)
+            lu.assertEquals(D, D)
+            lu.assertEquals(E, E)
+            lu.assertEquals(F, F)
+            lu.assertEquals(BB, BB)
+            lu.assertEquals(CC, CC)
+            lu.assertEquals(EE, EE)
+            lu.assertEquals(B, E); lu.assertEquals(A[t2b], D[t2e])
+            lu.assertEquals(E, B); lu.assertEquals(D[t2e], A[t2b])
+            lu.assertEquals(C, F); lu.assertEquals(A[t3c], D[t3f])
+            lu.assertEquals(F, C); lu.assertEquals(D[t3f], A[t3c])
+            lu.assertEquals(BB, EE); lu.assertEquals(A[t2b][t2bb], D[t2e][t2ee])
+            lu.assertEquals(EE, BB); lu.assertEquals(D[t2e][t2ee], A[t2b][t2bb])
+            lu.assertEquals(CC, EE); lu.assertEquals(A[t3c][t2cc], D[t3f][t2ee_])
+            lu.assertEquals(EE, CC); lu.assertEquals(D[t3f][t2ee_], A[t3c][t2cc])
+            lu.assertEquals(A, D)
+            lu.assertEquals(D, A)
+        end
+
+        lu.TABLE_EQUALS_KEYBYCONTENT = config_TABLE_EQUALS_KEYBYCONTENT
     end
 
     function TestLuaUnitUtilities:test_table_keytostring()
@@ -212,6 +422,9 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( lu.prettystr( { [{}] = 1 }), '{{}=1}' )
         lu.assertEquals( lu.prettystr( { 1, [{}] = 1, 2 }), '{1, 2, {}=1}' )
         lu.assertEquals( lu.prettystr( { 1, [{one=1}] = 1, 2, "test", false }), '{1, 2, "test", false, {one=1}=1}' )
+        lu.assertEquals( lu.prettystr( {["foo\nbar"] = 1}), [[{"foo\nbar"=1}]] )
+        lu.assertEquals( lu.prettystr( {["foo'bar"] = 2}), [[{"foo'bar"=2}]] )
+        lu.assertEquals( lu.prettystr( {['foo"bar'] = 3}), [[{'foo"bar'=3}]] )
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
@@ -305,23 +518,41 @@ TestLuaUnitUtilities = {} --class
     function TestLuaUnitUtilities:test_prettystrTableRecursion()
         local t = {}
         t.__index = t
-        lu.assertStrMatches(lu.prettystr(t), "<table: 0?x?[%x]+> {__index=<table: 0?x?[%x]+>}")
+        lu.assertStrMatches(lu.prettystr(t), "<table: (0?x?[%x]+)> {__index=<table: %1>}")
 
         local t1 = {}
         local t2 = {}
         t1.t2 = t2
         t2.t1 = t1
         local t3 = { t1 = t1, t2 = t2 }
-        lu.assertStrMatches(lu.prettystr(t1), "<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}}")
-        lu.assertStrMatches(lu.prettystr(t3), [[<table: 0?x?[%x]+> {
-    t1=<table: 0?x?[%x]+> {t2=<table: 0?x?[%x]+> {t1=<table: 0?x?[%x]+>}},
-    t2=<table: 0?x?[%x]+>
+        lu.assertStrMatches(lu.prettystr(t1), "<table: (0?x?[%x]+)> {t2=<table: (0?x?[%x]+)> {t1=<table: %1>}}")
+        lu.assertStrMatches(lu.prettystr(t3), [[<table: (0?x?[%x]+)> {
+    t1=<table: (0?x?[%x]+)> {t2=<table: (0?x?[%x]+)> {t1=<table: %2>}},
+    t2=<table: %3>
 }]])
 
         local t4 = {1,2}
         local t5 = {3,4,t4}
         t4[3] = t5
-        lu.assertStrMatches(lu.prettystr(t5), "<table: 0?x?[%x]+> {3, 4, <table: 0?x?[%x]+> {1, 2, <table: 0?x?[%x]+>}}")
+        lu.assertStrMatches(lu.prettystr(t5), "<table: (0?x?[%x]+)> {3, 4, (<table: 0?x?[%x]+)> {1, 2, <table: %1>}}")
+
+        local t6 = {}
+        t6[t6] = 1
+        lu.assertStrMatches(lu.prettystr(t6), "<table: (0?x?[%x]+)> {<table: %1>=1}" )
+
+        local t7, t8 = {"t7"}, {"t8"}
+        t7[t8] = 1
+        t8[t7] = 2
+        lu.assertStrMatches(lu.prettystr(t7), '<table: (0?x?[%x]+)> {"t7", <table: (0?x?[%x]+)> {"t8", <table: %1>=2}=1}')
+
+        local t9 = {"t9", {}}
+        t9[{t9}] = 1
+        -- (table) addresses under 64bit are longer, making the resulting string not fit into default line length of 80, triggering multiline display
+        -- hack the line length temporarily
+        local config_LINE_LENGTH = lu.LINE_LENGTH
+        lu.LINE_LENGTH = 160
+        lu.assertStrMatches(lu.prettystr(t9), '<table: (0?x?[%x]+)> {"t9", <table: (0?x?[%x]+)> {}, <table: (0?x?[%x]+)> {<table: %1>}=1}')
+        lu.LINE_LENGTH = config_LINE_LENGTH
     end
 
     function TestLuaUnitUtilities:test_prettystrPadded()
@@ -694,9 +925,13 @@ TestLuaUnitAssertions = {} --class
         lu.TABLE_EQUALS_KEYBYCONTENT = false
         assertFailure( lu.assertEquals, {[{}] = 1}, { [{}] = 1})
         assertFailure( lu.assertEquals, {[{one=1, two=2}] = 1}, { [{two=2, one=1}] = 1})
+        assertFailure( lu.assertEquals, {[{1}]=2, [{1}]=3}, {[{1}]=3, [{1}]=2} )
         lu.TABLE_EQUALS_KEYBYCONTENT = true
         lu.assertEquals( {[{}] = 1}, { [{}] = 1})
         lu.assertEquals( {[{one=1, two=2}] = 1}, { [{two=2, one=1}] = 1})
+        lu.assertEquals( {[{1}]=2, [{1}]=3}, {[{1}]=3, [{1}]=2} )
+        -- try the other order as well, in case pairs() returns items reversed in the test above
+        lu.assertEquals( {[{1}]=2, [{1}]=3}, {[{1}]=2, [{1}]=3} )
 
         assertFailure( lu.assertEquals, 1, 2)
         assertFailure( lu.assertEquals, 1, "abc" )
@@ -722,6 +957,8 @@ TestLuaUnitAssertions = {} --class
         assertFailure( lu.assertEquals, {[{}] = 1}, {[{one=1}] = 2})
         assertFailure( lu.assertEquals, {[{}] = 1}, {[{}] = 1, 2})
         assertFailure( lu.assertEquals, {[{}] = 1}, {[{}] = 1, [{}] = 1})
+        assertFailure( lu.assertEquals, {[{"one"}]=1}, {[{"one", 1}]=2} )
+        assertFailure( lu.assertEquals, {[{"one"}]=1,[{"one"}]=1}, {[{"one"}]=1} )
         lu.TABLE_EQUALS_KEYBYCONTENT = config_saved
     end
 
