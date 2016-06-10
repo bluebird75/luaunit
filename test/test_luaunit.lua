@@ -175,17 +175,32 @@ TestLuaUnitUtilities = {} --class
         lu.assertEquals( lu.private.prefixString( '12 ', 'ab\ncd\nde'), '12 ab\n12 cd\n12 de' )
     end
 
+    local function _is_table_equals_simple(actual, expected)
+        for k, v in pairs(actual) do
+            if v ~= expected[k] then
+                return false
+            end
+        end
+        for k, v in pairs(expected) do
+            if v ~= actual[k] then
+                return false
+            end
+        end
+        return true
+    end
+
     function TestLuaUnitUtilities:test_tablecopy()
         local A = {1, "2", true, false, {}, {3}, [{4}]=5}
         local B = lu.private._table_copy(A)
-        lu.assertItemsEquals(B, A)
+        -- assertItemsEquals ignores keys, assertEquals compares tables by contents, not by reference
+        lu.assertTrue(_is_table_equals_simple(B, A))
         lu.assertTrue(B ~= A)
 
         B = {6, 7, "8", false, true, {}, {9}, [{10}]=11}
         local C = B
-        lu.assertErrorMsgMatches(lu.FAILURE_PREFIX .. "Contents of the tables are not identical:.*", lu.assertItemsEquals, B, A)
+        lu.assertFalse(_is_table_equals_simple(B, A))
         local D = lu.private._table_copy(A, B)
-        lu.assertItemsEquals(B, A)
+        lu.assertTrue(_is_table_equals_simple(B, A))
         lu.assertTrue(B == C)
         lu.assertTrue(D == C)
         lu.assertTrue(D ~= A)
