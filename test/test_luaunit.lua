@@ -231,6 +231,10 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
             '}',
         } , '\n' ) )
 
+        -- make sure that prettystr(t, true) respects "keeponeline"
+        lu.assertTrue( lu.private.hasNewLine( lu.prettystr(t2)) )
+        lu.assertFalse( lu.private.hasNewLine( lu.prettystr(t2, true)) )
+
         local t2bis = { 1,2,3,'12345678901234567890123456789012345678901234567890123456789012345678901234567890', 4,5,6 }
         lu.assertEquals(lu.prettystr(t2bis), [[{
     1,

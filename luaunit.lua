@@ -355,7 +355,8 @@ local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recurs
         --if v.__class__ then
         --    return string.gsub( tostring(v), 'table', v.__class__ )
         --end
-        return M.private._table_tostring(v, indentLevel, printTableRefs, recursionTable)
+        return M.private._table_tostring(v, indentLevel, keeponeline,
+                                            printTableRefs, recursionTable)
     end
 
     return tostring(v)
@@ -407,7 +408,7 @@ M.private.prettystrPadded = prettystrPadded
 local TABLE_TOSTRING_SEP = ", "
 local TABLE_TOSTRING_SEP_LEN = string.len(TABLE_TOSTRING_SEP)
 
-local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable )
+local function _table_tostring( tbl, indentLevel, keeponeline, printTableRefs, recursionTable )
     printTableRefs = printTableRefs or M.PRINT_TABLE_REF_IN_ERROR_MSG
     recursionTable = recursionTable or {}
     recursionTable[tbl] = true
@@ -437,29 +438,31 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
             entry = entry .. "<"..tostring(v)..">"
         else
             entry = entry ..
-                prettystr_sub( v, indentLevel+1, true, printTableRefs, recursionTable )
+                prettystr_sub( v, indentLevel+1, keeponeline, printTableRefs, recursionTable )
         end
         count = count + 1
         result[count] = entry
     end
 
-    -- set dispOnMultLines if the maximum LINE_LENGTH would be exceeded
-    local totalLength = 0
-    for k, v in ipairs( result ) do
-        totalLength = totalLength + string.len( v )
-        if totalLength >= M.LINE_LENGTH then
-            dispOnMultLines = true
-            break
+    if not keeponeline then
+        -- set dispOnMultLines if the maximum LINE_LENGTH would be exceeded
+        local totalLength = 0
+        for k, v in ipairs( result ) do
+            totalLength = totalLength + string.len( v )
+            if totalLength >= M.LINE_LENGTH then
+                dispOnMultLines = true
+                break
+            end
         end
-    end
 
-    if not dispOnMultLines then
-        -- adjust with length of separator(s):
-        -- two items need 1 sep, three items two seps, ... plus len of '{}'
-        if count > 0 then
-            totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * (count - 1)
+        if not dispOnMultLines then
+            -- adjust with length of separator(s):
+            -- two items need 1 sep, three items two seps, ... plus len of '{}'
+            if count > 0 then
+                totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * (count - 1)
+            end
+            dispOnMultLines = totalLength + 2 >= M.LINE_LENGTH
         end
-        dispOnMultLines = totalLength + 2 >= M.LINE_LENGTH
     end
 
     -- now reformat the result table (currently holding element strings)
