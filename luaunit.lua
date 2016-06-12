@@ -551,13 +551,10 @@ local function _is_table_equals(actual, expected, recursions)
         for k, v in pairs(actual) do
             if M.TABLE_EQUALS_KEYBYCONTENT and type(k) == "table" then
                 -- If the keys are tables, things get a bit tricky here as we
-                -- can have _is_table_equals(k1, k2) and t[k1] ~= t[k2]. So we
-                -- collect actual's table keys, group them by length for
-                -- performance, and then for each table key in expected we look
-                -- it up in actualTableKeys.
-                local count = #k
-                if not actualTableKeys[count] then actualTableKeys[count] = {} end
-                table.insert(actualTableKeys[count], k)
+                -- can have _is_table_equals(t[k1], t[k2]) despite k1 ~= k2. So
+                -- we first collect table keys from "actual", and then later try
+                -- to match each table key from "expected" to actualTableKeys.
+                table.insert(actualTableKeys, k)
             else
                 if not _is_table_equals(v, expected[k], recursions) then
                     return false -- Mismatch on value, tables can't be equal
@@ -568,15 +565,15 @@ local function _is_table_equals(actual, expected, recursions)
 
         for k, v in pairs(expected) do
             if M.TABLE_EQUALS_KEYBYCONTENT and type(k) == "table" then
-                local candidates, found = actualTableKeys[#k], nil
-                if not candidates then return false end
-                for i, candidate in pairs(candidates) do
+                local found
+                -- Note: DON'T use ipairs() here, table may be non-sequential!
+                for i, candidate in pairs(actualTableKeys) do
                     if _is_table_equals(candidate, k) then
                         found = candidate
                         -- Remove the candidate we matched against from the list
-                        -- of candidates, so each key in actual can only match
+                        -- of table keys, so each key in actual can only match
                         -- one key in expected.
-                        candidates[i] = nil
+                        actualTableKeys[i] = nil
                         break
                     end
                 end
@@ -599,13 +596,11 @@ local function _is_table_equals(actual, expected, recursions)
         -- were missing from "expected", meaning the tables are different.
         if next(actualKeysMatched) then return false end
 
-        if M.TABLE_EQUALS_KEYBYCONTENT then
-            for _, keys in pairs(actualTableKeys) do
-                -- if there are any keys left in any actualTableKeys[i] then
-                -- that is a key in actual with no matching key in expected,
-                -- and so the tables aren't equal.
-                if next(keys) then return false end
-            end
+        if next(actualTableKeys) then
+            -- If there is any key left in actualTableKeys, then that is
+            -- a table-type key in actual with no matching counterpart
+            -- (in expected), and so the tables aren't equal.
+            return false
         end
 
         return true
