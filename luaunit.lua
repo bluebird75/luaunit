@@ -529,22 +529,72 @@ local function _is_table_items_equals(actual, expected )
     return true
 end
 
+--[[
+This is a specialized metatable to help with the bookkeeping of recursions
+in _is_table_equals(). It provides an __index table that implements utility
+functions for easier management of the table. The "cached" method queries
+the state of a specific (actual,expected) pair; and the "store" method sets
+this state to the given value. The state of pairs not "seen" / visited is
+assumed to be `nil`.
+]]
+local _recursion_cache_MT = {
+    __index = {
+        -- Return the cached value for an (actual,expected) pair (or `nil`)
+        cached = function(t, actual, expected)
+            local subtable = t[actual] or {}
+            return subtable[expected]
+        end,
+
+        -- Store cached value for a specific (actual,expected) pair.
+        -- Returns the value, so it's easy to use for a "tailcall" (return ...).
+        store = function(t, actual, expected, value, asymmetric)
+            local subtable = t[actual]
+            if not subtable then
+                subtable = {}
+                t[actual] = subtable
+            end
+            subtable[expected] = value
+
+            -- Unless explicitly marked "asymmetric": Consider the recursion
+            -- on (expected,actual) to be equivalent to (actual,expected) by
+            -- default, and thus cache the value for both.
+            if not asymmetric then
+                t:store(expected, actual, value, true)
+            end
+
+            return value
+        end
+    }
+}
+
 local function _is_table_equals(actual, expected, recursions)
     local type_a, type_e = type(actual), type(expected)
-    recursions = recursions or {}
+    recursions = recursions or setmetatable({}, _recursion_cache_MT)
 
     if type_a ~= type_e then
         return false -- different types won't match
     end
 
-    if (type_a == 'table') --[[ and (type_e == 'table') ]] and not recursions[actual] then
+    if (type_a == 'table') --[[ and (type_e == 'table') ]] then
+        if actual == expected then
+            -- Both reference the same table, so they are actually identical
+            return recursions:store(actual, expected, true)
+        end
+
+        -- If we've tested this (actual,expected) pair before: return cached value
+        local previous = recursions:cached(actual, expected)
+        if previous ~= nil then
+            return previous
+        end
+
+        -- Mark this (actual,expected) pair, so we won't recurse it again. For
+        -- now, assume a "false" result, which we might adjust later if needed.
+        recursions:store(actual, expected, false)
+
         -- Tables must have identical element count, or they can't match.
         if (#actual ~= #expected) then
             return false
         end
-
-        -- add "actual" to the recursions table, to detect and avoid loops
-        recursions[actual] = true
 
         local actualKeysMatched, actualTableKeys = {}, {}
 
@@ -603,7 +653,8 @@ local function _is_table_equals(actual, expected, recursions)
             return false
         end
 
-        return true
+        -- The tables are actually considered equal, update cache and return result
+        return recursions:store(actual, expected, true)
 
     elseif actual ~= expected then
         return false
