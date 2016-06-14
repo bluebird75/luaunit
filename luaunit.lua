@@ -468,15 +468,14 @@ local function _table_contains(t, element)
         local type_e = type(element)
         for _, value in pairs(t) do
             if type(value) == type_e then
+                if value == element then
+                    return true
+                end
                 if type_e == 'table' then
                     -- if we wanted recursive items content comparison, we could use
                     -- _is_table_items_equals(v, expected) but one level of just comparing
                     -- items is sufficient
                     if M.private._is_table_equals( value, element ) then
-                        return true
-                    end
-                else
-                    if value == element then
                         return true
                     end
                 end
@@ -516,7 +515,11 @@ local function _is_table_equals(actual, expected, recursions)
     local type_a, type_e = type(actual), type(expected)
     recursions = recursions or {}
 
-    if (type_a == 'table') and (type_e == 'table') and not recursions[actual] then
+    if type_a ~= type_e then
+        return false -- different types won't match
+    end
+
+    if (type_a == 'table') --[[ and (type_e == 'table') ]] and not recursions[actual] then
         -- Tables must have identical element count, or they can't match.
         if (#actual ~= #expected) then
             return false
@@ -588,9 +591,6 @@ local function _is_table_equals(actual, expected, recursions)
         end
 
         return true
-
-    elseif type_a ~= type_e then
-        return false
 
     elseif actual ~= expected then
         return false
