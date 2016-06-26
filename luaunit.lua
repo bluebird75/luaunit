@@ -161,10 +161,10 @@ end
 M.private.sortedPairs = sortedPairs
 
 local function strsplit(delimiter, text)
--- Split text into a list consisting of the strings in text,
--- separated by strings matching delimiter (which may be a pattern).
--- example: strsplit(",%s*", "Anna, Bob, Charlie,Dolores")
-    if string.find("", delimiter, 1, true) then -- this would result in endless loops
+-- Split text into a list consisting of the strings in text, separated
+-- by strings matching delimiter (which may _NOT_ be a pattern).
+-- Example: strsplit(", ", "Anna, Bob, Charlie, Dolores")
+    if delimiter == "" then -- this would result in endless loops
         error("delimiter matches empty string!")
     end
     local list, pos, first, last = {}, 1
@@ -190,7 +190,7 @@ M.private.hasNewLine = hasNewLine
 
 local function prefixString( prefix, s )
     -- Prefix all the lines of s with prefix
-    return prefix .. table.concat(strsplit('\n', s), '\n' .. prefix)
+    return prefix .. string.gsub(s, '\n', '\n' .. prefix)
 end
 M.private.prefixString = prefixString
 
@@ -468,15 +468,14 @@ local function _table_contains(t, element)
         local type_e = type(element)
         for _, value in pairs(t) do
             if type(value) == type_e then
+                if value == element then
+                    return true
+                end
                 if type_e == 'table' then
                     -- if we wanted recursive items content comparison, we could use
                     -- _is_table_items_equals(v, expected) but one level of just comparing
                     -- items is sufficient
                     if M.private._is_table_equals( value, element ) then
-                        return true
-                    end
-                else
-                    if value == element then
                         return true
                     end
                 end
@@ -516,7 +515,11 @@ local function _is_table_equals(actual, expected, recursions)
     local type_a, type_e = type(actual), type(expected)
     recursions = recursions or {}
 
-    if (type_a == 'table') and (type_e == 'table') and not recursions[actual] then
+    if type_a ~= type_e then
+        return false -- different types won't match
+    end
+
+    if (type_a == 'table') --[[ and (type_e == 'table') ]] and not recursions[actual] then
         -- Tables must have identical element count, or they can't match.
         if (#actual ~= #expected) then
             return false
@@ -588,9 +591,6 @@ local function _is_table_equals(actual, expected, recursions)
         end
 
         return true
-
-    elseif type_a ~= type_e then
-        return false
 
     elseif actual ~= expected then
         return false
@@ -683,14 +683,14 @@ end
 -- Help Lua in corner cases like almostEquals(1.1, 1.0, 0.1), which by default
 -- may not work. We need to give margin a small boost; EPSILON defines the
 -- default value to use for this:
-local EPSILON = 0.00000000001
+local EPSILON = 1E-11
 function M.almostEquals( actual, expected, margin, margin_boost )
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
             prettystr(actual), prettystr(expected), prettystr(margin))
     end
-    if margin <= 0 then
-        error('almostEquals: margin must be positive, current value is ' .. margin, 3)
+    if margin < 0 then
+        error('almostEquals: margin must not be negative, current value is ' .. margin, 3)
     end
     local realmargin = margin + (margin_boost or EPSILON)
     return math.abs(expected - actual) <= realmargin
@@ -1976,10 +1976,9 @@ end
         -- expand all classes (provided as {className, classInstance}) to a list of {className.methodName, classInstance}
         -- functions and methods remain untouched
         local result = {}
-        local name, instance, className, methodName, methodInstance
 
         for i,v in ipairs( listOfNameAndInst ) do
-            name, instance = v[1], v[2]
+            local name, instance = v[1], v[2]
             if M.LuaUnit.asFunction(instance) then
                 table.insert( result, { name, instance } )
             else
@@ -1987,8 +1986,8 @@ end
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 end
                 if M.LuaUnit.isClassMethod( name ) then
-                    className, methodName = M.LuaUnit.splitClassMethod( name )
-                    methodInstance = instance[methodName]
+                    local className, methodName = M.LuaUnit.splitClassMethod( name )
+                    local methodInstance = instance[methodName]
                     if methodInstance == nil then
                         error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
                     end
@@ -2022,15 +2021,14 @@ end
         --   * { class name, class instance }
         --   * { class.method name, class instance }
 
-        local expandedList, filteredList, filteredOutList, className, methodName, methodInstance, name, instance
-        expandedList = self.expandClasses( listOfNameAndInst )
-
-        filteredList, filteredOutList = self.applyPatternFilter( self.patternFilter, expandedList )
+        local expandedList = self.expandClasses( listOfNameAndInst )
+        local filteredList, filteredOutList
+            = self.applyPatternFilter( self.patternFilter, expandedList )
 
         self:startSuite( #filteredList, #filteredOutList )
 
         for i,v in ipairs( filteredList ) do
-            name, instance = v[1], v[2]
+            local name, instance = v[1], v[2]
             if M.LuaUnit.asFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
             else
@@ -2038,8 +2036,8 @@ end
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 else
                     assert( M.LuaUnit.isClassMethod( name ) )
-                    className, methodName = M.LuaUnit.splitClassMethod( name )
-                    methodInstance = instance[methodName]
+                    local className, methodName = M.LuaUnit.splitClassMethod( name )
+                    local methodInstance = instance[methodName]
                     if methodInstance == nil then
                         error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
                     end
@@ -2064,12 +2062,12 @@ end
     function M.LuaUnit:runSuiteByNames( listOfName )
         -- Run an explicit list of test names
 
-        local  className, methodName, instanceName, instance, methodInstance
+        local instanceName, instance
         local listOfNameAndInst = {}
 
         for i,name in ipairs( listOfName ) do
             if M.LuaUnit.isClassMethod( name ) then
-                className, methodName = M.LuaUnit.splitClassMethod( name )
+                local className, methodName = M.LuaUnit.splitClassMethod( name )
                 instanceName = className
                 instance = _G[instanceName]
 
@@ -2081,7 +2079,7 @@ end
                     error( 'Instance of '..instanceName..' must be a table, not '..type(instance))
                 end
 
-                methodInstance = instance[methodName]
+                local methodInstance = instance[methodName]
                 if methodInstance == nil then
                     error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
                 end

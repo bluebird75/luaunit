@@ -57,10 +57,7 @@ TestMock = {}
 --
 ------------------------------------------------------------------
 
-TestLuaUnitUtilities = {} --class
-
-    TestLuaUnitUtilities.__class__ = 'TestLuaUnitUtilities'
-
+TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
     function TestLuaUnitUtilities:test_genSortedIndex()
         lu.assertEquals( lu.private.__genSortedIndex( { 2, 5, 7} ), {1,2,3} )
@@ -671,9 +668,7 @@ local function assertBadMethodNil( ... )
     lu.assertErrorMsgMatches( ".* attempt to call .*a nil value.*", ... )
 end
 
-TestLuaUnitAssertions = {} --class
-
-    TestLuaUnitAssertions.__class__ = 'TestLuaUnitAssertions'
+TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
     function TestLuaUnitAssertions:test_assertEquals()
         local f = function() return true end
@@ -727,6 +722,7 @@ TestLuaUnitAssertions = {} --class
 
     function TestLuaUnitAssertions:test_assertAlmostEquals()
         lu.assertAlmostEquals( 1, 1, 0.1 )
+        lu.assertAlmostEquals( 1, 1, 0 ) -- zero margin
 
         lu.assertAlmostEquals( 1, 1.1, 0.2 )
         lu.assertAlmostEquals( -1, -1.1, 0.2 )
@@ -741,8 +737,7 @@ TestLuaUnitAssertions = {} --class
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, -1, 1, nil )
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, -1, nil, 0 )
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, nil, 1, 0 )
-        lu.assertErrorMsgContains( "margin must be positive", lu.assertAlmostEquals, 1, 1.1, 0 )
-        lu.assertErrorMsgContains( "margin must be positive", lu.assertAlmostEquals, 1, 1.1, -0.1 )
+        lu.assertErrorMsgContains( "margin must not be negative", lu.assertAlmostEquals, 1, 1.1, -0.1 )
     end
 
     function TestLuaUnitAssertions:test_assertNotEquals()
@@ -772,6 +767,7 @@ TestLuaUnitAssertions = {} --class
 
     function TestLuaUnitAssertions:test_assertNotAlmostEquals()
         lu.assertNotAlmostEquals( 1, 1.2, 0.1 )
+        lu.assertNotAlmostEquals( 1, 1.01, 0 ) -- zero margin
 
         lu.assertNotAlmostEquals( 1, 1.3, 0.2 )
         lu.assertNotAlmostEquals( -1, -1.3, 0.2 )
@@ -786,8 +782,7 @@ TestLuaUnitAssertions = {} --class
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertNotAlmostEquals, -1, 1, nil )
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertNotAlmostEquals, -1, nil, 0 )
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertNotAlmostEquals, nil, 1, 0 )
-        lu.assertErrorMsgContains( "margin must be positive", lu.assertNotAlmostEquals, 1, 1.1, 0 )
-        lu.assertErrorMsgContains( "margin must be positive", lu.assertNotAlmostEquals, 1, 1.1, -0.1 )
+        lu.assertErrorMsgContains( "margin must not be negative", lu.assertNotAlmostEquals, 1, 1.1, -0.1 )
     end
 
     function TestLuaUnitAssertions:test_assertNotEqualsDifferentTypes2()
@@ -1384,8 +1379,7 @@ TestLuaUnitAssertionsError = {}
 --
 ------------------------------------------------------------------
 
-TestLuaUnitErrorMsg = {} --class
-    TestLuaUnitErrorMsg.__class__ = 'TestLuaUnitErrorMsg'
+TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:setUp()
         self.old_ORDER_ACTUAL_EXPECTED = lu.ORDER_ACTUAL_EXPECTED
@@ -1644,9 +1638,7 @@ function MyTestFunction()
     table.insert( executedTests, "MyTestFunction" ) 
 end
 
-TestLuaUnitExecution = {} --class
-
-    TestLuaUnitExecution.__class__ = 'TestLuaUnitExecution'
+TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
     function TestLuaUnitExecution:tearDown()
         executedTests = {}
@@ -2273,9 +2265,7 @@ TestLuaUnitExecution = {} --class
 --
 ------------------------------------------------------------------
 
-TestLuaUnitResults = {} -- class
-
-    TestLuaUnitResults.__class__ = 'TestLuaUnitResults'
+TestLuaUnitResults = { __class__ = 'TestLuaUnitResults' }
 
     function TestLuaUnitResults:tearDown()
         executedTests = {}

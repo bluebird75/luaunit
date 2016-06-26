@@ -53,6 +53,7 @@ test/legacyExample.txt
 test/legacyExampleError.txt
 test/compat_luaunit_v2x.txt
 test/errFailPass*.txt
+test/errFailPass*.xml
 
 *.diff
 
