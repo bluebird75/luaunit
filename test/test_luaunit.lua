@@ -15,9 +15,9 @@ end
 
 -- This is a bit tricky since the test uses the features that it tests.
 
-lu = require('luaunit')
+local lu = require('luaunit')
 
-Mock = { __class__ = 'Mock' }
+local Mock = { __class__ = 'Mock' }
 
 function Mock.new(runner)
     local t = lu.genericOutput.new(runner)
@@ -1618,6 +1618,7 @@ TestLuaUnitErrorMsg = {} --class
 --
 ------------------------------------------------------------------
 
+local executedTests
 
 MyTestToto1 = {} --class
     function MyTestToto1:test1() table.insert( executedTests, "MyTestToto1:test1" ) end

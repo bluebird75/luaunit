@@ -21,10 +21,12 @@ matrix:
 
 before_install:
   - source .travis/setenv_lua.sh
+  - luarocks install luacheck
 
 script: 
   - lua -v run_unit_tests.lua
   - lua run_functional_tests.lua
+  - luacheck *.lua test/
 
 notifications:
   email:

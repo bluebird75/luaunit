@@ -1,4 +1,4 @@
-lu = require('luaunit')
+local lu = require('luaunit')
 
 --[[ Test used by functional tests ]]
 TestSomething = {} --class
@@ -20,11 +20,11 @@ TestSomething = {} --class
     end
 
     function TestSomething:test3_Err1()
-        v = 1 + { 1,2 }
+        local v = 1 + { 1,2 }
     end
 
     function TestSomething:test3_Err2()
-        v = 1 + { 1,2 }
+        local v = 1 + { 1,2 }
     end
 
 TestAnotherThing = {} --class
@@ -38,11 +38,11 @@ TestAnotherThing = {} --class
     end
 
     function TestAnotherThing:test2_Err1()
-        v = 1 + { 1,2 }
+        local v = 1 + { 1,2 }
     end
 
     function TestAnotherThing:test2_Err2()
-        v = 1 + { 1,2 }
+        local v = 1 + { 1,2 }
     end
 
     function TestAnotherThing:test3_Fail1()
@@ -63,9 +63,9 @@ function testFuncFail1()
 end
 
 function testFuncErr1()
-    v = 1 + { 1,2 }
+    local v = 1 + { 1,2 }
 end
 
-runner = lu.LuaUnit.new()
+local runner = lu.LuaUnit.new()
 runner:setOutputType("text")
 os.exit( runner:runSuite() )
