@@ -644,6 +644,30 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
 ------------------------------------------------------------------
 --
+--                        Outputter Tests
+--
+------------------------------------------------------------------
+
+TestLuaUnitOutputters = { __class__ = 'TestOutputters' }
+
+    -- JUnitOutput:startSuite() can raise errors on its own, cover those
+    function TestLuaUnitOutputters:testJUnitOutputErrors()
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType('junit')
+        local outputter = runner.outputType.new(runner)
+
+        -- missing file name
+        lu.assertErrorMsgContains('With Junit, an output filename must be supplied',
+            outputter.startSuite, outputter)
+
+        -- test adding .xml extension, catch output error
+        outputter.fname = '/tmp/nonexistent.dir/foobar'
+        lu.assertErrorMsgContains('Could not open file for writing: /tmp/nonexistent.dir/foobar.xml',
+            outputter.startSuite, outputter)
+    end
+
+------------------------------------------------------------------
+--
 --                  Assertion Tests              
 --
 ------------------------------------------------------------------
@@ -2256,6 +2280,14 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( executedTests[6], "MyTestToto1:testb" )
         lu.assertEquals( executedTests[7], "MyTestToto2:test1" )
         lu.assertEquals( #executedTests, 7)
+    end
+
+    function TestLuaUnitExecution:test_endSuiteTwice()
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType( "NIL" )
+        runner:runSuite( 'MyTestWithErrorsAndFailures', 'MyTestOk' )
+        lu.assertErrorMsgContains('suite was already ended',
+            runner.endSuite, runner)
     end
 
 

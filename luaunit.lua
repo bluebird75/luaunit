@@ -67,6 +67,8 @@ Options:
 ----------------------------------------------------------------
 
 local function pcall_or_abort(func, ...)
+    -- unpack is a global function for Lua 5.1, otherwise use table.unpack
+    local unpack = rawget(_G, "unpack") or table.unpack
     local result = {pcall(func, ...)}
     if not result[1] then
         -- an error occurred
@@ -75,10 +77,7 @@ local function pcall_or_abort(func, ...)
         print(M.USAGE)
         os.exit(-1)
     end
-    if _VERSION == "Lua 5.1" then
-        return unpack(result, 2) -- unpack is a global function for Lua 5.1
-    end
-    return table.unpack(result, 2)
+    return unpack(result, 2)
 end
 
 local crossTypeOrdering = {
@@ -2071,17 +2070,24 @@ end
             if M.LuaUnit.asFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
             else
+                -- expandClasses() should have already taken care of this case
+                assert( type(instance) == 'table' )
+                --[[
                 if type(instance) ~= 'table' then
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 else
+                --]]
                     local className, methodName = M.LuaUnit.splitClassMethod( name )
                     assert( className ~= nil )
                     local methodInstance = instance[methodName]
+                    assert(methodInstance ~= nil)
+                    --[[
                     if methodInstance == nil then
                         error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
                     end
+                    --]]
                     self:execOneFunction( className, methodName, instance, methodInstance )
-                end
+                --end
             end
             if self.result.aborted then break end -- "--error" or "--failure" option triggered
         end
