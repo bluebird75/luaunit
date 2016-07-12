@@ -9,7 +9,7 @@ Welcome to LuaUnit's documentation!
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
 .. highlight:: lua
 
@@ -28,11 +28,6 @@ format, set verbosity, ...
 
 Platform support
 ================
-
-LuaUnit works with Lua 5.1, 5.2, 5.3 and luajit (v1 and v2.1). It is tested on Windows Seven, Windows Server 2003 and Ubuntu 14.04 (see 
-continuous build results on `Travis-CI`_  and `AppVeyor`_ ) and should work on all platforms supported by lua.
-It has no other dependency than lua itself. 
-
 
 LuaUnit works with Lua 5.1, LuaJIT 2.0, LuaJIT 2.1 beta, Lua 5.2 and Lua 5.3 . It is tested on Windows Seven, Windows Server 2012 R2 (x64) and Ubuntu 14.04 (see 
 continuous build results on `Travis-CI`_  and `AppVeyor`_  ) and should work on all platforms supported by Lua.
@@ -62,13 +57,14 @@ This documentation describes the functionality of LuaUnit v3.2 .
 
 New in version 3.2 - (in progress)
 ------------------------------------
-* distinguish between failures (failed assertion) and errors
+* Distinguish between failures (failed assertion) and errors
 * Support for new versions: Lua 5.3 and LuaJIT (2.0, 2.1 beta)
 * Validation of all lua versions on Travis CI and AppVeyor
-* Compatibility layer with forked luaunit v2.x added
-* added documentation about development process
-* improved support for table containing keys of type table
-* small bug fixes, several internal improvements
+* Add compatibility layer with forked luaunit v2.x
+* Added documentation about development process
+* Improved support for table containing keys of type table
+* Small bug fixes, several internal improvements
+* Available with a Luarock package
 
 New in version 3.1 - 10. Mar 2015
 ---------------------------------
@@ -689,7 +685,8 @@ Assertions functions
 You will now find the list of all assertion functions. For all functions, When an assertion fails, the failure
 message tries to be as informative as possible, by displaying the expectation and value that caused the failure.
 
-.. Note:: see :More on table printing: to know more about tables.
+.. Note:: see :ref:`table-printing` and :ref:`comparing-table-keys-table` for more dealing with recursive tables and tables containing keys of type table.
+
 
 .. _assert-equality:
 
@@ -1009,6 +1006,111 @@ Table assertions
         luaunit.assertItemsEquals( {1,{2,3},4}, {4,{3,2,},1} ) -- assertion fails because {2,3} ~= {3,2}
 
 
+.. _table-printing:
+
+More on table printing
+===========================
+
+When asserting tables equality, by default, the table content is printed in case of failures. LuaUnit tries to print
+tables in a readable format. It is 
+possible to always display the table id along with the content, by setting a module parameter PRINT_TABLE_REF_IN_ERROR_MSG . This
+helps identifying tables:
+
+.. code-block:: lua
+
+    local lu = require('luaunit')
+
+    local t1 = {1,2,3}
+    -- normally, t1 is dispalyed as: "{1,2,3}"
+
+    -- if setting this:
+    lu.PRINT_TABLE_REF_IN_ERROR_MSG = true
+
+    -- display of table t1 becomes: "<table: 0x29ab56> {1,2,3}"
+
+
+.. Note :: table loops
+
+    When displaying table content, it is possible to encounter loops, if for example two table references eachother. In such
+    cases, LuaUnit display the full table content once, along with the table id, and displays only the table id for the looping
+    reference.
+
+**Example:** displaying a table with reference loop
+
+.. code-block:: lua
+
+    local t1 = {}
+    local t2 = {}
+    t1.t2 = t2
+    t1.a = {1,2,3}
+    t2.t1 = t1
+
+    -- when displaying table t1:
+    --   table t1 inside t2 is only displayed by its id because t1 is already being displayed
+    --   table t2 is displayed along with its id because it is part of a loop.
+    -- t1: "<table: 0x29ab56> { a={1,2,3}, t2=<table: 0x27ab23> {t1=<table: 0x29ab56>} }"
+
+
+.. _comparing-table-keys-table:
+
+Comparing tables with keys of type table
+===========================================
+
+
+This is a very uncommon scenario but there are a few programs out there which use tables as keys for other tables. LuaUnit has been adjusted to deal intelligently with this scenario.
+
+A small code block is worth a thousand pictures :
+
+.. code-block:: lua
+
+    local lu = require('luaunit')
+
+    -- let's define two tables
+    t1 = { 1, 2 }
+    t2 = { 1, 2 }
+    lu.assertEquals( t1, t2 ) -- succeeds
+
+    -- let's define three tables, with the two above tables as keys
+    t3 = { t1='a' }
+    t4 = { t2='a' }
+    t5 = { t2='a' }
+
+There are two ways to treat comparison of tables t3 and t4:
+
+**Method 1: table keys are compared by content**
+
+* t3 contain one key: t1
+* t4 contain one key: t2, which has exactly the same content as t1
+* the two keys compare equally with assertEquals, so assertEquals( t3, t4 ) succeeds
+
+**Method 2: table keys are compared by reference**
+
+* t3 contain one key: t1
+* t4 contain one key: t2, which is not the same table as t1, its reference is different
+* the two keys are different because t1 is a different object than t2 so assertEquals( t3, t4 ) fails
+
+Whether method 1 or method 2 is more appropriate is up for debate.
+
+LuaUnit has been adjusted to support both scenarios, with the config variable: *TABLE_EQUALS_KEYBYCONTENT*
+
+* TABLE_EQUALS_KEYBYCONTENT = true (default): method 1 - table keys compared by content
+* TABLE_EQUALS_KEYBYCONTENT = false: method 2 - table keys compared by reference
+
+In any case, assertEquals( t4, t5 ) always succeeds.
+
+To adjust the config, change it into the luaunit table before running any tests:
+
+
+.. code-block:: lua
+
+    local lu = require('luaunit')
+
+    -- define all your tests
+    -- ...
+
+    lu.TABLE_EQUALS_KEYBYCONTENT = false
+    -- run your tests:
+    os.exit( lu.LuaUnit.run() )
 
 .. _developing-luaunit:
 
@@ -1181,51 +1283,6 @@ Then commit the updates files.
 
 
 
-
-
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-Annexes
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-
-Annex A: More on table printing
-********************************
-
-When asserting tables equality, by default, the table content is printed in case of failures. LuaUnit tries to print
-tables in a readable format. It is 
-possible to always display the table id along with the content, by setting a module parameter PRINT_TABLE_REF_IN_ERROR_MSG . This
-helps identifying tables:
-
-.. code-block:: lua
-
-    local t1 = {1,2,3}
-    -- normally, t1 is dispalyed as: "{1,2,3}"
-
-    -- if setting this:
-    luaunit.PRINT_TABLE_REF_IN_ERROR_MSG = true
-
-    -- display of table t1 becomes: "<table: 0x29ab56> {1,2,3}"
-
-
-.. Note :: table loops
-
-    When displaying table content, it is possible to encounter loops, if for example two table references eachother. In such
-    cases, LuaUnit display the full table content once, along with the table id, and displays only the table id for the looping
-    reference.
-
-**Example:** displaying a table with reference loop
-
-.. code-block:: lua
-
-    local t1 = {}
-    local t2 = {}
-    t1.t2 = t2
-    t1.a = {1,2,3}
-    t2.t1 = t1
-
-    -- when displaying table t1:
-    --   table t1 inside t2 is only displayed by its id because t1 is already being displayed
-    --   table t2 is displayed along with its id because it is part of a loop.
-    -- t1: "<table: 0x29ab56> { a={1,2,3}, t2=<table: 0x27ab23> {t1=<table: 0x29ab56>} }"
 
 
 
