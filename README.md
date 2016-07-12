@@ -73,11 +73,11 @@ A rocks is being worked on.
 
 ### History 
 
-#### Version 3.2 (in progress)
+#### Version 3.2 - 12. Jul 2016
 * distinguish between failures (failed assertion) and errors
-* Support for new versions: Lua 5.3 and LuaJIT (2.0, 2.1 beta)
-* Validation of all lua versions on Travis CI and AppVeyor
-* Compatibility layer with forked luaunit v2.x added
+* support for new versions: Lua 5.3 and LuaJIT (2.0, 2.1 beta)
+* validation of all lua versions on Travis CI and AppVeyor
+* added compatibility layer with forked luaunit v2.x
 * added documentation about development process
 * improved support for table containing keys of type table
 * small bug fixes, several internal improvements

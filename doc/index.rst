@@ -55,8 +55,8 @@ Version and Changelog
 =====================
 This documentation describes the functionality of LuaUnit v3.2 .
 
-New in version 3.2 - (in progress)
-------------------------------------
+New in version 3.2 - 12. Jul 2016
+---------------------------------
 * Distinguish between failures (failed assertion) and errors
 * Support for new versions: Lua 5.3 and LuaJIT (2.0, 2.1 beta)
 * Validation of all lua versions on Travis CI and AppVeyor
@@ -1169,7 +1169,7 @@ The main goal of functional tests is to validate that LuaUnit output has not bee
 
 Functional tests perform the following actions:
 
-* Run each of the 3 suites: example_with_luaunit.lua, test_with_xml.lua, run_unit_test.lua (LuaUnit's internal test suite)
+* Run the 2 suites: example_with_luaunit.lua, test_with_err_fail_pass.lua (with various options to have successe, failure and/or errors)
 * Run every suite with all output format, all verbosity
 * Validate the XML output with jenkins/hudson and junit schema
 * Compare the results with the previous output ( archived in test/ref ), with some tricks to make the comparison possible :
@@ -1177,6 +1177,9 @@ Functional tests perform the following actions:
     * adjustment of the file separator to use the same output on Windows and Unix
     * date and test duration is zeroed so that it does not impact the comparison
     * adjust the stack trace format which has changed between Lua 5.1, 5.2 and 5.3
+
+* Run some legacy suites or tricky output to manage and verify output: test_with_xml.lua, , compat_luaunit_v2x.lua, legacy_example_with_luaunit.lua
+
 
 For functional tests to run, *diff* must be available on the command line. *xmllint* is needed to perform the xml validation but
 this step is skipped if *xmllint* can not be found.
@@ -1207,27 +1210,45 @@ The script run_functional_tests.lua supports a --update option, with an optional
     *  ExampleTap: TAP output of example_with_luaunit
     *  ExampleText: text output of example_with_luaunit
     *  ExampleNil: nil output of example_with_luaunit
-    *  UnitXml: XML output of run_unit_tests
-    *  UnitTap: TAP output of run_unit_tests
-    *  UnitText: text output of run_unit_tests 
+    *  ErrFailPassText: text output of test_with_err_fail_pass
+    *  ErrFailPassTap: TAP output of test_with_err_fail_pass
+    *  ErrFailPassXml: XML output of test_with_err_fail_pass
+    *  StopOnError: errFailPassTextStopOnError-1.txt, -2.txt, -3.txt, -4.txt
 
 
-
-
-For example to record a change in the unit-tests:
+For example to record a change in the test_with_err_fail_pass output
 
 .. code-block:: shell
 
-    $ lua run_functional_tests.lua --update UnitXml UnitTap UnitText
-    >>>>>>> Generating test/ref/unitTestsXmlDefault.txt
-    >>>>>>> Generating test/ref/unitTestsXmlQuiet.txt
-    >>>>>>> Generating test/ref/unitTestsXmlVerbose.txt
-    >>>>>>> Generating test/ref/unitTestsTapDefault.txt
-    >>>>>>> Generating test/ref/unitTestsTapQuiet.txt
-    >>>>>>> Generating test/ref/unitTestsTapVerbose.txt
-    >>>>>>> Generating test/ref/unitTestsTextDefault.txt
-    >>>>>>> Generating test/ref/unitTestsTextQuiet.txt
-    >>>>>>> Generating test/ref/unitTestsTextVerbose.txt
+    $ lua run_functional_tests.lua --update ErrFailPassXml ErrFailPassTap ErrFailPassText
+
+    >>>>>>> Generating test/ref/errFailPassXmlDefault.txt
+    >>>>>>> Generating test/ref/errFailPassXmlDefault-success.txt
+    >>>>>>> Generating test/ref/errFailPassXmlDefault-failures.txt
+    >>>>>>> Generating test/ref/errFailPassXmlQuiet.txt
+    >>>>>>> Generating test/ref/errFailPassXmlQuiet-success.txt
+    >>>>>>> Generating test/ref/errFailPassXmlQuiet-failures.txt
+    >>>>>>> Generating test/ref/errFailPassXmlVerbose.txt
+    >>>>>>> Generating test/ref/errFailPassXmlVerbose-success.txt
+    >>>>>>> Generating test/ref/errFailPassXmlVerbose-failures.txt
+    >>>>>>> Generating test/ref/errFailPassTapDefault.txt
+    >>>>>>> Generating test/ref/errFailPassTapDefault-success.txt
+    >>>>>>> Generating test/ref/errFailPassTapDefault-failures.txt
+    >>>>>>> Generating test/ref/errFailPassTapQuiet.txt
+    >>>>>>> Generating test/ref/errFailPassTapQuiet-success.txt
+    >>>>>>> Generating test/ref/errFailPassTapQuiet-failures.txt
+    >>>>>>> Generating test/ref/errFailPassTapVerbose.txt
+    >>>>>>> Generating test/ref/errFailPassTapVerbose-success.txt
+    >>>>>>> Generating test/ref/errFailPassTapVerbose-failures.txt
+    >>>>>>> Generating test/ref/errFailPassTextDefault.txt
+    >>>>>>> Generating test/ref/errFailPassTextDefault-success.txt
+    >>>>>>> Generating test/ref/errFailPassTextDefault-failures.txt
+    >>>>>>> Generating test/ref/errFailPassTextQuiet.txt
+    >>>>>>> Generating test/ref/errFailPassTextQuiet-success.txt
+    >>>>>>> Generating test/ref/errFailPassTextQuiet-failures.txt
+    >>>>>>> Generating test/ref/errFailPassTextVerbose.txt
+    >>>>>>> Generating test/ref/errFailPassTextVerbose-success.txt
+    >>>>>>> Generating test/ref/errFailPassTextVerbose-failures.txt
     $
 
 You can then commit the new files into git.
@@ -1247,43 +1268,8 @@ Typical failures for functional tests
 
 Functional tests may start failing when:
 
-1. Adding a new unit-test
-2. Increasing LuaUnit version
-3. Improving or breaking LuaUnit output
-
-
-**Case 1: adding a new unit-test**
-
-Because functional tests use LuaUnit self tests to verify the output, the output gets broken each time
-a new unit-test is added. This is kind of stupid and should be improved but until it happens, you have to deal with it.
-
-When it happens, functional tests generate tons of diff output, where the main change is the number of tests executed. Please
-carefully verify that this is the only change. If so, fix it with:
-
-.. code-block:: shell
-
-    $ lua run_functional_tests.lua --update UnitXml UnitTap UnitText
-    >>>>>>> Generating test/ref/unitTestsXmlDefault.txt
-    >>>>>>> Generating test/ref/unitTestsXmlQuiet.txt
-    >>>>>>> Generating test/ref/unitTestsXmlVerbose.txt
-    >>>>>>> Generating test/ref/unitTestsTapDefault.txt
-    >>>>>>> Generating test/ref/unitTestsTapQuiet.txt
-    >>>>>>> Generating test/ref/unitTestsTapVerbose.txt
-    >>>>>>> Generating test/ref/unitTestsTextDefault.txt
-    >>>>>>> Generating test/ref/unitTestsTextQuiet.txt
-    >>>>>>> Generating test/ref/unitTestsTextVerbose.txt
-    $
-
-Then commit the updates files.
-
-
-
-
-
-
-
-
-
+1. Increasing LuaUnit version
+2. Improving or breaking LuaUnit output
 
 
 Index and Search page
