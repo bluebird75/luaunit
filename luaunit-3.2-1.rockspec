@@ -4,8 +4,7 @@ source =
 {
 	url = "git://github.com/bluebird75/luaunit",
 	
-	-- to be updated when v3.2 is released:
-	-- tag = "LUAUNIT_V3_2"
+	tag = "LUAUNIT_V3_2"
 }
 
 description =
@@ -41,5 +40,5 @@ build =
 	{
 		luaunit = "luaunit.lua"
 	},
-	copy_directories = { "doc/html" }
+	-- copy_directories = { "doc/html" }
 }
