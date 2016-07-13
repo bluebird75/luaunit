@@ -75,6 +75,7 @@ A rocks is being worked on.
 
 #### Version 3.2 - 12. Jul 2016
 * distinguish between failures (failed assertion) and errors
+* add command-line option to stop on first error or failure
 * support for new versions: Lua 5.3 and LuaJIT (2.0, 2.1 beta)
 * validation of all lua versions on Travis CI and AppVeyor
 * added compatibility layer with forked luaunit v2.x

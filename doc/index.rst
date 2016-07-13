@@ -57,6 +57,7 @@ This documentation describes the functionality of LuaUnit v3.2 .
 
 New in version 3.2 - 12. Jul 2016
 ---------------------------------
+* Add command-line option to stop on first error or failure
 * Distinguish between failures (failed assertion) and errors
 * Support for new versions: Lua 5.3 and LuaJIT (2.0, 2.1 beta)
 * Validation of all lua versions on Travis CI and AppVeyor
@@ -225,7 +226,13 @@ You always have:
 * the date at which the test suite was started
 * the group to which the function belongs (usually, the name of the function table, and *<TestFunctions>* for all direct test functions)
 * the name of the function being executed
-* a report at the end, with number of executed test, number of non selected tests, number of failures and duration.
+* a report at the end, with number of executed test, number of non selected tests, number of failures, number of errors (if any) and duration.
+
+The difference between failures and errors are:
+
+* luaunit assertion functions generate failures
+* any unexpected error during execution generates an error
+* failures or errors during setup() or teardown() always generate errors
 
 
 You also want to test that when the function receives negative numbers, it generates an error. Use
@@ -668,6 +675,12 @@ actually match the pattern are selected. When specifying more than one pattern,
 they are tried one by one until the name matches (OR combination).
 
 Make sure you esape magic chars like ``+?-*`` with ``%`` .
+
+**Stopping on first error or failure**
+
+If --failure or -f is passed as an option, LuaUnit will stop on the first failure or error and display the test results.
+
+If --error or -e is passed as an option, LuaUnit will stop on the first error (but continue on failures).
 
 
 **Other Options:**
