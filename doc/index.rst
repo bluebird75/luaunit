@@ -46,6 +46,13 @@ https://github.com/bluebird75/luaunit
 
 It is released under the BSD license.
 
+
+Upgrade note
+================
+
+**Important note when upgrading to version 3.1 and above** : there is a break of backward compatibility in version 3.1, assertions functions are no longer exported directly to the global namespace. See :ref:`luaunit-global-asserts` on how to adjust or restore previous behavior.
+
+
 LuaUnit development
 ===================
 
