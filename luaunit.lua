@@ -16,6 +16,7 @@ local M={}
 M.private = {}
 
 M.VERSION='3.2'
+M._VERSION=M.VERSION -- For LuaUnit v2 compatibility
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer 
 assertEquals( expected, actual ).
@@ -850,6 +851,22 @@ for _, funcName in ipairs(
 end
 
 --[[
+Add shortcuts for verifying type of a variable, without failure (luaunit v2 compatibility)
+M.isXxx(value) -> returns true if type(value) conforms to "xxx"
+]]
+for _, typeExpected in ipairs(
+    {'Number', 'String', 'Table', 'Boolean',
+     'Function', 'Userdata', 'Thread', 'Nil' }
+) do
+    local typeExpectedLower = typeExpected:lower()
+    local isType = function(value)
+        return (type(value) == typeExpectedLower)
+    end
+    M['is'..typeExpected] = isType
+    M['is_'..typeExpectedLower] = isType
+end
+
+--[[
 Add non-type assertion functions to the module table M. Each of these functions
 takes a single parameter "value", and checks that its Lua type differs from the
 expected string (derived from the function name):
@@ -917,7 +934,8 @@ function M.wrapFunctions(...)
     -- so just do nothing !
     io.stderr:write[[Use of WrapFunctions() is no longer needed.
 Just prefix your test function names with "test" or "Test" and they
-will be picked up and run by LuaUnit.]]
+will be picked up and run by LuaUnit.
+]]
 end
 
 local list_of_funcs = {

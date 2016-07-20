@@ -39,7 +39,9 @@ end
 
 local function typeAsserter( goodType, badType, goodAsserter, badAsserter )
     goodAsserter( goodType )
-    badAsserter( badType )
+    if badAsserter ~= nil then
+        badAsserter( badType )
+    end
 end
 
 function TestLuaUnitV2Compat:testAssertType()
@@ -47,13 +49,21 @@ function TestLuaUnitV2Compat:testAssertType()
     local t = coroutine.create( function(v) local y=v+1 end )
     local typesToVerify = {
         -- list of: { goodType, badType, goodAsserter, badAsserter }
-        { true, "toto", assertBoolean, assertNotBoolean },
-        { 1   , "toto", assertNumber, assertNotNumber },
-        { "q" , 1     , assertString, assertNotString },
-        { nil , 1     , assertNil, assertNotNil },
-        { {1,2}, "toto", assertTable, assertNotTable },
+        {  true, "toto", assertBoolean,  assertNotBoolean },
+        {  true, "toto", assert_boolean, assert_not_boolean },
+        {  1   , "toto", assertNumber,   assertNotNumber },
+        {  1   , "toto", assert_number,  assert_not_number },
+        {  "q" , 1     , assertString,   assertNotString },
+        {  "q" , 1     , assert_string,  assert_not_string },
+        {  nil , 1     , assertNil,      assertNotNil },
+        {  nil , 1     , assert_nil,     assert_not_nil },
+        { {1,2}, "toto", assertTable,    assertNotTable },
+        { {1,2}, "toto", assert_table,   assert_not_table },
         { f    , "toto", assertFunction, assertNotFunction },
-        { t    , "toto", assertThread, assertNotThread },
+        { f    , "toto", assert_function,assert_not_function },
+        { t    , "toto", assertThread,   assertNotThread },
+        { t    , "toto", assert_thread,  assert_not_thread },
+
     }
 
     for _,v in ipairs( typesToVerify ) do 
@@ -62,11 +72,42 @@ function TestLuaUnitV2Compat:testAssertType()
     end
 
     assertNotUserdata( "toto" )
+
+
+    local typesToVerify2 = {
+        { true, "toto", lu.isBoolean },
+        { true, "toto", lu.is_boolean },
+        { 1,    "toto", lu.isNumber },
+        { 1,    "toto", lu.is_number },
+        { "t",       1, lu.isString },
+        { "t",       1, lu.is_string },
+        { nil,  "toto", lu.isNil },
+        { nil,  "toto", lu.is_nil },
+        { {1,2},"toto", lu.isTable },
+        { {1,2},"toto", lu.is_table },
+        { f,    "toto", lu.isFunction },
+        { f,    "toto", lu.is_function },
+        { t,    "toto", lu.isThread },
+        { t,    "toto", lu.is_thread },
+    }
+
+    for _,v in ipairs( typesToVerify2 ) do 
+        local goodType, badType, goodTypeVerifier = v[1], v[2], v[3]
+        if (v[3] == nil) then
+            print('Missing function at index '.._)
+            assertNotNil( v[3] )
+        end
+        assertTrue ( goodTypeVerifier( goodType ) )
+        assertFalse( goodTypeVerifier( badType ) )
+    end
+
 end
 
 function TestLuaUnitV2Compat:testHasVersionKey()
     assertNotNil( lu.VERSION )
     assertString( lu.VERSION )
+    assertNotNil( lu._VERSION )
+    assertTrue( lu.is_string( lu._VERSION ) )
 end
 
 function TestLuaUnitV2Compat:testTableEquality()
