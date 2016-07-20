@@ -1,10 +1,10 @@
 package = "LuaUnit"
-version = "3.2-1"
+version = "3.2.1-1"
 source =
 {
 	url = "git://github.com/bluebird75/luaunit",
 	
-	tag = "LUAUNIT_V3_2"
+	tag = "LUAUNIT_V3_2_1"
 }
 
 description =
@@ -19,9 +19,11 @@ description =
 		platforms (Jenkins, Maven, ...) . The integrated command-line options provide a flexible interface to select tests by name 
 		or patterns, control output format, set verbosity, ...
 
-		LuaUnit works with Lua 5.1, 5.2 and 5.3 . It was tested on Windows XP, Windows Server 2012 R2 (x64) and 
-		Ubuntu 14.04 (see continuous build results on Travis-CI and AppVeyor ) and should work on all platforms 
-		supported by lua. It has no other dependency than lua itself. 
+		LuaUnit works with Lua 5.1, LuaJIT 2.0, LuaJIT 2.1 beta, Lua 5.2 and Lua 5.3 . It is tested on Windows Seven, Windows Server 2012 R2 (x64) and Ubuntu 14.04 (see continuous build results on Travis-CI and AppVeyor) and should work on all platforms supported by Lua.
+		It has no other dependency than Lua itself. 
+
+		**Important note when upgrading to version 3.1 and above** : break of backward compatibility, assertions functions are
+		no longer exported directly to the global namespace. See [documentation](http://luaunit.readthedocs.io/en/latest/#luaunit-global-asserts) on how to adjust or restore previous behavior.
 
 	]],
 	homepage = "http://github.com/bluebird75/luaunit",
