@@ -61,7 +61,7 @@ You can also install it with bower :
 
 **LuaRocks**
 
-A rocks is being worked on.
+LuaUnit v3.2 and above are available on LuaRocks.
 
 ##Contributors
 * [NiteHawk](https://github.com/n1tehawk)
