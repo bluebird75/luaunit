@@ -30,6 +30,10 @@ It is released under the BSD license.
 Documentation is available on
 [read-the-docs](http://luaunit.readthedocs.org/en/latest/)
 
+**Important note when upgrading to version 3.1 and above** : break of backward compatibility, assertions functions are
+no longer exported directly to the global namespace. See [documentation](http://luaunit.readthedocs.io/en/latest/#luaunit-global-asserts) on how to adjust or restore previous behavior.
+
+
 ##Install
 
 The version in development on github is always stable and can be used safely.
