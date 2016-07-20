@@ -19,7 +19,7 @@ files = {
         ignore = {"test%w+"}
     },
     ["test/compat_luaunit_v2x.lua"] = {
-        ignore = {"EXPORT_ASSERT_TO_GLOBALS", "[Tt]est[%w_]+", "assert%w+"}
+        ignore = {"EXPORT_ASSERT_TO_GLOBALS", "[Tt]est[%w_]+", "assert[%w_]+"}
     },
     ["test/legacy_example_with_luaunit.lua"] = {
         ignore = {"LuaUnit", "EXPORT_ASSERT_TO_GLOBALS", "[Tt]est[%w_]+",
