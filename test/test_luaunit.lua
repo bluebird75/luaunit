@@ -190,12 +190,6 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals(C, C)
     end
 
-    function TestLuaUnitUtilities:test_table_keytostring()
-        lu.assertEquals( lu.private._table_keytostring( 'a' ), 'a' )
-        lu.assertEquals( lu.private._table_keytostring( 'a0' ), 'a0' )
-        lu.assertEquals( lu.private._table_keytostring( 'a0!' ), '"a0!"' )
-    end
-
     function TestLuaUnitUtilities:test_prettystr()
         lu.assertEquals( lu.prettystr( 1 ), "1" )
         lu.assertEquals( lu.prettystr( 1.1 ), "1.1" )
@@ -209,6 +203,14 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.prettystr( { [{}] = 1 }), '{{}=1}' )
         lu.assertEquals( lu.prettystr( { 1, [{}] = 1, 2 }), '{1, 2, {}=1}' )
         lu.assertEquals( lu.prettystr( { 1, [{one=1}] = 1, 2, "test", false }), '{1, 2, "test", false, {one=1}=1}' )
+
+        -- test the (private) key string formatting within _table_tostring()
+        lu.assertEquals( lu.prettystr( {a = 1} ), '{a=1}' )
+        lu.assertEquals( lu.prettystr( {a0 = 2} ), '{a0=2}' )
+        lu.assertEquals( lu.prettystr( {['a0!'] = 3} ), '{"a0!"=3}' )
+        lu.assertEquals( lu.prettystr( {["foo\nbar"] = 1}), [[{"foo\nbar"=1}]] )
+        lu.assertEquals( lu.prettystr( {["foo'bar"] = 2}), [[{"foo'bar"=2}]] )
+        lu.assertEquals( lu.prettystr( {['foo"bar'] = 3}), [[{'foo"bar'=3}]] )
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
