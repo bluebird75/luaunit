@@ -404,16 +404,6 @@ local function prettystrPadded(value1, value2, suffix_a, suffix_b)
 end
 M.private.prettystrPadded = prettystrPadded
 
-local function _table_keytostring(k)
-    -- like prettystr but do not enclose with "" if the string is just alphanumerical
-    -- this is better for displaying table keys who are often simple strings
-    if "string" == type(k) and k:match("^[_%a][_%w]*$") then
-        return k
-    end
-    return prettystr(k)
-end
-M.private._table_keytostring = _table_keytostring
-
 local TABLE_TOSTRING_SEP = ", "
 local TABLE_TOSTRING_SEP_LEN = string.len(TABLE_TOSTRING_SEP)
 
@@ -424,6 +414,15 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
 
     local result, dispOnMultLines = {}, false
 
+    -- like prettystr but do not enclose with "" if the string is just alphanumerical
+    -- this is better for displaying table keys who are often simple strings
+    local function keytostring(k)
+        if "string" == type(k) and k:match("^[_%a][_%w]*$") then
+            return k
+        end
+        return prettystr_sub(k, indentLevel+1, true, printTableRefs, recursionTable)
+    end
+
     local entry, count, seq_index = nil, 0, 1
     for k, v in sortedPairs( tbl ) do
         if k == seq_index then
@@ -431,7 +430,7 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
             entry = ''
             seq_index = seq_index + 1
         else
-            entry = _table_keytostring( k ) .. "="
+            entry = keytostring(k) .. "="
         end
         if recursionTable[v] then -- recursion detected!
             recursionTable.recursionDetected = true
