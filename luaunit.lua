@@ -66,6 +66,21 @@ Options:
 --
 ----------------------------------------------------------------
 
+local function pcall_or_abort(func, ...)
+    local result = {pcall(func, ...)}
+    if not result[1] then
+        -- an error occurred
+        print(result[2]) -- error message
+        print()
+        print(M.USAGE)
+        os.exit(-1)
+    end
+    if _VERSION == "Lua 5.1" then
+        return unpack(result, 2) -- unpack is a global function for Lua 5.1
+    end
+    return table.unpack(result, 2)
+end
+
 local crossTypeOrdering = {
     number = 1,
     boolean = 2,
@@ -114,6 +129,7 @@ local function sortedNext(state, control)
     --print("sortedNext: control = "..tostring(control) )
     if control == nil then
         -- start of iteration
+        state.count = #state.sortedIdx
         state.lastIdx = 1
         key = state.sortedIdx[1]
         return key, state.t[key]
@@ -123,8 +139,7 @@ local function sortedNext(state, control)
     if control ~= state.sortedIdx[state.lastIdx] then
         -- strange, we have to find the next value by ourselves
         -- the key table is sorted in crossTypeSort() order! -> use bisection
-        local count = #state.sortedIdx
-        local lower, upper = 1, count
+        local lower, upper = 1, state.count
         repeat
             state.lastIdx = math.modf((lower + upper) / 2)
             key = state.sortedIdx[state.lastIdx]
@@ -138,7 +153,7 @@ local function sortedNext(state, control)
             end
         until lower > upper
         if lower > upper then -- only true if the key wasn't found, ...
-            state.lastIdx = count -- ... so ensure no match for the code below
+            state.lastIdx = state.count -- ... so ensure no match in code below
         end
     end
 
@@ -340,7 +355,8 @@ local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recurs
         --if v.__class__ then
         --    return string.gsub( tostring(v), 'table', v.__class__ )
         --end
-        return M.private._table_tostring(v, indentLevel, printTableRefs, recursionTable)
+        return M.private._table_tostring(v, indentLevel, keeponeline,
+                                            printTableRefs, recursionTable)
     end
 
     return tostring(v)
@@ -389,25 +405,24 @@ local function prettystrPadded(value1, value2, suffix_a, suffix_b)
 end
 M.private.prettystrPadded = prettystrPadded
 
-local function _table_keytostring(k)
-    -- like prettystr but do not enclose with "" if the string is just alphanumerical
-    -- this is better for displaying table keys who are often simple strings
-    if "string" == type(k) and k:match("^[_%a][_%w]*$") then
-        return k
-    end
-    return prettystr(k)
-end
-M.private._table_keytostring = _table_keytostring
-
 local TABLE_TOSTRING_SEP = ", "
 local TABLE_TOSTRING_SEP_LEN = string.len(TABLE_TOSTRING_SEP)
 
-local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable )
+local function _table_tostring( tbl, indentLevel, keeponeline, printTableRefs, recursionTable )
     printTableRefs = printTableRefs or M.PRINT_TABLE_REF_IN_ERROR_MSG
     recursionTable = recursionTable or {}
     recursionTable[tbl] = true
 
     local result, dispOnMultLines = {}, false
+
+    -- like prettystr but do not enclose with "" if the string is just alphanumerical
+    -- this is better for displaying table keys who are often simple strings
+    local function keytostring(k)
+        if "string" == type(k) and k:match("^[_%a][_%w]*$") then
+            return k
+        end
+        return prettystr_sub(k, indentLevel+1, true, printTableRefs, recursionTable)
+    end
 
     local entry, count, seq_index = nil, 0, 1
     for k, v in sortedPairs( tbl ) do
@@ -416,36 +431,38 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
             entry = ''
             seq_index = seq_index + 1
         else
-            entry = _table_keytostring( k ) .. "="
+            entry = keytostring(k) .. "="
         end
         if recursionTable[v] then -- recursion detected!
             recursionTable.recursionDetected = true
             entry = entry .. "<"..tostring(v)..">"
         else
             entry = entry ..
-                prettystr_sub( v, indentLevel+1, true, printTableRefs, recursionTable )
+                prettystr_sub( v, indentLevel+1, keeponeline, printTableRefs, recursionTable )
         end
         count = count + 1
         result[count] = entry
     end
 
-    -- set dispOnMultLines if the maximum LINE_LENGTH would be exceeded
-    local totalLength = 0
-    for k, v in ipairs( result ) do
-        totalLength = totalLength + string.len( v )
-        if totalLength >= M.LINE_LENGTH then
-            dispOnMultLines = true
-            break
+    if not keeponeline then
+        -- set dispOnMultLines if the maximum LINE_LENGTH would be exceeded
+        local totalLength = 0
+        for k, v in ipairs( result ) do
+            totalLength = totalLength + string.len( v )
+            if totalLength >= M.LINE_LENGTH then
+                dispOnMultLines = true
+                break
+            end
         end
-    end
 
-    if not dispOnMultLines then
-        -- adjust with length of separator(s):
-        -- two items need 1 sep, three items two seps, ... plus len of '{}'
-        if count > 0 then
-            totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * (count - 1)
+        if not dispOnMultLines then
+            -- adjust with length of separator(s):
+            -- two items need 1 sep, three items two seps, ... plus len of '{}'
+            if count > 0 then
+                totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * (count - 1)
+            end
+            dispOnMultLines = totalLength + 2 >= M.LINE_LENGTH
         end
-        dispOnMultLines = totalLength + 2 >= M.LINE_LENGTH
     end
 
     -- now reformat the result table (currently holding element strings)
@@ -1443,21 +1460,20 @@ end
         if 'function' == type(aObject) then return aObject end
     end
 
-    function M.LuaUnit.isClassMethod(aName)
-        -- return true if aName contains a class + a method name in the form class:method
-        return string.find(aName, '.', nil, true) ~= nil
-    end
-
     function M.LuaUnit.splitClassMethod(someName)
-        -- return a pair className, methodName for a name in the form class:method
-        -- return nil if not a class + method name
-        -- name is class + method
-        local hasMethod, methodName, className
-        hasMethod = string.find(someName, '.', nil, true )
-        if not hasMethod then return nil end
-        methodName = string.sub(someName, hasMethod+1)
-        className = string.sub(someName,1,hasMethod-1)
-        return className, methodName
+        --[[
+        Return a pair of className, methodName strings for a name in the form
+        "class.method". If no class part (or separator) is found, will return
+        nil, someName instead (the latter being unchanged).
+
+        This convention thus also replaces the older isClassMethod() test:
+        You just have to check for a non-nil className (return) value.
+        ]]
+        local separator = string.find(someName, '.', 1, true)
+        if separator then
+            return someName:sub(1, separator - 1), someName:sub(separator + 1)
+        end
+        return nil, someName
     end
 
     function M.LuaUnit.isMethodTestName( s )
@@ -2003,8 +2019,8 @@ end
                 if type(instance) ~= 'table' then
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 end
-                if M.LuaUnit.isClassMethod( name ) then
-                    local className, methodName = M.LuaUnit.splitClassMethod( name )
+                local className, methodName = M.LuaUnit.splitClassMethod( name )
+                if className then
                     local methodInstance = instance[methodName]
                     if methodInstance == nil then
                         error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
@@ -2053,8 +2069,8 @@ end
                 if type(instance) ~= 'table' then
                     error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
                 else
-                    assert( M.LuaUnit.isClassMethod( name ) )
                     local className, methodName = M.LuaUnit.splitClassMethod( name )
+                    assert( className ~= nil )
                     local methodInstance = instance[methodName]
                     if methodInstance == nil then
                         error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
@@ -2084,8 +2100,8 @@ end
         local listOfNameAndInst = {}
 
         for i,name in ipairs( listOfName ) do
-            if M.LuaUnit.isClassMethod( name ) then
-                local className, methodName = M.LuaUnit.splitClassMethod( name )
+            local className, methodName = M.LuaUnit.splitClassMethod( name )
+            if className then
                 instanceName = className
                 instance = _G[instanceName]
 
@@ -2149,15 +2165,7 @@ end
             args = cmdline_argv
         end
 
-        local no_error, val = pcall( M.LuaUnit.parseCmdLine, args )
-        if not no_error then
-            print(val) -- error message
-            print()
-            print(M.USAGE)
-            os.exit(-1)
-        end
-
-        local options = val
+        local options = pcall_or_abort( M.LuaUnit.parseCmdLine, args )
 
         -- We expect these option fields to be either `nil` or contain
         -- valid values, so it's safe to always copy them directly.
@@ -2167,19 +2175,12 @@ end
         self.fname         = options.fname
         self.patternFilter = options.pattern
 
-        if options.output and options.output:lower() == 'junit' and options.fname == nil then
-            print('With junit output, a filename must be supplied with -n or --name')
-            os.exit(-1)
-        end
-
         if options.output then
-            no_error, val = pcall(self.setOutputType, self, options.output)
-            if not no_error then
-                print(val) -- error message
-                print()
-                print(M.USAGE)
+            if options.output:lower() == 'junit' and options.fname == nil then
+                print('With junit output, a filename must be supplied with -n or --name')
                 os.exit(-1)
             end
+            pcall_or_abort(self.setOutputType, self, options.output)
         end
 
         self:runSuiteByNames( options.testNames or M.LuaUnit.collectTests() )
