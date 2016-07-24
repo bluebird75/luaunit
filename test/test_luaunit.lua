@@ -190,12 +190,6 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals(C, C)
     end
 
-    function TestLuaUnitUtilities:test_table_keytostring()
-        lu.assertEquals( lu.private._table_keytostring( 'a' ), 'a' )
-        lu.assertEquals( lu.private._table_keytostring( 'a0' ), 'a0' )
-        lu.assertEquals( lu.private._table_keytostring( 'a0!' ), '"a0!"' )
-    end
-
     function TestLuaUnitUtilities:test_prettystr()
         lu.assertEquals( lu.prettystr( 1 ), "1" )
         lu.assertEquals( lu.prettystr( 1.1 ), "1.1" )
@@ -209,6 +203,14 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.prettystr( { [{}] = 1 }), '{{}=1}' )
         lu.assertEquals( lu.prettystr( { 1, [{}] = 1, 2 }), '{1, 2, {}=1}' )
         lu.assertEquals( lu.prettystr( { 1, [{one=1}] = 1, 2, "test", false }), '{1, 2, "test", false, {one=1}=1}' )
+
+        -- test the (private) key string formatting within _table_tostring()
+        lu.assertEquals( lu.prettystr( {a = 1} ), '{a=1}' )
+        lu.assertEquals( lu.prettystr( {a0 = 2} ), '{a0=2}' )
+        lu.assertEquals( lu.prettystr( {['a0!'] = 3} ), '{"a0!"=3}' )
+        lu.assertEquals( lu.prettystr( {["foo\nbar"] = 1}), [[{"foo\nbar"=1}]] )
+        lu.assertEquals( lu.prettystr( {["foo'bar"] = 2}), [[{"foo'bar"=2}]] )
+        lu.assertEquals( lu.prettystr( {['foo"bar'] = 3}), [[{'foo"bar'=3}]] )
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
@@ -228,6 +230,10 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
             '    "hhhhhhhhhhhhhh"',
             '}',
         } , '\n' ) )
+
+        -- make sure that prettystr(t, true) respects "keeponeline"
+        lu.assertTrue( lu.private.hasNewLine( lu.prettystr(t2)) )
+        lu.assertFalse( lu.private.hasNewLine( lu.prettystr(t2, true)) )
 
         local t2bis = { 1,2,3,'12345678901234567890123456789012345678901234567890123456789012345678901234567890', 4,5,6 }
         lu.assertEquals(lu.prettystr(t2bis), [[{
@@ -430,15 +436,10 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertNil( lu.LuaUnit.asFunction( "not a function" ) )
     end
 
-    function TestLuaUnitUtilities:test_IsClassMethod()
-        lu.assertEquals( lu.LuaUnit.isClassMethod( 'toto' ), false )
-        lu.assertEquals( lu.LuaUnit.isClassMethod( 'toto.titi' ), true )
-    end
-
     function TestLuaUnitUtilities:test_splitClassMethod()
         lu.assertEquals( lu.LuaUnit.splitClassMethod( 'toto' ), nil )
-        local v1, v2 = lu.LuaUnit.splitClassMethod( 'toto.titi' )
-        lu.assertEquals( {v1, v2}, {'toto', 'titi'} )
+        lu.assertEquals( {lu.LuaUnit.splitClassMethod( 'toto.titi' )},
+                         {'toto', 'titi'} )
     end
 
     function TestLuaUnitUtilities:test_isTestName()
