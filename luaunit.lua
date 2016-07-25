@@ -18,7 +18,7 @@ M.private = {}
 M.VERSION='3.2'
 M._VERSION=M.VERSION -- For LuaUnit v2 compatibility
 
---[[ Some people like assertEquals( actual, expected ) and some people prefer 
+--[[ Some people like assertEquals( actual, expected ) and some people prefer
 assertEquals( expected, actual ).
 ]]--
 M.ORDER_ACTUAL_EXPECTED = true
@@ -53,7 +53,11 @@ Options:
   -o, --output OUTPUT:    Set output type to OUTPUT
                           Possible values: text, tap, junit, nil
   -n, --name NAME:        For junit only, mandatory name of xml file
+  -c, --count NUM:        Execute all tests NUM times, e.g. to trig the JIT
   -p, --pattern PATTERN:  Execute all test names matching the Lua PATTERN
+                          May be repeated to include severals patterns
+                          Make sure you escape magic chars like +? with %
+  -x, --exclude PATTERN:  Exclude all test names matching the Lua PATTERN
                           May be repeated to include severals patterns
                           Make sure you escape magic chars like +? with %
   testname1, testname2, ... : tests to run in the form of testFunction,
@@ -663,13 +667,13 @@ function M.assertError(f, ...)
 end
 
 function M.assertTrue(value)
-    if not value then
+    if value ~= true then
         failure("expected: true, actual: " ..prettystr(value), 2)
     end
 end
 
 function M.assertFalse(value)
-    if value then
+    if value ~= false then
         failure("expected: false, actual: " ..prettystr(value), 2)
     end
 end
@@ -686,6 +690,18 @@ function M.assertNotIsNil(value)
     end
 end
 
+function M.assertIsNaN(value)
+    if type(value) ~= "number" or value == value then
+        failure("expected: nan, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertNotIsNaN(value)
+    if type(value) == "number" and value ~= value then
+        failure("expected non nan value, received nan", 2)
+    end
+end
+
 function M.assertEquals(actual, expected)
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
@@ -698,11 +714,7 @@ function M.assertEquals(actual, expected)
     end
 end
 
--- Help Lua in corner cases like almostEquals(1.1, 1.0, 0.1), which by default
--- may not work. We need to give margin a small boost; EPSILON defines the
--- default value to use for this:
-local EPSILON = 1E-11
-function M.almostEquals( actual, expected, margin, margin_boost )
+function M.almostEquals( actual, expected, margin )
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
             prettystr(actual), prettystr(expected), prettystr(margin))
@@ -710,8 +722,7 @@ function M.almostEquals( actual, expected, margin, margin_boost )
     if margin < 0 then
         error('almostEquals: margin must not be negative, current value is ' .. margin, 3)
     end
-    local realmargin = margin + (margin_boost or EPSILON)
-    return math.abs(expected - actual) <= realmargin
+    return math.abs(expected - actual) <= margin
 end
 
 function M.assertAlmostEquals( actual, expected, margin )
@@ -986,6 +997,7 @@ local list_of_funcs = {
     { 'assertIsTable'           , 'assert_is_table' },
     { 'assertIsBoolean'         , 'assert_is_boolean' },
     { 'assertIsNil'             , 'assert_is_nil' },
+    { 'assertIsNaN'             , 'assert_is_nan' },
     { 'assertIsFunction'        , 'assert_is_function' },
     { 'assertIsThread'          , 'assert_is_thread' },
     { 'assertIsUserdata'        , 'assert_is_userdata' },
@@ -996,6 +1008,7 @@ local list_of_funcs = {
     { 'assertIsTable'           , 'assertTable' },
     { 'assertIsBoolean'         , 'assertBoolean' },
     { 'assertIsNil'             , 'assertNil' },
+    { 'assertIsNaN'             , 'assertNaN' },
     { 'assertIsFunction'        , 'assertFunction' },
     { 'assertIsThread'          , 'assertThread' },
     { 'assertIsUserdata'        , 'assertUserdata' },
@@ -1006,6 +1019,7 @@ local list_of_funcs = {
     { 'assertIsTable'           , 'assert_table' },
     { 'assertIsBoolean'         , 'assert_boolean' },
     { 'assertIsNil'             , 'assert_nil' },
+    { 'assertIsNaN'             , 'assert_nan' },
     { 'assertIsFunction'        , 'assert_function' },
     { 'assertIsThread'          , 'assert_thread' },
     { 'assertIsUserdata'        , 'assert_userdata' },
@@ -1016,6 +1030,7 @@ local list_of_funcs = {
     { 'assertNotIsTable'        , 'assert_not_is_table' },
     { 'assertNotIsBoolean'      , 'assert_not_is_boolean' },
     { 'assertNotIsNil'          , 'assert_not_is_nil' },
+    { 'assertNotIsNaN'          , 'assert_not_is_nan' },
     { 'assertNotIsFunction'     , 'assert_not_is_function' },
     { 'assertNotIsThread'       , 'assert_not_is_thread' },
     { 'assertNotIsUserdata'     , 'assert_not_is_userdata' },
@@ -1026,6 +1041,7 @@ local list_of_funcs = {
     { 'assertNotIsTable'        , 'assertNotTable' },
     { 'assertNotIsBoolean'      , 'assertNotBoolean' },
     { 'assertNotIsNil'          , 'assertNotNil' },
+    { 'assertNotIsNaN'          , 'assertNotNaN' },
     { 'assertNotIsFunction'     , 'assertNotFunction' },
     { 'assertNotIsThread'       , 'assertNotThread' },
     { 'assertNotIsUserdata'     , 'assertNotUserdata' },
@@ -1036,6 +1052,7 @@ local list_of_funcs = {
     { 'assertNotIsTable'        , 'assert_not_table' },
     { 'assertNotIsBoolean'      , 'assert_not_boolean' },
     { 'assertNotIsNil'          , 'assert_not_nil' },
+    { 'assertNotIsNaN'          , 'assert_not_nan' },
     { 'assertNotIsFunction'     , 'assert_not_function' },
     { 'assertNotIsThread'       , 'assert_not_thread' },
     { 'assertNotIsUserdata'     , 'assert_not_userdata' },
@@ -1267,7 +1284,7 @@ then OK or FAILED (failures=1, error=1)
 Started
  .
  Finished in 0.002695 seconds.
- 
+
  1 tests, 2 assertions, 0 failures, 0 errors
 
 -- Ruby:
@@ -1276,13 +1293,13 @@ Loaded suite tc_simple_number2
 Started
 F..
 Finished in 0.038617 seconds.
- 
+
   1) Failure:
 test_failure(TestSimpleNumber) [tc_simple_number2.rb:16]:
 Adding doesn't work.
 <3> expected but was
 <4>.
- 
+
 3 tests, 4 assertions, 1 failures, 0 errors
 
 -- Java Junit
@@ -1306,18 +1323,18 @@ Tests run: 8,  Failures: 1,  Errors: 0
  T E S T S
 -------------------------------------------------------
 Running math.AdditionTest
-Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed:
 0.03 sec <<< FAILURE!
 
 Results :
 
-Failed tests: 
+Failed tests:
   testLireSymbole(math.AdditionTest)
 
 Tests run: 2, Failures: 1, Errors: 0, Skipped: 0
 
 
--- LuaUnit 
+-- LuaUnit
 ---- non verbose
 * display . or F or E when running tests
 ---- verbose
@@ -1510,20 +1527,26 @@ end
         -- --error, -e: treat errors as fatal (quit program)
         -- --output, -o, + name: select output type
         -- --pattern, -p, + pattern: run test matching pattern, may be repeated
+        -- --exclude, -x, + pattern: run test not matching pattern, may be repeated
         -- --name, -n, + fname: name of output file for junit, default to stdout
+        -- --count, -c, + num: number of times to execute each test
         -- [testnames, ...]: run selected test names
         --
         -- Returns a table with the following fields:
         -- verbosity: nil, M.VERBOSITY_DEFAULT, M.VERBOSITY_QUIET, M.VERBOSITY_VERBOSE
         -- output: nil, 'tap', 'junit', 'text', 'nil'
         -- testNames: nil or a list of test names to run
+        -- exeCount: num or 1
         -- pattern: nil or a list of patterns
+        -- exclude: nil or a list of patterns
 
         local result = {}
         local state = nil
         local SET_OUTPUT = 1
         local SET_PATTERN = 2
-        local SET_FNAME = 3
+        local SET_EXCLUDE = 3
+        local SET_FNAME = 4
+        local SET_XCOUNT = 5
 
         if cmdLine == nil then
             return result
@@ -1554,8 +1577,14 @@ end
             elseif option == '--name' or option == '-n' then
                 state = SET_FNAME
                 return state
+            elseif option == '--count' or option == '-c' then
+                state = SET_XCOUNT
+                return state
             elseif option == '--pattern' or option == '-p' then
                 state = SET_PATTERN
+                return state
+            elseif option == '--exclude' or option == '-x' then
+                state = SET_EXCLUDE
                 return state
             end
             error('Unknown option: '..option,3)
@@ -1568,11 +1597,21 @@ end
             elseif state == SET_FNAME then
                 result['fname'] = cmdArg
                 return
+            elseif state == SET_XCOUNT then
+                result['exeCount'] = tonumber(cmdArg)
+                return
             elseif state == SET_PATTERN then
                 if result['pattern'] then
                     table.insert( result['pattern'], cmdArg )
                 else
                     result['pattern'] = { cmdArg }
+                end
+                return
+            elseif state == SET_EXCLUDE then
+                if result['exclude'] then
+                    table.insert( result['exclude'], cmdArg )
+                else
+                    result['exclude'] = { cmdArg }
                 end
                 return
             end
@@ -1628,6 +1667,23 @@ end
         -- if patternFilter is nil, return true (no filtering)
         if patternFilter == nil then
             return true
+        end
+
+        for i,pattern in ipairs(patternFilter) do
+            if string.find(expr, pattern) then
+                return true
+            end
+        end
+
+        return false
+    end
+
+    function M.LuaUnit.patternExclude( patternFilter, expr )
+        -- check if any of patternFilter is contained in expr. If so, return true.
+        -- return false if None of the patterns are contained in expr
+        -- if patternFilter is nil, return false (no filtering)
+        if patternFilter == nil then
+            return false
         end
 
         for i,pattern in ipairs(patternFilter) do
@@ -1757,7 +1813,8 @@ end
             startTime = os.clock(),
             startDate = os.date(os.getenv('LUAUNIT_DATEFMT')),
             startIsodate = os.date('%Y-%m-%dT%H:%M:%S'),
-            patternFilter = self.patternFilter,
+            patternIncludeFilter = self.patternIncludeFilter,
+            patternExcludeFilter = self.patternExcludeFilter,
             tests = {},
             failures = {},
             errors = {},
@@ -1923,8 +1980,9 @@ end
         -- determine if the error was a failed test:
         -- We do this by stripping the failure prefix from the error message,
         -- while keeping track of the gsub() count. A non-zero value -> failure
-        local failed
-        err.msg, failed = err.msg:gsub(M.FAILURE_PREFIX, "", 1)
+        local failed, iter_msg
+        iter_msg = self.exeCount and 'iteration: '..self.currentCount..', '
+        err.msg, failed = err.msg:gsub(M.FAILURE_PREFIX, iter_msg or '', 1)
         if failed > 0 then
             err.status = NodeStatus.FAIL
         end
@@ -1967,30 +2025,34 @@ end
 
         self:startTest(prettyFuncName)
 
-        -- run setUp first (if any)
-        if classInstance then
-            local func = self.asFunction( classInstance.setUp )
-                         or self.asFunction( classInstance.Setup )
-                         or self.asFunction( classInstance.setup )
-                         or self.asFunction( classInstance.SetUp )
-            if func then
-                self:addStatus(self:protectedCall(classInstance, func, className..'.setUp'))
+        for iter_n = 1, self.exeCount or 1 do
+            self.currentCount = iter_n
+
+            -- run setUp first (if any)
+            if classInstance then
+                  local func = self.asFunction( classInstance.setUp ) or
+                               self.asFunction( classInstance.Setup ) or
+                               self.asFunction( classInstance.setup ) or
+                               self.asFunction( classInstance.SetUp )
+                if func then
+                    self:addStatus(self:protectedCall(classInstance, func, className..'.setUp'))
+                end
             end
-        end
 
-        -- run testMethod()
-        if self.result.currentNode:isPassed() then
-            self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
-        end
+            -- run testMethod()
+            if self.result.currentNode:isPassed() then
+                self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
+            end
 
-        -- lastly, run tearDown (if any)
-        if classInstance then
-            local func = self.asFunction( classInstance.tearDown )
-                         or self.asFunction( classInstance.TearDown )
-                         or self.asFunction( classInstance.teardown )
-                         or self.asFunction( classInstance.Teardown )
-            if func then
-                self:addStatus(self:protectedCall(classInstance, func, className..'.tearDown'))
+            -- lastly, run tearDown (if any)
+            if classInstance then
+                  local func = self.asFunction( classInstance.tearDown ) or
+                               self.asFunction( classInstance.TearDown ) or
+                               self.asFunction( classInstance.teardown ) or
+                               self.asFunction( classInstance.Teardown )
+                if func then
+                    self:addStatus(self:protectedCall(classInstance, func, className..'.tearDown'))
+                end
             end
         end
 
@@ -2035,11 +2097,12 @@ end
         return result
     end
 
-    function M.LuaUnit.applyPatternFilter( patternFilter, listOfNameAndInst )
+    function M.LuaUnit.applyPatternFilter( patternIncFilter, patternExcFilter, listOfNameAndInst )
         local included, excluded = {}, {}
         for i, v in ipairs( listOfNameAndInst ) do
             -- local name, instance = v[1], v[2]
-            if M.LuaUnit.patternInclude( patternFilter, v[1] ) then
+            if  M.LuaUnit.patternInclude( patternIncFilter, v[1] ) and
+            not M.LuaUnit.patternExclude( patternExcFilter, v[1] ) then
                 table.insert( included, v )
             else
                 table.insert( excluded, v )
@@ -2056,8 +2119,8 @@ end
         --   * { class.method name, class instance }
 
         local expandedList = self.expandClasses( listOfNameAndInst )
-        local filteredList, filteredOutList
-            = self.applyPatternFilter( self.patternFilter, expandedList )
+        local filteredList, filteredOutList = self.applyPatternFilter(
+            self.patternIncludeFilter, self.patternExcludeFilter, expandedList )
 
         self:startSuite( #filteredList, #filteredOutList )
 
@@ -2173,7 +2236,9 @@ end
         self.quitOnError   = options.quitOnError
         self.quitOnFailure = options.quitOnFailure
         self.fname         = options.fname
-        self.patternFilter = options.pattern
+        self.exeCount             = options.exeCount
+        self.patternIncludeFilter = options.pattern
+        self.patternExcludeFilter = options.exclude
 
         if options.output then
             if options.output:lower() == 'junit' and options.fname == nil then
