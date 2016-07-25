@@ -666,6 +666,10 @@ end
 
 
 local function main()
+    if arg[1] == '--coverage' then
+        LUA = LUA .." -lluacov" -- run tests with LuaCov active
+        table.remove(arg, 1)
+    end
     if arg[1] == '--update' then
         if #arg == 1 then
             -- generate all files
