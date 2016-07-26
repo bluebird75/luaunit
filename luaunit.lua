@@ -26,6 +26,15 @@ M.PRINT_TABLE_REF_IN_ERROR_MSG = false
 M.TABLE_EQUALS_KEYBYCONTENT = true
 M.LINE_LENGTH=80
 
+--[[ EPSILON help Lua in simple corner cases like almostEquals(1.1-0.1, 1),
+which may not work as-is if the user does not provide explicitely some margin
+(e.g. numbers with rational binary representation). The default margin used by
+almostEquals in such case is EPSILON with an initial default value set to
+10^-12. If the user provides a margin, it is used unmodified as a replacement to
+EPSILON, which is then discarded. EPSILON can be changed by the user to suit
+better its needs if the initial default value is not acceptable. ]]--
+M.EPSILON = 1E-12
+
 -- set this to false to debug luaunit
 local STRIP_LUAUNIT_FROM_STACKTRACE=true
 
