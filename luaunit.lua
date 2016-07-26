@@ -710,10 +710,11 @@ function M.assertEquals(actual, expected)
 end
 
 -- Help Lua in corner cases like almostEquals(1.1, 1.0, 0.1), which by default
--- may not work. We need to give margin a small boost; EPSILON defines the
+-- may not work. We need to give a default margin; EPSILON defines the
 -- default value to use for this:
-local EPSILON = 1E-11
-function M.almostEquals( actual, expected, margin, margin_boost )
+local M.EPSILON = 1E-12
+function M.almostEquals( actual, expected, margin )
+    margin = margin or M.EPSILON
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
             prettystr(actual), prettystr(expected), prettystr(margin))
@@ -721,8 +722,7 @@ function M.almostEquals( actual, expected, margin, margin_boost )
     if margin < 0 then
         error('almostEquals: margin must not be negative, current value is ' .. margin, 3)
     end
-    local realmargin = margin + (margin_boost or EPSILON)
-    return math.abs(expected - actual) <= realmargin
+    return math.abs(expected - actual) <= margin
 end
 
 function M.assertAlmostEquals( actual, expected, margin )
