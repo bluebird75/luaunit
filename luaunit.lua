@@ -848,7 +848,7 @@ function M.assertEquals(actual, expected)
     end
 end
 
-function M.almostEquals( actual, expected, margin, margin_boost )
+function M.almostEquals( actual, expected, margin )
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
             prettystr(actual), prettystr(expected), prettystr(margin))
@@ -856,12 +856,12 @@ function M.almostEquals( actual, expected, margin, margin_boost )
     if margin < 0 then
         error('almostEquals: margin must not be negative, current value is ' .. margin, 3)
     end
-    local realmargin = margin + (margin_boost or M.EPSILON)
-    return math.abs(expected - actual) <= realmargin
+    return math.abs(expected - actual) <= margin
 end
 
 function M.assertAlmostEquals( actual, expected, margin )
     -- check that two floats are close by margin
+    margin = margin or M.EPSILON
     if not M.almostEquals(actual, expected, margin) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
@@ -888,6 +888,7 @@ end
 
 function M.assertNotAlmostEquals( actual, expected, margin )
     -- check that two floats are not close by margin
+    margin = margin or M.EPSILON
     if M.almostEquals(actual, expected, margin) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
