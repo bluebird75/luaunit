@@ -712,7 +712,8 @@ end
 -- Help Lua in corner cases like almostEquals(1.1, 1.0, 0.1), which by default
 -- may not work. We need to give a default margin; EPSILON defines the
 -- default value to use for this:
-local M.EPSILON = 1E-12
+M.EPSILON = 1E-12
+
 function M.almostEquals( actual, expected, margin )
     margin = margin or M.EPSILON
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
