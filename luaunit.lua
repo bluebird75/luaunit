@@ -697,6 +697,18 @@ function M.assertNotIsNaN(value)
     end
 end
 
+function M.assertIsInf(value)
+    if math.abs(value) ~= 1/0 then
+        failure("expected: inf, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertNotIsInf(value)
+    if math.abs(value) == 1/0 then
+        failure("expected non inf value, received ±inf", 2)
+    end
+end
+
 function M.assertEquals(actual, expected)
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
@@ -1001,6 +1013,7 @@ local list_of_funcs = {
     { 'assertIsBoolean'         , 'assert_is_boolean' },
     { 'assertIsNil'             , 'assert_is_nil' },
     { 'assertIsNaN'             , 'assert_is_nan' },
+    { 'assertIsInf'             , 'assert_is_inf' },
     { 'assertIsFunction'        , 'assert_is_function' },
     { 'assertIsThread'          , 'assert_is_thread' },
     { 'assertIsUserdata'        , 'assert_is_userdata' },
@@ -1012,6 +1025,7 @@ local list_of_funcs = {
     { 'assertIsBoolean'         , 'assertBoolean' },
     { 'assertIsNil'             , 'assertNil' },
     { 'assertIsNaN'             , 'assertNaN' },
+    { 'assertIsInf'             , 'assertInf' },
     { 'assertIsFunction'        , 'assertFunction' },
     { 'assertIsThread'          , 'assertThread' },
     { 'assertIsUserdata'        , 'assertUserdata' },
@@ -1023,6 +1037,7 @@ local list_of_funcs = {
     { 'assertIsBoolean'         , 'assert_boolean' },
     { 'assertIsNil'             , 'assert_nil' },
     { 'assertIsNaN'             , 'assert_nan' },
+    { 'assertIsInf'             , 'assert_inf' },
     { 'assertIsFunction'        , 'assert_function' },
     { 'assertIsThread'          , 'assert_thread' },
     { 'assertIsUserdata'        , 'assert_userdata' },
@@ -1034,6 +1049,7 @@ local list_of_funcs = {
     { 'assertNotIsBoolean'      , 'assert_not_is_boolean' },
     { 'assertNotIsNil'          , 'assert_not_is_nil' },
     { 'assertNotIsNaN'          , 'assert_not_is_nan' },
+    { 'assertNotIsInf'          , 'assert_not_is_inf' },
     { 'assertNotIsFunction'     , 'assert_not_is_function' },
     { 'assertNotIsThread'       , 'assert_not_is_thread' },
     { 'assertNotIsUserdata'     , 'assert_not_is_userdata' },
@@ -1045,6 +1061,7 @@ local list_of_funcs = {
     { 'assertNotIsBoolean'      , 'assertNotBoolean' },
     { 'assertNotIsNil'          , 'assertNotNil' },
     { 'assertNotIsNaN'          , 'assertNotNaN' },
+    { 'assertNotIsInf'          , 'assertNotInf' },
     { 'assertNotIsFunction'     , 'assertNotFunction' },
     { 'assertNotIsThread'       , 'assertNotThread' },
     { 'assertNotIsUserdata'     , 'assertNotUserdata' },
@@ -1056,6 +1073,7 @@ local list_of_funcs = {
     { 'assertNotIsBoolean'      , 'assert_not_boolean' },
     { 'assertNotIsNil'          , 'assert_not_nil' },
     { 'assertNotIsNaN'          , 'assert_not_nan' },
+    { 'assertNotIsInf'          , 'assert_not_inf' },
     { 'assertNotIsFunction'     , 'assert_not_function' },
     { 'assertNotIsThread'       , 'assert_not_thread' },
     { 'assertNotIsUserdata'     , 'assert_not_userdata' },
