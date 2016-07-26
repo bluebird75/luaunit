@@ -649,14 +649,26 @@ function M.assertError(f, ...)
     end
 end
 
-function M.assertTrue(value)
+function M.assertIf(value)
     if not value then
+        failure("expected: not false or nil, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertNotIf(value)
+    if value then
+        failure("expected: false or nil, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertTrue(value)
+    if value ~= true then
         failure("expected: true, actual: " ..prettystr(value), 2)
     end
 end
 
 function M.assertFalse(value)
-    if value then
+    if value ~= false then
         failure("expected: false, actual: " ..prettystr(value), 2)
     end
 end
@@ -963,6 +975,8 @@ local list_of_funcs = {
     { 'assertNotEquals'         , 'assert_not_equals' },
     { 'assertAlmostEquals'      , 'assert_almost_equals' },
     { 'assertNotAlmostEquals'   , 'assert_not_almost_equals' },
+    { 'assertIf'                , 'assert_if' },
+    { 'assertNotIf'             , 'assert_not_if' },
     { 'assertTrue'              , 'assert_true' },
     { 'assertFalse'             , 'assert_false' },
     { 'assertStrContains'       , 'assert_str_contains' },
