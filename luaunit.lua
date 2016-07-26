@@ -18,7 +18,7 @@ M.private = {}
 M.VERSION='3.2'
 M._VERSION=M.VERSION -- For LuaUnit v2 compatibility
 
---[[ Some people like assertEquals( actual, expected ) and some people prefer 
+--[[ Some people like assertEquals( actual, expected ) and some people prefer
 assertEquals( expected, actual ).
 ]]--
 M.ORDER_ACTUAL_EXPECTED = true
@@ -54,6 +54,9 @@ Options:
                           Possible values: text, tap, junit, nil
   -n, --name NAME:        For junit only, mandatory name of xml file
   -p, --pattern PATTERN:  Execute all test names matching the Lua PATTERN
+                          May be repeated to include severals patterns
+                          Make sure you escape magic chars like +? with %
+  -x, --exclude PATTERN:  Exclude all test names matching the Lua PATTERN
                           May be repeated to include severals patterns
                           Make sure you escape magic chars like +? with %
   testname1, testname2, ... : tests to run in the form of testFunction,
@@ -1250,7 +1253,7 @@ then OK or FAILED (failures=1, error=1)
 Started
  .
  Finished in 0.002695 seconds.
- 
+
  1 tests, 2 assertions, 0 failures, 0 errors
 
 -- Ruby:
@@ -1259,13 +1262,13 @@ Loaded suite tc_simple_number2
 Started
 F..
 Finished in 0.038617 seconds.
- 
+
   1) Failure:
 test_failure(TestSimpleNumber) [tc_simple_number2.rb:16]:
 Adding doesn't work.
 <3> expected but was
 <4>.
- 
+
 3 tests, 4 assertions, 1 failures, 0 errors
 
 -- Java Junit
@@ -1289,18 +1292,18 @@ Tests run: 8,  Failures: 1,  Errors: 0
  T E S T S
 -------------------------------------------------------
 Running math.AdditionTest
-Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed:
 0.03 sec <<< FAILURE!
 
 Results :
 
-Failed tests: 
+Failed tests:
   testLireSymbole(math.AdditionTest)
 
 Tests run: 2, Failures: 1, Errors: 0, Skipped: 0
 
 
--- LuaUnit 
+-- LuaUnit
 ---- non verbose
 * display . or F or E when running tests
 ---- verbose
@@ -1494,6 +1497,7 @@ end
         -- --error, -e: treat errors as fatal (quit program)
         -- --output, -o, + name: select output type
         -- --pattern, -p, + pattern: run test matching pattern, may be repeated
+        -- --exclude, -x, + pattern: run test not matching pattern, may be repeated
         -- --name, -n, + fname: name of output file for junit, default to stdout
         -- [testnames, ...]: run selected test names
         --
@@ -1502,12 +1506,14 @@ end
         -- output: nil, 'tap', 'junit', 'text', 'nil'
         -- testNames: nil or a list of test names to run
         -- pattern: nil or a list of patterns
+        -- exclude: nil or a list of patterns
 
         local result = {}
         local state = nil
         local SET_OUTPUT = 1
         local SET_PATTERN = 2
-        local SET_FNAME = 3
+        local SET_EXCLUDE = 3
+        local SET_FNAME = 4
 
         if cmdLine == nil then
             return result
@@ -1541,6 +1547,9 @@ end
             elseif option == '--pattern' or option == '-p' then
                 state = SET_PATTERN
                 return state
+            elseif option == '--exclude' or option == '-x' then
+                state = SET_EXCLUDE
+                return state
             end
             error('Unknown option: '..option,3)
         end
@@ -1557,6 +1566,13 @@ end
                     table.insert( result['pattern'], cmdArg )
                 else
                     result['pattern'] = { cmdArg }
+                end
+                return
+            elseif state == SET_EXCLUDE then
+                if result['exclude'] then
+                    table.insert( result['exclude'], cmdArg )
+                else
+                    result['exclude'] = { cmdArg }
                 end
                 return
             end
@@ -1612,6 +1628,23 @@ end
         -- if patternFilter is nil, return true (no filtering)
         if patternFilter == nil then
             return true
+        end
+
+        for i,pattern in ipairs(patternFilter) do
+            if string.find(expr, pattern) then
+                return true
+            end
+        end
+
+        return false
+    end
+
+    function M.LuaUnit.patternExclude( patternFilter, expr )
+        -- check if any of patternFilter is contained in expr. If so, return true.
+        -- return false if None of the patterns are contained in expr
+        -- if patternFilter is nil, return false (no filtering)
+        if patternFilter == nil then
+            return false
         end
 
         for i,pattern in ipairs(patternFilter) do
@@ -1741,7 +1774,8 @@ end
             startTime = os.clock(),
             startDate = os.date(os.getenv('LUAUNIT_DATEFMT')),
             startIsodate = os.date('%Y-%m-%dT%H:%M:%S'),
-            patternFilter = self.patternFilter,
+            patternIncludeFilter = self.patternIncludeFilter,
+            patternExcludeFilter = self.patternExcludeFilter,
             tests = {},
             failures = {},
             errors = {},
@@ -2019,11 +2053,12 @@ end
         return result
     end
 
-    function M.LuaUnit.applyPatternFilter( patternFilter, listOfNameAndInst )
+    function M.LuaUnit.applyPatternFilter( patternIncFilter, patternExcFilter, listOfNameAndInst )
         local included, excluded = {}, {}
         for i, v in ipairs( listOfNameAndInst ) do
             -- local name, instance = v[1], v[2]
-            if M.LuaUnit.patternInclude( patternFilter, v[1] ) then
+            if  M.LuaUnit.patternInclude( patternIncFilter, v[1] ) and
+            not M.LuaUnit.patternExclude( patternExcFilter, v[1] ) then
                 table.insert( included, v )
             else
                 table.insert( excluded, v )
@@ -2040,8 +2075,8 @@ end
         --   * { class.method name, class instance }
 
         local expandedList = self.expandClasses( listOfNameAndInst )
-        local filteredList, filteredOutList
-            = self.applyPatternFilter( self.patternFilter, expandedList )
+        local filteredList, filteredOutList = self.applyPatternFilter(
+            self.patternIncludeFilter, self.patternExcludeFilter, expandedList )
 
         self:startSuite( #filteredList, #filteredOutList )
 
@@ -2165,7 +2200,8 @@ end
         self.quitOnError   = options.quitOnError
         self.quitOnFailure = options.quitOnFailure
         self.fname         = options.fname
-        self.patternFilter = options.pattern
+        self.patternIncludeFilter = options.pattern
+        self.patternExcludeFilter = options.exclude
 
         if options.output and options.output:lower() == 'junit' and options.fname == nil then
             print('With junit output, a filename must be supplied with -n or --name')
@@ -2200,3 +2236,4 @@ M.SetVerbosity = M.setVerbosity
 
 
 return M
+
