@@ -53,6 +53,7 @@ Options:
   -o, --output OUTPUT:    Set output type to OUTPUT
                           Possible values: text, tap, junit, nil
   -n, --name NAME:        For junit only, mandatory name of xml file
+  -c, --count NUM:        Execute all tests NUM times, e.g. to trig the JIT
   -p, --pattern PATTERN:  Execute all test names matching the Lua PATTERN
                           May be repeated to include severals patterns
                           Make sure you escape magic chars like +? with %
@@ -1499,12 +1500,14 @@ end
         -- --pattern, -p, + pattern: run test matching pattern, may be repeated
         -- --exclude, -x, + pattern: run test not matching pattern, may be repeated
         -- --name, -n, + fname: name of output file for junit, default to stdout
+        -- --count, -c, + num: number of times to execute each test
         -- [testnames, ...]: run selected test names
         --
         -- Returns a table with the following fields:
         -- verbosity: nil, M.VERBOSITY_DEFAULT, M.VERBOSITY_QUIET, M.VERBOSITY_VERBOSE
         -- output: nil, 'tap', 'junit', 'text', 'nil'
         -- testNames: nil or a list of test names to run
+        -- exeCount: num or 1
         -- pattern: nil or a list of patterns
         -- exclude: nil or a list of patterns
 
@@ -1514,6 +1517,7 @@ end
         local SET_PATTERN = 2
         local SET_EXCLUDE = 3
         local SET_FNAME = 4
+        local SET_XCOUNT = 5
 
         if cmdLine == nil then
             return result
@@ -1544,6 +1548,9 @@ end
             elseif option == '--name' or option == '-n' then
                 state = SET_FNAME
                 return state
+            elseif option == '--count' or option == '-c' then
+                state = SET_XCOUNT
+                return state
             elseif option == '--pattern' or option == '-p' then
                 state = SET_PATTERN
                 return state
@@ -1560,6 +1567,9 @@ end
                 return
             elseif state == SET_FNAME then
                 result['fname'] = cmdArg
+                return
+            elseif state == SET_XCOUNT then
+                result['exeCount'] = tonumber(cmdArg)
                 return
             elseif state == SET_PATTERN then
                 if result['pattern'] then
@@ -1941,8 +1951,9 @@ end
         -- determine if the error was a failed test:
         -- We do this by stripping the failure prefix from the error message,
         -- while keeping track of the gsub() count. A non-zero value -> failure
-        local failed
-        err.msg, failed = err.msg:gsub(M.FAILURE_PREFIX, "", 1)
+        local failed, iter_msg
+        iter_msg = self.exeCount and 'iteration: '..self.currentCount..', '
+        err.msg, failed = err.msg:gsub(M.FAILURE_PREFIX, iter_msg or '', 1)
         if failed > 0 then
             err.status = NodeStatus.FAIL
         end
@@ -1985,30 +1996,34 @@ end
 
         self:startTest(prettyFuncName)
 
-        -- run setUp first (if any)
-        if classInstance then
-            local func = self.asFunction( classInstance.setUp )
-                         or self.asFunction( classInstance.Setup )
-                         or self.asFunction( classInstance.setup )
-                         or self.asFunction( classInstance.SetUp )
-            if func then
-                self:addStatus(self:protectedCall(classInstance, func, className..'.setUp'))
+        for iter_n = 1, self.exeCount or 1 do
+            self.currentCount = iter_n
+
+            -- run setUp first (if any)
+            if classInstance then
+                local func = self.asFunction( classInstance.setUp ) or
+                             self.asFunction( classInstance.Setup ) or
+                             self.asFunction( classInstance.setup ) or
+                             self.asFunction( classInstance.SetUp )
+                if func then
+                    self:addStatus(self:protectedCall(classInstance, func, className..'.setUp'))
+                end
             end
-        end
 
-        -- run testMethod()
-        if self.result.currentNode:isPassed() then
-            self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
-        end
+            -- run testMethod()
+            if self.result.currentNode:isPassed() then
+                self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
+            end
 
-        -- lastly, run tearDown (if any)
-        if classInstance then
-            local func = self.asFunction( classInstance.tearDown )
-                         or self.asFunction( classInstance.TearDown )
-                         or self.asFunction( classInstance.teardown )
-                         or self.asFunction( classInstance.Teardown )
-            if func then
-                self:addStatus(self:protectedCall(classInstance, func, className..'.tearDown'))
+            -- lastly, run tearDown (if any)
+            if classInstance then
+                local func = self.asFunction( classInstance.tearDown ) or
+                             self.asFunction( classInstance.TearDown ) or
+                             self.asFunction( classInstance.teardown ) or
+                             self.asFunction( classInstance.Teardown )
+                if func then
+                    self:addStatus(self:protectedCall(classInstance, func, className..'.tearDown'))
+                end
             end
         end
 
@@ -2200,6 +2215,8 @@ end
         self.quitOnError   = options.quitOnError
         self.quitOnFailure = options.quitOnFailure
         self.fname         = options.fname
+
+        self.exeCount             = options.exeCount
         self.patternIncludeFilter = options.pattern
         self.patternExcludeFilter = options.exclude
 
