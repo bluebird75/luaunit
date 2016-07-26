@@ -57,6 +57,9 @@ Options:
   -p, --pattern PATTERN:  Execute all test names matching the Lua PATTERN
                           May be repeated to include severals patterns
                           Make sure you escape magic chars like +? with %
+  -x, --exclude PATTERN:  Exclude all test names matching the Lua PATTERN
+                          May be repeated to include severals patterns
+                          Make sure you escape magic chars like +? with %
   testname1, testname2, ... : tests to run in the form of testFunction,
                               TestClass or TestClass.testMethod
 ]]
@@ -1582,6 +1585,7 @@ end
         -- --error, -e: treat errors as fatal (quit program)
         -- --output, -o, + name: select output type
         -- --pattern, -p, + pattern: run test matching pattern, may be repeated
+        -- --exclude, -x, + pattern: run test not matching pattern, may be repeated
         -- --random, -r, : run tests in random order
         -- --name, -n, + fname: name of output file for junit, default to stdout
         -- [testnames, ...]: run selected test names
@@ -1591,12 +1595,14 @@ end
         -- output: nil, 'tap', 'junit', 'text', 'nil'
         -- testNames: nil or a list of test names to run
         -- pattern: nil or a list of patterns
+        -- exclude: nil or a list of patterns
 
         local result = {}
         local state = nil
         local SET_OUTPUT = 1
         local SET_PATTERN = 2
-        local SET_FNAME = 3
+        local SET_EXCLUDE = 3
+        local SET_FNAME = 4
 
         if cmdLine == nil then
             return result
@@ -1633,6 +1639,9 @@ end
             elseif option == '--pattern' or option == '-p' then
                 state = SET_PATTERN
                 return state
+            elseif option == '--exclude' or option == '-x' then
+                state = SET_EXCLUDE
+                return state
             end
             error('Unknown option: '..option,3)
         end
@@ -1649,6 +1658,13 @@ end
                     table.insert( result['pattern'], cmdArg )
                 else
                     result['pattern'] = { cmdArg }
+                end
+                return
+            elseif state == SET_EXCLUDE then
+                if result['exclude'] then
+                    table.insert( result['exclude'], cmdArg )
+                else
+                    result['exclude'] = { cmdArg }
                 end
                 return
             end
@@ -1704,6 +1720,23 @@ end
         -- if patternFilter is nil, return true (no filtering)
         if patternFilter == nil then
             return true
+        end
+
+        for i,pattern in ipairs(patternFilter) do
+            if string.find(expr, pattern) then
+                return true
+            end
+        end
+
+        return false
+    end
+
+    function M.LuaUnit.patternExclude( patternFilter, expr )
+        -- check if any of patternFilter is contained in expr. If so, return true.
+        -- return false if None of the patterns are contained in expr
+        -- if patternFilter is nil, return false (no filtering)
+        if patternFilter == nil then
+            return false
         end
 
         for i,pattern in ipairs(patternFilter) do
@@ -1833,7 +1866,8 @@ end
             startTime = os.clock(),
             startDate = os.date(os.getenv('LUAUNIT_DATEFMT')),
             startIsodate = os.date('%Y-%m-%dT%H:%M:%S'),
-            patternFilter = self.patternFilter,
+            patternIncludeFilter = self.patternIncludeFilter,
+            patternExcludeFilter = self.patternExcludeFilter,
             tests = {},
             failures = {},
             errors = {},
@@ -2124,11 +2158,12 @@ end
         return result
     end
 
-    function M.LuaUnit.applyPatternFilter( patternFilter, listOfNameAndInst )
+    function M.LuaUnit.applyPatternFilter( patternIncFilter, patternExcFilter, listOfNameAndInst )
         local included, excluded = {}, {}
         for i, v in ipairs( listOfNameAndInst ) do
             -- local name, instance = v[1], v[2]
-            if M.LuaUnit.patternInclude( patternFilter, v[1] ) then
+            if  M.LuaUnit.patternInclude( patternIncFilter, v[1] ) and
+            not M.LuaUnit.patternExclude( patternExcFilter, v[1] ) then
                 table.insert( included, v )
             else
                 table.insert( excluded, v )
@@ -2149,8 +2184,8 @@ end
         if self.randomize then
             randomizeTable( expandedList )
         end
-        local filteredList, filteredOutList
-            = self.applyPatternFilter( self.patternFilter, expandedList )
+        local filteredList, filteredOutList = self.applyPatternFilter(
+            self.patternIncludeFilter, self.patternExcludeFilter, expandedList )
 
         self:startSuite( #filteredList, #filteredOutList )
 
@@ -2265,7 +2300,8 @@ end
         self.quitOnError   = options.quitOnError
         self.quitOnFailure = options.quitOnFailure
         self.fname         = options.fname
-        self.patternFilter = options.pattern
+        self.patternIncludeFilter = options.pattern
+        self.patternExcludeFilter = options.exclude
         self.randomize     = options.randomize
 
         if options.output then
