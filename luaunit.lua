@@ -33,7 +33,7 @@ almostEquals in such case is EPSILON with an initial default value set to
 10^-12. If the user provides a margin, it is used unmodified as a replacement to
 EPSILON, which is then discarded. EPSILON can be changed by the user to suit
 better its needs if the initial default value is not acceptable. ]]--
-M.EPSILON = 1E-12
+M.EPSILON = 2^-52
 
 -- set this to false to debug luaunit
 local STRIP_LUAUNIT_FROM_STACKTRACE=true
@@ -752,7 +752,7 @@ function M.assertAlmostEquals( actual, expected, margin )
             expected, actual = actual, expected
         end
         fail_fmt(2, 'Values are not almost equal\nExpected: %s with margin of %s, received: %s',
-                 expected, margin, actual)
+                 expected, margin or M.EPSILON, actual)
     end
 end
 
@@ -778,7 +778,7 @@ function M.assertNotAlmostEquals( actual, expected, margin )
             expected, actual = actual, expected
         end
         fail_fmt(2, 'Values are almost equal\nExpected: %s with a difference above margin of %s, received: %s',
-                 expected, margin, actual)
+                 expected, margin or M.EPSILON, actual)
     end
 end
 
