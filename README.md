@@ -75,6 +75,24 @@ LuaUnit v3.2 and above are available on LuaRocks.
 * [Urs Breu](https://github.com/ubreu)
 * Jim Anderson
 
+##Successes
+
+Projects using LuaUnit:
+* Gazelle:          https://github.com/haberman/gazelle
+* Lua Wiki Creole:  https://github.com/rrees/luawikicreole
+* lmock:            https://github.com/LuaDist/lmock
+* objectlua: class oriented lua module ( https://github.com/LuaDist/objectlua )
+* luapica: Lua library to handle PICA+ data ( https://github.com/nichtich/luapica )
+* Lua FSM: Finite State Machines in Lua ( https://github.com/cornelisse/LuaFSM )
+* lua framework for ngcp-kamailio config ( https://github.com/sipwise/lua-ngcp-kamailio.git )
+* Fluento: Search for objects in Ultima Online ( https://code.google.com/archive/p/fluentuo/source/default/source )
+* http://wow5box.googlecode.com/svn/trunk/
+* lua-discount      https://github.com/asb/lua-discount/
+* Circles           https://github.com/tkadlubo/Circles.lua
+* Lua Stubs         https://github.com/jivebird/lust
+* Leslie: A lua implementation of the Django template ( https://code.google.com/archive/p/leslie/ )
+
+
 ### History 
 
 #### Version 3.2 - 12. Jul 2016
