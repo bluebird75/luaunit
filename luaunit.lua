@@ -707,13 +707,13 @@ function M.assertNotIsNaN(value)
 end
 
 function M.assertIsInf(value)
-    if math.abs(value) ~= 1/0 then
+    if type(value) ~= "number" or math.abs(value) ~= 1/0 then
         failure("expected: inf, actual: " ..prettystr(value), 2)
     end
 end
 
 function M.assertNotIsInf(value)
-    if math.abs(value) == 1/0 then
+    if type(value) == "number" and math.abs(value) == 1/0 then
         failure("expected non inf value, received ±inf", 2)
     end
 end
