@@ -700,8 +700,13 @@ end
 
 -- Help Lua in corner cases like almostEquals(1.1, 1.0, 0.1), which by default
 -- may not work. We need to give margin a small boost; EPSILON defines the
--- default value to use for this:
-local EPSILON = 1E-11
+-- default value to use for this. Since Lua may be compiled with different
+-- numeric precisions (single vs. double), we try to select a useful default:
+local EPSILON = math.exp(-51 * math.log(2)) -- 2 * (2^-52, machine epsilon for "double") ~4.44E-16
+if math.abs(1.1 - 1 - 0.1) > EPSILON then
+    -- rounding error is above EPSILON, assume single precision
+    EPSILON = math.exp(-22 * math.log(2)) -- 2 * (2^-23, machine epsilon for "float") ~2.38E-07
+end
 function M.almostEquals( actual, expected, margin, margin_boost )
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
