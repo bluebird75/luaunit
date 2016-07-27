@@ -71,6 +71,27 @@ else
     cd lua-5.3.2;
   fi
 
+  # adjust numerical precision if requested with LUANUMBER=float
+  if [ "$LUANUMBER" == "float" ]; then
+    if [ "$LUA" == "lua5.3" ]; then
+      # for Lua 5.3 we can simply adjust the default float type
+      perl -i -pe "s/#define LUA_FLOAT_TYPE\tLUA_FLOAT_DOUBLE/#define LUA_FLOAT_TYPE\tLUA_FLOAT_FLOAT/" src/luaconf.h
+    else
+      # modify the basic LUA_NUMBER type
+      perl -i -pe 's/#define LUA_NUMBER_DOUBLE/#define LUA_NUMBER_FLOAT/' src/luaconf.h
+      perl -i -pe "s/LUA_NUMBER\tdouble/LUA_NUMBER\tfloat/" src/luaconf.h
+      #perl -i -pe "s/LUAI_UACNUMBER\tdouble/LUAI_UACNUMBER\tfloat/" src/luaconf.h
+      # adjust LUA_NUMBER_SCAN (input format)
+      perl -i -pe 's/"%lf"/"%f"/' src/luaconf.h
+      # adjust LUA_NUMBER_FMT (output format)
+      perl -i -pe 's/"%\.14g"/"%\.7g"/' src/luaconf.h
+      # adjust lua_str2number conversion
+      perl -i -pe 's/strtod\(/strtof\(/' src/luaconf.h
+      # this one is specific to the l_mathop(x) macro of Lua 5.2
+      perl -i -pe 's/\t\t\(x\)/\t\t\(x##f\)/' src/luaconf.h
+    fi
+  fi
+
   # Build Lua without backwards compatibility for testing
   perl -i -pe 's/-DLUA_COMPAT_(ALL|5_2)//' src/Makefile
   make $PLATFORM

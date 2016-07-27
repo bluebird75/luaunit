@@ -6,9 +6,12 @@ env:
   global:
     - LUAROCKS=2.2.2
   matrix:
-    - LUA=lua5.1
-    - LUA=lua5.2
-    - LUA=lua5.3
+    - LUA=lua5.1  LUANUMBER=double
+    - LUA=lua5.1  LUANUMBER=float
+    - LUA=lua5.2  LUANUMBER=double
+    - LUA=lua5.2  LUANUMBER=float
+    - LUA=lua5.3  LUANUMBER=double
+    - LUA=lua5.3  LUANUMBER=float
     - LUA=luajit     # latest stable version (2.0.x)
     - LUA=luajit2.0  # current head of 2.0 branch
     - LUA=luajit2.1  # current head of 2.1 branch
