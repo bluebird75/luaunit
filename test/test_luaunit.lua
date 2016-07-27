@@ -520,7 +520,7 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'toto', 'titi', '-v', 'tata', '-o', 'tintin', '-p', 'tutu', 'prout', '-n', 'toto.xml' } ), 
             { pattern={'toto', 'tutu'}, verbosity=lu.VERBOSITY_VERBOSE, output='tintin', testNames={'titi', 'tata', 'prout'}, fname='toto.xml' } )
 
-        lu.assertErrorMsgContains( 'option: -x', lu.LuaUnit.parseCmdLine, { '-x', } )
+        lu.assertErrorMsgContains( 'option: -$', lu.LuaUnit.parseCmdLine, { '-$', } )
     end
 
     function TestLuaUnitUtilities:test_includePattern()
