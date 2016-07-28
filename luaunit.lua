@@ -240,6 +240,25 @@ local function strMatch(s, pattern, start, final )
 end
 M.private.strMatch = strMatch
 
+local function patternFilter(patterns, expr, nil_result)
+    -- Check if any of `patterns` is contained in `expr`. If so, return `true`.
+    -- Return `false` if none of the patterns are contained in expr. If patterns
+    -- is `nil` (= unset), return default value passed in `nil_result`.
+    if patterns ~= nil then
+
+        for _, pattern in ipairs(patterns) do
+            if string.find(expr, pattern) then
+                return true
+            end
+        end
+
+        return false -- no match from patterns
+    end
+
+    return nil_result
+end
+M.private.patternFilter = patternFilter
+
 local function xmlEscape( s )
     -- Return s escaped for XML attributes
     -- escapes table:
@@ -1714,40 +1733,6 @@ end
         os.exit(0)
     end
 
-    function M.LuaUnit.patternInclude( patternFilter, expr )
-        -- check if any of patternFilter is contained in expr. If so, return true.
-        -- return false if None of the patterns are contained in expr
-        -- if patternFilter is nil, return true (no filtering)
-        if patternFilter == nil then
-            return true
-        end
-
-        for i,pattern in ipairs(patternFilter) do
-            if string.find(expr, pattern) then
-                return true
-            end
-        end
-
-        return false
-    end
-
-    function M.LuaUnit.patternExclude( patternFilter, expr )
-        -- check if any of patternFilter is contained in expr. If so, return true.
-        -- return false if None of the patterns are contained in expr
-        -- if patternFilter is nil, return false (no filtering)
-        if patternFilter == nil then
-            return false
-        end
-
-        for i,pattern in ipairs(patternFilter) do
-            if string.find(expr, pattern) then
-                return true
-            end
-        end
-
-        return false
-    end
-
 ----------------------------------------------------------------
 --                     class NodeStatus
 ----------------------------------------------------------------
@@ -2162,8 +2147,8 @@ end
         local included, excluded = {}, {}
         for i, v in ipairs( listOfNameAndInst ) do
             -- local name, instance = v[1], v[2]
-            if  M.LuaUnit.patternInclude( patternIncFilter, v[1] ) and
-            not M.LuaUnit.patternExclude( patternExcFilter, v[1] ) then
+            if  patternFilter( patternIncFilter, v[1], true ) and
+            not patternFilter( patternExcFilter, v[1], false ) then
                 table.insert( included, v )
             else
                 table.insert( excluded, v )

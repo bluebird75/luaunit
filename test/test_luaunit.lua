@@ -527,13 +527,14 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertErrorMsgContains( 'option: -$', lu.LuaUnit.parseCmdLine, { '-$', } )
     end
 
-    function TestLuaUnitUtilities:test_includePattern()
-        lu.assertEquals( lu.LuaUnit.patternInclude( nil, 'toto'), true )
-        lu.assertEquals( lu.LuaUnit.patternInclude( {}, 'toto'), false  )
-        lu.assertEquals( lu.LuaUnit.patternInclude( {'toto'}, 'toto'), true )
-        lu.assertEquals( lu.LuaUnit.patternInclude( {'toto'}, 'yyytotoxxx'), true )
-        lu.assertEquals( lu.LuaUnit.patternInclude( {'titi', 'toto'}, 'yyytotoxxx'), true )
-        lu.assertEquals( lu.LuaUnit.patternInclude( {'titi', 'to..'}, 'yyytoxxx'), true )
+    function TestLuaUnitUtilities:test_patternFilter()
+        lu.assertEquals( lu.private.patternFilter( nil, 'toto', true), true )
+        lu.assertEquals( lu.private.patternFilter( {}, 'toto', true), false  )
+        lu.assertEquals( lu.private.patternFilter( nil, 'titi', false), false )
+        lu.assertEquals( lu.private.patternFilter( {'toto'}, 'toto'), true )
+        lu.assertEquals( lu.private.patternFilter( {'toto'}, 'yyytotoxxx'), true )
+        lu.assertEquals( lu.private.patternFilter( {'titi', 'toto'}, 'yyytotoxxx'), true )
+        lu.assertEquals( lu.private.patternFilter( {'titi', 'to..'}, 'yyytoxxx'), true )
     end
 
     function TestLuaUnitUtilities:test_applyPatternFilter()
