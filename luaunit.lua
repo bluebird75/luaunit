@@ -734,7 +734,6 @@ end
 -- may not work. We need to give a default margin; EPSILON defines the
 -- default value to use for this:
 function M.almostEquals( actual, expected, margin )
-    margin = margin or M.EPSILON
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
             prettystr(actual), prettystr(expected), prettystr(margin))
@@ -747,12 +746,13 @@ end
 
 function M.assertAlmostEquals( actual, expected, margin )
     -- check that two floats are close by margin
+    margin = margin or M.EPSILON
     if not M.almostEquals(actual, expected, margin) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
         end
         fail_fmt(2, 'Values are not almost equal\nExpected: %s with margin of %s, received: %s',
-                 expected, margin or M.EPSILON, actual)
+                 expected, margin, actual)
     end
 end
 
@@ -773,12 +773,13 @@ end
 
 function M.assertNotAlmostEquals( actual, expected, margin )
     -- check that two floats are not close by margin
+    margin = margin or M.EPSILON
     if M.almostEquals(actual, expected, margin) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
         end
         fail_fmt(2, 'Values are almost equal\nExpected: %s with a difference above margin of %s, received: %s',
-                 expected, margin or M.EPSILON, actual)
+                 expected, margin, actual)
     end
 end
 
