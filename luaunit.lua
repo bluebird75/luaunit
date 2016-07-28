@@ -1681,6 +1681,7 @@ end
                 return
             elseif state == SET_XCOUNT then
                 result['exeCount'] = tonumber(cmdArg)
+                                     or error('Malformed -c argument: '..cmdArg)
                 return
             elseif state == SET_PATTERN then
                 if result['pattern'] then

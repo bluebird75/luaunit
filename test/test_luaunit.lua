@@ -520,6 +520,12 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-x', 'titi', '-x', 'toto' } ), { exclude={'titi', 'toto'} } )
         lu.assertErrorMsgContains( 'Missing argument after -x', lu.LuaUnit.parseCmdLine, { '-x', } )
 
+        -- count
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--count', '123' } ), { exeCount=123 } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-c', '123' } ), { exeCount=123 } )
+        lu.assertErrorMsgContains( 'Malformed -c argument', lu.LuaUnit.parseCmdLine, { '-c', 'bad' } )
+        lu.assertErrorMsgContains( 'Missing argument after -c', lu.LuaUnit.parseCmdLine, { '-c', } )
+
         --megamix
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'toto', 'titi', '-v', 'tata', '-o', 'tintin', '-p', 'tutu', 'prout', '-n', 'toto.xml' } ), 
             { pattern={'toto', 'tutu'}, verbosity=lu.VERBOSITY_VERBOSE, output='tintin', testNames={'titi', 'tata', 'prout'}, fname='toto.xml' } )
@@ -2213,6 +2219,21 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( runner.result.notPassed[1].status, lu.NodeStatus.FAIL  )
     end
 
+    function TestLuaUnitExecution:testWithCount()
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType( "NIL" )
+
+        runner:runSuite( '--count', '5',
+                         'MyTestWithErrorsAndFailures.testOk')
+        lu.assertEquals( runner.exeCount, 5 )
+        lu.assertEquals( runner.currentCount, 5 )
+
+        runner:runSuite( '--count', '5',
+                         'MyTestWithErrorsAndFailures.testWithFailure1')
+        -- check if the current iteration got reflected in the failure message
+        lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertStrContains(runner.result.failures[1].msg, "iteration: 1")
+    end
 
 
     function TestLuaUnitExecution:testOutputInterface()
