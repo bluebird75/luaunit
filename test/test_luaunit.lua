@@ -753,8 +753,8 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertAlmostEquals( -1, -1.1, 0.2 )
         lu.assertAlmostEquals( 0.1, -0.1, 0.3 )
 
-        lu.assertAlmostEquals( 1, 1.1, 0.1 )
-        lu.assertAlmostEquals( -1, -1.1, 0.1 )
+        lu.assertAlmostEquals( 1, 1.1, 0.1, 2E-7 ) -- explicit epsilon
+        lu.assertAlmostEquals( -1, -1.1, 0.1, true ) -- default epsilon
         lu.assertAlmostEquals( 0.1, -0.1, 0.2 )
 
         assertFailure( lu.assertAlmostEquals, 1, 1.11, 0.1 )

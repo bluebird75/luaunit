@@ -706,7 +706,7 @@ if math.abs(1.1 - 1 - 0.1) > EPSILON then
     -- rounding error is above EPSILON, assume single precision
     EPSILON = 2^-23 -- = machine epsilon for "float", ~1.19E-07
 end
-function M.almostEquals( actual, expected, margin, margin_boost )
+function M.almostEquals( actual, expected, margin, epsilon )
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
             prettystr(actual), prettystr(expected), prettystr(margin))
@@ -714,13 +714,16 @@ function M.almostEquals( actual, expected, margin, margin_boost )
     if margin < 0 then
         error('almostEquals: margin must not be negative, current value is ' .. margin, 3)
     end
-    local realmargin = margin + (margin_boost or EPSILON)
-    return math.abs(expected - actual) <= realmargin
+    if epsilon then
+        epsilon = tonumber(epsilon) or EPSILON
+        return math.abs(expected - actual) <= margin + epsilon
+    end
+    return math.abs(expected - actual) <= margin
 end
 
-function M.assertAlmostEquals( actual, expected, margin )
+function M.assertAlmostEquals( actual, expected, margin, epsilon )
     -- check that two floats are close by margin
-    if not M.almostEquals(actual, expected, margin) then
+    if not M.almostEquals(actual, expected, margin, epsilon) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
         end
@@ -744,9 +747,9 @@ function M.assertNotEquals(actual, expected)
     fail_fmt(2, 'Received the not expected value: %s', prettystr(actual))
 end
 
-function M.assertNotAlmostEquals( actual, expected, margin )
+function M.assertNotAlmostEquals( actual, expected, margin, epsilon )
     -- check that two floats are not close by margin
-    if M.almostEquals(actual, expected, margin) then
+    if M.almostEquals(actual, expected, margin, epsilon) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
         end
