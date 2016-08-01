@@ -642,6 +642,22 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
     end
 
+    function TestLuaUnitUtilities:testMargin()
+        local eps = lu.EPSILON
+
+        lu.assertEquals(lu.private.margin(), 0)
+        lu.assertEquals(lu.private.margin(true), eps)
+        lu.assertEquals(lu.private.margin(nil, 1), eps)
+        lu.assertEquals(lu.private.margin(1E-5), 1E-5)
+        lu.assertEquals(lu.private.margin(1E-5, 3), 1E-5 + 3 * eps)
+        lu.assertEquals(lu.private.margin(true, 0.5), 1.5 * eps)
+
+        lu.assertErrorMsgContains('margin must not be negative',
+                                  lu.private.margin, -1E-19)
+        lu.assertErrorMsgContains('margin must not be negative',
+                                  lu.private.margin, nil, -0.01)
+    end
+
 ------------------------------------------------------------------
 --
 --                        Outputter Tests

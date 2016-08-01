@@ -712,6 +712,42 @@ function M.assertEquals(actual, expected)
     end
 end
 
+--[[ helper function to determine an error margin
+
+`limit` represents an "absolute" value. For user's convenience it's also
+possible to pass `true` instead, to select M.EPSILON as the default margin.
+(i.e. margin(true) will return M.EPSILON)
+
+`epsilons` is a multiplicative factor that specifies a boundary in terms of
+"multiples of M.EPSILON". (This may be useful to express error margins relative
+to the numeric precision that the underlying Lua implementation offers.)
+
+The two parameters default to zero, i.e. margin() will return 0. If both are
+specified, the resulting values will get added (= sum up). This gives users a
+simple way to specify a larger "absolute" value plus some compensation for small
+rounding errors - e.g. margin(1E-4, 1) would return 1E-4 + M.EPSILON.
+
+margin()            0
+margin(1E-5)        1E-5
+margin(1E-5, 3)     1E-5 + 3 * M.EPSILON
+margin(true)        M.EPSILON
+margin(nil, 1)      M.EPSILON
+margin(true, 0.5)   M.EPSILON + 0.5 * M.EPSILON  = M.EPSILON * 1.5
+]]
+local function margin(limit, epsilons)
+    if limit == true then
+        limit = M.EPSILON
+    elseif limit == nil then
+        limit = 0
+    end
+    local result = limit + (epsilons or 0) * M.EPSILON
+    if result < 0 then
+        error('margin must not be negative, resulting value was ' .. result, 2)
+    end
+    return result
+end
+M.private.margin = margin
+
 function M.almostEquals( actual, expected, margin, epsilon )
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
