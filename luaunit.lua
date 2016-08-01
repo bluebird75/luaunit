@@ -81,11 +81,7 @@ local function pcall_or_abort(func, ...)
 end
 
 local crossTypeOrdering = {
-    number = 1,
-    boolean = 2,
-    string = 3,
-    table = 4,
-    other = 5
+    number = 1, boolean = 2, string = 3, table = 4, other = 5
 }
 local crossTypeComparison = {
     number = function(a, b) return a < b end,
@@ -142,7 +138,9 @@ local function sortedNext(state, control)
         repeat
             state.lastIdx = math.modf((lower + upper) / 2)
             key = state.sortedIdx[state.lastIdx]
-            if key == control then break; end -- key found (and thus prev index)
+            if key == control then
+                break -- key found (and thus prev index)
+            end
             if crossTypeSort(key, control) then
                 -- key < control, continue search "right" (towards upper bound)
                 lower = state.lastIdx + 1
@@ -340,7 +338,9 @@ M.private.stripLuaunitTrace = stripLuaunitTrace
 local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
     local type_v = type(v)
     if "string" == type_v  then
-        if keeponeline then v = v:gsub("\n", "\\n") end
+        if keeponeline then
+            v = v:gsub("\n", "\\n") -- escape newline(s)
+        end
 
         -- use clever delimiters according to content:
         -- enclose with single quotes if string contains ", but no '
@@ -1398,11 +1398,12 @@ TextOutput.__class__ = 'TextOutput'
     end
 
     function TextOutput:displayFailedTests()
-        if self.result.notPassedCount == 0 then return end
-        print("Failed tests:")
-        print("-------------")
-        for i,v in ipairs(self.result.notPassed) do
-            self:displayOneFailedTest( i, v )
+        if self.result.notPassedCount ~= 0 then
+            print("Failed tests:")
+            print("-------------")
+            for i, v in ipairs(self.result.notPassed) do
+                self:displayOneFailedTest(i, v)
+            end
         end
     end
 
@@ -1500,8 +1501,8 @@ end
         -- that match LuaUnit.isTestName
 
         local testNames = {}
-        for k, v in pairs(_G) do
-            if M.LuaUnit.isTestName( k ) then
+        for k, _ in pairs(_G) do
+            if type(k) == "string" and M.LuaUnit.isTestName( k ) then
                 table.insert( testNames , k )
             end
         end
@@ -1526,8 +1527,7 @@ end
         -- testNames: nil or a list of test names to run
         -- pattern: nil or a list of patterns
 
-        local result = {}
-        local state = nil
+        local result, state = {}, nil
         local SET_OUTPUT = 1
         local SET_PATTERN = 2
         local SET_FNAME = 3
