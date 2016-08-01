@@ -866,6 +866,85 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         end
     end
 
+    function TestLuaUnitAssertions:test_assertRelErrorWithin()
+        -- for relative error, the order of arguments matters!
+        local config_saved = lu.ORDER_ACTUAL_EXPECTED
+
+        lu.ORDER_ACTUAL_EXPECTED = true
+        -- Unlike assertAbsErrorWithin(), the relative error here is exceeding
+        -- EPSILON - so these will FAIL (despite being "boosted")
+        assertFailure( lu.assertRelErrorWithin, 1.1 - 1.0, 0.1, nil, 1 )    -- 1 * EPSILON
+        assertFailure( lu.assertRelErrorWithin, 1.1 - 1.0, 0.1, true )      -- default margin = EPSILON
+        if lu.EPSILON < 1E-15 then
+            -- 3 * EPSILON should still be insufficient
+            -- (single precision seems to result in an error of 2 * EPSILON)
+            assertFailure( lu.assertRelErrorWithin, 1.1 - 1.0, 0.1, 0, 3 )
+        end
+        -- 4 * EPSILON should finally make it pass
+        lu.assertRelErrorWithin( 1.1 - 1.0, 0.1, 0, 4 )
+        lu.assertRelErrorWithin( 1.1 - 1.0, 0.1, true, 3 )  -- (1 + 3) * EPSILON
+
+        if lu.EPSILON < 1E-15 then
+            lu.assertRelErrorWithin(math.deg(math.pi / 3), 60, 0, 0.5) -- EPSILON / 2
+        else
+            lu.assertRelErrorWithin(math.deg(math.pi / 3), 60, 0, 1) -- 1 * EPSILON
+        end
+        lu.assertRelErrorWithin(math.sqrt(2) * math.sqrt(2), 2, true) -- 1 * EPSILON
+
+        -- when scaled by 1, the error is definitely too big for (0.1 - EPSILON)
+        assertFailure( lu.assertRelErrorWithin, 1.1, 1.0, 0.1, -1 )
+        -- but when dividing by 1.1, it'll PASS
+        lu.assertRelErrorWithin( 1.0, 1.1, 0.1, -1 )
+        -- an "expected" value of zero is an error
+        lu.assertErrorMsgContains( "relative error is 'inf'",
+                                   lu.assertRelErrorWithin, 1, 0 )
+
+        lu.ORDER_ACTUAL_EXPECTED = false
+        assertFailure( lu.assertRelErrorWithin, 1.0, 1.1, 0.1, -1 )
+        lu.assertRelErrorWithin( 1.1, 1.0, 0.1, -1 )
+        lu.assertErrorMsgContains( "relative error is 'inf'",
+                                   lu.assertRelErrorWithin, 0, 1 )
+
+        lu.ORDER_ACTUAL_EXPECTED = config_saved
+    end
+
+    function TestLuaUnitAssertions:test_assertNotRelErrorWithin()
+        -- for relative error, the order of arguments matters!
+        local config_saved = lu.ORDER_ACTUAL_EXPECTED
+
+        lu.ORDER_ACTUAL_EXPECTED = true
+        lu.assertNotRelErrorWithin( 1.1 - 1.0, 0.1, nil, 1 )    -- 1 * EPSILON
+        lu.assertNotRelErrorWithin( 1.1 - 1.0, 0.1, true )      -- default margin = EPSILON
+        if lu.EPSILON < 1E-15 then
+            -- 3 * EPSILON should still be insufficient
+            lu.assertNotRelErrorWithin( 1.1 - 1.0, 0.1, 0, 3 )
+        end
+        -- 4 * EPSILON should finally make it FAIL
+        assertFailure( lu.assertNotRelErrorWithin, 1.1 - 1.0, 0.1, 0, 4 )
+        assertFailure( lu.assertNotRelErrorWithin, 1.1 - 1.0, 0.1, true, 3 ) -- (1 + 3) * EPSILON
+
+        if lu.EPSILON < 1E-15 then
+            lu.assertNotRelErrorWithin(math.deg(math.pi / 3), 60, 0, 0.49)
+            lu.assertNotRelErrorWithin(math.sqrt(2) * math.sqrt(2), 2, 0, 0.99)
+        end
+
+        -- when scaled by 1, the error is definitely too big for (0.1 - EPSILON)
+        lu.assertNotRelErrorWithin( 1.1, 1.0, 0.1, -1 )
+        -- but not when dividing by 1.1
+        assertFailure( lu.assertNotRelErrorWithin, 1.0, 1.1, 0.1, -1 )
+        -- an "expected" value of zero is an error
+        lu.assertErrorMsgContains( "relative error is 'inf'",
+                                   lu.assertNotRelErrorWithin, 1, 0 )
+
+        lu.ORDER_ACTUAL_EXPECTED = false
+        lu.assertNotRelErrorWithin( 1.0, 1.1, 0.1, -1 )
+        assertFailure( lu.assertNotRelErrorWithin, 1.1, 1.0, 0.1, -1 )
+        lu.assertErrorMsgContains( "relative error is 'inf'",
+                                   lu.assertNotRelErrorWithin, 0, 1 )
+
+        lu.ORDER_ACTUAL_EXPECTED = config_saved
+    end
+
     function TestLuaUnitAssertions:test_assertNotEqualsDifferentTypes2()
         lu.assertNotEquals( 2, "abc" )
     end

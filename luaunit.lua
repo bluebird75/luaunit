@@ -822,6 +822,44 @@ function M.assertNotAbsErrorWithin(actual, expected, limit, epsilons)
     end
 end
 
+-- assert "relative" error between actual and expected is within given boundary
+function M.assertRelErrorWithin(actual, expected, limit, epsilons)
+    -- relative error is affected by order of arguments!
+    if not M.ORDER_ACTUAL_EXPECTED then
+        expected, actual = actual, expected
+    end
+    -- values for limit and relative error
+    local lim, e = margin(limit, epsilons), actual / expected - 1
+
+    if math.abs(e) == math.huge then
+        error("relative error is 'inf', don't try to use 'expected' == 0")
+    end
+    if math.abs(e) > lim then
+        fail_fmt(2, 'Relative error exceeded\n' ..
+                    'Actual: %s, expected: %s with margin of %s; delta: %s',
+                    actual, expected, lim, math.abs(e) - lim)
+    end
+end
+
+-- assert "relative" error between actual and expected NOT within given boundary
+function M.assertNotRelErrorWithin(actual, expected, limit, epsilons)
+    -- relative error is affected by order of arguments!
+    if not M.ORDER_ACTUAL_EXPECTED then
+        expected, actual = actual, expected
+    end
+    -- values for limit and relative error
+    local lim, e = margin(limit, epsilons), actual / expected - 1
+
+    if math.abs(e) == math.huge then
+        error("relative error is 'inf', don't try to use 'expected' == 0")
+    end
+    if math.abs(e) <= lim then
+        fail_fmt(2, 'Relative error NOT exceeded\n' ..
+                    'Actual: %s, expected: %s with margin above %s; delta: %s',
+                    actual, expected, lim, lim - math.abs(e))
+    end
+end
+
 function M.assertStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
