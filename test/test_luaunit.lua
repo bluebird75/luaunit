@@ -746,6 +746,8 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
     end
 
     function TestLuaUnitAssertions:test_assertAlmostEquals()
+        local config_saved = lu.ALMOST_EQUALS_USES_EPSILON
+
         lu.assertAlmostEquals( 1, 1, 0.1 )
         lu.assertAlmostEquals( 1, 1, 0 ) -- zero margin
 
@@ -753,6 +755,12 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertAlmostEquals( -1, -1.1, 0.2 )
         lu.assertAlmostEquals( 0.1, -0.1, 0.3 )
 
+        lu.ALMOST_EQUALS_USES_EPSILON = false
+        -- With no additional margin (epsilon), these are expected to FAIL
+        assertFailure( lu.assertAlmostEquals, 1, 1.1, 0.1 )
+        assertFailure( lu.assertAlmostEquals, -1, -1.1, 0.1 )
+
+        lu.ALMOST_EQUALS_USES_EPSILON = true
         lu.assertAlmostEquals( 1, 1.1, 0.1 )
         lu.assertAlmostEquals( -1, -1.1, 0.1 )
         lu.assertAlmostEquals( 0.1, -0.1, 0.2 )
@@ -763,6 +771,8 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, -1, nil, 0 )
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, nil, 1, 0 )
         lu.assertErrorMsgContains( "margin must not be negative", lu.assertAlmostEquals, 1, 1.1, -0.1 )
+
+        lu.ALMOST_EQUALS_USES_EPSILON = config_saved
     end
 
     function TestLuaUnitAssertions:test_assertNotEquals()

@@ -24,6 +24,7 @@ assertEquals( expected, actual ).
 M.ORDER_ACTUAL_EXPECTED = true
 M.PRINT_TABLE_REF_IN_ERROR_MSG = false
 M.TABLE_EQUALS_KEYBYCONTENT = true
+M.ALMOST_EQUALS_USES_EPSILON = true
 M.LINE_LENGTH=80
 
 --[[ M.EPSILON is meant to help with Lua's floating point math in simple corner
@@ -721,7 +722,12 @@ function M.almostEquals( actual, expected, margin, margin_boost )
     if margin < 0 then
         error('almostEquals: margin must not be negative, current value is ' .. margin, 3)
     end
-    local realmargin = margin + (margin_boost or M.EPSILON)
+    local realmargin
+    if M.ALMOST_EQUALS_USES_EPSILON then
+        realmargin = margin + (margin_boost or M.EPSILON)
+    else
+        realmargin = margin + (margin_boost or 0)
+    end
     return math.abs(expected - actual) <= realmargin
 end
 
