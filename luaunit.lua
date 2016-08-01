@@ -798,6 +798,30 @@ function M.assertNotAlmostEquals( actual, expected, margin, epsilons )
     end
 end
 
+-- assert "absolute" error between actual and expected is within given boundary
+function M.assertAbsErrorWithin(actual, expected, limit, epsilons)
+    -- values for limit and absolute error
+    local lim, e = margin(limit, epsilons), actual - expected
+
+    if math.abs(e) > lim then
+        fail_fmt(2, 'Absolute error exceeded\n' ..
+                    'Actual: %s, expected: %s with margin of %s; delta: %s',
+                    actual, expected, lim, math.abs(e) - lim)
+    end
+end
+
+-- assert "absolute" error between actual and expected NOT within given boundary
+function M.assertNotAbsErrorWithin(actual, expected, limit, epsilons)
+    -- values for limit and absolute error
+    local lim, e = margin(limit, epsilons), actual - expected
+
+    if math.abs(e) <= lim then
+        fail_fmt(2, 'Absolute error NOT exceeded\n' ..
+                    'Actual: %s, expected: %s with margin above %s; delta: %s',
+                    actual, expected, lim, lim - math.abs(e))
+    end
+end
+
 function M.assertStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string

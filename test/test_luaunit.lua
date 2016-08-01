@@ -834,6 +834,38 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertErrorMsgContains( "margin must not be negative", lu.assertNotAlmostEquals, 1, 1.1, -0.1 )
     end
 
+    function TestLuaUnitAssertions:test_assertAbsErrorWithin()
+        -- with no additional epsilon, these are expected to FAIL due to rounding
+        -- (this checks that a user-supplied margin gets used unmodified)
+        assertFailure( lu.assertAbsErrorWithin, 1.1, 1.0, 0.1 )     -- explicit margin
+        assertFailure( lu.assertAbsErrorWithin, 1.1 - 1.0, 0.1 )    -- implicit zero margin
+        assertFailure( lu.assertAbsErrorWithin, 1.1 - 1.0, 0.1, 0 ) -- explicit zero margin
+        -- explicitly "boost" margin to make tests PASS
+        lu.assertAbsErrorWithin( 1.1, 1.0, 0.1, 1 )         -- 1 * EPSILON
+        lu.assertAbsErrorWithin( 1.1 - 1.0, 0.1, nil, 1 )   -- 1 * EPSILON
+        lu.assertAbsErrorWithin( 1.1 - 1.0, 0.1, true )     -- default margin = EPSILON
+
+        lu.assertAbsErrorWithin(math.deg(math.pi / 3), 60, 0, 32) -- 32 * EPSILON
+        lu.assertAbsErrorWithin(math.sqrt(2) * math.sqrt(2), 2, 0, 2) -- 2 * EPSILON
+    end
+
+    function TestLuaUnitAssertions:test_assertNotAbsErrorWithin()
+        -- these are expected to PASS due to rounding errors
+        lu.assertNotAbsErrorWithin( 1.1, 1.0, 0.1 )     -- explicit margin
+        lu.assertNotAbsErrorWithin( 1.1 - 1.0, 0.1 )    -- implicit zero margin
+        lu.assertNotAbsErrorWithin( 1.1 - 1.0, 0.1, 0 ) -- explicit zero margin
+        -- explicitly "boost" margin to make tests FAIL
+        assertFailure( lu.assertNotAbsErrorWithin, 1.1, 1.0, 0.1, 1 )       -- 1 * EPSILON
+        assertFailure( lu.assertNotAbsErrorWithin, 1.1 - 1.0, 0.1, nil, 1 ) -- 1 * EPSILON
+        assertFailure( lu.assertNotAbsErrorWithin, 1.1 - 1.0, 0.1, true )   -- default margin = EPSILON
+
+        if lu.EPSILON < 1E-15 then
+            -- these tests won't fail when testing with single precision
+            lu.assertNotAbsErrorWithin(math.deg(math.pi / 3), 60, 0, 31)
+            lu.assertNotAbsErrorWithin(math.sqrt(2) * math.sqrt(2), 2, true) -- 1 * EPSILON
+        end
+    end
+
     function TestLuaUnitAssertions:test_assertNotEqualsDifferentTypes2()
         lu.assertNotEquals( 2, "abc" )
     end
