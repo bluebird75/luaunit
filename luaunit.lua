@@ -26,6 +26,22 @@ M.PRINT_TABLE_REF_IN_ERROR_MSG = false
 M.TABLE_EQUALS_KEYBYCONTENT = true
 M.LINE_LENGTH=80
 
+--[[ M.EPSILON is meant to help with Lua's floating point math in simple corner
+cases like almostEquals(1.1-0.1, 1), which may not work as-is (e.g. on numbers
+with rational binary representation) if the user doesn't provide some explicit
+error margin.
+The default margin used by almostEquals() in such cases is M.EPSILON; and since
+Lua may be compiled with different numeric precisions (single vs. double), we
+try to select a useful default for it dynamically. Note: If the initial value
+is not acceptable, it can be changed by the user to better suit specific needs.
+See also: https://en.wikipedia.org/wiki/Machine_epsilon
+]]
+M.EPSILON = 2^-52 -- = machine epsilon for "double", ~2.22E-16
+if math.abs(1.1 - 1 - 0.1) > M.EPSILON then
+    -- rounding error is above EPSILON, assume single precision
+    M.EPSILON = 2^-23 -- = machine epsilon for "float", ~1.19E-07
+end
+
 -- set this to false to debug luaunit
 local STRIP_LUAUNIT_FROM_STACKTRACE=true
 
@@ -697,15 +713,6 @@ function M.assertEquals(actual, expected)
     end
 end
 
--- Help Lua in corner cases like almostEquals(1.1, 1.0, 0.1), which by default
--- may not work. We need to give margin a small boost; EPSILON defines the
--- default value to use for this. Since Lua may be compiled with different
--- numeric precisions (single vs. double), we try to select a useful default:
-local EPSILON = math.exp(-51 * math.log(2)) -- 2 * (2^-52, machine epsilon for "double") ~4.44E-16
-if math.abs(1.1 - 1 - 0.1) > EPSILON then
-    -- rounding error is above EPSILON, assume single precision
-    EPSILON = math.exp(-22 * math.log(2)) -- 2 * (2^-23, machine epsilon for "float") ~2.38E-07
-end
 function M.almostEquals( actual, expected, margin, margin_boost )
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
@@ -714,7 +721,7 @@ function M.almostEquals( actual, expected, margin, margin_boost )
     if margin < 0 then
         error('almostEquals: margin must not be negative, current value is ' .. margin, 3)
     end
-    local realmargin = margin + (margin_boost or EPSILON)
+    local realmargin = margin + (margin_boost or M.EPSILON)
     return math.abs(expected - actual) <= realmargin
 end
 
