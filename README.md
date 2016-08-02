@@ -97,6 +97,10 @@ Projects using LuaUnit:
 
 ### History 
 
+#### Version 3.3 - in progress
+* assertTrue and assertFalse are now strict and only succeed with boolean
+* add assertEvalToTrue and assertEvalToFalse with previous assertTrue/False behavior of coercing before asserting
+
 #### Version 3.2 - 12. Jul 2016
 * distinguish between failures (failed assertion) and errors
 * add command-line option to stop on first error or failure

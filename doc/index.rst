@@ -771,19 +771,41 @@ not influence the test itself.
 
 Value assertions
 ----------------------
+.. function:: assertEvalToTrue(value)
+
+    **Alias**: *assert_eval_to_true()*
+
+    Assert that a given value evals to ``true``. Lua coercion rules are applied
+    so that values like ``0``, ``""``, ``1.17`` **succeed** in this assertion.
+    
+    See :func:`assertTrue` for a strict assertion to boolean ``true``.
+
+.. function:: assertEvalToFalse(value)
+
+    **Alias**: *assert_eval_to_false()*
+
+    Assert that a given value eval to ``false``. Lua coercion rules are applied
+    so that ``nil`` and ``false``  **succeed** in this assertion.
+
+    See :func:`assertFalse` for a strict assertion to boolean ``false``.
+    
 .. function:: assertTrue(value)
 
     **Alias**: *assert_true()*
 
-    Assert that a given value compares to true. Lua coercion rules are applied
-    so that values like ``0``, ``""``, ``1.17`` all compare to *true*.
+    Assert that a given value is strictly ``true``. Lua coercion rules do not apply
+    so that values like ``0``, ``""``, ``1.17`` **fail** in this assertion.
+
+    See :func:`assertEvalToTrue` for an assertion with lua coerction rules to ``true``.
     
 .. function:: assertFalse(value)
 
     **Alias**: *assert_false()*
 
-    Assert that a given value compares to false. Lua coercion rules are applied
-    so that only *nil* and *false* all compare to *false*.
+    Assert that a given value is strictly ``false``. Lua coercion rules do not apply
+    so that ``nil`` **fails** in this assertion.
+
+    See :func:`assertEvalToFalse` for an assertion with lua coerction rules to ``false``.
     
 .. function:: assertNil(value)
 
