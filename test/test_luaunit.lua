@@ -816,21 +816,22 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
     function TestLuaUnitAssertions:test_assertTrue()
         lu.assertTrue(true)
+        -- assertTrue is strict
         assertFailure( lu.assertTrue, false)
-        lu.assertTrue(0)
-        lu.assertTrue(1)
-        lu.assertTrue("")
-        lu.assertTrue("abc")
         assertFailure( lu.assertTrue, nil )
-        lu.assertTrue( function() return true end )
-        lu.assertTrue( {} )
-        lu.assertTrue( { 1 } )
+        assertFailure( lu.assertTrue, 0)
+        assertFailure( lu.assertTrue, 1)
+        assertFailure( lu.assertTrue, "")
+        assertFailure( lu.assertTrue, "abc")
+        assertFailure( lu.assertTrue,  function() return true end )
+        assertFailure( lu.assertTrue,  {} )
+        assertFailure( lu.assertTrue,  { 1 } )
     end
 
     function TestLuaUnitAssertions:test_assertFalse()
         lu.assertFalse(false)
+        assertFailure( lu.assertFalse, nil) -- assertFalse is strict !
         assertFailure( lu.assertFalse, true)
-        lu.assertFalse( nil )
         assertFailure( lu.assertFalse, 0 )
         assertFailure( lu.assertFalse, 1 )
         assertFailure( lu.assertFalse, "" )
@@ -838,6 +839,32 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure( lu.assertFalse, function() return true end )
         assertFailure( lu.assertFalse, {} )
         assertFailure( lu.assertFalse, { 1 } )
+    end
+
+    function TestLuaUnitAssertions:test_assertEvalToTrue()
+        lu.assertEvalToTrue(true)
+        assertFailure( lu.assertEvalToTrue, false)
+        assertFailure( lu.assertEvalToTrue, nil )
+        lu.assertEvalToTrue(0)
+        lu.assertEvalToTrue(1)
+        lu.assertEvalToTrue("")
+        lu.assertEvalToTrue("abc")
+        lu.assertEvalToTrue( function() return true end )
+        lu.assertEvalToTrue( {} )
+        lu.assertEvalToTrue( { 1 } )
+    end
+
+    function TestLuaUnitAssertions:test_assertEvalToFalse()
+        lu.assertEvalToFalse(false)
+        lu.assertEvalToFalse(nil)
+        assertFailure( lu.assertEvalToFalse, true)
+        assertFailure( lu.assertEvalToFalse, 0 )
+        assertFailure( lu.assertEvalToFalse, 1 )
+        assertFailure( lu.assertEvalToFalse, "" )
+        assertFailure( lu.assertEvalToFalse, "abc" )
+        assertFailure( lu.assertEvalToFalse, function() return true end )
+        assertFailure( lu.assertEvalToFalse, {} )
+        assertFailure( lu.assertEvalToFalse, { 1 } )
     end
 
     function TestLuaUnitAssertions:test_assertNil()
@@ -1470,10 +1497,21 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals( 'expected: true, actual: false', lu.assertTrue, false )
         assertFailureEquals( 'expected: true, actual: nil', lu.assertTrue, nil )
         assertFailureEquals( 'expected: false, actual: true', lu.assertFalse, true )
+        assertFailureEquals( 'expected: false, actual: nil', lu.assertFalse, nil )
         assertFailureEquals( 'expected: false, actual: 0', lu.assertFalse, 0)
         assertFailureMatches( 'expected: false, actual: {}', lu.assertFalse, {})
         assertFailureEquals( 'expected: false, actual: "abc"', lu.assertFalse, 'abc')
         assertFailureContains( 'expected: false, actual: function', lu.assertFalse, function () end )
+    end 
+
+    function TestLuaUnitErrorMsg:test_assertEvalToTrueFalse()
+        assertFailureEquals( 'expected: a value evaluating to true, actual: false', lu.assertEvalToTrue, false )
+        assertFailureEquals( 'expected: a value evaluating to true, actual: nil', lu.assertEvalToTrue, nil )
+        assertFailureEquals( 'expected: false or nil, actual: true', lu.assertEvalToFalse, true )
+        assertFailureEquals( 'expected: false or nil, actual: 0', lu.assertEvalToFalse, 0)
+        assertFailureMatches( 'expected: false or nil, actual: {}', lu.assertEvalToFalse, {})
+        assertFailureEquals( 'expected: false or nil, actual: "abc"', lu.assertEvalToFalse, 'abc')
+        assertFailureContains( 'expected: false or nil, actual: function', lu.assertEvalToFalse, function () end )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNil()
