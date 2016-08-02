@@ -45,13 +45,16 @@ TestToto = {} --class
 
     function TestToto:test5()
         -- print( "some stuff test 5" )
-        assertTrue( self.a )
-        assertFalse( self.a )
+        assertEvalToTrue( self.a )
+        assertEvalToFalse( self.a ) -- will trigger the failure
     end
 
     function TestToto:test6()
         -- print( "some stuff test 6" )
-        assertTrue( false )
+        assertTrue( true )
+        assertFalse( false )
+        assertEvalToFalse( nil )
+        assertFalse( nil ) -- trigger the failure assertFalse is strict
     end
 
     function TestToto:test7()
