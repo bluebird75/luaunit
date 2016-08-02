@@ -24,7 +24,24 @@ assertEquals( expected, actual ).
 M.ORDER_ACTUAL_EXPECTED = true
 M.PRINT_TABLE_REF_IN_ERROR_MSG = false
 M.TABLE_EQUALS_KEYBYCONTENT = true
+M.ALMOST_EQUALS_USES_EPSILON = true
 M.LINE_LENGTH=80
+
+--[[ M.EPSILON is meant to help with Lua's floating point math in simple corner
+cases like almostEquals(1.1-0.1, 1), which may not work as-is (e.g. on numbers
+with rational binary representation) if the user doesn't provide some explicit
+error margin.
+The default margin used by almostEquals() in such cases is M.EPSILON; and since
+Lua may be compiled with different numeric precisions (single vs. double), we
+try to select a useful default for it dynamically. Note: If the initial value
+is not acceptable, it can be changed by the user to better suit specific needs.
+See also: https://en.wikipedia.org/wiki/Machine_epsilon
+]]
+M.EPSILON = 2^-52 -- = machine epsilon for "double", ~2.22E-16
+if math.abs(1.1 - 1 - 0.1) > M.EPSILON then
+    -- rounding error is above EPSILON, assume single precision
+    M.EPSILON = 2^-23 -- = machine epsilon for "float", ~1.19E-07
+end
 
 -- set this to false to debug luaunit
 local STRIP_LUAUNIT_FROM_STACKTRACE=true
@@ -697,30 +714,56 @@ function M.assertEquals(actual, expected)
     end
 end
 
--- Help Lua in corner cases like almostEquals(1.1, 1.0, 0.1), which by default
--- may not work. We need to give margin a small boost; EPSILON defines the
--- default value to use for this. Since Lua may be compiled with different
--- numeric precisions (single vs. double), we try to select a useful default:
-local EPSILON = math.exp(-51 * math.log(2)) -- 2 * (2^-52, machine epsilon for "double") ~4.44E-16
-if math.abs(1.1 - 1 - 0.1) > EPSILON then
-    -- rounding error is above EPSILON, assume single precision
-    EPSILON = math.exp(-22 * math.log(2)) -- 2 * (2^-23, machine epsilon for "float") ~2.38E-07
+--[[ helper function to determine an error margin
+
+`limit` represents an "absolute" value. For user's convenience it's also
+possible to pass `true` instead, to select M.EPSILON as the default margin.
+(i.e. margin(true) will return M.EPSILON)
+
+`epsilons` is a multiplicative factor that specifies a boundary in terms of
+"multiples of M.EPSILON". (This may be useful to express error margins relative
+to the numeric precision that the underlying Lua implementation offers.)
+
+The two parameters default to zero, i.e. margin(nil, nil) will return 0. If both
+are specified, the resulting values will get added (= sum up). This gives users
+a simple way to specify a larger "absolute" value plus some compensation for
+small rounding errors - e.g. margin(1E-4, 1) would return 1E-4 + M.EPSILON.
+
+margin()            0
+margin(1E-5)        1E-5
+margin(1E-5, 3)     1E-5 + 3 * M.EPSILON
+margin(true)        M.EPSILON
+margin(nil, 1)      M.EPSILON
+margin(true, 0.5)   M.EPSILON + 0.5 * M.EPSILON  = M.EPSILON * 1.5
+]]
+local function margin(limit, epsilons)
+    if limit == true then
+        limit = M.EPSILON
+    elseif limit == nil then
+        limit = 0
+    end
+    local result = limit + (epsilons or 0) * M.EPSILON
+    if result < 0 then
+        error('margin must not be negative, resulting value was ' .. result, 2)
+    end
+    return result
 end
-function M.almostEquals( actual, expected, margin, margin_boost )
-    if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
-        error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
-            prettystr(actual), prettystr(expected), prettystr(margin))
+M.private.margin = margin
+
+local function almostEquals(actual, expected, limit, epsilons)
+    if type(actual) ~= 'number' or type(expected) ~= 'number' then
+        error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s',
+            prettystr(actual), prettystr(expected))
     end
-    if margin < 0 then
-        error('almostEquals: margin must not be negative, current value is ' .. margin, 3)
+    if M.ALMOST_EQUALS_USES_EPSILON then
+        epsilons = epsilons or 1 -- default to M.EPSILON
     end
-    local realmargin = margin + (margin_boost or EPSILON)
-    return math.abs(expected - actual) <= realmargin
+    return math.abs(expected - actual) <= margin(limit, epsilons)
 end
 
-function M.assertAlmostEquals( actual, expected, margin )
+function M.assertAlmostEquals( actual, expected, margin, epsilons )
     -- check that two floats are close by margin
-    if not M.almostEquals(actual, expected, margin) then
+    if not almostEquals(actual, expected, margin, epsilons) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
         end
@@ -744,14 +787,76 @@ function M.assertNotEquals(actual, expected)
     fail_fmt(2, 'Received the not expected value: %s', prettystr(actual))
 end
 
-function M.assertNotAlmostEquals( actual, expected, margin )
+function M.assertNotAlmostEquals( actual, expected, margin, epsilons )
     -- check that two floats are not close by margin
-    if M.almostEquals(actual, expected, margin) then
+    if almostEquals(actual, expected, margin, epsilons) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
         end
         fail_fmt(2, 'Values are almost equal\nExpected: %s with a difference above margin of %s, received: %s',
                  expected, margin, actual)
+    end
+end
+
+-- assert "absolute" error between actual and expected is within given boundary
+function M.assertAbsErrorWithin(actual, expected, limit, epsilons)
+    -- values for limit and absolute error
+    local lim, e = margin(limit, epsilons), actual - expected
+
+    if math.abs(e) > lim then
+        fail_fmt(2, 'Absolute error exceeded\n' ..
+                    'Actual: %s, expected: %s with margin of %s; delta: %s',
+                    actual, expected, lim, math.abs(e) - lim)
+    end
+end
+
+-- assert "absolute" error between actual and expected NOT within given boundary
+function M.assertNotAbsErrorWithin(actual, expected, limit, epsilons)
+    -- values for limit and absolute error
+    local lim, e = margin(limit, epsilons), actual - expected
+
+    if math.abs(e) <= lim then
+        fail_fmt(2, 'Absolute error NOT exceeded\n' ..
+                    'Actual: %s, expected: %s with margin above %s; delta: %s',
+                    actual, expected, lim, lim - math.abs(e))
+    end
+end
+
+-- assert "relative" error between actual and expected is within given boundary
+function M.assertRelErrorWithin(actual, expected, limit, epsilons)
+    -- relative error is affected by order of arguments!
+    if not M.ORDER_ACTUAL_EXPECTED then
+        expected, actual = actual, expected
+    end
+    -- values for limit and relative error
+    local lim, e = margin(limit, epsilons), actual / expected - 1
+
+    if math.abs(e) == math.huge then
+        error("relative error is 'inf', don't try to use 'expected' == 0")
+    end
+    if math.abs(e) > lim then
+        fail_fmt(2, 'Relative error exceeded\n' ..
+                    'Actual: %s, expected: %s with margin of %s; delta: %s',
+                    actual, expected, lim, math.abs(e) - lim)
+    end
+end
+
+-- assert "relative" error between actual and expected NOT within given boundary
+function M.assertNotRelErrorWithin(actual, expected, limit, epsilons)
+    -- relative error is affected by order of arguments!
+    if not M.ORDER_ACTUAL_EXPECTED then
+        expected, actual = actual, expected
+    end
+    -- values for limit and relative error
+    local lim, e = margin(limit, epsilons), actual / expected - 1
+
+    if math.abs(e) == math.huge then
+        error("relative error is 'inf', don't try to use 'expected' == 0")
+    end
+    if math.abs(e) <= lim then
+        fail_fmt(2, 'Relative error NOT exceeded\n' ..
+                    'Actual: %s, expected: %s with margin above %s; delta: %s',
+                    actual, expected, lim, lim - math.abs(e))
     end
 end
 

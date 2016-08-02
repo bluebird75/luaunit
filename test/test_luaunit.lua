@@ -642,6 +642,22 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
     end
 
+    function TestLuaUnitUtilities:testMargin()
+        local eps = lu.EPSILON
+
+        lu.assertEquals(lu.private.margin(), 0)
+        lu.assertEquals(lu.private.margin(true), eps)
+        lu.assertEquals(lu.private.margin(nil, 1), eps)
+        lu.assertEquals(lu.private.margin(1E-5), 1E-5)
+        lu.assertEquals(lu.private.margin(1E-5, 3), 1E-5 + 3 * eps)
+        lu.assertEquals(lu.private.margin(true, 0.5), 1.5 * eps)
+
+        lu.assertErrorMsgContains('margin must not be negative',
+                                  lu.private.margin, -1E-20)
+        lu.assertErrorMsgContains('margin must not be negative',
+                                  lu.private.margin, nil, -0.01)
+    end
+
 ------------------------------------------------------------------
 --
 --                        Outputter Tests
@@ -746,6 +762,8 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
     end
 
     function TestLuaUnitAssertions:test_assertAlmostEquals()
+        local config_saved = lu.ALMOST_EQUALS_USES_EPSILON
+
         lu.assertAlmostEquals( 1, 1, 0.1 )
         lu.assertAlmostEquals( 1, 1, 0 ) -- zero margin
 
@@ -753,16 +771,23 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertAlmostEquals( -1, -1.1, 0.2 )
         lu.assertAlmostEquals( 0.1, -0.1, 0.3 )
 
+        lu.ALMOST_EQUALS_USES_EPSILON = false
+        -- With no additional margin (epsilon), these are expected to FAIL
+        assertFailure( lu.assertAlmostEquals, 1, 1.1, 0.1 )
+        assertFailure( lu.assertAlmostEquals, -1, -1.1, 0.1 )
+
+        lu.ALMOST_EQUALS_USES_EPSILON = true
         lu.assertAlmostEquals( 1, 1.1, 0.1 )
         lu.assertAlmostEquals( -1, -1.1, 0.1 )
         lu.assertAlmostEquals( 0.1, -0.1, 0.2 )
 
         assertFailure( lu.assertAlmostEquals, 1, 1.11, 0.1 )
         assertFailure( lu.assertAlmostEquals, -1, -1.11, 0.1 )
-        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, -1, 1, nil )
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, -1, nil, 0 )
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, nil, 1, 0 )
         lu.assertErrorMsgContains( "margin must not be negative", lu.assertAlmostEquals, 1, 1.1, -0.1 )
+
+        lu.ALMOST_EQUALS_USES_EPSILON = config_saved
     end
 
     function TestLuaUnitAssertions:test_assertNotEquals()
@@ -804,10 +829,120 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
         assertFailure( lu.assertNotAlmostEquals, 1, 1.11, 0.2 )
         assertFailure( lu.assertNotAlmostEquals, -1, -1.11, 0.2 )
-        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertNotAlmostEquals, -1, 1, nil )
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertNotAlmostEquals, -1, nil, 0 )
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertNotAlmostEquals, nil, 1, 0 )
         lu.assertErrorMsgContains( "margin must not be negative", lu.assertNotAlmostEquals, 1, 1.1, -0.1 )
+    end
+
+    function TestLuaUnitAssertions:test_assertAbsErrorWithin()
+        -- with no additional epsilon, these are expected to FAIL due to rounding
+        -- (this checks that a user-supplied margin gets used unmodified)
+        assertFailure( lu.assertAbsErrorWithin, 1.1, 1.0, 0.1 )     -- explicit margin
+        assertFailure( lu.assertAbsErrorWithin, 1.1 - 1.0, 0.1 )    -- implicit zero margin
+        assertFailure( lu.assertAbsErrorWithin, 1.1 - 1.0, 0.1, 0 ) -- explicit zero margin
+        -- explicitly "boost" margin to make tests PASS
+        lu.assertAbsErrorWithin( 1.1, 1.0, 0.1, 1 )         -- 1 * EPSILON
+        lu.assertAbsErrorWithin( 1.1 - 1.0, 0.1, nil, 1 )   -- 1 * EPSILON
+        lu.assertAbsErrorWithin( 1.1 - 1.0, 0.1, true )     -- default margin = EPSILON
+
+        lu.assertAbsErrorWithin(math.deg(math.pi / 3), 60, 0, 32) -- 32 * EPSILON
+        lu.assertAbsErrorWithin(math.sqrt(2) * math.sqrt(2), 2, 0, 2) -- 2 * EPSILON
+    end
+
+    function TestLuaUnitAssertions:test_assertNotAbsErrorWithin()
+        -- these are expected to PASS due to rounding errors
+        lu.assertNotAbsErrorWithin( 1.1, 1.0, 0.1 )     -- explicit margin
+        lu.assertNotAbsErrorWithin( 1.1 - 1.0, 0.1 )    -- implicit zero margin
+        lu.assertNotAbsErrorWithin( 1.1 - 1.0, 0.1, 0 ) -- explicit zero margin
+        -- explicitly "boost" margin to make tests FAIL
+        assertFailure( lu.assertNotAbsErrorWithin, 1.1, 1.0, 0.1, 1 )       -- 1 * EPSILON
+        assertFailure( lu.assertNotAbsErrorWithin, 1.1 - 1.0, 0.1, nil, 1 ) -- 1 * EPSILON
+        assertFailure( lu.assertNotAbsErrorWithin, 1.1 - 1.0, 0.1, true )   -- default margin = EPSILON
+
+        if lu.EPSILON < 1E-15 then
+            -- these tests won't fail when testing with single precision
+            lu.assertNotAbsErrorWithin(math.deg(math.pi / 3), 60, 0, 31)
+            lu.assertNotAbsErrorWithin(math.sqrt(2) * math.sqrt(2), 2, true) -- 1 * EPSILON
+        end
+    end
+
+    function TestLuaUnitAssertions:test_assertRelErrorWithin()
+        -- for relative error, the order of arguments matters!
+        local config_saved = lu.ORDER_ACTUAL_EXPECTED
+
+        lu.ORDER_ACTUAL_EXPECTED = true
+        -- Unlike assertAbsErrorWithin(), the relative error here is exceeding
+        -- EPSILON - so these will FAIL (despite being "boosted")
+        assertFailure( lu.assertRelErrorWithin, 1.1 - 1.0, 0.1, nil, 1 )    -- 1 * EPSILON
+        assertFailure( lu.assertRelErrorWithin, 1.1 - 1.0, 0.1, true )      -- default margin = EPSILON
+        if lu.EPSILON < 1E-15 then
+            -- 3 * EPSILON should still be insufficient
+            -- (single precision seems to result in an error of 2 * EPSILON)
+            assertFailure( lu.assertRelErrorWithin, 1.1 - 1.0, 0.1, 0, 3 )
+        end
+        -- 4 * EPSILON should finally make it pass
+        lu.assertRelErrorWithin( 1.1 - 1.0, 0.1, 0, 4 )
+        lu.assertRelErrorWithin( 1.1 - 1.0, 0.1, true, 3 )  -- (1 + 3) * EPSILON
+
+        if lu.EPSILON < 1E-15 then
+            lu.assertRelErrorWithin(math.deg(math.pi / 3), 60, 0, 0.5) -- EPSILON / 2
+        else
+            lu.assertRelErrorWithin(math.deg(math.pi / 3), 60, 0, 1) -- 1 * EPSILON
+        end
+        lu.assertRelErrorWithin(math.sqrt(2) * math.sqrt(2), 2, true) -- 1 * EPSILON
+
+        -- when scaled by 1, the error is definitely too big for (0.1 - EPSILON)
+        assertFailure( lu.assertRelErrorWithin, 1.1, 1.0, 0.1, -1 )
+        -- but when dividing by 1.1, it'll PASS
+        lu.assertRelErrorWithin( 1.0, 1.1, 0.1, -1 )
+        -- an "expected" value of zero is an error
+        lu.assertErrorMsgContains( "relative error is 'inf'",
+                                   lu.assertRelErrorWithin, 1, 0 )
+
+        lu.ORDER_ACTUAL_EXPECTED = false
+        assertFailure( lu.assertRelErrorWithin, 1.0, 1.1, 0.1, -1 )
+        lu.assertRelErrorWithin( 1.1, 1.0, 0.1, -1 )
+        lu.assertErrorMsgContains( "relative error is 'inf'",
+                                   lu.assertRelErrorWithin, 0, 1 )
+
+        lu.ORDER_ACTUAL_EXPECTED = config_saved
+    end
+
+    function TestLuaUnitAssertions:test_assertNotRelErrorWithin()
+        -- for relative error, the order of arguments matters!
+        local config_saved = lu.ORDER_ACTUAL_EXPECTED
+
+        lu.ORDER_ACTUAL_EXPECTED = true
+        lu.assertNotRelErrorWithin( 1.1 - 1.0, 0.1, nil, 1 )    -- 1 * EPSILON
+        lu.assertNotRelErrorWithin( 1.1 - 1.0, 0.1, true )      -- default margin = EPSILON
+        if lu.EPSILON < 1E-15 then
+            -- 3 * EPSILON should still be insufficient
+            lu.assertNotRelErrorWithin( 1.1 - 1.0, 0.1, 0, 3 )
+        end
+        -- 4 * EPSILON should finally make it FAIL
+        assertFailure( lu.assertNotRelErrorWithin, 1.1 - 1.0, 0.1, 0, 4 )
+        assertFailure( lu.assertNotRelErrorWithin, 1.1 - 1.0, 0.1, true, 3 ) -- (1 + 3) * EPSILON
+
+        if lu.EPSILON < 1E-15 then
+            lu.assertNotRelErrorWithin(math.deg(math.pi / 3), 60, 0, 0.49)
+            lu.assertNotRelErrorWithin(math.sqrt(2) * math.sqrt(2), 2, 0, 0.99)
+        end
+
+        -- when scaled by 1, the error is definitely too big for (0.1 - EPSILON)
+        lu.assertNotRelErrorWithin( 1.1, 1.0, 0.1, -1 )
+        -- but not when dividing by 1.1
+        assertFailure( lu.assertNotRelErrorWithin, 1.0, 1.1, 0.1, -1 )
+        -- an "expected" value of zero is an error
+        lu.assertErrorMsgContains( "relative error is 'inf'",
+                                   lu.assertNotRelErrorWithin, 1, 0 )
+
+        lu.ORDER_ACTUAL_EXPECTED = false
+        lu.assertNotRelErrorWithin( 1.0, 1.1, 0.1, -1 )
+        assertFailure( lu.assertNotRelErrorWithin, 1.1, 1.0, 0.1, -1 )
+        lu.assertErrorMsgContains( "relative error is 'inf'",
+                                   lu.assertNotRelErrorWithin, 0, 1 )
+
+        lu.ORDER_ACTUAL_EXPECTED = config_saved
     end
 
     function TestLuaUnitAssertions:test_assertNotEqualsDifferentTypes2()
