@@ -1,7 +1,7 @@
 #!/usr/bin/env lua
 
 
-lu = require('luaunit')
+local lu = require('luaunit')
 
 TestToto = {} --class
 
