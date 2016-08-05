@@ -1,8 +1,7 @@
 language: c
 sudo: false
 
-os:
-  - linux
+os: linux
 
 env:
   global:
@@ -19,12 +18,11 @@ env:
     - LUA=luajit2.1  # current head of 2.1 branch
 
 matrix:
+  # test Mac OS X, but limit it to a single build
   include:
     - os: osx
-      env: LUAROCKS=2.2.2 LUA=lua5.1  LUANUMBER=double
-
-# 'bleeding edge' LuaJIT may fail without breaking the build
-matrix:
+      env: LUA=lua5.1 LUANUMBER=double
+  # 'bleeding edge' LuaJIT may fail without breaking the build
   allow_failures:
     - env: LUA=luajit2.0
     - env: LUA=luajit2.1
