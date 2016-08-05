@@ -8,7 +8,7 @@ env:
   global:
     - LUAROCKS=2.2.2
   matrix:
-    - LUA=lua5.1  LUANUMBER=double os=osx
+    - os=osx LUA=lua5.1  LUANUMBER=double
     - LUA=lua5.1  LUANUMBER=float
     - LUA=lua5.2  LUANUMBER=double
     - LUA=lua5.2  LUANUMBER=float
