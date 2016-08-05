@@ -175,6 +175,22 @@ local function sortedPairs(tbl)
 end
 M.private.sortedPairs = sortedPairs
 
+math.randomseed(os.clock()*100000000000)
+
+local function randomizeTable( t )
+    -- Shuffle the table t
+    local rand = math.random 
+    assert( t, "shuffleTable() expected a table, got nil" )
+    local iterations = #t
+    local j
+    
+    for i = iterations, 2, -1 do
+        j = rand(i)
+        t[i], t[j] = t[j], t[i]
+    end
+end
+M.private.randomizeTable = randomizeTable
+ 
 local function strsplit(delimiter, text)
 -- Split text into a list consisting of the strings in text, separated
 -- by strings matching delimiter (which may _NOT_ be a pattern).
@@ -1514,6 +1530,7 @@ end
         -- --error, -e: treat errors as fatal (quit program)
         -- --output, -o, + name: select output type
         -- --pattern, -p, + pattern: run test matching pattern, may be repeated
+        -- --random, -r, : run tests in random order
         -- --name, -n, + fname: name of output file for junit, default to stdout
         -- [testnames, ...]: run selected test names
         --
@@ -1551,6 +1568,9 @@ end
                 return
             elseif option == '--failure' or option == '-f' then
                 result['quitOnFailure'] = true
+                return
+            elseif option == '--random' or option == '-r' then
+                result['randomize'] = true
                 return
             elseif option == '--output' or option == '-o' then
                 state = SET_OUTPUT
@@ -2074,6 +2094,9 @@ end
         ]]
 
         local expandedList = self.expandClasses( listOfNameAndInst )
+        if self.randomize then
+            M.private.randomizeTable( expandedList )
+        end
         local filteredList, filteredOutList
             = self.applyPatternFilter( self.patternFilter, expandedList )
 
@@ -2191,6 +2214,7 @@ end
         self.quitOnFailure = options.quitOnFailure
         self.fname         = options.fname
         self.patternFilter = options.pattern
+        self.randomize     = options.randomize
 
         if options.output then
             if options.output:lower() == 'junit' and options.fname == nil then
