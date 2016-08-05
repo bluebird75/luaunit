@@ -2002,7 +2002,11 @@ end
     end
 
     function M.LuaUnit.expandOneClass( result, className, classInstance )
-        -- add all test methods of classInstance to result
+        --[[
+        Input: a list of { name, instance }, a class name, a class instance
+        Ouptut: modify result to add all test method instance in the form:
+        { className.methodName, classInstance }
+        ]]
         for methodName, methodInstance in sortedPairs(classInstance) do
             if M.LuaUnit.asFunction(methodInstance) and M.LuaUnit.isMethodTestName( methodName ) then
                 table.insert( result, { className..'.'..methodName, classInstance } )
@@ -2011,8 +2015,17 @@ end
     end
 
     function M.LuaUnit.expandClasses( listOfNameAndInst )
+        --[[
         -- expand all classes (provided as {className, classInstance}) to a list of {className.methodName, classInstance}
         -- functions and methods remain untouched
+
+        Input: a list of { name, instance }
+
+        Output:
+        * { function name, function instance } : do nothing
+        * { class.method name, class instance }: do nothing
+        * { class name, class instance } : add all method names in the form of (className.methodName, classInstance)
+        ]]
         local result = {}
 
         for i,v in ipairs( listOfNameAndInst ) do
@@ -2053,11 +2066,12 @@ end
     end
 
     function M.LuaUnit:runSuiteByInstances( listOfNameAndInst )
-        -- Run an explicit list of tests. All test instances and names must be supplied.
-        -- each test must be one of:
-        --   * { function name, function instance }
-        --   * { class name, class instance }
-        --   * { class.method name, class instance }
+        --[[ Run an explicit list of tests. All test instances and names must be supplied.
+        each test must be one of:
+        * { function name, function instance }
+        * { class name, class instance }
+        * { class.method name, class instance }
+        ]]
 
         local expandedList = self.expandClasses( listOfNameAndInst )
         local filteredList, filteredOutList
@@ -2070,24 +2084,13 @@ end
             if M.LuaUnit.asFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
             else
-                -- expandClasses() should have already taken care of this case
+                -- expandClasses() should have already taken care of sanitizing the input
                 assert( type(instance) == 'table' )
-                --[[
-                if type(instance) ~= 'table' then
-                    error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
-                else
-                --]]
-                    local className, methodName = M.LuaUnit.splitClassMethod( name )
-                    assert( className ~= nil )
-                    local methodInstance = instance[methodName]
-                    assert(methodInstance ~= nil)
-                    --[[
-                    if methodInstance == nil then
-                        error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
-                    end
-                    --]]
-                    self:execOneFunction( className, methodName, instance, methodInstance )
-                --end
+                local className, methodName = M.LuaUnit.splitClassMethod( name )
+                assert( className ~= nil )
+                local methodInstance = instance[methodName]
+                assert(methodInstance ~= nil)
+                self:execOneFunction( className, methodName, instance, methodInstance )
             end
             if self.result.aborted then break end -- "--error" or "--failure" option triggered
         end
@@ -2105,7 +2108,10 @@ end
     end
 
     function M.LuaUnit:runSuiteByNames( listOfName )
-        -- Run an explicit list of test names
+        --[[ Run LuaUnit with a list of generic names, coming either from command-line or from global
+            namespace analysis. Convert the list into a list of (name, valid instances (table or function))
+            and calls runSuiteByInstances.
+        ]]
 
         local instanceName, instance
         local listOfNameAndInst = {}
