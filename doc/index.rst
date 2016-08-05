@@ -689,6 +689,9 @@ If --failure or -f is passed as an option, LuaUnit will stop on the first failur
 
 If --error or -e is passed as an option, LuaUnit will stop on the first error (but continue on failures).
 
+**Randomize order**
+
+If --random or -r is passed as an option, LuaUnit will execute tests in random order
 
 **Other Options:**
 
