@@ -18,8 +18,7 @@ env:
     - LUA=luajit2.0  # current head of 2.0 branch
     - LUA=luajit2.1  # current head of 2.1 branch
     include:
-      os=osx 
-      - LUA=lua5.1  LUANUMBER=double
+      - os: osx LUA=lua5.1  LUANUMBER=double
 
 # 'bleeding edge' LuaJIT may fail without breaking the build
 matrix:
