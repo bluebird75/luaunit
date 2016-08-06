@@ -140,10 +140,9 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
     function TestLuaUnitUtilities:test_randomizeTable()
         local t, tref, n, i
-        t, tref, n, i = {}, {}, 20, 0
-        while i < n do
-            table.insert(t, i)
-            table.insert(tref, i)
+        t, tref, n, i = {}, {}, 20, 1
+        while i <= n do
+            t[i], tref[i] = i, i
             i = i + 1
         end
         lu.assertEquals( #t, n )

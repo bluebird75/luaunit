@@ -176,18 +176,16 @@ local function sortedPairs(tbl)
 end
 M.private.sortedPairs = sortedPairs
 
-math.randomseed(os.clock()*100000000000)
+-- seed the random with a strongly varying seed
+math.randomseed(os.clock()*1E11)
 
 local function randomizeTable( t )
-    -- Shuffle the table t
-    local rand = math.random 
-    assert( t, "shuffleTable() expected a table, got nil" )
-    local iterations = #t
-    local j
-    
-    for i = iterations, 2, -1 do
-        j = rand(i)
-        t[i], t[j] = t[j], t[i]
+    -- randomize the item orders of the table t
+    for i = #t, 2, -1 do
+        local j = math.random(i)
+        if i ~= j then
+            t[i], t[j] = t[j], t[i]
+        end
     end
 end
 M.private.randomizeTable = randomizeTable
@@ -2096,7 +2094,7 @@ end
 
         local expandedList = self.expandClasses( listOfNameAndInst )
         if self.randomize then
-            M.private.randomizeTable( expandedList )
+            randomizeTable( expandedList )
         end
         local filteredList, filteredOutList
             = self.applyPatternFilter( self.patternFilter, expandedList )
