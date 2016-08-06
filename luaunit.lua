@@ -673,15 +673,27 @@ function M.assertEvalToFalse(value)
     end
 end
 
-function M.assertTrue(value)
+function M.assertIsTrue(value)
     if value ~= true then
         failure("expected: true, actual: " ..prettystr(value), 2)
     end
 end
 
-function M.assertFalse(value)
+function M.assertNotIsTrue(value)
+    if value == true then
+        failure("expected: anything but true, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertIsFalse(value)
     if value ~= false then
         failure("expected: false, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertNotIsFalse(value)
+    if value == false then
+        failure("expected: anything but false, actual: " ..prettystr(value), 2)
     end
 end
 
@@ -982,8 +994,6 @@ local list_of_funcs = {
     { 'assertNotAlmostEquals'   , 'assert_not_almost_equals' },
     { 'assertEvalToTrue'        , 'assert_eval_to_true' },
     { 'assertEvalToFalse'       , 'assert_eval_to_false' },
-    { 'assertTrue'              , 'assert_true' },
-    { 'assertFalse'             , 'assert_false' },
     { 'assertStrContains'       , 'assert_str_contains' },
     { 'assertStrIContains'      , 'assert_str_icontains' },
     { 'assertNotStrContains'    , 'assert_not_str_contains' },
@@ -1004,6 +1014,8 @@ local list_of_funcs = {
     { 'assertIsTable'           , 'assert_is_table' },
     { 'assertIsBoolean'         , 'assert_is_boolean' },
     { 'assertIsNil'             , 'assert_is_nil' },
+    { 'assertIsTrue'            , 'assert_is_true' },
+    { 'assertIsFalse'           , 'assert_is_false' },
     { 'assertIsFunction'        , 'assert_is_function' },
     { 'assertIsThread'          , 'assert_is_thread' },
     { 'assertIsUserdata'        , 'assert_is_userdata' },
@@ -1014,6 +1026,8 @@ local list_of_funcs = {
     { 'assertIsTable'           , 'assertTable' },
     { 'assertIsBoolean'         , 'assertBoolean' },
     { 'assertIsNil'             , 'assertNil' },
+    { 'assertIsTrue'            , 'assertTrue' },
+    { 'assertIsFalse'           , 'assertFalse' },
     { 'assertIsFunction'        , 'assertFunction' },
     { 'assertIsThread'          , 'assertThread' },
     { 'assertIsUserdata'        , 'assertUserdata' },
@@ -1024,6 +1038,8 @@ local list_of_funcs = {
     { 'assertIsTable'           , 'assert_table' },
     { 'assertIsBoolean'         , 'assert_boolean' },
     { 'assertIsNil'             , 'assert_nil' },
+    { 'assertIsTrue'            , 'assert_true' },
+    { 'assertIsFalse'           , 'assert_false' },
     { 'assertIsFunction'        , 'assert_function' },
     { 'assertIsThread'          , 'assert_thread' },
     { 'assertIsUserdata'        , 'assert_userdata' },
@@ -1034,6 +1050,8 @@ local list_of_funcs = {
     { 'assertNotIsTable'        , 'assert_not_is_table' },
     { 'assertNotIsBoolean'      , 'assert_not_is_boolean' },
     { 'assertNotIsNil'          , 'assert_not_is_nil' },
+    { 'assertNotIsTrue'         , 'assert_not_is_true' },
+    { 'assertNotIsFalse'        , 'assert_not_is_false' },
     { 'assertNotIsFunction'     , 'assert_not_is_function' },
     { 'assertNotIsThread'       , 'assert_not_is_thread' },
     { 'assertNotIsUserdata'     , 'assert_not_is_userdata' },
@@ -1044,6 +1062,8 @@ local list_of_funcs = {
     { 'assertNotIsTable'        , 'assertNotTable' },
     { 'assertNotIsBoolean'      , 'assertNotBoolean' },
     { 'assertNotIsNil'          , 'assertNotNil' },
+    { 'assertNotIsTrue'         , 'assertNotTrue' },
+    { 'assertNotIsFalse'        , 'assertNotFalse' },
     { 'assertNotIsFunction'     , 'assertNotFunction' },
     { 'assertNotIsThread'       , 'assertNotThread' },
     { 'assertNotIsUserdata'     , 'assertNotUserdata' },
@@ -1054,6 +1074,8 @@ local list_of_funcs = {
     { 'assertNotIsTable'        , 'assert_not_table' },
     { 'assertNotIsBoolean'      , 'assert_not_boolean' },
     { 'assertNotIsNil'          , 'assert_not_nil' },
+    { 'assertNotIsTrue'         , 'assert_not_true' },
+    { 'assertNotIsFalse'        , 'assert_not_false' },
     { 'assertNotIsFunction'     , 'assert_not_function' },
     { 'assertNotIsThread'       , 'assert_not_thread' },
     { 'assertNotIsUserdata'     , 'assert_not_userdata' },
