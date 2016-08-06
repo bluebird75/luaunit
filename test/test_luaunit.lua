@@ -1221,6 +1221,8 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         local s1='toto'
         local s2='toto'
         local s3='to'..'to'
+        local b1=true
+        local b2=false
 
         lu.assertIs(1,1)
         lu.assertIs(f,f)
@@ -1229,6 +1231,8 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertIs(s1, s3)
         lu.assertIs(t1,t1)
         lu.assertIs(t4,t4)
+        lu.assertIs(b1, true)
+        lu.assertIs(b2, false)
 
         assertFailure(lu.assertIs, 1, 2)
         assertFailure(lu.assertIs, 1.4, 1)
@@ -1238,6 +1242,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure(lu.assertIs, {1,2,3}, f)
         assertFailure(lu.assertIs, f, g)
         assertFailure(lu.assertIs, t2,t3 )
+        assertFailure(lu.assertIs, b2, nil)
     end
 
     function TestLuaUnitAssertions:test_assertNotIs()
@@ -1249,6 +1254,8 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         local t4= {a=1,{1,2},day="today"}
         local s1='toto'
         local s2='toto'
+        local b1=true
+        local b2=false
 
         assertFailure( lu.assertNotIs, 1,1 )
         assertFailure( lu.assertNotIs, f,f )
@@ -1256,6 +1263,8 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure( lu.assertNotIs, t4,t4)
         assertFailure( lu.assertNotIs, s1,s2 )
         assertFailure( lu.assertNotIs, 'toto', 'toto' )
+        assertFailure( lu.assertNotIs, b1, true )
+        assertFailure( lu.assertNotIs, b2, false )
 
         lu.assertNotIs(1, 2)
         lu.assertNotIs(1.4, 1)
@@ -1265,6 +1274,9 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertNotIs({1,2,3}, f)
         lu.assertNotIs(f, g)
         lu.assertNotIs(t2,t3)
+        lu.assertNotIs(b1, false)
+        lu.assertNotIs(b2, true)
+        lu.assertNotIs(b2, nil)
     end
 
     function TestLuaUnitAssertions:test_assertTableNum()
