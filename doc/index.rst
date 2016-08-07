@@ -771,6 +771,31 @@ not influence the test itself.
 
 Value assertions
 ----------------------
+
+LuaUnit contains several flavours of true/false assertions, to be used in different contexts.
+Usually, when asserting for true or false, you want strict assertions (nil should not 
+assert to false); assertTrue and assertFalse are the functions for this purpose. In some cases though,
+you want Lua coerction rules to apply (value 1, string "hello" yields true) and the right functions to use
+are assertEvalToTrue and assertEvalToFalse. Finally, you have the assertNotTrue and assertNotFalse to verify
+that a value is anything but the boolean true or false.
+
+The below table sums it up:
+
+============  ============  ===================  ================  =============  ===================  ===============
+**True assertion family**                                            **False assertion family**
+-----------------------------------------------------------------  ---------------------------------------------------
+Input Value   assertTrue()   assertEvalToTrue()  assertNotFalse()  assertFalse()  assertEvalToFalse()  assertNotTrue()
+============  ============  ===================  ================  =============  ===================  ===============
+*true*        OK            OK                   OK                Fail           Fail                 Fail
+*false*       Fail          Fail                 Fail              OK             OK                   OK 
+*nil*         Fail          Fail                 OK                Fail           OK                   OK 
+*0*           Fail          OK                   OK                Fail           Fail                 Fail 
+*1*           Fail          OK                   OK                Fail           Fail                 Fail
+*"hello"*     Fail          OK                   OK                Fail           Fail                 Fail
+============  ============  ===================  ================  =============  ===================  ===============
+
+
+
 .. function:: assertEvalToTrue(value)
 
     **Alias**: *assert_eval_to_true()*
@@ -836,11 +861,14 @@ Value assertions
         s2='to'..'to'
         t1={1,2}
         t2={1,2}
+        v1=nil
+        v2=false
 
         luaunit.assertIs(s1,s1) -- ok
         luaunit.assertIs(s1,s2) -- ok
         luaunit.assertIs(t1,t1) -- ok
         luaunit.assertIs(t1,t2) -- fail
+        luaunit.assertIs(v1,v2) -- fail
     
 .. function:: assertNotIs(actual, expected)
 
