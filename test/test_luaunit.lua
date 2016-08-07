@@ -138,6 +138,22 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( v, '33' )
     end
 
+    function TestLuaUnitUtilities:test_randomizeTable()
+        local t, tref, n, i
+        t, tref, n, i = {}, {}, 20, 1
+        while i <= n do
+            t[i], tref[i] = i, i
+            i = i + 1
+        end
+        lu.assertEquals( #t, n )
+
+        lu.private.randomizeTable( t )
+        lu.assertEquals( #t, n )
+        lu.assertNotEquals( t, tref)
+        table.sort(t)
+        lu.assertEquals( t, tref )
+    end
+
     function TestLuaUnitUtilities:test_strSplitOneCharDelim()
         local t = lu.private.strsplit( '\n', '1\n22\n333\n' )
         lu.assertEquals( t[1], '1')
