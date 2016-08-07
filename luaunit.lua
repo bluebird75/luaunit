@@ -50,6 +50,7 @@ Options:
   -q, --quiet:            Set verbosity to minimum
   -e, --error:            Stop on first error
   -f, --failure:          Stop on first failure or error
+  -r, --random            Run tests in random order
   -o, --output OUTPUT:    Set output type to OUTPUT
                           Possible values: text, tap, junit, nil
   -n, --name NAME:        For junit only, mandatory name of xml file
@@ -175,6 +176,20 @@ local function sortedPairs(tbl)
 end
 M.private.sortedPairs = sortedPairs
 
+-- seed the random with a strongly varying seed
+math.randomseed(os.clock()*1E11)
+
+local function randomizeTable( t )
+    -- randomize the item orders of the table t
+    for i = #t, 2, -1 do
+        local j = math.random(i)
+        if i ~= j then
+            t[i], t[j] = t[j], t[i]
+        end
+    end
+end
+M.private.randomizeTable = randomizeTable
+ 
 local function strsplit(delimiter, text)
 -- Split text into a list consisting of the strings in text, separated
 -- by strings matching delimiter (which may _NOT_ be a pattern).
@@ -1550,6 +1565,7 @@ end
         -- --error, -e: treat errors as fatal (quit program)
         -- --output, -o, + name: select output type
         -- --pattern, -p, + pattern: run test matching pattern, may be repeated
+        -- --random, -r, : run tests in random order
         -- --name, -n, + fname: name of output file for junit, default to stdout
         -- [testnames, ...]: run selected test names
         --
@@ -1587,6 +1603,9 @@ end
                 return
             elseif option == '--failure' or option == '-f' then
                 result['quitOnFailure'] = true
+                return
+            elseif option == '--random' or option == '-r' then
+                result['randomize'] = true
                 return
             elseif option == '--output' or option == '-o' then
                 state = SET_OUTPUT
@@ -2110,6 +2129,9 @@ end
         ]]
 
         local expandedList = self.expandClasses( listOfNameAndInst )
+        if self.randomize then
+            randomizeTable( expandedList )
+        end
         local filteredList, filteredOutList
             = self.applyPatternFilter( self.patternFilter, expandedList )
 
@@ -2227,6 +2249,7 @@ end
         self.quitOnFailure = options.quitOnFailure
         self.fname         = options.fname
         self.patternFilter = options.pattern
+        self.randomize     = options.randomize
 
         if options.output then
             if options.output:lower() == 'junit' and options.fname == nil then
