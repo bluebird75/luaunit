@@ -1,11 +1,11 @@
 
-## LuaUnit
-by Philippe Fremy
-
 [![Build status](https://ci.appveyor.com/api/projects/status/us6uh4e5q597jj54?svg=true&passingText=Windows%20Build%20passing&failingText=Windows%20Build%20failed)](https://ci.appveyor.com/project/bluebird75/luaunit)
 [![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
 [![Documentation Status](https://readthedocs.org/projects/luaunit/badge/?version=latest)](https://readthedocs.org/projects/luaunit/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/bluebird75/luaunit/badge.svg?branch=master)](https://coveralls.io/github/bluebird75/luaunit?branch=master)
+
+## LuaUnit
+by Philippe Fremy
 
 LuaUnit is a unit-testing framework for Lua. It allows you 
 to write test functions and test classes with test methods, combined with 
@@ -55,15 +55,15 @@ On Linux, you can also install it into your Lua directories
 Edit `install()` for Lua version and installation directory if that
 fails. It uses, by default, Linux paths that depend on the version. 
 
+**LuaRocks**
+
+LuaUnit v3.2 and above are available on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit).
+
 **bower**
 
 You can also install it with bower :
 
     bower install https://github.com/bluebird75/luaunit.git.
-
-**LuaRocks**
-
-LuaUnit v3.2 and above are available on LuaRocks.
 
 ##Contributors
 * [NiteHawk](https://github.com/n1tehawk)
@@ -79,20 +79,7 @@ LuaUnit v3.2 and above are available on LuaRocks.
 
 ##Successes
 
-Projects using LuaUnit:
-* Gazelle:          https://github.com/haberman/gazelle
-* Lua Wiki Creole:  https://github.com/rrees/luawikicreole
-* lmock:            https://github.com/LuaDist/lmock
-* objectlua: class oriented lua module ( https://github.com/LuaDist/objectlua )
-* luapica: Lua library to handle PICA+ data ( https://github.com/nichtich/luapica )
-* Lua FSM: Finite State Machines in Lua ( https://github.com/cornelisse/LuaFSM )
-* lua framework for ngcp-kamailio config ( https://github.com/sipwise/lua-ngcp-kamailio.git )
-* Fluento: Search for objects in Ultima Online ( https://code.google.com/archive/p/fluentuo/source/default/source )
-* http://wow5box.googlecode.com/svn/trunk/
-* lua-discount      https://github.com/asb/lua-discount/
-* Circles           https://github.com/tkadlubo/Circles.lua
-* Lua Stubs         https://github.com/jivebird/lust
-* Leslie: A lua implementation of the Django template ( https://code.google.com/archive/p/leslie/ )
+LuaUnit is used by hundreds of projects on GitHub (see [LuaUnit search](https://github.com/search?utf8=%E2%9C%93&q=filename%3Aluaunit.lua&type=Code&ref=searchresults) ) has more than 10k download on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit) ).
 
 
 ### History 
