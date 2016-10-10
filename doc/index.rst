@@ -778,7 +778,7 @@ Value assertions
 LuaUnit contains several flavours of true/false assertions, to be used in different contexts.
 Usually, when asserting for true or false, you want strict assertions (nil should not 
 assert to false); assertTrue and assertFalse are the functions for this purpose. In some cases though,
-you want Lua coerction rules to apply (value 1, string "hello" yields true) and the right functions to use
+you want Lua coercion rules to apply (value 1, string "hello" yields true) and the right functions to use
 are assertEvalToTrue and assertEvalToFalse. Finally, you have the assertNotTrue and assertNotFalse to verify
 that a value is anything but the boolean true or false.
 
