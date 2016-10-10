@@ -45,13 +45,16 @@ TestToto = {} --class
 
     function TestToto:test5()
         -- print( "some stuff test 5" )
-        lu.assertTrue( self.a )
-        lu.assertFalse( self.a )
+        lu.assertEvalToTrue( self.a )
+        lu.assertEvalToFalse( self.a ) -- will trigger the failure
     end
 
     function TestToto:test6()
         -- print( "some stuff test 6" )
-        lu.assertTrue( false )
+        lu.assertTrue( true )
+        lu.assertFalse( false )
+        lu.assertEvalToFalse( nil )
+        lu.assertFalse( nil ) -- trigger the failure assertFalse is strict
     end
 
     function TestToto:test7()
