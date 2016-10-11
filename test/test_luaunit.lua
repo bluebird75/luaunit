@@ -542,27 +542,48 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
     end
 
     function TestLuaUnitUtilities:test_applyPatternFilter()
-        local myTestToto1Value = { 'MyTestToto1.test1', MyTestToto1 }
+        local dummy = function() end
+        local testset = {
+            { 'toto.foo', dummy}, { 'toto.bar', dummy},
+            { 'titi.foo', dummy}, { 'titi.bar', dummy},
+            { 'tata.foo', dummy}, { 'tata.bar', dummy},
+            { 'foo.bar', dummy}, { 'foobar.test', dummy},
+        }
 
-        local included, excluded = lu.LuaUnit.applyPatternFilter( nil, nil, { myTestToto1Value } )
+        -- default action: include everything
+        local included, excluded = lu.LuaUnit.applyPatternFilter( nil, nil, testset )
+        lu.assertEquals( #included, 8 )
         lu.assertEquals( excluded, {} )
-        lu.assertEquals( included, { myTestToto1Value } )
 
-        included, excluded = lu.LuaUnit.applyPatternFilter( {'T.to'}, nil, { myTestToto1Value } )
-        lu.assertEquals( excluded, {} )
-        lu.assertEquals( included, { myTestToto1Value } )
+        -- single exclude pattern (= select anything not matching "bar")
+        included, excluded = lu.LuaUnit.applyPatternFilter( nil, {'bar'}, testset )
+        lu.assertEquals( included, {testset[1], testset[3], testset[5]} )
+        lu.assertEquals( #excluded, 5 )
 
-        included, excluded = lu.LuaUnit.applyPatternFilter( {'T.ti'}, nil, { myTestToto1Value } )
-        lu.assertEquals( excluded, { myTestToto1Value } )
-        lu.assertEquals( included, {} )
+        -- single include pattern
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'t.t.'}, nil, testset )
+        lu.assertEquals( #included, 6 )
+        lu.assertEquals( excluded, {testset[7], testset[8]} )
 
-        included, excluded = lu.LuaUnit.applyPatternFilter( nil, {'T.to'}, { myTestToto1Value } )
-        lu.assertEquals( excluded, { myTestToto1Value } )
-        lu.assertEquals( included, {} )
+        -- single include and exclude patterns
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'foo'}, {'test'}, testset )
+        lu.assertEquals( included, {testset[1], testset[3], testset[5], testset[7]} )
+        lu.assertEquals( #excluded, 4 )
 
-        included, excluded = lu.LuaUnit.applyPatternFilter( {'T.t.'}, {'.o.o'}, { myTestToto1Value } )
-        lu.assertEquals( excluded, { myTestToto1Value } )
-        lu.assertEquals( included, {} )
+        -- multiple (specific) includes
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'toto', 'titi'}, nil, testset )
+        lu.assertEquals( included, {testset[1], testset[2], testset[3], testset[4]} )
+        lu.assertEquals( #excluded, 4 )
+
+        -- multiple excludes
+        included, excluded = lu.LuaUnit.applyPatternFilter( nil, {'tata', '%.bar'}, testset )
+        lu.assertEquals( included, {testset[1], testset[3], testset[8]} )
+        lu.assertEquals( #excluded, 5 )
+
+        -- combined test
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'t[oai]', 'bar$', 'test'}, {'%.b', 'titi'}, testset )
+        lu.assertEquals( included, {testset[1], testset[5], testset[8]} )
+        lu.assertEquals( #excluded, 5 )
     end
 
     function TestLuaUnitUtilities:test_strMatch()
