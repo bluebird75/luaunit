@@ -2236,6 +2236,33 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( runner.exeCount, 5 )
         lu.assertEquals( runner.currentCount, 1 )
         lu.assertStrContains(runner.result.failures[1].msg, "iteration: 1")
+
+        --[[ Test failure based on iteration count ]]--
+
+        -- for runSuite() we need a function in the global scope
+        function _G.MyTestIterationBasedFailure()
+            -- this will pass three iterations, and only then start to fail
+            lu.assertTrue(runner.currentCount <= 3)
+        end
+
+        -- three iterations will PASS
+        runner:runSuite( '--count', '3',
+                         'MyTestIterationBasedFailure')
+        lu.assertEquals( runner.result.passedCount, 1 )
+        lu.assertEquals( runner.result.failureCount, 0 )
+        lu.assertEquals( runner.exeCount, 3 )
+        lu.assertEquals( runner.currentCount, 3 )
+
+        -- more iterations should FAIL (on the fourth one)
+        runner:runSuite( '--count', '5',
+                         'MyTestIterationBasedFailure')
+        lu.assertEquals( runner.result.passedCount, 0 )
+        lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertEquals( runner.exeCount, 5 )
+        lu.assertEquals( runner.currentCount, 4 )
+        lu.assertStrContains(runner.result.failures[1].msg, "iteration: 4")
+
+        _G.MyTestIterationBasedFailure = nil -- clean up
     end
 
 
