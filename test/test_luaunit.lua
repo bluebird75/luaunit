@@ -139,11 +139,9 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
     end
 
     function TestLuaUnitUtilities:test_randomizeTable()
-        local t, tref, n, i
-        t, tref, n, i = {}, {}, 20, 1
-        while i <= n do
+        local t, tref, n = {}, {}, 20
+        for i = 1, n do
             t[i], tref[i] = i, i
-            i = i + 1
         end
         lu.assertEquals( #t, n )
 
@@ -515,37 +513,77 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'toto' } ), { pattern={'toto'} } )
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'titi', '-p', 'toto' } ), { pattern={'titi', 'toto'} } )
         lu.assertErrorMsgContains( 'Missing argument after -p', lu.LuaUnit.parseCmdLine, { '-p', } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--exclude', 'toto' } ), { exclude={'toto'} } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-x', 'toto' } ), { exclude={'toto'} } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-x', 'titi', '-x', 'toto' } ), { exclude={'titi', 'toto'} } )
+        lu.assertErrorMsgContains( 'Missing argument after -x', lu.LuaUnit.parseCmdLine, { '-x', } )
+
+        -- count
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--count', '123' } ), { exeCount=123 } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-c', '123' } ), { exeCount=123 } )
+        lu.assertErrorMsgContains( 'Malformed -c argument', lu.LuaUnit.parseCmdLine, { '-c', 'bad' } )
+        lu.assertErrorMsgContains( 'Missing argument after -c', lu.LuaUnit.parseCmdLine, { '-c', } )
 
         --megamix
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'toto', 'titi', '-v', 'tata', '-o', 'tintin', '-p', 'tutu', 'prout', '-n', 'toto.xml' } ), 
             { pattern={'toto', 'tutu'}, verbosity=lu.VERBOSITY_VERBOSE, output='tintin', testNames={'titi', 'tata', 'prout'}, fname='toto.xml' } )
 
-        lu.assertErrorMsgContains( 'option: -x', lu.LuaUnit.parseCmdLine, { '-x', } )
+        lu.assertErrorMsgContains( 'option: -$', lu.LuaUnit.parseCmdLine, { '-$', } )
     end
 
-    function TestLuaUnitUtilities:test_includePattern()
-        lu.assertEquals( lu.LuaUnit.patternInclude( nil, 'toto'), true )
-        lu.assertEquals( lu.LuaUnit.patternInclude( {}, 'toto'), false  )
-        lu.assertEquals( lu.LuaUnit.patternInclude( {'toto'}, 'toto'), true )
-        lu.assertEquals( lu.LuaUnit.patternInclude( {'toto'}, 'yyytotoxxx'), true )
-        lu.assertEquals( lu.LuaUnit.patternInclude( {'titi', 'toto'}, 'yyytotoxxx'), true )
-        lu.assertEquals( lu.LuaUnit.patternInclude( {'titi', 'to..'}, 'yyytoxxx'), true )
+    function TestLuaUnitUtilities:test_patternFilter()
+        lu.assertEquals( lu.private.patternFilter( nil, 'toto', true), true )
+        lu.assertEquals( lu.private.patternFilter( {}, 'toto', true), false  )
+        lu.assertEquals( lu.private.patternFilter( nil, 'titi', false), false )
+        lu.assertEquals( lu.private.patternFilter( {'toto'}, 'toto'), true )
+        lu.assertEquals( lu.private.patternFilter( {'toto'}, 'yyytotoxxx'), true )
+        lu.assertEquals( lu.private.patternFilter( {'titi', 'toto'}, 'yyytotoxxx'), true )
+        lu.assertEquals( lu.private.patternFilter( {'titi', 'to..'}, 'yyytoxxx'), true )
     end
 
     function TestLuaUnitUtilities:test_applyPatternFilter()
-        local myTestToto1Value = { 'MyTestToto1.test1', MyTestToto1 }
+        local dummy = function() end
+        local testset = {
+            { 'toto.foo', dummy}, { 'toto.bar', dummy},
+            { 'titi.foo', dummy}, { 'titi.bar', dummy},
+            { 'tata.foo', dummy}, { 'tata.bar', dummy},
+            { 'foo.bar', dummy}, { 'foobar.test', dummy},
+        }
 
-        local included, excluded = lu.LuaUnit.applyPatternFilter( nil, { myTestToto1Value } )
+        -- default action: include everything
+        local included, excluded = lu.LuaUnit.applyPatternFilter( nil, nil, testset )
+        lu.assertEquals( #included, 8 )
         lu.assertEquals( excluded, {} )
-        lu.assertEquals( included, { myTestToto1Value } )
 
-        included, excluded = lu.LuaUnit.applyPatternFilter( {'T.to'}, { myTestToto1Value } )
-        lu.assertEquals( excluded, {} )
-        lu.assertEquals( included, { myTestToto1Value } )
+        -- single exclude pattern (= select anything not matching "bar")
+        included, excluded = lu.LuaUnit.applyPatternFilter( nil, {'bar'}, testset )
+        lu.assertEquals( included, {testset[1], testset[3], testset[5]} )
+        lu.assertEquals( #excluded, 5 )
 
-        included, excluded = lu.LuaUnit.applyPatternFilter( {'T.ti'}, { myTestToto1Value } )
-        lu.assertEquals( excluded, { myTestToto1Value } )
-        lu.assertEquals( included, {} )
+        -- single include pattern
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'t.t.'}, nil, testset )
+        lu.assertEquals( #included, 6 )
+        lu.assertEquals( excluded, {testset[7], testset[8]} )
+
+        -- single include and exclude patterns
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'foo'}, {'test'}, testset )
+        lu.assertEquals( included, {testset[1], testset[3], testset[5], testset[7]} )
+        lu.assertEquals( #excluded, 4 )
+
+        -- multiple (specific) includes
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'toto', 'titi'}, nil, testset )
+        lu.assertEquals( included, {testset[1], testset[2], testset[3], testset[4]} )
+        lu.assertEquals( #excluded, 4 )
+
+        -- multiple excludes
+        included, excluded = lu.LuaUnit.applyPatternFilter( nil, {'tata', '%.bar'}, testset )
+        lu.assertEquals( included, {testset[1], testset[3], testset[8]} )
+        lu.assertEquals( #excluded, 5 )
+
+        -- combined test
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'t[oai]', 'bar$', 'test'}, {'%.b', 'titi'}, testset )
+        lu.assertEquals( included, {testset[1], testset[5], testset[8]} )
+        lu.assertEquals( #excluded, 5 )
     end
 
     function TestLuaUnitUtilities:test_strMatch()
@@ -2263,6 +2301,53 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( runner.result.notPassed[1].status, lu.NodeStatus.FAIL  )
     end
 
+    function TestLuaUnitExecution:testWithCount()
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType( "NIL" )
+
+        runner:runSuite( '--count', '5',
+                         'MyTestWithErrorsAndFailures.testOk')
+        lu.assertEquals( runner.result.passedCount, 1 )
+        lu.assertEquals( runner.result.failureCount, 0 )
+        lu.assertEquals( runner.exeCount, 5 )
+        lu.assertEquals( runner.currentCount, 5 )
+
+        runner:runSuite( '--count', '5',
+                         'MyTestWithErrorsAndFailures.testWithFailure1')
+        -- check if the current iteration got reflected in the failure message
+        lu.assertEquals( runner.result.passedCount, 0 )
+        lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertEquals( runner.exeCount, 5 )
+        lu.assertEquals( runner.currentCount, 1 )
+        lu.assertStrContains(runner.result.failures[1].msg, "iteration: 1")
+
+        --[[ Test failure based on iteration count ]]--
+
+        -- for runSuite() we need a function in the global scope
+        function _G.MyTestIterationBasedFailure()
+            -- this will pass three iterations, and only then start to fail
+            lu.assertTrue(runner.currentCount <= 3)
+        end
+
+        -- three iterations will PASS
+        runner:runSuite( '--count', '3',
+                         'MyTestIterationBasedFailure')
+        lu.assertEquals( runner.result.passedCount, 1 )
+        lu.assertEquals( runner.result.failureCount, 0 )
+        lu.assertEquals( runner.exeCount, 3 )
+        lu.assertEquals( runner.currentCount, 3 )
+
+        -- more iterations should FAIL (on the fourth one)
+        runner:runSuite( '--count', '5',
+                         'MyTestIterationBasedFailure')
+        lu.assertEquals( runner.result.passedCount, 0 )
+        lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertEquals( runner.exeCount, 5 )
+        lu.assertEquals( runner.currentCount, 4 )
+        lu.assertStrContains(runner.result.failures[1].msg, "iteration: 4")
+
+        _G.MyTestIterationBasedFailure = nil -- clean up
+    end
 
 
     function TestLuaUnitExecution:testOutputInterface()
@@ -2398,6 +2483,9 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( executedTests[6], "MyTestToto1:testb" )
         lu.assertEquals( executedTests[7], "MyTestToto2:test1" )
         lu.assertEquals( #executedTests, 7)
+
+        runner:runSuite('-x', 'Toto2', '-p', 'Toto.' )
+        lu.assertEquals( runner.result.testCount, 5) -- MyTestToto2 excluded
     end
 
     function TestLuaUnitExecution:test_endSuiteTwice()

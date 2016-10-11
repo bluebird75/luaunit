@@ -54,7 +54,11 @@ Options:
   -o, --output OUTPUT:    Set output type to OUTPUT
                           Possible values: text, tap, junit, nil
   -n, --name NAME:        For junit only, mandatory name of xml file
+  -c, --count NUM:        Execute all tests NUM times, e.g. to trig the JIT
   -p, --pattern PATTERN:  Execute all test names matching the Lua PATTERN
+                          May be repeated to include severals patterns
+                          Make sure you escape magic chars like +? with %
+  -x, --exclude PATTERN:  Exclude all test names matching the Lua PATTERN
                           May be repeated to include severals patterns
                           Make sure you escape magic chars like +? with %
   testname1, testname2, ... : tests to run in the form of testFunction,
@@ -82,11 +86,7 @@ local function pcall_or_abort(func, ...)
 end
 
 local crossTypeOrdering = {
-    number = 1,
-    boolean = 2,
-    string = 3,
-    table = 4,
-    other = 5
+    number = 1, boolean = 2, string = 3, table = 4, other = 5
 }
 local crossTypeComparison = {
     number = function(a, b) return a < b end,
@@ -143,7 +143,9 @@ local function sortedNext(state, control)
         repeat
             state.lastIdx = math.modf((lower + upper) / 2)
             key = state.sortedIdx[state.lastIdx]
-            if key == control then break; end -- key found (and thus prev index)
+            if key == control then
+                break -- key found (and thus prev index)
+            end
             if crossTypeSort(key, control) then
                 -- key < control, continue search "right" (towards upper bound)
                 lower = state.lastIdx + 1
@@ -236,6 +238,25 @@ local function strMatch(s, pattern, start, final )
     return foundStart == start and foundEnd == final
 end
 M.private.strMatch = strMatch
+
+local function patternFilter(patterns, expr, nil_result)
+    -- Check if any of `patterns` is contained in `expr`. If so, return `true`.
+    -- Return `false` if none of the patterns are contained in expr. If patterns
+    -- is `nil` (= unset), return default value passed in `nil_result`.
+    if patterns ~= nil then
+
+        for _, pattern in ipairs(patterns) do
+            if string.find(expr, pattern) then
+                return true
+            end
+        end
+
+        return false -- no match from patterns
+    end
+
+    return nil_result
+end
+M.private.patternFilter = patternFilter
 
 local function xmlEscape( s )
     -- Return s escaped for XML attributes
@@ -355,7 +376,9 @@ M.private.stripLuaunitTrace = stripLuaunitTrace
 local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
     local type_v = type(v)
     if "string" == type_v  then
-        if keeponeline then v = v:gsub("\n", "\\n") end
+        if keeponeline then
+            v = v:gsub("\n", "\\n") -- escape newline(s)
+        end
 
         -- use clever delimiters according to content:
         -- enclose with single quotes if string contains ", but no '
@@ -1499,11 +1522,12 @@ TextOutput.__class__ = 'TextOutput'
     end
 
     function TextOutput:displayFailedTests()
-        if self.result.notPassedCount == 0 then return end
-        print("Failed tests:")
-        print("-------------")
-        for i,v in ipairs(self.result.notPassed) do
-            self:displayOneFailedTest( i, v )
+        if self.result.notPassedCount ~= 0 then
+            print("Failed tests:")
+            print("-------------")
+            for i, v in ipairs(self.result.notPassed) do
+                self:displayOneFailedTest(i, v)
+            end
         end
     end
 
@@ -1601,8 +1625,8 @@ end
         -- that match LuaUnit.isTestName
 
         local testNames = {}
-        for k, v in pairs(_G) do
-            if M.LuaUnit.isTestName( k ) then
+        for k, _ in pairs(_G) do
+            if type(k) == "string" and M.LuaUnit.isTestName( k ) then
                 table.insert( testNames , k )
             end
         end
@@ -1618,21 +1642,26 @@ end
         -- --error, -e: treat errors as fatal (quit program)
         -- --output, -o, + name: select output type
         -- --pattern, -p, + pattern: run test matching pattern, may be repeated
+        -- --exclude, -x, + pattern: run test not matching pattern, may be repeated
         -- --random, -r, : run tests in random order
         -- --name, -n, + fname: name of output file for junit, default to stdout
+        -- --count, -c, + num: number of times to execute each test
         -- [testnames, ...]: run selected test names
         --
         -- Returns a table with the following fields:
         -- verbosity: nil, M.VERBOSITY_DEFAULT, M.VERBOSITY_QUIET, M.VERBOSITY_VERBOSE
         -- output: nil, 'tap', 'junit', 'text', 'nil'
         -- testNames: nil or a list of test names to run
+        -- exeCount: num or 1
         -- pattern: nil or a list of patterns
+        -- exclude: nil or a list of patterns
 
-        local result = {}
-        local state = nil
+        local result, state = {}, nil
         local SET_OUTPUT = 1
         local SET_PATTERN = 2
-        local SET_FNAME = 3
+        local SET_EXCLUDE = 3
+        local SET_FNAME = 4
+        local SET_XCOUNT = 5
 
         if cmdLine == nil then
             return result
@@ -1666,8 +1695,14 @@ end
             elseif option == '--name' or option == '-n' then
                 state = SET_FNAME
                 return state
+            elseif option == '--count' or option == '-c' then
+                state = SET_XCOUNT
+                return state
             elseif option == '--pattern' or option == '-p' then
                 state = SET_PATTERN
+                return state
+            elseif option == '--exclude' or option == '-x' then
+                state = SET_EXCLUDE
                 return state
             end
             error('Unknown option: '..option,3)
@@ -1680,11 +1715,22 @@ end
             elseif state == SET_FNAME then
                 result['fname'] = cmdArg
                 return
+            elseif state == SET_XCOUNT then
+                result['exeCount'] = tonumber(cmdArg)
+                                     or error('Malformed -c argument: '..cmdArg)
+                return
             elseif state == SET_PATTERN then
                 if result['pattern'] then
                     table.insert( result['pattern'], cmdArg )
                 else
                     result['pattern'] = { cmdArg }
+                end
+                return
+            elseif state == SET_EXCLUDE then
+                if result['exclude'] then
+                    table.insert( result['exclude'], cmdArg )
+                else
+                    result['exclude'] = { cmdArg }
                 end
                 return
             end
@@ -1732,23 +1778,6 @@ end
     function M.LuaUnit.version()
         print('LuaUnit v'..M.VERSION..' by Philippe Fremy <phil@freehackers.org>')
         os.exit(0)
-    end
-
-    function M.LuaUnit.patternInclude( patternFilter, expr )
-        -- check if any of patternFilter is contained in expr. If so, return true.
-        -- return false if None of the patterns are contained in expr
-        -- if patternFilter is nil, return true (no filtering)
-        if patternFilter == nil then
-            return true
-        end
-
-        for i,pattern in ipairs(patternFilter) do
-            if string.find(expr, pattern) then
-                return true
-            end
-        end
-
-        return false
     end
 
 ----------------------------------------------------------------
@@ -1869,7 +1898,8 @@ end
             startTime = os.clock(),
             startDate = os.date(os.getenv('LUAUNIT_DATEFMT')),
             startIsodate = os.date('%Y-%m-%dT%H:%M:%S'),
-            patternFilter = self.patternFilter,
+            patternIncludeFilter = self.patternIncludeFilter,
+            patternExcludeFilter = self.patternExcludeFilter,
             tests = {},
             failures = {},
             errors = {},
@@ -2035,8 +2065,9 @@ end
         -- determine if the error was a failed test:
         -- We do this by stripping the failure prefix from the error message,
         -- while keeping track of the gsub() count. A non-zero value -> failure
-        local failed
-        err.msg, failed = err.msg:gsub(M.FAILURE_PREFIX, "", 1)
+        local failed, iter_msg
+        iter_msg = self.exeCount and 'iteration: '..self.currentCount..', '
+        err.msg, failed = err.msg:gsub(M.FAILURE_PREFIX, iter_msg or '', 1)
         if failed > 0 then
             err.status = NodeStatus.FAIL
         end
@@ -2079,30 +2110,38 @@ end
 
         self:startTest(prettyFuncName)
 
-        -- run setUp first (if any)
-        if classInstance then
-            local func = self.asFunction( classInstance.setUp )
-                         or self.asFunction( classInstance.Setup )
-                         or self.asFunction( classInstance.setup )
-                         or self.asFunction( classInstance.SetUp )
-            if func then
-                self:addStatus(self:protectedCall(classInstance, func, className..'.setUp'))
+        local node = self.result.currentNode
+        for iter_n = 1, self.exeCount or 1 do
+            if node:isNotPassed() then
+                break
             end
-        end
+            self.currentCount = iter_n
 
-        -- run testMethod()
-        if self.result.currentNode:isPassed() then
-            self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
-        end
+            -- run setUp first (if any)
+            if classInstance then
+                local func = self.asFunction( classInstance.setUp ) or
+                             self.asFunction( classInstance.Setup ) or
+                             self.asFunction( classInstance.setup ) or
+                             self.asFunction( classInstance.SetUp )
+                if func then
+                    self:addStatus(self:protectedCall(classInstance, func, className..'.setUp'))
+                end
+            end
 
-        -- lastly, run tearDown (if any)
-        if classInstance then
-            local func = self.asFunction( classInstance.tearDown )
-                         or self.asFunction( classInstance.TearDown )
-                         or self.asFunction( classInstance.teardown )
-                         or self.asFunction( classInstance.Teardown )
-            if func then
-                self:addStatus(self:protectedCall(classInstance, func, className..'.tearDown'))
+            -- run testMethod()
+            if node:isPassed() then
+                self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
+            end
+
+            -- lastly, run tearDown (if any)
+            if classInstance then
+                local func = self.asFunction( classInstance.tearDown ) or
+                             self.asFunction( classInstance.TearDown ) or
+                             self.asFunction( classInstance.teardown ) or
+                             self.asFunction( classInstance.Teardown )
+                if func then
+                    self:addStatus(self:protectedCall(classInstance, func, className..'.tearDown'))
+                end
             end
         end
 
@@ -2160,11 +2199,12 @@ end
         return result
     end
 
-    function M.LuaUnit.applyPatternFilter( patternFilter, listOfNameAndInst )
+    function M.LuaUnit.applyPatternFilter( patternIncFilter, patternExcFilter, listOfNameAndInst )
         local included, excluded = {}, {}
         for i, v in ipairs( listOfNameAndInst ) do
             -- local name, instance = v[1], v[2]
-            if M.LuaUnit.patternInclude( patternFilter, v[1] ) then
+            if  patternFilter( patternIncFilter, v[1], true ) and
+            not patternFilter( patternExcFilter, v[1], false ) then
                 table.insert( included, v )
             else
                 table.insert( excluded, v )
@@ -2185,8 +2225,8 @@ end
         if self.randomize then
             randomizeTable( expandedList )
         end
-        local filteredList, filteredOutList
-            = self.applyPatternFilter( self.patternFilter, expandedList )
+        local filteredList, filteredOutList = self.applyPatternFilter(
+            self.patternIncludeFilter, self.patternExcludeFilter, expandedList )
 
         self:startSuite( #filteredList, #filteredOutList )
 
@@ -2301,7 +2341,10 @@ end
         self.quitOnError   = options.quitOnError
         self.quitOnFailure = options.quitOnFailure
         self.fname         = options.fname
-        self.patternFilter = options.pattern
+
+        self.exeCount             = options.exeCount
+        self.patternIncludeFilter = options.pattern
+        self.patternExcludeFilter = options.exclude
         self.randomize     = options.randomize
 
         if options.output then
