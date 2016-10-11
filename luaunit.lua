@@ -800,6 +800,30 @@ function M.assertNotIsNil(value)
     end
 end
 
+function M.assertIsNaN(value)
+    if type(value) ~= "number" or value == value then
+        failure("expected: nan, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertNotIsNaN(value)
+    if type(value) == "number" and value ~= value then
+        failure("expected non nan value, received nan", 2)
+    end
+end
+
+function M.assertIsInf(value)
+    if type(value) ~= "number" or math.abs(value) ~= math.huge then
+        failure("expected: inf, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertNotIsInf(value)
+    if type(value) == "number" and math.abs(value) == math.huge then
+        failure("expected non inf value, received ±inf", 2)
+    end
+end
+
 function M.assertEquals(actual, expected)
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
@@ -1107,6 +1131,8 @@ local list_of_funcs = {
     { 'assertIsNil'             , 'assert_is_nil' },
     { 'assertIsTrue'            , 'assert_is_true' },
     { 'assertIsFalse'           , 'assert_is_false' },
+    { 'assertIsNaN'             , 'assert_is_nan' },
+    { 'assertIsInf'             , 'assert_is_inf' },
     { 'assertIsFunction'        , 'assert_is_function' },
     { 'assertIsThread'          , 'assert_is_thread' },
     { 'assertIsUserdata'        , 'assert_is_userdata' },
@@ -1119,6 +1145,8 @@ local list_of_funcs = {
     { 'assertIsNil'             , 'assertNil' },
     { 'assertIsTrue'            , 'assertTrue' },
     { 'assertIsFalse'           , 'assertFalse' },
+    { 'assertIsNaN'             , 'assertNaN' },
+    { 'assertIsInf'             , 'assertInf' },
     { 'assertIsFunction'        , 'assertFunction' },
     { 'assertIsThread'          , 'assertThread' },
     { 'assertIsUserdata'        , 'assertUserdata' },
@@ -1131,6 +1159,8 @@ local list_of_funcs = {
     { 'assertIsNil'             , 'assert_nil' },
     { 'assertIsTrue'            , 'assert_true' },
     { 'assertIsFalse'           , 'assert_false' },
+    { 'assertIsNaN'             , 'assert_nan' },
+    { 'assertIsInf'             , 'assert_inf' },
     { 'assertIsFunction'        , 'assert_function' },
     { 'assertIsThread'          , 'assert_thread' },
     { 'assertIsUserdata'        , 'assert_userdata' },
@@ -1143,6 +1173,8 @@ local list_of_funcs = {
     { 'assertNotIsNil'          , 'assert_not_is_nil' },
     { 'assertNotIsTrue'         , 'assert_not_is_true' },
     { 'assertNotIsFalse'        , 'assert_not_is_false' },
+    { 'assertNotIsNaN'          , 'assert_not_is_nan' },
+    { 'assertNotIsInf'          , 'assert_not_is_inf' },
     { 'assertNotIsFunction'     , 'assert_not_is_function' },
     { 'assertNotIsThread'       , 'assert_not_is_thread' },
     { 'assertNotIsUserdata'     , 'assert_not_is_userdata' },
@@ -1155,6 +1187,8 @@ local list_of_funcs = {
     { 'assertNotIsNil'          , 'assertNotNil' },
     { 'assertNotIsTrue'         , 'assertNotTrue' },
     { 'assertNotIsFalse'        , 'assertNotFalse' },
+    { 'assertNotIsNaN'          , 'assertNotNaN' },
+    { 'assertNotIsInf'          , 'assertNotInf' },
     { 'assertNotIsFunction'     , 'assertNotFunction' },
     { 'assertNotIsThread'       , 'assertNotThread' },
     { 'assertNotIsUserdata'     , 'assertNotUserdata' },
@@ -1167,6 +1201,8 @@ local list_of_funcs = {
     { 'assertNotIsNil'          , 'assert_not_nil' },
     { 'assertNotIsTrue'         , 'assert_not_true' },
     { 'assertNotIsFalse'        , 'assert_not_false' },
+    { 'assertNotIsNaN'          , 'assert_not_nan' },
+    { 'assertNotIsInf'          , 'assert_not_inf' },
     { 'assertNotIsFunction'     , 'assert_not_function' },
     { 'assertNotIsThread'       , 'assert_not_thread' },
     { 'assertNotIsUserdata'     , 'assert_not_userdata' },

@@ -1125,6 +1125,57 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure(lu.assertIsNumber, true)
     end
 
+    function TestLuaUnitAssertions:test_assertIsNaN()
+        assertFailure(lu.assertIsNaN, "hi there!")
+        assertFailure(lu.assertIsNaN, nil)
+        assertFailure(lu.assertIsNaN, {})
+        assertFailure(lu.assertIsNaN, {1,2,3})
+        assertFailure(lu.assertIsNaN, {1})
+        assertFailure(lu.assertIsNaN, coroutine.create( function(v) local y=v+1 end ) )
+        lu.assertIsNaN(0 / 0)
+        lu.assertIsNaN(-0 / 0)
+        lu.assertIsNaN(0 / -0)
+        lu.assertIsNaN(-0 / -0)
+        local inf = math.huge
+        lu.assertIsNaN(inf / inf)
+        lu.assertIsNaN(-inf / inf)
+        lu.assertIsNaN(inf / -inf)
+        lu.assertIsNaN(-inf / -inf)
+        lu.assertIsNaN(inf - inf)
+        lu.assertIsNaN((-inf) + inf)
+        lu.assertIsNaN(inf + (-inf))
+        lu.assertIsNaN((-inf) - (-inf))
+        lu.assertIsNaN(0 * inf)
+        lu.assertIsNaN(-0 * inf)
+        lu.assertIsNaN(0 * -inf)
+        lu.assertIsNaN(-0 * -inf)
+        lu.assertIsNaN(math.sqrt(-1))
+        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.2" then
+            -- Lua 5.3 will complain/error "bad argument #2 to 'fmod' (zero)"
+            lu.assertIsNaN(math.fmod(1, 0))
+            lu.assertIsNaN(math.fmod(1, -0))
+        end
+        lu.assertIsNaN(math.fmod(inf, 1))
+        lu.assertIsNaN(math.fmod(-inf, 1))
+        assertFailure(lu.assertIsNaN, 0 / 1) -- 0.0
+        assertFailure(lu.assertIsNaN, 1 / 0) -- inf
+    end
+
+    function TestLuaUnitAssertions:test_assertIsInf()
+        assertFailure(lu.assertIsInf, "hi there!")
+        assertFailure(lu.assertIsInf, nil)
+        assertFailure(lu.assertIsInf, {})
+        assertFailure(lu.assertIsInf, {1,2,3})
+        assertFailure(lu.assertIsInf, {1})
+        assertFailure(lu.assertIsInf, coroutine.create( function(v) local y=v+1 end ) )
+        assertFailure(lu.assertIsInf, 0 / 0) -- NaN
+        assertFailure(lu.assertIsInf, 0 / 1) -- 0.0
+        lu.assertIsInf(1 / 0) -- inf
+        lu.assertIsInf(math.log(0)) -- -inf
+        lu.assertIsInf(math.huge) -- inf
+        lu.assertIsInf(-math.huge) -- -inf
+    end
+
     function TestLuaUnitAssertions:test_assertIsString()
         assertFailure(lu.assertIsString, 1)
         assertFailure(lu.assertIsString, 1.4)
@@ -1225,6 +1276,57 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertNotIsNumber( {1})
         lu.assertNotIsNumber( coroutine.create( function(v) local y=v+1 end ) )
         lu.assertNotIsNumber( true)
+    end
+
+    function TestLuaUnitAssertions:test_assertNotIsNaN()
+        lu.assertNotIsNaN( "hi there!" )
+        lu.assertNotIsNaN( nil )
+        lu.assertNotIsNaN( {} )
+        lu.assertNotIsNaN( {1,2,3} )
+        lu.assertNotIsNaN( {1} )
+        lu.assertNotIsNaN( coroutine.create( function(v) local y=v+1 end ) )
+        assertFailure(lu.assertNotIsNaN, 0 / 0)
+        assertFailure(lu.assertNotIsNaN, -0 / 0)
+        assertFailure(lu.assertNotIsNaN, 0 / -0)
+        assertFailure(lu.assertNotIsNaN, -0 / -0)
+        local inf = math.huge
+        assertFailure(lu.assertNotIsNaN, inf / inf)
+        assertFailure(lu.assertNotIsNaN, -inf / inf)
+        assertFailure(lu.assertNotIsNaN, inf / -inf)
+        assertFailure(lu.assertNotIsNaN, -inf / -inf)
+        assertFailure(lu.assertNotIsNaN, inf - inf)
+        assertFailure(lu.assertNotIsNaN, (-inf) + inf)
+        assertFailure(lu.assertNotIsNaN, inf + (-inf))
+        assertFailure(lu.assertNotIsNaN, (-inf) - (-inf))
+        assertFailure(lu.assertNotIsNaN, 0 * inf)
+        assertFailure(lu.assertNotIsNaN, -0 * inf)
+        assertFailure(lu.assertNotIsNaN, 0 * -inf)
+        assertFailure(lu.assertNotIsNaN, -0 * -inf)
+        assertFailure(lu.assertNotIsNaN, math.sqrt(-1))
+        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.2" then
+            -- Lua 5.3 will complain/error "bad argument #2 to 'fmod' (zero)"
+            assertFailure(lu.assertNotIsNaN, math.fmod(1, 0))
+            assertFailure(lu.assertNotIsNaN, math.fmod(1, -0))
+        end
+        assertFailure(lu.assertNotIsNaN, math.fmod(inf, 1))
+        assertFailure(lu.assertNotIsNaN, math.fmod(-inf, 1))
+        lu.assertNotIsNaN( 0 / 1 ) -- 0.0
+        lu.assertNotIsNaN( 1 / 0 ) -- inf
+    end
+
+    function TestLuaUnitAssertions:test_assertNotIsInf()
+        lu.assertNotIsInf( "hi there!" )
+        lu.assertNotIsInf( nil)
+        lu.assertNotIsInf( {})
+        lu.assertNotIsInf( {1,2,3})
+        lu.assertNotIsInf( {1})
+        lu.assertNotIsInf( coroutine.create( function(v) local y=v+1 end ) )
+        lu.assertNotIsInf( 0 / 0 ) -- NaN
+        lu.assertNotIsInf( 0 / 1 ) -- 0.0
+        assertFailure(lu.assertNotIsInf, 1 / 0 )
+        assertFailure(lu.assertNotIsInf, math.log(0) )
+        assertFailure(lu.assertNotIsInf, math.huge )
+        assertFailure(lu.assertNotIsInf, -math.huge )
     end
 
     function TestLuaUnitAssertions:test_assertNotIsString()
