@@ -2074,7 +2074,11 @@ end
 
         self:startTest(prettyFuncName)
 
+        local node = self.result.currentNode
         for iter_n = 1, self.exeCount or 1 do
+            if node:isNotPassed() then
+                break
+            end
             self.currentCount = iter_n
 
             -- run setUp first (if any)
@@ -2089,7 +2093,7 @@ end
             end
 
             -- run testMethod()
-            if self.result.currentNode:isPassed() then
+            if node:isPassed() then
                 self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
             end
 

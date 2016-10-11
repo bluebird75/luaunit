@@ -2223,13 +2223,18 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         runner:runSuite( '--count', '5',
                          'MyTestWithErrorsAndFailures.testOk')
+        lu.assertEquals( runner.result.passedCount, 1 )
+        lu.assertEquals( runner.result.failureCount, 0 )
         lu.assertEquals( runner.exeCount, 5 )
         lu.assertEquals( runner.currentCount, 5 )
 
         runner:runSuite( '--count', '5',
                          'MyTestWithErrorsAndFailures.testWithFailure1')
         -- check if the current iteration got reflected in the failure message
+        lu.assertEquals( runner.result.passedCount, 0 )
         lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertEquals( runner.exeCount, 5 )
+        lu.assertEquals( runner.currentCount, 1 )
         lu.assertStrContains(runner.result.failures[1].msg, "iteration: 1")
     end
 
