@@ -1095,6 +1095,30 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure(lu.assertIsNaN, {1})
         assertFailure(lu.assertIsNaN, coroutine.create( function(v) local y=v+1 end ) )
         lu.assertIsNaN(0 / 0)
+        lu.assertIsNaN(-0 / 0)
+        lu.assertIsNaN(0 / -0)
+        lu.assertIsNaN(-0 / -0)
+        local inf = math.huge
+        lu.assertIsNaN(inf / inf)
+        lu.assertIsNaN(-inf / inf)
+        lu.assertIsNaN(inf / -inf)
+        lu.assertIsNaN(-inf / -inf)
+        lu.assertIsNaN(inf - inf)
+        lu.assertIsNaN((-inf) + inf)
+        lu.assertIsNaN(inf + (-inf))
+        lu.assertIsNaN((-inf) - (-inf))
+        lu.assertIsNaN(0 * inf)
+        lu.assertIsNaN(-0 * inf)
+        lu.assertIsNaN(0 * -inf)
+        lu.assertIsNaN(-0 * -inf)
+        lu.assertIsNaN(math.sqrt(-1))
+        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.2" then
+            -- Lua 5.3 will complain/error "bad argument #2 to 'fmod' (zero)"
+            lu.assertIsNaN(math.fmod(1, 0))
+            lu.assertIsNaN(math.fmod(1, -0))
+        end
+        lu.assertIsNaN(math.fmod(inf, 1))
+        lu.assertIsNaN(math.fmod(-inf, 1))
         assertFailure(lu.assertIsNaN, 0 / 1) -- 0.0
         assertFailure(lu.assertIsNaN, 1 / 0) -- inf
     end
@@ -1224,6 +1248,30 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertNotIsNaN( {1} )
         lu.assertNotIsNaN( coroutine.create( function(v) local y=v+1 end ) )
         assertFailure(lu.assertNotIsNaN, 0 / 0)
+        assertFailure(lu.assertNotIsNaN, -0 / 0)
+        assertFailure(lu.assertNotIsNaN, 0 / -0)
+        assertFailure(lu.assertNotIsNaN, -0 / -0)
+        local inf = math.huge
+        assertFailure(lu.assertNotIsNaN, inf / inf)
+        assertFailure(lu.assertNotIsNaN, -inf / inf)
+        assertFailure(lu.assertNotIsNaN, inf / -inf)
+        assertFailure(lu.assertNotIsNaN, -inf / -inf)
+        assertFailure(lu.assertNotIsNaN, inf - inf)
+        assertFailure(lu.assertNotIsNaN, (-inf) + inf)
+        assertFailure(lu.assertNotIsNaN, inf + (-inf))
+        assertFailure(lu.assertNotIsNaN, (-inf) - (-inf))
+        assertFailure(lu.assertNotIsNaN, 0 * inf)
+        assertFailure(lu.assertNotIsNaN, -0 * inf)
+        assertFailure(lu.assertNotIsNaN, 0 * -inf)
+        assertFailure(lu.assertNotIsNaN, -0 * -inf)
+        assertFailure(lu.assertNotIsNaN, math.sqrt(-1))
+        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.2" then
+            -- Lua 5.3 will complain/error "bad argument #2 to 'fmod' (zero)"
+            assertFailure(lu.assertNotIsNaN, math.fmod(1, 0))
+            assertFailure(lu.assertNotIsNaN, math.fmod(1, -0))
+        end
+        assertFailure(lu.assertNotIsNaN, math.fmod(inf, 1))
+        assertFailure(lu.assertNotIsNaN, math.fmod(-inf, 1))
         lu.assertNotIsNaN( 0 / 1 ) -- 0.0
         lu.assertNotIsNaN( 1 / 0 ) -- inf
     end
