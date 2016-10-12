@@ -4,7 +4,7 @@ REM It is intended to be run as "install" step from within AppVeyor.
 REM version numbers and file names for binaries from http://sf.net/p/luabinaries/
 set VER_51=5.1.5
 set VER_52=5.2.4
-set VER_53=5.3.2
+set VER_53=5.3.3
 set ZIP_51=lua-%VER_51%_Win32_bin.zip
 set ZIP_52=lua-%VER_52%_Win32_bin.zip
 set ZIP_53=lua-%VER_53%_Win32_bin.zip
