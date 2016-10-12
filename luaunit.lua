@@ -24,7 +24,7 @@ assertEquals( expected, actual ).
 M.ORDER_ACTUAL_EXPECTED = true
 M.PRINT_TABLE_REF_IN_ERROR_MSG = false
 M.TABLE_EQUALS_KEYBYCONTENT = true
-M.LINE_LENGTH=80
+M.LINE_LENGTH = 80
 
 --[[ M.EPSILON is meant to help with Lua's floating point math in simple corner
 cases like almostEquals(1.1-0.1, 1), which may not work as-is (e.g. on numbers
@@ -45,7 +45,7 @@ if math.abs(1.1 - 1 - 0.1) > M.EPSILON then
 end
 
 -- set this to false to debug luaunit
-local STRIP_LUAUNIT_FROM_STACKTRACE=true
+local STRIP_LUAUNIT_FROM_STACKTRACE = true
 
 M.VERBOSITY_DEFAULT = 10
 M.VERBOSITY_LOW     = 1
@@ -707,7 +707,9 @@ local function _is_table_equals(actual, expected, recursions)
 
         -- If we have any keys left in the actualKeysMatched table, then those
         -- were missing from "expected", meaning the tables are different.
-        if next(actualKeysMatched) then return false end
+        if next(actualKeysMatched) then
+            return false
+        end
 
         if next(actualTableKeys) then
             -- If there is any key left in actualTableKeys, then that is
@@ -1494,7 +1496,7 @@ Failed tests:
 Tests run: 2, Failures: 1, Errors: 0, Skipped: 0
 
 
--- LuaUnit 
+-- LuaUnit
 ---- non verbose
 * display . or F or E when running tests
 ---- verbose
