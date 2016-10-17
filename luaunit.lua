@@ -408,7 +408,7 @@ local function suitableForMismatchFormatting( value1, value2)
 end
 M.private.suitableForMismatchFormatting = suitableForMismatchFormatting
 
-local function tryMismatchAFormatting( v1, v2)
+local function tryMismatchFormatting( ta, tb)
     --[[
     Prepares a nice error message when comparing non-nested lists, performing a deeper 
     analysis.
@@ -418,30 +418,29 @@ local function tryMismatchAFormatting( v1, v2)
                in this case, just use standard assertion message
     * result: if success is true, a multi-line string with deep analysis of the two lists
     ]]
-    local success = false
     local result = {}
 
-    if not suitableForMismatchFormatting( v1, v2) then
+    if not suitableForMismatchFormatting( ta, tb) then
         return false, ''
     end
 
-    local descv1, descv2
-    descv1, descv2 = 'actual', 'expected'
+    local descta, desctb
+    descta, desctb = 'actual', 'expected'
     if not M.ORDER_ACTUAL_EXPECTED then
-        descv1, descv2 = descv2, descv1
+        descta, desctb = desctb, descta
     end
 
-    local lv1 = #v1
-    local lv2 = #v2
+    local lta = #ta
+    local ltb = #tb
     local i
-    local longest  = math.max(lv1, lv2)
-    local shortest = math.min(lv1, lv2)
+    local longest  = math.max(lta, ltb)
+    local shortest = math.min(lta, ltb)
     local deltalv  = longest - shortest
-    local commonUntil = 0
+    local commonUntil, commonBackTo
 
     i = 1
     while i <= longest do
-        if v1[i] ~= v2[i] then
+        if ta[i] ~= tb[i] then
             break
         end
 
@@ -451,7 +450,7 @@ local function tryMismatchAFormatting( v1, v2)
 
     i = 0
     while i > -shortest do
-        if v1[lv1+i] ~= v2[lv2+i] then
+        if ta[lta+i] ~= tb[ltb+i] then
             break
         end
         i = i - 1
@@ -461,32 +460,32 @@ local function tryMismatchAFormatting( v1, v2)
 
     local refa, refb = '', ''
     if M.PRINT_TABLE_REF_IN_ERROR_MSG then
-        refa, refb = string.format( '<%s> ', tostring(v1)), string.format('<%s> ', tostring(v2) )
+        refa, refb = string.format( '<%s> ', tostring(ta)), string.format('<%s> ', tostring(tb) )
     end
-    if lv1 == lv2 then
+    if lta == ltb then
         -- TODO: handle expected/actual naming
-        table.insert( result, string.format( 'Lists %sA (%s) and %sB (%s) have the same size', refa, descv1, refb, descv2 ) )
+        table.insert( result, string.format( 'Lists %sA (%s) and %sB (%s) have the same size', refa, descta, refb, desctb ) )
     else 
-        table.insert( result, string.format( 'Size of lists differ: list %sA (%s) has %d items, list %sB (%s) has %d items', refa, descv1, lv1, refb, descv2, lv2 ) )
+        table.insert( result, string.format( 'Size of lists differ: list %sA (%s) has %d items, list %sB (%s) has %d items', refa, descta, lta, refb, desctb, ltb ) )
     end
 
     i = 1
     table.insert( result, string.format( 'Lists A and B start differing at index %d', commonUntil+1 ) )
     if commonBackTo < 1 then
         if deltalv > 0 then
-            table.insert( result, string.format( 'Lists A and B are equals again from index %d for A, %d for B', lv1+commonBackTo, lv2+commonBackTo ) )
+            table.insert( result, string.format( 'Lists A and B are equals again from index %d for A, %d for B', lta+commonBackTo, ltb+commonBackTo ) )
         else
-            table.insert( result, string.format( 'Lists A and B are equals again from index %d', lv1+commonBackTo ) )
+            table.insert( result, string.format( 'Lists A and B are equals again from index %d', lta+commonBackTo ) )
         end
     end
 
     local function insertABValue(i, bi)
         bi = bi or i
-        if v1[i] == v2[bi] then
-            return table.insert( result, string.format( '  = A[%d], B[%d]: %s', i, bi, prettystr(v1[i]) ) )
+        if ta[i] == tb[bi] then
+            return table.insert( result, string.format( '  = A[%d], B[%d]: %s', i, bi, prettystr(ta[i]) ) )
         else
-            table.insert( result, string.format( '  - A[%d]: %s', i, prettystr(v1[i])))
-            table.insert( result, string.format( '  + B[%d]: %s', bi, prettystr(v2[bi])))
+            table.insert( result, string.format( '  - A[%d]: %s', i, prettystr(ta[i])))
+            table.insert( result, string.format( '  + B[%d]: %s', bi, prettystr(tb[bi])))
         end
     end
 
@@ -513,12 +512,12 @@ local function tryMismatchAFormatting( v1, v2)
         table.insert( result, 'Present only in one list:' )
     end
     while i < longest + commonBackTo do
-        if lv1 > lv2 then
-            table.insert( result, string.format( '  - A[%d]: %s', i, prettystr(v1[i]) ) )
+        if lta > ltb then
+            table.insert( result, string.format( '  - A[%d]: %s', i, prettystr(ta[i]) ) )
             -- table.insert( result, '+ (no matching B index)')
         else
             -- table.insert( result, '- no matching A index')
-            table.insert( result, string.format( '  + B[%d]: %s', i, prettystr(v2[i]) ) )
+            table.insert( result, string.format( '  + B[%d]: %s', i, prettystr(tb[i]) ) )
         end
         i = i + 1
     end
@@ -528,7 +527,7 @@ local function tryMismatchAFormatting( v1, v2)
         table.insert( result, 'Common parts at the end of the lists' )
     end
     while i <= longest do
-        if lv1 > lv2 then
+        if lta > ltb then
             insertABValue( i, i-deltalv )
         else
             insertABValue( i-deltalv, i )
@@ -536,13 +535,9 @@ local function tryMismatchAFormatting( v1, v2)
         i = i + 1
     end
 
-    -- find common values at the start of the table
-    -- check the type to make sure we are not dealing with nested tables
-    -- find common values at the end of the list
-
     return true, table.concat( result, '\n')
 end
-M.private.tryMismatchFormatting = tryMismatchAFormatting
+M.private.tryMismatchFormatting = tryMismatchFormatting
 
 local function prettystrPairs(value1, value2, suffix_a, suffix_b)
     --[[
@@ -805,7 +800,7 @@ end
 
 local function errorMsgEquality(actual, expected)
     local success, result
-    success, result = tryMismatchAFormatting( actual, expected )
+    success, result = tryMismatchFormatting( actual, expected )
     if success then 
         return result
     end
