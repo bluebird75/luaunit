@@ -143,7 +143,7 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
     local dest, linesOut = nil, {}
     for line in io.lines(fileOut) do
         idxStart, idxEnd, capture = line:find( pattern )
-        if idxStart ~= nil then
+        while idxStart ~= nil do
             dest = capture
             if verbose then
                 print('Modifying line: '..line )
@@ -152,8 +152,9 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
             -- line = line:sub(1,idxStart-1)..source..line:sub(idxEnd+1)
             -- string.gsub( line, dest, source )
             if verbose then
-                print('Result: '..line )
+                print('Result        : '..line )
             end
+            idxStart, idxEnd, capture = line:find( pattern, idxEnd )
         end
         table.insert( linesOut, line )
     end
@@ -197,6 +198,10 @@ local function check_text_output( fileToRun, options, output, refOutput, refExit
         adjustFile( output, refOutput, 'Started on (.*)')
     end
     adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
+    adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
+    adjustFile( output, refOutput, ': thread: (0?x?[%x]+)', true )
+    adjustFile( output, refOutput, ': function: (0?x?[%x]+)', true )
+    adjustFile( output, refOutput, 'list <table: (0?x?[%x]+)>', true, false )
     -- For Lua 5.3: stack trace uses "method" instead of "function"
     adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
 
@@ -491,6 +496,14 @@ function testTestWithXmlQuiet()
     lu.assertEquals( 0,
         check_xml_output('test/test_with_xml.lua', '--quiet', 'test/testWithXmlQuiet.txt', 'test/testWithXmlQuiet.xml',
         'test/testWithXmlLintQuiet.txt', 'test/ref/testWithXmlQuiet.txt', 'test/ref/testWithXmlQuiet.xml', 2 ) )
+end
+
+function testListComparison()
+    -- run test/some_lists_comparisons and check exit status 
+    lu.assertEquals( 0,
+        check_text_output('test/some_lists_comparisons.lua', '--verbose',
+            'test/some_lists_comparisons.txt', 
+            'test/ref/some_lists_comparisons.txt', 10 ) )
 end
 
 function testLegacyLuaunitUsage()

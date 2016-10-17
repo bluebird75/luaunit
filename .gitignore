@@ -54,6 +54,7 @@ test/legacyExampleError.txt
 test/compat_luaunit_v2x.txt
 test/errFailPass*.txt
 test/errFailPass*.xml
+test/some_lists_comparisons.txt
 
 *.diff
 

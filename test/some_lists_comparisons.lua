@@ -130,4 +130,4 @@ function test6()
     lu.assertEquals( B, A )
 end
 
-lu.run()
+os.exit( lu.run() )
