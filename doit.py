@@ -3,6 +3,7 @@ import subprocess, sys, os, shutil, os.path, optparse
 VERSION='3.2'
 RELEASE_NAME='luaunit-%s' % VERSION
 RELEASE_DIR='release/' + RELEASE_NAME + '/'
+RELEASE_TAG='LUAUNIT_V3_2_1'
 TARGET_ZIP=RELEASE_NAME + '.zip'
 TARGET_TGZ=RELEASE_NAME + '.tgz'
 REPO_PATH='d:/work/luaunit/luaunit-git/luaunit2/'
@@ -22,7 +23,7 @@ ALL_LUA = (
 os.environ["nodosfilewarning"] = "1"
 
 def report( s ):
-    print '[[[[[[[[[[[[[ %s ]]]]]]]]]]]]]' % s
+    print( '[[[[[[[[[[[[[ %s ]]]]]]]]]]]]]' % s )
 
 def run_tests():
     '''Run tests with all versions of lua'''
@@ -55,7 +56,7 @@ def packageit():
         os.mkdir('release')
     except OSError:
         pass
-    subprocess.check_call(['d:/program/utils/Git/bin/git.exe', 'clone', '--no-hardlinks', REPO_PATH, RELEASE_DIR])
+    subprocess.check_call(['d:/program/utils/Git/bin/git.exe', 'clone', '--no-hardlinks', '--branch', RELEASE_TAG, REPO_PATH, RELEASE_DIR])
     os.chdir( RELEASE_DIR )
 
     # Release dir cleanup 
@@ -76,7 +77,7 @@ def packageit():
 def help():
     print( 'Available actions:')
     for opt in OptToFunc:
-        print '\t%s' % opt
+        print( '\t%s' % opt )
 
 def makedoc():
     os.chdir('doc')
@@ -111,7 +112,7 @@ if __name__ == '__main__':
             doingNothing = False
             OptToFunc[arg]()
         else:
-            print 'No such action :', arg
+            print( 'No such action :', arg )
             sys.exit(-1)
 
     if doingNothing:
