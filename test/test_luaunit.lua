@@ -321,82 +321,82 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertStrMatches(lu.prettystr(t5), "<table: 0?x?[%x]+> {3, 4, <table: 0?x?[%x]+> {1, 2, <table: 0?x?[%x]+>}}")
     end
 
-    function TestLuaUnitUtilities:test_prettystrPadded()
+    function TestLuaUnitUtilities:test_prettystrPairs()
         local foo, bar, str1, str2
 
         -- test all combinations of: foo = nil, "foo", "fo\no" (embedded
         -- newline); and bar = nil, "bar", "bar\n" (trailing newline)
 
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, "nil")
         lu.assertEquals(str2, "nil")
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, "nil_B")
         lu.assertEquals(str2, "nil")
 
         bar = "bar"
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, "nil")
         lu.assertEquals(str2, '"bar"')
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, "nil_B")
         lu.assertEquals(str2, '"bar"')
 
         bar = "bar\n"
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, "\nnil")
         lu.assertEquals(str2, '\n"bar\n"')
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, "\nnil_A")
         lu.assertEquals(str2, '\n"bar\n"')
 
         foo = "foo"
         bar = nil
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, '"foo"')
         lu.assertEquals(str2, "nil")
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, '"foo"_B')
         lu.assertEquals(str2, "nil")
 
         bar = "bar"
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, '"foo"')
         lu.assertEquals(str2, '"bar"')
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, '"foo"_B')
         lu.assertEquals(str2, '"bar"')
 
         bar = "bar\n"
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, '\n"foo"')
         lu.assertEquals(str2, '\n"bar\n"')
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, '\n"foo"_A')
         lu.assertEquals(str2, '\n"bar\n"')
 
         foo = "fo\no"
         bar = nil
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, '\n"fo\no"')
         lu.assertEquals(str2, "\nnil")
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, '\n"fo\no"_A')
         lu.assertEquals(str2, "\nnil")
 
         bar = "bar"
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, '\n"fo\no"')
         lu.assertEquals(str2, '\n"bar"')
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, '\n"fo\no"_A')
         lu.assertEquals(str2, '\n"bar"')
 
         bar = "bar\n"
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, '\n"fo\no"')
         lu.assertEquals(str2, '\n"bar\n"')
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, '\n"fo\no"_A')
         lu.assertEquals(str2, '\n"bar\n"')
     end
