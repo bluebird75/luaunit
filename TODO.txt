@@ -6,7 +6,6 @@ TODO Future:
 - validate output with ignored tests (0 failures or some failures)
 - report test duration everywhere
 - allow to skip tests
-- randomized testing
 - parametrize tests
 - coloured output
 - global setup / teardown
@@ -28,6 +27,7 @@ TODO for 3.3 release:
 - doc about prettystr
 - doc about usage of prettystr & assertion library
 - more doc about assertTrue/False/... with a table
+- randomized testing
 
 
 Done since 3.1:
