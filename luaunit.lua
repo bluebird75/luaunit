@@ -387,19 +387,11 @@ local function suitableForMismatchFormatting( value1, value2)
             -- this table is not a list, abort
             return false
         end
-
-        if type(v1) == 'table' then
-            return false
-        end
     end
 
     for k2, v2 in pairs(value2) do
         if type(k2) ~= 'number' or k2 > lv2 then
             -- this table is not a list, abort
-            return false
-        end
-
-        if type(v2) == 'table' then
             return false
         end
     end
@@ -438,9 +430,16 @@ local function tryMismatchFormatting( ta, tb)
     local deltalv  = longest - shortest
     local commonUntil, commonBackTo
 
+    function is_eq( a, b )
+        if type(a) == 'table' and type(b) == 'table' then
+            return M.private._is_table_equals(a,b) 
+        end
+        return a == b
+    end
+
     i = 1
     while i <= longest do
-        if ta[i] ~= tb[i] then
+        if not is_eq(ta[i], tb[i]) then
             break
         end
 
@@ -450,7 +449,7 @@ local function tryMismatchFormatting( ta, tb)
 
     i = 0
     while i > -shortest do
-        if ta[lta+i] ~= tb[ltb+i] then
+        if not is_eq(ta[lta+i], tb[ltb+i]) then
             break
         end
         i = i - 1
@@ -481,7 +480,7 @@ local function tryMismatchFormatting( ta, tb)
 
     local function insertABValue(i, bi)
         bi = bi or i
-        if ta[i] == tb[bi] then
+        if is_eq( ta[i], tb[bi]) then
             return table.insert( result, string.format( '  = A[%d], B[%d]: %s', i, bi, prettystr(ta[i]) ) )
         else
             table.insert( result, string.format( '  - A[%d]: %s', i, prettystr(ta[i])))
