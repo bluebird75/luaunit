@@ -366,7 +366,181 @@ local function prettystr( v, keeponeline )
 end
 M.prettystr = prettystr
 
-local function prettystrPadded(value1, value2, suffix_a, suffix_b)
+local function suitableForMismatchFormatting( value1, value2)
+    -- Return true if the two values are suitable for a deep analysis:
+    -- * type must be table
+    -- * table is a pure list
+    -- * one length > 2
+    if type(value1) ~= 'table' or type(value2) ~= 'table' then
+        return false
+    end
+
+    local v1, v2, lv1, lv2
+    lv1 = #value1
+    lv2 = #value2
+    if lv1 < 3 or lv2 < 3 then
+        return false
+    end
+
+    for k1, v1 in pairs(value1) do
+        if type(k1) ~= 'number' or k1 > lv1 then
+            -- this table is not a list, abort
+            return false
+        end
+
+        if type(v1) == 'table' then
+            return false
+        end
+    end
+
+    for k2, v2 in pairs(value2) do
+        if type(k2) ~= 'number' or k2 > lv2 then
+            -- this table is not a list, abort
+            return false
+        end
+
+        if type(v2) == 'table' then
+            return false
+        end
+    end
+
+    return true
+end
+M.private.suitableForMismatchFormatting = suitableForMismatchFormatting
+
+local function tryMismatchAFormatting( v1, v2)
+    --[[
+    Prepares a nice error message when comparing non-nested lists, performing a deeper 
+    analysis.
+
+    Returns: {success, result}
+    * success: false if deep analysis could not be performed (nested tables for example)
+               in this case, just use standard assertion message
+    * result: if success is true, a multi-line string with deep analysis of the two lists
+    ]]
+    local success = false
+    local result = {}
+
+    if not suitableForMismatchFormatting( v1, v2) then
+        return false, ''
+    end
+
+    local descv1, descv2
+    descv1, descv2 = 'actual', 'expected'
+    if not M.ORDER_ACTUAL_EXPECTED then
+        descv1, descv2 = descv2, descv1
+    end
+
+    local lv1 = #v1
+    local lv2 = #v2
+    local i
+    local longest  = math.max(lv1, lv2)
+    local shortest = math.min(lv1, lv2)
+    local deltalv  = longest - shortest
+    local commonUntil = 0
+
+    i = 1
+    while i <= longest do
+        if v1[i] ~= v2[i] then
+            break
+        end
+
+        i = i+1
+    end
+    commonUntil = i-1
+
+    i = 0
+    while i > -shortest do
+        if v1[lv1+i] ~= v2[lv2+i] then
+            break
+        end
+        i = i - 1
+    end
+    commonBackTo = i+1
+
+
+    if lv1 == lv2 then
+        -- TODO: handle expected/actual naming
+        table.insert( result, string.format( 'Lists A (%s) and B (%s) have the same size', descv1, descv2 ) )
+    else 
+        table.insert( result, string.format( 'Size of lists differ: list A (%s) has %d items, list B (%s) has %d items', descv1, lv1, descv2, lv2 ) )
+    end
+
+    i = 1
+    table.insert( result, string.format( 'Lists A and B start differing at index %d', commonUntil+1 ) )
+    if commonBackTo < 1 then
+        if deltalv > 0 then
+            table.insert( result, string.format( 'Lists A and B are equals again from index %d for A, %d for B', lv1+commonBackTo, lv2+commonBackTo ) )
+        else
+            table.insert( result, string.format( 'Lists A and B are equals again from index %d', lv1+commonBackTo ) )
+        end
+    end
+
+    local function insertABValue(i, bi)
+        bi = bi or i
+        if v1[i] == v2[bi] then
+            return table.insert( result, string.format( '  = A[%d], B[%d]: %s', i, bi, prettystr(v1[i]) ) )
+        else
+            table.insert( result, string.format( '  - A[%d]: %s', i, prettystr(v1[i])))
+            table.insert( result, string.format( '  + B[%d]: %s', bi, prettystr(v2[bi])))
+        end
+    end
+
+    -- common parts to list A & B, at the beginning
+    if i <= commonUntil then 
+        table.insert( result, 'Common parts:' )
+    end
+    while i <= commonUntil do
+        insertABValue( i )
+        i = i + 1
+    end
+
+    -- diffing parts to list A & B
+    if i <  shortest + commonBackTo then
+        table.insert( result, 'Differing parts:' )
+    end
+    while i <  shortest + commonBackTo do
+        insertABValue( i )
+        i = i + 1
+    end
+
+    -- display indexes of one list, with no match on other list
+    if i < longest + commonBackTo then
+        table.insert( result, 'Present only in one list:' )
+    end
+    while i < longest + commonBackTo do
+        if lv1 > lv2 then
+            table.insert( result, string.format( '  - A[%d]: %s', i, prettystr(v1[i]) ) )
+            -- table.insert( result, '+ (no matching B index)')
+        else
+            -- table.insert( result, '- no matching A index')
+            table.insert( result, string.format( '  + B[%d]: %s', i, prettystr(v2[i]) ) )
+        end
+        i = i + 1
+    end
+
+    -- common parts to list A & B, at the end
+    if i <= longest then
+        table.insert( result, 'Common parts at the end of the lists' )
+    end
+    while i <= longest do
+        if lv1 > lv2 then
+            insertABValue( i, i-deltalv )
+        else
+            insertABValue( i-deltalv, i )
+        end
+        i = i + 1
+    end
+
+    -- find common values at the start of the table
+    -- check the type to make sure we are not dealing with nested tables
+    -- find common values at the end of the list
+
+    return true, table.concat( result, '\n')
+end
+M.private.tryMismatchFormatting = tryMismatchAFormatting
+
+local function prettystrPairs(value1, value2, suffix_a, suffix_b)
     --[[
     This function helps with the recurring task of constructing the "expected
     vs. actual" error messages. It takes two arbitrary values and formats
@@ -626,6 +800,13 @@ end
 ----------------------------------------------------------------
 
 local function errorMsgEquality(actual, expected)
+    local success, result
+    success, result = tryMismatchAFormatting( actual, expected )
+    if success then 
+        return result
+    end
+    -- continue to regular printing
+
     if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
     end

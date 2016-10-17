@@ -196,6 +196,18 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.private._table_keytostring( 'a0!' ), '"a0!"' )
     end
 
+    function TestLuaUnitUtilities:test_suitableForMismatchFormatting()
+        lu.assertFalse( lu.private.suitableForMismatchFormatting( {1,2}, {2,1} ) )
+        lu.assertFalse( lu.private.suitableForMismatchFormatting( nil, { 1,2,3} ) )
+        lu.assertFalse( lu.private.suitableForMismatchFormatting( {1,2,3}, {} ) )
+        lu.assertFalse( lu.private.suitableForMismatchFormatting( "123", "123" ) )
+        lu.assertFalse( lu.private.suitableForMismatchFormatting( "123", "123" ) )
+        lu.assertFalse( lu.private.suitableForMismatchFormatting( {1,2,3, toto='titi'}, {1,2,3} ) )
+        lu.assertFalse( lu.private.suitableForMismatchFormatting( {1,2,3, [5]=1000}, {1,2,3} ) )
+
+        lu.assertTrue( lu.private.suitableForMismatchFormatting( {1,2,3}, {3,2,1} ))
+    end
+
     function TestLuaUnitUtilities:test_prettystr()
         lu.assertEquals( lu.prettystr( 1 ), "1" )
         lu.assertEquals( lu.prettystr( 1.1 ), "1.1" )
