@@ -503,7 +503,7 @@ function testListComparison()
     lu.assertEquals( 0,
         check_text_output('test/some_lists_comparisons.lua', '--verbose',
             'test/some_lists_comparisons.txt', 
-            'test/ref/some_lists_comparisons.txt', 10 ) )
+            'test/ref/some_lists_comparisons.txt', 11 ) )
 end
 
 function testLegacyLuaunitUsage()

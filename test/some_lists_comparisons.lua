@@ -130,4 +130,12 @@ function test6()
     lu.assertEquals( B, A )
 end
 
+function test7()
+    local A = { {1,2,3}, {1,2}, { {1}, {2} }, { 'aa', 'cc'}, 1, 2 }
+    local B = { {1,2,3}, {1,2}, { {2}, {2} }, { 'aa', 'bb'}, 1, 2 }
+    lu.assertEquals( B, A )
+end
+
+
+
 os.exit( lu.run() )

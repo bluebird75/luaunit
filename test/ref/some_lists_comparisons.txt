@@ -225,6 +225,21 @@ Common parts at the end of the lists
   = A[10], B[10]: thread: 008026A8
   = A[11], B[11]: thread: 008026A8
   = A[12], B[12]: thread: 008026A8
+    test7 ... FAIL
+test/some_lists_comparisons.lua:136: Lists A (actual) and B (expected) have the same size
+Lists A and B start differing at index 3
+Lists A and B are equals again from index 5
+Common parts:
+  = A[1], B[1]: {1, 2, 3}
+  = A[2], B[2]: {1, 2}
+Differing parts:
+  - A[3]: {{2}, {2}}
+  + B[3]: {{1}, {2}}
+  - A[4]: {"aa", "bb"}
+  + B[4]: {"aa", "cc"}
+Common parts at the end of the lists
+  = A[5], B[5]: 1
+  = A[6], B[6]: 2
 =========================================================
 Failed tests:
 -------------
@@ -483,4 +498,22 @@ Common parts at the end of the lists
 stack traceback:
 	test/some_lists_comparisons.lua:130: in function 'test6'
 
-Ran 11 tests in 0.003 seconds, 1 success, 10 failures
+11) test7
+test/some_lists_comparisons.lua:136: Lists A (actual) and B (expected) have the same size
+Lists A and B start differing at index 3
+Lists A and B are equals again from index 5
+Common parts:
+  = A[1], B[1]: {1, 2, 3}
+  = A[2], B[2]: {1, 2}
+Differing parts:
+  - A[3]: {{2}, {2}}
+  + B[3]: {{1}, {2}}
+  - A[4]: {"aa", "bb"}
+  + B[4]: {"aa", "cc"}
+Common parts at the end of the lists
+  = A[5], B[5]: 1
+  = A[6], B[6]: 2
+stack traceback:
+	test/some_lists_comparisons.lua:136: in function 'test7'
+
+Ran 12 tests in 0.003 seconds, 1 success, 11 failures
