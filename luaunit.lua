@@ -459,11 +459,15 @@ local function tryMismatchAFormatting( v1, v2)
     commonBackTo = i+1
 
 
+    local refa, refb = '', ''
+    if M.PRINT_TABLE_REF_IN_ERROR_MSG then
+        refa, refb = string.format( '<%s> ', tostring(v1)), string.format('<%s> ', tostring(v2) )
+    end
     if lv1 == lv2 then
         -- TODO: handle expected/actual naming
-        table.insert( result, string.format( 'Lists A (%s) and B (%s) have the same size', descv1, descv2 ) )
+        table.insert( result, string.format( 'Lists %sA (%s) and %sB (%s) have the same size', refa, descv1, refb, descv2 ) )
     else 
-        table.insert( result, string.format( 'Size of lists differ: list A (%s) has %d items, list B (%s) has %d items', descv1, lv1, descv2, lv2 ) )
+        table.insert( result, string.format( 'Size of lists differ: list %sA (%s) has %d items, list %sB (%s) has %d items', refa, descv1, lv1, refb, descv2, lv2 ) )
     end
 
     i = 1
