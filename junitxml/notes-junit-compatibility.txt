@@ -1,3 +1,20 @@
+Our source information:
+* http://stackoverflow.com/questions/4922867/junit-xml-format-specification-that-hudson-supports
+(Jenkins)
+* https://github.com/jenkinsci/xunit-plugin/tree/master/src/main/resources/org/jenkinsci/plugins/xunit/types/model/xsd
+* http://help.catchsoftware.com/display/ET/JUnit+Format
+* http://llg.cubic.org/docs/junit/
+* https://confluence.atlassian.com/bamboo/junit-parsing-in-bamboo-289277357.html
+* http://nose2.readthedocs.io/en/latest/plugins/junitxml.html
+* https://pzolee.blogs.balabit.com/2012/11/jenkins-vs-junit-xml-format/
+* https://www.relishapp.com/cucumber/cucumber/docs/formatters/junit-output-formatter
+* http://stackoverflow.com/questions/11241781/python-unittests-in-jenkins
+* https://github.com/xmlrunner/unittest-xml-reporting/tree/master/
+
+
+
+Notes:
+======
 Ant xml schema is much more restrictive than jenkins.
 
 Non allowed fields in ant, allowed in jenkins:
