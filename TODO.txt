@@ -23,10 +23,12 @@ Nice to have:
 ============
 - stack unwrapping like in py.test
 
-TODO for 3.2 release:
-====================
-- document new config: table with key of type table
-- document --error
+Done since 3.2:
+===============
+- better error messages for list assertions:
+	+ expected length of X, got Y
+	+ index differing in table 1 and 2
+
 
 Done since 3.1:
 ===============
