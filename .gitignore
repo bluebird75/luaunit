@@ -32,6 +32,9 @@ obj/
 [Rr]elease*/
 _ReSharper*/
 
+# LuaCov output (stats and report)
+luacov.*.out
+
 # LuaUnit ignores
 [Tt]est[Rr]esult*
 *.sublime-project

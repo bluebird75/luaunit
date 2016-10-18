@@ -689,6 +689,9 @@ If --failure or -f is passed as an option, LuaUnit will stop on the first failur
 
 If --error or -e is passed as an option, LuaUnit will stop on the first error (but continue on failures).
 
+**Randomize order**
+
+If --random or -r is passed as an option, LuaUnit will execute tests in random order
 
 **Other Options:**
 
@@ -771,19 +774,66 @@ not influence the test itself.
 
 Value assertions
 ----------------------
+
+LuaUnit contains several flavours of true/false assertions, to be used in different contexts.
+Usually, when asserting for true or false, you want strict assertions (nil should not 
+assert to false); assertTrue and assertFalse are the functions for this purpose. In some cases though,
+you want Lua coercion rules to apply (value 1, string "hello" yields true) and the right functions to use
+are assertEvalToTrue and assertEvalToFalse. Finally, you have the assertNotTrue and assertNotFalse to verify
+that a value is anything but the boolean true or false.
+
+The below table sums it up:
+
+============  ============  ===================  ================  =============  ===================  ===============
+**True assertion family**                                            **False assertion family**
+-----------------------------------------------------------------  ---------------------------------------------------
+Input Value   assertTrue()   assertEvalToTrue()  assertNotFalse()  assertFalse()  assertEvalToFalse()  assertNotTrue()
+============  ============  ===================  ================  =============  ===================  ===============
+*true*        OK            OK                   OK                Fail           Fail                 Fail
+*false*       Fail          Fail                 Fail              OK             OK                   OK 
+*nil*         Fail          Fail                 OK                Fail           OK                   OK 
+*0*           Fail          OK                   OK                Fail           Fail                 Fail 
+*1*           Fail          OK                   OK                Fail           Fail                 Fail
+*"hello"*     Fail          OK                   OK                Fail           Fail                 Fail
+============  ============  ===================  ================  =============  ===================  ===============
+
+
+
+.. function:: assertEvalToTrue(value)
+
+    **Alias**: *assert_eval_to_true()*
+
+    Assert that a given value evals to ``true``. Lua coercion rules are applied
+    so that values like ``0``, ``""``, ``1.17`` **succeed** in this assertion.
+    
+    See :func:`assertTrue` for a strict assertion to boolean ``true``.
+
+.. function:: assertEvalToFalse(value)
+
+    **Alias**: *assert_eval_to_false()*
+
+    Assert that a given value eval to ``false``. Lua coercion rules are applied
+    so that ``nil`` and ``false``  **succeed** in this assertion.
+
+    See :func:`assertFalse` for a strict assertion to boolean ``false``.
+    
 .. function:: assertTrue(value)
 
     **Alias**: *assert_true()*
 
-    Assert that a given value compares to true. Lua coercion rules are applied
-    so that values like ``0``, ``""``, ``1.17`` all compare to *true*.
+    Assert that a given value is strictly ``true``. Lua coercion rules do not apply
+    so that values like ``0``, ``""``, ``1.17`` **fail** in this assertion.
+
+    See :func:`assertEvalToTrue` for an assertion with lua coerction rules to ``true``.
     
 .. function:: assertFalse(value)
 
     **Alias**: *assert_false()*
 
-    Assert that a given value compares to false. Lua coercion rules are applied
-    so that only *nil* and *false* all compare to *false*.
+    Assert that a given value is strictly ``false``. Lua coercion rules do not apply
+    so that ``nil`` **fails** in this assertion.
+
+    See :func:`assertEvalToFalse` for an assertion with lua coerction rules to ``false``.
     
 .. function:: assertNil(value)
 
@@ -814,11 +864,14 @@ Value assertions
         s2='to'..'to'
         t1={1,2}
         t2={1,2}
+        v1=nil
+        v2=false
 
         luaunit.assertIs(s1,s1) -- ok
         luaunit.assertIs(s1,s2) -- ok
         luaunit.assertIs(t1,t1) -- ok
         luaunit.assertIs(t1,t2) -- fail
+        luaunit.assertIs(v1,v2) -- fail
     
 .. function:: assertNotIs(actual, expected)
 

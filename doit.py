@@ -57,7 +57,7 @@ def packageit():
         os.mkdir('release')
     except OSError:
         pass
-    subprocess.check_call(['d:/program/utils/Git/bin/git.exe', 'clone', '--no-hardlinks', REPO_PATH, RELEASE_DIR])
+    subprocess.check_call(['d:/program/utils/Git/bin/git.exe', 'clone', '--no-hardlinks', '--branch', RELEASE_TAG, REPO_PATH, RELEASE_DIR])
     os.chdir( RELEASE_DIR )
 
     # Release dir cleanup 
@@ -78,7 +78,7 @@ def packageit():
 def help():
     print( 'Available actions:')
     for opt in OptToFunc:
-        print '\t%s' % opt
+        print( '\t%s' % opt )
 
 def makedoc():
     os.chdir('doc')

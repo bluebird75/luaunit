@@ -1,13 +1,11 @@
 
 TODO Future:
 ============
+- document prettystr
 - add the ability to count the number of assertions that should have been executed in the test
-- mention that general error are correctly handled by luaunit as failures
-- detect if a functions creates new global variables.
 - validate output with ignored tests (0 failures or some failures)
 - report test duration everywhere
 - allow to skip tests
-- randomized testing
 - parametrize tests
 - coloured output
 - global setup / teardown
@@ -17,17 +15,26 @@ TODO Future:
 	+ expected length of X, got Y
 	+ keys differing in table 1 and 2
 - XML: report system information
-- better error messages for string differences
+- better error messages for string differences (diffing)
 
 Nice to have: 
 ============
 - stack unwrapping like in py.test
+
+TODO for 3.3 release:
+===============
+- doc about scientific computing dedicated functions
+- doc about prettystr
+- doc about usage of prettystr & assertion library
+
 
 Done since 3.2:
 ===============
 - better error messages for list assertions:
 	+ expected length of X, got Y
 	+ index differing in table 1 and 2
+
+- randomized testing
 
 
 Done since 3.1:
