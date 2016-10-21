@@ -420,60 +420,206 @@ end
 M.prettystr = prettystr
 
 local function suitableForMismatchFormatting( value1, value2)
-    -- Return true if the two values are suitable for a deep analysis:
+    -- Return false if the two values are not suitable for a deep analysis:
     -- * type must be table
-    -- * table is a pure list
-    -- * one length > 2
+    -- * for lists, length must be > 2 for two elements
+    -- Returns true if suitable for deep analysis. Second item of return value
+    -- indicates if this is a pure list (true) or if it is a mapping (false)
     if type(value1) ~= 'table' or type(value2) ~= 'table' then
         return false
     end
 
-    local v1, v2, lv1, lv2
+    local k1, k2, v1, v2, lv1, lv2
     lv1 = #value1
     lv2 = #value2
-    if lv1 < 3 or lv2 < 3 then
-        return false
-    end
 
     for k1, v1 in pairs(value1) do
         if type(k1) ~= 'number' or k1 > lv1 then
-            -- this table is not a list, abort
-            return false
+            -- this table a mapping
+            return true, false
         end
     end
 
     for k2, v2 in pairs(value2) do
         if type(k2) ~= 'number' or k2 > lv2 then
-            -- this table is not a list, abort
-            return false
+            -- this table a mapping
+            return true, false
         end
     end
 
-    return true
+    -- this is a pure list
+    if lv1 < 3 or lv2 < 3 then
+        return false
+    end
+
+    return true, true
 end
 M.private.suitableForMismatchFormatting = suitableForMismatchFormatting
 
 local function tryMismatchFormatting( ta, tb)
     --[[
-    Prepares a nice error message when comparing non-nested lists, performing a deeper 
+    Prepares a nice error message when comparing tables, performing a deeper 
     analysis.
 
     Returns: {success, result}
-    * success: false if deep analysis could not be performed (nested tables for example)
+    * success: false if deep analysis could not be performed 
                in this case, just use standard assertion message
     * result: if success is true, a multi-line string with deep analysis of the two lists
     ]]
-    local result = {}
+    local suitable, isPureList
 
-    if not suitableForMismatchFormatting( ta, tb) then
+    suitable, isPureList = suitableForMismatchFormatting( ta, tb ) 
+    if not suitable then
         return false, ''
     end
 
+    if isPureList then
+        return M.private.mismatchFormattingPureList( ta, tb )
+    else
+        return M.private.mismatchFormattingMapping( ta, tb )
+    end
+end
+M.private.tryMismatchFormatting = tryMismatchFormatting
+
+local function getTaTbDesc()
     local descta, desctb
     descta, desctb = 'actual', 'expected'
     if not M.ORDER_ACTUAL_EXPECTED then
         descta, desctb = desctb, descta
     end
+    return descta, desctb
+end
+
+function is_eq( a, b )
+    if type(a) == 'table' and type(b) == 'table' then
+        return M.private._is_table_equals(a,b) 
+    end
+    return a == b
+end
+
+local function extendWithStrFmt( res, ... )
+    table.insert( res, string.format( ... ) )
+end
+
+local function mismatchFormattingMapping( ta, tb )
+    --[[
+    Prepares a nice error message when comparing tables which are not pure lists, performing a deeper 
+    analysis.
+
+    Returns: {success, result}
+    * success: false if deep analysis could not be performed 
+               in this case, just use standard assertion message
+    * result: if success is true, a multi-line string with deep analysis of the two lists
+    ]]
+    local result = {}
+    local descta, desctb = getTaTbDesc()
+
+    local keysCommon = {}
+    local keysOnlyTa = {}
+    local keysOnlyTb = {}
+    local keysDiffTaTb = {}
+
+    local k, v
+
+    for k,v in pairs( ta ) do
+        if is_eq( v, tb[k] ) then
+            table.insert( keysCommon, k )
+        else 
+            if tb[k] == nil then
+                table.insert( keysOnlyTa, k )
+            else
+                table.insert( keysDiffTaTb, k )
+            end
+        end
+    end
+
+    for k,v in pairs( tb ) do
+        if not is_eq( v, ta[k] ) and ta[k] == nil then
+            table.insert( keysOnlyTb, k )
+        end
+    end
+
+    local lta = #keysCommon + #keysDiffTaTb + #keysOnlyTa
+    local ltb = #keysCommon + #keysDiffTaTb + #keysOnlyTb
+
+    if lta == ltb then
+        extendWithStrFmt( result, 'Table A (%s) and B (%s) both have %d items', descta, desctb, lta )
+    else
+        table.insert( result, string.format( 'Table A (%s) has %d items and table B (%s) has %d items', descta, lta, desctb, ltb ) )
+    end
+
+    if #keysCommon == 0 and #keysDiffTaTb == 0 then
+        table.insert( result, 'Table A and B have no keys in common, they are totally different')
+    else
+        local s_other = 'other '
+        if #keysCommon then
+            table.insert( result, string.format( 'Table A and B have %d identical items', #keysCommon ))
+        else
+            table.insert( result, 'Table A and B have no identical items' )
+            s_other = ''
+        end
+
+        if #keysDiffTaTb ~= 0 then
+            result[#result] = string.format( '%s and %d items differing present in both tables', result[#result], #keysDiffTaTb)
+        else
+            result[#result] = string.format( '%s and no %sitems differing present in both tables', result[#result], s_other, #keysDiffTaTb)
+        end
+    end
+
+    table.insert( result, string.format( 'Table A has %d keys not present in table B and table B has %d keys not present in table A', #keysOnlyTa, #keysOnlyTb ) )
+
+    local function keytostring(k)
+        if "string" == type(k) and k:match("^[_%a][_%w]*$") then
+            return k
+        end
+        return prettystr(k)
+    end
+
+    if #keysDiffTaTb ~= 0 then
+        table.insert( result, string.format( 'Items differing in A and B:') )
+        for k,v in sortedPairs( keysDiffTaTb ) do
+            extendWithStrFmt( result, '  - A[%s]: %s', keytostring(v), prettystr(ta[v]) )
+            extendWithStrFmt( result, '  + B[%s]: %s', keytostring(v), prettystr(tb[v]) )
+        end
+    end    
+
+    if #keysOnlyTa == 0 then
+        table.insert( result, 'Items only in table A:' )
+        for k,v in sortedPairs( keysOnlyTa ) do
+            extendWithStrFmt( result, '  - A[%s]: %s', keytostring(v), prettystr(ta[v]) )
+        end
+    end
+
+    if #keysOnlyTb == 0 then
+        table.insert( result, 'Items only in table B:' )
+        for k,v in sortedPairs( keysOnlyTb ) do
+            extendWithStrFmt( result, '  + B[%s]: %s', keytostring(v), prettystr(tb[v]) )
+        end
+    end
+
+    if #keysCommon ~= 0 then
+        table.insert( result, string.format( 'Items common to A and B:') )
+        for k,v in sortedPairs( keysCommon ) do
+            extendWithStrFmt( result, '  = A and B [%s]: %s', keytostring(v), prettystr(ta[v]) )
+        end
+    end    
+
+    return true, table.concat( result, '\n')
+end
+M.private.mismatchFormattingMapping = mismatchFormattingMapping
+
+local function mismatchFormattingPureList( ta, tb )
+    --[[
+    Prepares a nice error message when comparing tables which are lists, performing a deeper 
+    analysis.
+
+    Returns: {success, result}
+    * success: false if deep analysis could not be performed 
+               in this case, just use standard assertion message
+    * result: if success is true, a multi-line string with deep analysis of the two lists
+    ]]
+    local result = {}
+    local descta, desctb = getTaTbDesc()
 
     local lta = #ta
     local ltb = #tb
@@ -482,13 +628,6 @@ local function tryMismatchFormatting( ta, tb)
     local shortest = math.min(lta, ltb)
     local deltalv  = longest - shortest
     local commonUntil, commonBackTo
-
-    function is_eq( a, b )
-        if type(a) == 'table' and type(b) == 'table' then
-            return M.private._is_table_equals(a,b) 
-        end
-        return a == b
-    end
 
     i = 1
     while i <= longest do
@@ -589,7 +728,7 @@ local function tryMismatchFormatting( ta, tb)
 
     return true, table.concat( result, '\n')
 end
-M.private.tryMismatchFormatting = tryMismatchFormatting
+M.private.mismatchFormattingPureList = mismatchFormattingPureList
 
 local function prettystrPairs(value1, value2, suffix_a, suffix_b)
     --[[
@@ -616,6 +755,7 @@ M.private.prettystrPairs = prettystrPairs
 
 local TABLE_TOSTRING_SEP = ", "
 local TABLE_TOSTRING_SEP_LEN = string.len(TABLE_TOSTRING_SEP)
+
 
 local function _table_tostring( tbl, indentLevel, keeponeline, printTableRefs, recursionTable )
     printTableRefs = printTableRefs or M.PRINT_TABLE_REF_IN_ERROR_MSG
