@@ -221,7 +221,7 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
         lu.assertTrue( lu.private.suitableForMismatchFormatting( {1,2,3}, {3,2,1} ))
         lu.assertTrue( lu.private.suitableForMismatchFormatting( {'a','b','c'}, {'c', 'b', 'a'} ))
-        lu.assertTrue( lu.private.suitableForMismatchFormatting( {1,2,3, toto='titi'}, {1,2,3, toto='tata', tutu=bloup } ) )
+        lu.assertTrue( lu.private.suitableForMismatchFormatting( {1,2,3, toto='titi'}, {1,2,3, toto='tata', tutu="bloup" } ) )
         lu.assertTrue( lu.private.suitableForMismatchFormatting( {1,2,3, [5]=1000}, {1,2,3} ) )
     end
 
