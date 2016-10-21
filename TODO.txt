@@ -26,9 +26,14 @@ TODO for 3.3 release:
 - doc about scientific computing dedicated functions
 - doc about prettystr
 - doc about usage of prettystr & assertion library
+
+Done since 3.2:
+===============
 - more doc about assertTrue/False/... with a table
 - randomized testing
-
+- assertions for nan and inf
+- can run a tests numerous times (useful for triggering the JIT effect)
+- can include and exclude tests from the test list
 
 Done since 3.1:
 ===============

@@ -89,6 +89,7 @@ LuaUnit is used by hundreds of projects on GitHub (see [LuaUnit search](https://
 #### Version 3.3 - in progress
 * assertTrue and assertFalse are now strict and only succeed with boolean
 * add assertEvalToTrue and assertEvalToFalse with previous assertTrue/False behavior of coercing before asserting
+* randomized testing
 
 #### Version 3.2 - 12. Jul 2016
 * distinguish between failures (failed assertion) and errors
