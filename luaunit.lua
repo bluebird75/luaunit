@@ -699,16 +699,8 @@ local function _is_table_equals(actual, expected, recursions)
                     -- Found a key that we did not see in "actual" -> mismatch
                     return false
                 end
-                -- Otherwise we know that actual[k] was already matched
-                -- against v = expected[k]. Remove k from the table again.
-                actualKeysMatched[k] = nil
+                -- Otherwise actual[k] was already matched against v = expected[k].
             end
-        end
-
-        -- If we have any keys left in the actualKeysMatched table, then those
-        -- were missing from "expected", meaning the tables are different.
-        if next(actualKeysMatched) then
-            return false
         end
 
         if next(actualTableKeys) then
