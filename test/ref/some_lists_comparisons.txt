@@ -1,6 +1,6 @@
-Started on 10/17/16 21:56:22
-    test1 ... FAIL
-test/some_lists_comparisons.lua:16: Lists A (actual) and B (expected) have the same size
+Started on 10/24/16 22:51:46
+    TestListCompare.test1 ... FAIL
+test/some_lists_comparisons.lua:22: Lists A (actual) and B (expected) have the same size
 Lists A and B start differing at index 3
 Lists A and B are equals again from index 4
 Common parts:
@@ -12,8 +12,8 @@ Differing parts:
 Common parts at the end of the lists
   = A[4], B[4]: 122122212
   = A[5], B[5]: 111221212121
-    test1b ... FAIL
-test/some_lists_comparisons.lua:21: Lists A (actual) and B (expected) have the same size
+    TestListCompare.test1b ... FAIL
+test/some_lists_comparisons.lua:27: Lists A (actual) and B (expected) have the same size
 Lists A and B start differing at index 3
 Common parts:
   = A[1], B[1]: 1212212
@@ -21,8 +21,8 @@ Common parts:
 Differing parts:
   - A[3]: 12211221
   + B[3]: 12121221
-    test1c ... FAIL
-test/some_lists_comparisons.lua:26: Lists A (actual) and B (expected) have the same size
+    TestListCompare.test1c ... FAIL
+test/some_lists_comparisons.lua:32: Lists A (actual) and B (expected) have the same size
 Lists A and B start differing at index 1
 Lists A and B are equals again from index 2
 Differing parts:
@@ -31,8 +31,8 @@ Differing parts:
 Common parts at the end of the lists
   = A[2], B[2]: 122122212
   = A[3], B[3]: 111221212121
-    test2 ... FAIL
-test/some_lists_comparisons.lua:48: Lists A (actual) and B (expected) have the same size
+    TestListCompare.test2 ... FAIL
+test/some_lists_comparisons.lua:42: Lists A (actual) and B (expected) have the same size
 Lists A and B start differing at index 7
 Lists A and B are equals again from index 9
 Common parts:
@@ -60,8 +60,8 @@ Common parts at the end of the lists
   = A[18], B[18]: 18
   = A[19], B[19]: 19
   = A[20], B[20]: 20
-    test3 ... FAIL
-test/some_lists_comparisons.lua:63: Size of lists differ: list A (actual) has 20 items, list B (expected) has 19 items
+    TestListCompare.test3 ... FAIL
+test/some_lists_comparisons.lua:57: Size of lists differ: list A (actual) has 20 items, list B (expected) has 19 items
 Lists A and B start differing at index 7
 Lists A and B are equals again from index 8 for A, 7 for B
 Common parts:
@@ -87,8 +87,8 @@ Common parts at the end of the lists
   = A[18], B[17]: 18
   = A[19], B[18]: 19
   = A[20], B[19]: 20
-    test4 ... FAIL
-test/some_lists_comparisons.lua:81: Size of lists differ: list A (actual) has 20 items, list B (expected) has 17 items
+    TestListCompare.test4 ... FAIL
+test/some_lists_comparisons.lua:75: Size of lists differ: list A (actual) has 20 items, list B (expected) has 17 items
 Lists A and B start differing at index 7
 Lists A and B are equals again from index 10 for A, 7 for B
 Common parts:
@@ -114,8 +114,8 @@ Common parts at the end of the lists
   = A[18], B[15]: 18
   = A[19], B[16]: 19
   = A[20], B[17]: 20
-    test5a ... FAIL
-test/some_lists_comparisons.lua:106: Size of lists differ: list A (expected) has 20 items, list B (actual) has 17 items
+    TestListCompare.test5a ... FAIL
+test/some_lists_comparisons.lua:100: Size of lists differ: list A (expected) has 20 items, list B (actual) has 17 items
 Lists A and B start differing at index 5
 Lists A and B are equals again from index 10 for A, 7 for B
 Common parts:
@@ -144,8 +144,8 @@ Common parts at the end of the lists
   = A[18], B[15]: 18
   = A[19], B[16]: 19
   = A[20], B[17]: 20
-    test5b ... FAIL
-test/some_lists_comparisons.lua:112: Size of lists differ: list A (actual) has 17 items, list B (expected) has 20 items
+    TestListCompare.test5b ... FAIL
+test/some_lists_comparisons.lua:106: Size of lists differ: list A (actual) has 17 items, list B (expected) has 20 items
 Lists A and B start differing at index 5
 Lists A and B are equals again from index 7 for A, 10 for B
 Common parts:
@@ -174,8 +174,8 @@ Common parts at the end of the lists
   = A[15], B[18]: 18
   = A[16], B[19]: 19
   = A[17], B[20]: 20
-    test5c ... FAIL
-test/some_lists_comparisons.lua:118: Size of lists differ: list <table: 0082ECE0> A (actual) has 17 items, list <table: 0082ECE0> B (expected) has 20 items
+    TestListCompare.test5c ... FAIL
+test/some_lists_comparisons.lua:112: Size of lists differ: list <table: 00CE85E0> A (actual) has 17 items, list <table: 00CE8518> B (expected) has 20 items
 Lists A and B start differing at index 5
 Lists A and B are equals again from index 7 for A, 10 for B
 Common parts:
@@ -204,16 +204,16 @@ Common parts at the end of the lists
   = A[15], B[18]: 18
   = A[16], B[19]: 19
   = A[17], B[20]: 20
-    test5d ... Ok
-    test6 ... FAIL
-test/some_lists_comparisons.lua:130: Lists A (actual) and B (expected) have the same size
+    TestListCompare.test5d ... Ok
+    TestListCompare.test6 ... FAIL
+test/some_lists_comparisons.lua:124: Lists A (actual) and B (expected) have the same size
 Lists A and B start differing at index 8
 Lists A and B are equals again from index 9
 Common parts:
   = A[1], B[1]: "aaa"
   = A[2], B[2]: "bbb"
   = A[3], B[3]: "ccc"
-  = A[4], B[4]: function: 00832760
+  = A[4], B[4]: function: 00CD5060
   = A[5], B[5]: 1
   = A[6], B[6]: 2
   = A[7], B[7]: nil
@@ -222,11 +222,11 @@ Differing parts:
   + B[8]: true
 Common parts at the end of the lists
   = A[9], B[9]: false
-  = A[10], B[10]: thread: 008026A8
-  = A[11], B[11]: thread: 008026A8
-  = A[12], B[12]: thread: 008026A8
-    test7 ... FAIL
-test/some_lists_comparisons.lua:136: Lists A (actual) and B (expected) have the same size
+  = A[10], B[10]: thread: 00CD1808
+  = A[11], B[11]: thread: 00CD1808
+  = A[12], B[12]: thread: 00CD1808
+    TestListCompare.test7 ... FAIL
+test/some_lists_comparisons.lua:130: Lists A (actual) and B (expected) have the same size
 Lists A and B start differing at index 3
 Lists A and B are equals again from index 5
 Common parts:
@@ -243,8 +243,8 @@ Common parts at the end of the lists
 =========================================================
 Failed tests:
 -------------
-1) test1
-test/some_lists_comparisons.lua:16: Lists A (actual) and B (expected) have the same size
+1) TestListCompare.test1
+test/some_lists_comparisons.lua:22: Lists A (actual) and B (expected) have the same size
 Lists A and B start differing at index 3
 Lists A and B are equals again from index 4
 Common parts:
@@ -257,10 +257,10 @@ Common parts at the end of the lists
   = A[4], B[4]: 122122212
   = A[5], B[5]: 111221212121
 stack traceback:
-	test/some_lists_comparisons.lua:16: in function 'test1'
+	test/some_lists_comparisons.lua:22: in function 'TestListCompare.test1'
 
-2) test1b
-test/some_lists_comparisons.lua:21: Lists A (actual) and B (expected) have the same size
+2) TestListCompare.test1b
+test/some_lists_comparisons.lua:27: Lists A (actual) and B (expected) have the same size
 Lists A and B start differing at index 3
 Common parts:
   = A[1], B[1]: 1212212
@@ -269,10 +269,10 @@ Differing parts:
   - A[3]: 12211221
   + B[3]: 12121221
 stack traceback:
-	test/some_lists_comparisons.lua:21: in function 'test1b'
+	test/some_lists_comparisons.lua:27: in function 'TestListCompare.test1b'
 
-3) test1c
-test/some_lists_comparisons.lua:26: Lists A (actual) and B (expected) have the same size
+3) TestListCompare.test1c
+test/some_lists_comparisons.lua:32: Lists A (actual) and B (expected) have the same size
 Lists A and B start differing at index 1
 Lists A and B are equals again from index 2
 Differing parts:
@@ -282,10 +282,10 @@ Common parts at the end of the lists
   = A[2], B[2]: 122122212
   = A[3], B[3]: 111221212121
 stack traceback:
-	test/some_lists_comparisons.lua:26: in function 'test1c'
+	test/some_lists_comparisons.lua:32: in function 'TestListCompare.test1c'
 
-4) test2
-test/some_lists_comparisons.lua:48: Lists A (actual) and B (expected) have the same size
+4) TestListCompare.test2
+test/some_lists_comparisons.lua:42: Lists A (actual) and B (expected) have the same size
 Lists A and B start differing at index 7
 Lists A and B are equals again from index 9
 Common parts:
@@ -314,10 +314,10 @@ Common parts at the end of the lists
   = A[19], B[19]: 19
   = A[20], B[20]: 20
 stack traceback:
-	test/some_lists_comparisons.lua:48: in function 'test2'
+	test/some_lists_comparisons.lua:42: in function 'TestListCompare.test2'
 
-5) test3
-test/some_lists_comparisons.lua:63: Size of lists differ: list A (actual) has 20 items, list B (expected) has 19 items
+5) TestListCompare.test3
+test/some_lists_comparisons.lua:57: Size of lists differ: list A (actual) has 20 items, list B (expected) has 19 items
 Lists A and B start differing at index 7
 Lists A and B are equals again from index 8 for A, 7 for B
 Common parts:
@@ -344,10 +344,10 @@ Common parts at the end of the lists
   = A[19], B[18]: 19
   = A[20], B[19]: 20
 stack traceback:
-	test/some_lists_comparisons.lua:63: in function 'test3'
+	test/some_lists_comparisons.lua:57: in function 'TestListCompare.test3'
 
-6) test4
-test/some_lists_comparisons.lua:81: Size of lists differ: list A (actual) has 20 items, list B (expected) has 17 items
+6) TestListCompare.test4
+test/some_lists_comparisons.lua:75: Size of lists differ: list A (actual) has 20 items, list B (expected) has 17 items
 Lists A and B start differing at index 7
 Lists A and B are equals again from index 10 for A, 7 for B
 Common parts:
@@ -374,10 +374,10 @@ Common parts at the end of the lists
   = A[19], B[16]: 19
   = A[20], B[17]: 20
 stack traceback:
-	test/some_lists_comparisons.lua:81: in function 'test4'
+	test/some_lists_comparisons.lua:75: in function 'TestListCompare.test4'
 
-7) test5a
-test/some_lists_comparisons.lua:106: Size of lists differ: list A (expected) has 20 items, list B (actual) has 17 items
+7) TestListCompare.test5a
+test/some_lists_comparisons.lua:100: Size of lists differ: list A (expected) has 20 items, list B (actual) has 17 items
 Lists A and B start differing at index 5
 Lists A and B are equals again from index 10 for A, 7 for B
 Common parts:
@@ -407,10 +407,10 @@ Common parts at the end of the lists
   = A[19], B[16]: 19
   = A[20], B[17]: 20
 stack traceback:
-	test/some_lists_comparisons.lua:106: in function 'test5a'
+	test/some_lists_comparisons.lua:100: in function 'TestListCompare.test5a'
 
-8) test5b
-test/some_lists_comparisons.lua:112: Size of lists differ: list A (actual) has 17 items, list B (expected) has 20 items
+8) TestListCompare.test5b
+test/some_lists_comparisons.lua:106: Size of lists differ: list A (actual) has 17 items, list B (expected) has 20 items
 Lists A and B start differing at index 5
 Lists A and B are equals again from index 7 for A, 10 for B
 Common parts:
@@ -440,10 +440,10 @@ Common parts at the end of the lists
   = A[16], B[19]: 19
   = A[17], B[20]: 20
 stack traceback:
-	test/some_lists_comparisons.lua:112: in function 'test5b'
+	test/some_lists_comparisons.lua:106: in function 'TestListCompare.test5b'
 
-9) test5c
-test/some_lists_comparisons.lua:118: Size of lists differ: list <table: 0082ECE0> A (actual) has 17 items, list <table: 0082ECE0> B (expected) has 20 items
+9) TestListCompare.test5c
+test/some_lists_comparisons.lua:112: Size of lists differ: list <table: 00CE85E0> A (actual) has 17 items, list <table: 00CE8518> B (expected) has 20 items
 Lists A and B start differing at index 5
 Lists A and B are equals again from index 7 for A, 10 for B
 Common parts:
@@ -473,17 +473,17 @@ Common parts at the end of the lists
   = A[16], B[19]: 19
   = A[17], B[20]: 20
 stack traceback:
-	test/some_lists_comparisons.lua:118: in function 'test5c'
+	test/some_lists_comparisons.lua:112: in function 'TestListCompare.test5c'
 
-10) test6
-test/some_lists_comparisons.lua:130: Lists A (actual) and B (expected) have the same size
+10) TestListCompare.test6
+test/some_lists_comparisons.lua:124: Lists A (actual) and B (expected) have the same size
 Lists A and B start differing at index 8
 Lists A and B are equals again from index 9
 Common parts:
   = A[1], B[1]: "aaa"
   = A[2], B[2]: "bbb"
   = A[3], B[3]: "ccc"
-  = A[4], B[4]: function: 00832760
+  = A[4], B[4]: function: 00CD5060
   = A[5], B[5]: 1
   = A[6], B[6]: 2
   = A[7], B[7]: nil
@@ -492,14 +492,14 @@ Differing parts:
   + B[8]: true
 Common parts at the end of the lists
   = A[9], B[9]: false
-  = A[10], B[10]: thread: 008026A8
-  = A[11], B[11]: thread: 008026A8
-  = A[12], B[12]: thread: 008026A8
+  = A[10], B[10]: thread: 00CD1808
+  = A[11], B[11]: thread: 00CD1808
+  = A[12], B[12]: thread: 00CD1808
 stack traceback:
-	test/some_lists_comparisons.lua:130: in function 'test6'
+	test/some_lists_comparisons.lua:124: in function 'TestListCompare.test6'
 
-11) test7
-test/some_lists_comparisons.lua:136: Lists A (actual) and B (expected) have the same size
+11) TestListCompare.test7
+test/some_lists_comparisons.lua:130: Lists A (actual) and B (expected) have the same size
 Lists A and B start differing at index 3
 Lists A and B are equals again from index 5
 Common parts:
@@ -514,6 +514,6 @@ Common parts at the end of the lists
   = A[5], B[5]: 1
   = A[6], B[6]: 2
 stack traceback:
-	test/some_lists_comparisons.lua:136: in function 'test7'
+	test/some_lists_comparisons.lua:130: in function 'TestListCompare.test7'
 
-Ran 12 tests in 0.003 seconds, 1 success, 11 failures
+Ran 12 tests in 0.002 seconds, 1 success, 11 failures

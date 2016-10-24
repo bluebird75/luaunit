@@ -213,16 +213,24 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
     end
 
     function TestLuaUnitUtilities:test_suitableForMismatchFormatting()
-        lu.assertFalse( lu.private.suitableForMismatchFormatting( {1,2}, {2,1} ) )
-        lu.assertFalse( lu.private.suitableForMismatchFormatting( nil, { 1,2,3} ) )
-        lu.assertFalse( lu.private.suitableForMismatchFormatting( {1,2,3}, {} ) )
-        lu.assertFalse( lu.private.suitableForMismatchFormatting( "123", "123" ) )
-        lu.assertFalse( lu.private.suitableForMismatchFormatting( "123", "123" ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( {1,2}, {2,1} ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( nil, { 1,2,3} ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( {1,2,3}, {} ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( "123", "123" ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( "123", "123" ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( {'a','b','c'}, {'c', 'b', 'a'} ))
+        lu.assertFalse( lu.private.tryMismatchFormatting( {1,2,3, toto='titi'}, {1,2,3, toto='tata', tutu="bloup" } ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( {1,2,3, [5]=1000}, {1,2,3} ) )
 
-        lu.assertTrue( lu.private.suitableForMismatchFormatting( {1,2,3}, {3,2,1} ))
-        lu.assertTrue( lu.private.suitableForMismatchFormatting( {'a','b','c'}, {'c', 'b', 'a'} ))
-        lu.assertTrue( lu.private.suitableForMismatchFormatting( {1,2,3, toto='titi'}, {1,2,3, toto='tata', tutu="bloup" } ) )
-        lu.assertTrue( lu.private.suitableForMismatchFormatting( {1,2,3, [5]=1000}, {1,2,3} ) )
+        local i=0
+        local l1, l2={}, {}
+        while i <= lu.LIST_DIFF_ANALYSIS_THRESHOLD+1 do
+            i = i + 1
+            table.insert( l1, i )
+            table.insert( l2, i+1 )
+        end
+
+        lu.assertTrue( lu.private.tryMismatchFormatting( l1, l2 ) )
     end
 
     function TestLuaUnitUtilities:test_prettystr()

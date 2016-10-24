@@ -646,6 +646,11 @@ local filesToGenerateStopOnError = {
         'test/ref/errFailPassTextStopOnError-4.txt'},
 }
 
+local filesToGenerateListsComp = {
+    { 'test/some_lists_comparisons.lua', '', '--output text --verbose',
+        'test/ref/some_lists_comparisons.txt'},
+}
+
 local filesSetIndex = {
     ErrFailPassText=filesToGenerateErrFailPassText,
     ErrFailPassTap=filesToGenerateErrFailPassTap,
@@ -656,6 +661,7 @@ local filesSetIndex = {
     ExampleXml=filesToGenerateExampleXml,
     TestXml=filesToGenerateTestXml,
     StopOnError=filesToGenerateStopOnError,
+    ListsComp=filesToGenerateListsComp,
 }
 
 local function updateRefFiles( filesToGenerate )

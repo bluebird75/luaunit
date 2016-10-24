@@ -1,5 +1,6 @@
 
 local lu = require('luaunit')
+lu.LIST_DIFF_ANALYSIS_THRESHOLD = 3
 
 local function range(start, stop)
     -- return list of { start ... stop }
@@ -131,12 +132,12 @@ TestListCompare = {}
 -- end TestListCompare
 
 
-TestDictCompare = {}
-    function TestDictCompare:test1()
+XTestDictCompare = {}
+    function XTestDictCompare:test1()
         lu.assertEquals( {one=1,two=2, three=3}, {one=1,two=1, three=3} )
     end
 
-    function TestDictCompare:test2()
+    function XTestDictCompare:test2()
         lu.assertEquals( {one=1,two=2, three=3, four=4, five=5}, {one=1,two=1, three=3, four=4, five=5} )
     end
 -- end TestDictCompare

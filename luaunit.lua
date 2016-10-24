@@ -25,6 +25,8 @@ M.ORDER_ACTUAL_EXPECTED = true
 M.PRINT_TABLE_REF_IN_ERROR_MSG = false
 M.TABLE_EQUALS_KEYBYCONTENT = true
 M.LINE_LENGTH=80
+M.TABLE_DIFF_ANALYSIS_THRESHOLD = 10    -- display deep analysis for more than 10 items
+M.LIST_DIFF_ANALYSIS_THRESHOLD  = 10    -- display deep analysis for more than 10 items
 
 -- set this to false to debug luaunit
 local STRIP_LUAUNIT_FROM_STACKTRACE=true
@@ -33,13 +35,16 @@ M.VERBOSITY_DEFAULT = 10
 M.VERBOSITY_LOW     = 1
 M.VERBOSITY_QUIET   = 0
 M.VERBOSITY_VERBOSE = 20
+M.DEFAULT_DEEP_ANALYSIS = nil
+M.FORCE_DEEP_ANALYSIS   = true
+M.DISABLE_DEEP_ANALYSIS = false
 
 -- set EXPORT_ASSERT_TO_GLOBALS to have all asserts visible as global values
 -- EXPORT_ASSERT_TO_GLOBALS = true
 
 -- we need to keep a copy of the script args before it is overriden
 local cmdline_argv = rawget(_G, "arg")
-
+    
 M.FAILURE_PREFIX = 'LuaUnit test FAILURE: ' -- prefix string for failed tests
 
 M.USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
@@ -419,64 +424,65 @@ local function prettystr( v, keeponeline )
 end
 M.prettystr = prettystr
 
-local function suitableForMismatchFormatting( value1, value2)
-    -- Return false if the two values are not suitable for a deep analysis:
-    -- * type must be table
-    -- * for lists, length must be > 2 for two elements
-    -- Returns true if suitable for deep analysis. Second item of return value
-    -- indicates if this is a pure list (true) or if it is a mapping (false)
-    if type(value1) ~= 'table' or type(value2) ~= 'table' then
-        return false
-    end
-
-    local k1, k2, v1, v2, lv1, lv2
-    lv1 = #value1
-    lv2 = #value2
-
-    for k1, v1 in pairs(value1) do
-        if type(k1) ~= 'number' or k1 > lv1 then
-            -- this table a mapping
-            return true, false
-        end
-    end
-
-    for k2, v2 in pairs(value2) do
-        if type(k2) ~= 'number' or k2 > lv2 then
-            -- this table a mapping
-            return true, false
-        end
-    end
-
-    -- this is a pure list
-    if lv1 < 3 or lv2 < 3 then
-        return false
-    end
-
-    return true, true
-end
-M.private.suitableForMismatchFormatting = suitableForMismatchFormatting
-
-local function tryMismatchFormatting( ta, tb)
+local function tryMismatchFormatting( ta, tb, doDeepAnalysis )
     --[[
     Prepares a nice error message when comparing tables, performing a deeper 
     analysis.
+
+    Arguments:
+    * ta, tb: tables to be compared
+    * doDeepAnalysis:
+        M.DEFAULT_DEEP_ANALYSIS: (the default if not specified) perform deep analysis only for big lists and big dictionnaries
+        M.FORCE_DEEP_ANALYSIS  : always perform deep analysis
+        M.DISABLE_DEEP_ANALYSIS: never perform deep analysis
 
     Returns: {success, result}
     * success: false if deep analysis could not be performed 
                in this case, just use standard assertion message
     * result: if success is true, a multi-line string with deep analysis of the two lists
     ]]
-    local suitable, isPureList
+    local isPureList
 
-    suitable, isPureList = suitableForMismatchFormatting( ta, tb ) 
-    if not suitable then
-        return false, ''
+    -- check if ta & tb are suitable for deep analysis
+    if type(ta) ~= 'table' or type(tb) ~= 'table' then
+        return false
+    end
+
+    if doDeepAnalysis == M.DISABLE_DEEP_ANALYSIS then
+        return false
+    end
+
+    local k1, k2, v1, v2, lv1, lv2
+    lv1 = #ta
+    lv2 = #tb
+    isPureList = true
+
+    for k1, v1 in pairs(ta) do
+        if type(k1) ~= 'number' or k1 > lv1 then
+            -- this table a mapping
+            isPureList = false
+            break
+        end
+    end
+
+    for k2, v2 in pairs(tb) do
+        if not isPureList or type(k2) ~= 'number' or k2 > lv2 then
+            -- this table a mapping
+            isPureList = false
+            break
+        end
+    end
+
+    if isPureList and math.min(lv1, lv2) < M.LIST_DIFF_ANALYSIS_THRESHOLD then
+        return false
     end
 
     if isPureList then
-        return M.private.mismatchFormattingPureList( ta, tb )
+        return M.private.mismatchFormattingPureList( ta, tb, doDeepAnalysis )
     else
-        return M.private.mismatchFormattingMapping( ta, tb )
+        -- only work on mapping for the moment
+        -- return M.private.mismatchFormattingMapping( ta, tb, doDeepAnalysis )
+        return false
     end
 end
 M.private.tryMismatchFormatting = tryMismatchFormatting
@@ -490,7 +496,7 @@ local function getTaTbDesc()
     return descta, desctb
 end
 
-function is_eq( a, b )
+local function is_eq( a, b )
     if type(a) == 'table' and type(b) == 'table' then
         return M.private._is_table_equals(a,b) 
     end
@@ -501,7 +507,7 @@ local function extendWithStrFmt( res, ... )
     table.insert( res, string.format( ... ) )
 end
 
-local function mismatchFormattingMapping( ta, tb )
+local function mismatchFormattingMapping( ta, tb, doDeepAnalysis )
     --[[
     Prepares a nice error message when comparing tables which are not pure lists, performing a deeper 
     analysis.
@@ -541,32 +547,39 @@ local function mismatchFormattingMapping( ta, tb )
 
     local lta = #keysCommon + #keysDiffTaTb + #keysOnlyTa
     local ltb = #keysCommon + #keysDiffTaTb + #keysOnlyTb
+    local limited_display = (lta < 5 or ltb < 5)
 
-    if lta == ltb then
-        extendWithStrFmt( result, 'Table A (%s) and B (%s) both have %d items', descta, desctb, lta )
-    else
-        table.insert( result, string.format( 'Table A (%s) has %d items and table B (%s) has %d items', descta, lta, desctb, ltb ) )
+    if math.min(lta, ltb) < M.TABLE_DIFF_ANALYSIS_THRESHOLD then
+        return false
     end
 
-    if #keysCommon == 0 and #keysDiffTaTb == 0 then
-        table.insert( result, 'Table A and B have no keys in common, they are totally different')
-    else
-        local s_other = 'other '
-        if #keysCommon then
-            table.insert( result, string.format( 'Table A and B have %d identical items', #keysCommon ))
+    if not limited_display then
+        if lta == ltb then
+            extendWithStrFmt( result, 'Table A (%s) and B (%s) both have %d items', descta, desctb, lta )
         else
-            table.insert( result, 'Table A and B have no identical items' )
-            s_other = ''
+            table.insert( result, string.format( 'Table A (%s) has %d items and table B (%s) has %d items', descta, lta, desctb, ltb ) )
         end
 
-        if #keysDiffTaTb ~= 0 then
-            result[#result] = string.format( '%s and %d items differing present in both tables', result[#result], #keysDiffTaTb)
+        if #keysCommon == 0 and #keysDiffTaTb == 0 then
+            table.insert( result, 'Table A and B have no keys in common, they are totally different')
         else
-            result[#result] = string.format( '%s and no %sitems differing present in both tables', result[#result], s_other, #keysDiffTaTb)
+            local s_other = 'other '
+            if #keysCommon then
+                table.insert( result, string.format( 'Table A and B have %d identical items', #keysCommon ))
+            else
+                table.insert( result, 'Table A and B have no identical items' )
+                s_other = ''
+            end
+
+            if #keysDiffTaTb ~= 0 then
+                result[#result] = string.format( '%s and %d items differing present in both tables', result[#result], #keysDiffTaTb)
+            else
+                result[#result] = string.format( '%s and no %sitems differing present in both tables', result[#result], s_other, #keysDiffTaTb)
+            end
         end
+
+        table.insert( result, string.format( 'Table A has %d keys not present in table B and table B has %d keys not present in table A', #keysOnlyTa, #keysOnlyTb ) )
     end
-
-    table.insert( result, string.format( 'Table A has %d keys not present in table B and table B has %d keys not present in table A', #keysOnlyTa, #keysOnlyTb ) )
 
     local function keytostring(k)
         if "string" == type(k) and k:match("^[_%a][_%w]*$") then
@@ -583,14 +596,14 @@ local function mismatchFormattingMapping( ta, tb )
         end
     end    
 
-    if #keysOnlyTa == 0 then
+    if #keysOnlyTa ~= 0 then
         table.insert( result, 'Items only in table A:' )
         for k,v in sortedPairs( keysOnlyTa ) do
             extendWithStrFmt( result, '  - A[%s]: %s', keytostring(v), prettystr(ta[v]) )
         end
     end
 
-    if #keysOnlyTb == 0 then
+    if #keysOnlyTb ~= 0 then
         table.insert( result, 'Items only in table B:' )
         for k,v in sortedPairs( keysOnlyTb ) do
             extendWithStrFmt( result, '  + B[%s]: %s', keytostring(v), prettystr(tb[v]) )
@@ -608,7 +621,7 @@ local function mismatchFormattingMapping( ta, tb )
 end
 M.private.mismatchFormattingMapping = mismatchFormattingMapping
 
-local function mismatchFormattingPureList( ta, tb )
+local function mismatchFormattingPureList( ta, tb, doDeepAnalysis )
     --[[
     Prepares a nice error message when comparing tables which are lists, performing a deeper 
     analysis.
@@ -1044,9 +1057,9 @@ end
 --
 ----------------------------------------------------------------
 
-local function errorMsgEquality(actual, expected)
+local function errorMsgEquality(actual, expected, doDeepAnalysis)
     local success, result
-    success, result = tryMismatchFormatting( actual, expected )
+    success, result = tryMismatchFormatting( actual, expected, doDeepAnalysis )
     if success then 
         return result
     end
@@ -1056,7 +1069,7 @@ local function errorMsgEquality(actual, expected)
         expected, actual = actual, expected
     end
     if type(expected) == 'string' or type(expected) == 'table' then
-        strExpected, strActual = prettystrPairs(expected, actual)
+        local strExpected, strActual = prettystrPairs(expected, actual)
         return string.format("expected: %s\nactual: %s", strExpected, strActual)
     end
     return string.format("expected: %s, actual: %s",
@@ -1143,10 +1156,10 @@ function M.assertNotIsInf(value)
     end
 end
 
-function M.assertEquals(actual, expected)
+function M.assertEquals(actual, expected, doDeepAnalysis)
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
-            failure( errorMsgEquality(actual, expected), 2 )
+            failure( errorMsgEquality(actual, expected, doDeepAnalysis), 2 )
         end
     elseif type(actual) ~= type(expected) then
         failure( errorMsgEquality(actual, expected), 2 )
