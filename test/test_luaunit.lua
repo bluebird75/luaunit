@@ -1712,21 +1712,23 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
     end 
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsMsg()
-        assertFailureEquals('Values are not almost equal\nExpected: 1 with margin of 0.1, received: 2', lu.assertAlmostEquals, 2, 1, 0.1 )
+        assertFailureEquals('Values are not almost equal\nActual: 2, expected: 1 with margin of 0.1; delta: 0.9', lu.assertAlmostEquals, 2, 1, 0.1 )
     end
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsOrderReversedMsg()
         lu.ORDER_ACTUAL_EXPECTED = false
-        assertFailureEquals('Values are not almost equal\nExpected: 2 with margin of 0.1, received: 1', lu.assertAlmostEquals, 2, 1, 0.1 )
+        assertFailureEquals('Values are not almost equal\nActual: 1, expected: 2 with margin of 0.1; delta: 0.9', lu.assertAlmostEquals, 2, 1, 0.1 )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
-        assertFailureEquals('Values are almost equal\nExpected: 1 with a difference above margin of 0.2, received: 1.1', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
+        -- single precision math Lua won't output an "exact" delta (0.1) here, so we do a partial match
+        assertFailureContains('Values are almost equal\nActual: 1.1, expected: 1 with a difference above margin of 0.2; delta: ', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
     end
 
-    function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
+    function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsOrderReversedMsg()
+        -- single precision math Lua won't output an "exact" delta (0.1) here, so we do a partial match
         lu.ORDER_ACTUAL_EXPECTED = false
-        assertFailureEquals('Values are almost equal\nExpected: 1.1 with a difference above margin of 0.2, received: 1', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
+        assertFailureContains('Values are almost equal\nActual: 1, expected: 1.1 with a difference above margin of 0.2; delta: ', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotEqualsMsg()
