@@ -828,19 +828,31 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
     function TestLuaUnitAssertions:test_assertAlmostEquals()
         lu.assertAlmostEquals( 1, 1, 0.1 )
+        lu.assertAlmostEquals( 1, 1 ) -- default margin (= M.EPSILON)
         lu.assertAlmostEquals( 1, 1, 0 ) -- zero margin
+        assertFailure( lu.assertAlmostEquals, 0, lu.EPSILON, 0 ) -- zero margin
 
         lu.assertAlmostEquals( 1, 1.1, 0.2 )
         lu.assertAlmostEquals( -1, -1.1, 0.2 )
         lu.assertAlmostEquals( 0.1, -0.1, 0.3 )
-
-        lu.assertAlmostEquals( 1, 1.1, 0.1 )
-        lu.assertAlmostEquals( -1, -1.1, 0.1 )
         lu.assertAlmostEquals( 0.1, -0.1, 0.2 )
+
+        -- Due to rounding errors, these user-supplied margins are too small.
+        -- The tests should respect them, and so are required to fail.
+        assertFailure( lu.assertAlmostEquals, 1, 1.1, 0.1 )
+        assertFailure( lu.assertAlmostEquals, -1, -1.1, 0.1 )
+        -- Check that an explicit zero margin gets respected too
+        assertFailure( lu.assertAlmostEquals, 1.1 - 1, 0.1, 0 )
+        assertFailure( lu.assertAlmostEquals, -1 - (-1.1), 0.1, 0 )
+        -- Tests pass when adding M.EPSILON, either explicitly or implicitly
+        lu.assertAlmostEquals( 1, 1.1, 0.1 + lu.EPSILON)
+        lu.assertAlmostEquals( 1.1 - 1, 0.1 )
+        lu.assertAlmostEquals( -1, -1.1, 0.1 + lu.EPSILON )
+        lu.assertAlmostEquals( -1 - (-1.1), 0.1 )
 
         assertFailure( lu.assertAlmostEquals, 1, 1.11, 0.1 )
         assertFailure( lu.assertAlmostEquals, -1, -1.11, 0.1 )
-        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, -1, 1, nil )
+        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, -1, 1, "foobar" )
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, -1, nil, 0 )
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, nil, 1, 0 )
         lu.assertErrorMsgContains( "margin must not be negative", lu.assertAlmostEquals, 1, 1.1, -0.1 )
@@ -873,7 +885,9 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
     function TestLuaUnitAssertions:test_assertNotAlmostEquals()
         lu.assertNotAlmostEquals( 1, 1.2, 0.1 )
+        lu.assertNotAlmostEquals( 1, 1.01 ) -- default margin (= M.EPSILON)
         lu.assertNotAlmostEquals( 1, 1.01, 0 ) -- zero margin
+        lu.assertNotAlmostEquals( 0, lu.EPSILON, 0 ) -- zero margin
 
         lu.assertNotAlmostEquals( 1, 1.3, 0.2 )
         lu.assertNotAlmostEquals( -1, -1.3, 0.2 )
@@ -883,9 +897,22 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertNotAlmostEquals( -1, -1.1, 0.09 )
         lu.assertNotAlmostEquals( 0.1, -0.1, 0.11 )
 
+        -- Due to rounding errors, these user-supplied margins are too small.
+        -- The tests should respect them, and so are expected to pass.
+        lu.assertNotAlmostEquals( 1, 1.1, 0.1 )
+        lu.assertNotAlmostEquals( -1, -1.1, 0.1 )
+        -- Check that an explicit zero margin gets respected too
+        lu.assertNotAlmostEquals( 1.1 - 1, 0.1, 0 )
+        lu.assertNotAlmostEquals( -1 - (-1.1), 0.1, 0 )
+        -- Tests fail when adding M.EPSILON, either explicitly or implicitly
+        assertFailure( lu.assertNotAlmostEquals, 1, 1.1, 0.1 + lu.EPSILON)
+        assertFailure( lu.assertNotAlmostEquals, 1.1 - 1, 0.1 )
+        assertFailure( lu.assertNotAlmostEquals, -1, -1.1, 0.1 + lu.EPSILON )
+        assertFailure( lu.assertNotAlmostEquals, -1 - (-1.1), 0.1 )
+
         assertFailure( lu.assertNotAlmostEquals, 1, 1.11, 0.2 )
         assertFailure( lu.assertNotAlmostEquals, -1, -1.11, 0.2 )
-        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertNotAlmostEquals, -1, 1, nil )
+        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertNotAlmostEquals, -1, 1, "foobar" )
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertNotAlmostEquals, -1, nil, 0 )
         lu.assertErrorMsgContains( "must supply only number arguments", lu.assertNotAlmostEquals, nil, 1, 0 )
         lu.assertErrorMsgContains( "margin must not be negative", lu.assertNotAlmostEquals, 1, 1.1, -0.1 )
