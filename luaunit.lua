@@ -474,7 +474,9 @@ local function tryMismatchFormatting( ta, tb, doDeepAnalysis )
     end
 
     if isPureList and math.min(lv1, lv2) < M.LIST_DIFF_ANALYSIS_THRESHOLD then
-        return false
+        if not (doDeepAnalysis == M.FORCE_DEEP_ANALYSIS) then
+            return false
+        end
     end
 
     if isPureList then

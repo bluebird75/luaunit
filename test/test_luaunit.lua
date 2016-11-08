@@ -15,6 +15,19 @@ end
 
 -- This is a bit tricky since the test uses the features that it tests.
 
+local function range(start, stop)
+    -- return list of { start ... stop }
+    local i 
+    local ret = {}
+    i=start
+    while i <= stop do
+        table.insert(ret, i)
+        i = i + 1
+    end
+    return ret
+end
+
+
 local lu = require('luaunit')
 
 local Mock = { __class__ = 'Mock' }
@@ -231,6 +244,19 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         end
 
         lu.assertTrue( lu.private.tryMismatchFormatting( l1, l2 ) )
+    end
+
+
+    function TestLuaUnitUtilities:test_diffAnalysisThreshold()
+        local threshold =  lu.LIST_DIFF_ANALYSIS_THRESHOLD
+        lu.assertFalse( lu.private.tryMismatchFormatting( range(1,threshold-1), range(1,threshold-2), lu.DEFAULT_DEEP_ANALYSIS ) )
+        lu.assertTrue(  lu.private.tryMismatchFormatting( range(1,threshold),   range(1,threshold),   lu.DEFAULT_DEEP_ANALYSIS ) )
+
+        lu.assertFalse( lu.private.tryMismatchFormatting( range(1,threshold-1), range(1,threshold-2), lu.DISABLE_DEEP_ANALYSIS ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( range(1,threshold),   range(1,threshold),   lu.DISABLE_DEEP_ANALYSIS ) )
+
+        lu.assertTrue( lu.private.tryMismatchFormatting( range(1,threshold-1), range(1,threshold-2), lu.FORCE_DEEP_ANALYSIS ) ) 
+        lu.assertTrue( lu.private.tryMismatchFormatting( range(1,threshold),   range(1,threshold),   lu.FORCE_DEEP_ANALYSIS ) )
     end
 
     function TestLuaUnitUtilities:test_prettystr()
@@ -1909,7 +1935,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureMatches( 'expected: <table: 0?x?[%x]+> {one=1, two=2}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
         -- trigger mismatch formatting
         assertFailureMatches( [[Lists <table: 0?x?[%x]+> A %(actual%) and <table: 0?x?[%x]+> B %(expected%) have the same size.*]]
-                , lu.assertEquals, {3,2,1,4}, {1,2,3,4} )
+                , lu.assertEquals, {3,2,1,4,1,1,1,1,1,1,1}, {1,2,3,4,1,1,1,1,1,1,1} )
 
     end
 
