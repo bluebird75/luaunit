@@ -25,15 +25,17 @@ local function escape_lua_pattern(s)
     return s:gsub(LUA_MAGIC_CHARS, "%%%1") -- substitute with '%' + matched char
 end
 
-local function string_sub(s, orig, repl)
+local function string_gsub(s, orig, repl)
     -- replace occurrence of string orig by string repl
     -- just like string.gsub, but with no pattern matching
+    -- print( 'gsub_input '..s..' '..orig..' '..repl)
     return s:gsub( escape_lua_pattern(orig), repl )
 end
 
 function testStringSub()
-    lu.assertEquals( string_sub('aa a % b cc', 'a % b', 'a + b'), 'aa a + b cc' )
-    lu.assertEquals( string_sub('aa: ?cc', ': ?', 'xx?'), 'aaxx?cc' )
+    lu.assertEquals( string_gsub('aa a % b cc', 'a % b', 'a + b'), 'aa a + b cc' )
+    lu.assertEquals( string_gsub('aa: ?cc', ': ?', 'xx?'), 'aaxx?cc' )
+    lu.assertEquals( string_gsub('aa b: cc b: ee', 'b:', 'xx'), 'aa xx cc xx ee' )
 end
 
 local function osExec( ... )
@@ -141,17 +143,18 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
     local dest, linesOut = nil, {}
     for line in io.lines(fileOut) do
         idxStart, idxEnd, capture = line:find( pattern )
-        if idxStart ~= nil then
+        while idxStart ~= nil do
             dest = capture
             if verbose then
                 print('Modifying line: '..line )
             end
-            line = string_sub(line, dest, source)
+            line = string_gsub(line, dest, source)
             -- line = line:sub(1,idxStart-1)..source..line:sub(idxEnd+1)
             -- string.gsub( line, dest, source )
             if verbose then
-                print('Result: '..line )
+                print('Result        : '..line )
             end
+            idxStart, idxEnd, capture = line:find( pattern, idxEnd )
         end
         table.insert( linesOut, line )
     end
@@ -195,6 +198,10 @@ local function check_text_output( fileToRun, options, output, refOutput, refExit
         adjustFile( output, refOutput, 'Started on (.*)')
     end
     adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
+    adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
+    adjustFile( output, refOutput, 'thread: (0?x?[%x]+)', true )
+    adjustFile( output, refOutput, 'function: (0?x?[%x]+)', true )
+    adjustFile( output, refOutput, '<table: (0?x?[%x]+)>', true, false )
     -- For Lua 5.3: stack trace uses "method" instead of "function"
     adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
 
@@ -491,6 +498,14 @@ function testTestWithXmlQuiet()
         'test/testWithXmlLintQuiet.txt', 'test/ref/testWithXmlQuiet.txt', 'test/ref/testWithXmlQuiet.xml', 2 ) )
 end
 
+function testListComparison()
+    -- run test/some_lists_comparisons and check exit status 
+    lu.assertEquals( 0,
+        check_text_output('test/some_lists_comparisons.lua', '--verbose',
+            'test/some_lists_comparisons.txt', 
+            'test/ref/some_lists_comparisons.txt', 11 ) )
+end
+
 function testLegacyLuaunitUsage()
     -- run test/legacy_example_usage and check exit status (expecting 12 failures)
     osExpectedCodeExec(12, '%s %s  --output text > %s', LUA,
@@ -631,6 +646,11 @@ local filesToGenerateStopOnError = {
         'test/ref/errFailPassTextStopOnError-4.txt'},
 }
 
+local filesToGenerateListsComp = {
+    { 'test/some_lists_comparisons.lua', '', '--output text --verbose',
+        'test/ref/some_lists_comparisons.txt'},
+}
+
 local filesSetIndex = {
     ErrFailPassText=filesToGenerateErrFailPassText,
     ErrFailPassTap=filesToGenerateErrFailPassTap,
@@ -641,6 +661,7 @@ local filesSetIndex = {
     ExampleXml=filesToGenerateExampleXml,
     TestXml=filesToGenerateTestXml,
     StopOnError=filesToGenerateStopOnError,
+    ListsComp=filesToGenerateListsComp,
 }
 
 local function updateRefFiles( filesToGenerate )
