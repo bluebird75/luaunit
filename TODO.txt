@@ -16,6 +16,15 @@ TODO Future:
 	+ keys differing in table 1 and 2
 - XML: report system information
 - better error messages for string differences (diffing)
+- print local variables upon assertion error:
+	+ debug.get_local( ) will get the local variables in the current context
+	+ debug.get_upvalue( ) will get the upvalues in the current context
+- see inspect for better table printing: https://github.com/kikito/inspect.lua
+	+ print list part separate from the dict part in a table
+	+ print metatables in tables
+- see StackTracePlus for printing more stack information: https://github.com/ignacio/StackTracePlus
+- how does busted deal with nested tables ? functions ?
+- look at serpent to see how to improve nested table printing
 
 Nice to have: 
 ============
@@ -33,7 +42,6 @@ Done since 3.2:
 - better error messages for list assertions:
 	+ expected length of X, got Y
 	+ index differing in table 1 and 2
-
 - randomized testing
 
 
