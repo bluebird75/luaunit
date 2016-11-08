@@ -1,6 +1,5 @@
 
 local lu = require('luaunit')
-lu.LIST_DIFF_ANALYSIS_THRESHOLD = 3
 
 local function range(start, stop)
     -- return list of { start ... stop }
@@ -18,24 +17,26 @@ end
 TestListCompare = {}
 
     function TestListCompare:test1()
-        local A, B = { 1212212, 12221122, 12211221, 122122212, 111221212121 }, { 1212212, 12221122, 12121221, 122122212, 111221212121 }
+        local A = { 1212212, 12221122, 1212212, 12221122, 1212212, 12221122, 1212212, 12221122, 12211221, 122122212, 111221212121 } 
+        local B = { 1212212, 12221122, 1212212, 12221122, 1212212, 12221122, 1212212, 12221122, 12121221, 122122212, 111221212121 }
         lu.assertEquals( A, B )
     end
 
     function TestListCompare:test1b()
-        local A, B = { 1212212, 12221122, 12211221 }, { 1212212, 12221122, 12121221 }
+        local A = { 1212212, 12221122, 1212212, 12221122, 1212212, 12221122, 1212212, 12221122, 1212212, 12221122, 12211221 }
+        local B = { 1212212, 12221122, 1212212, 12221122, 1212212, 12221122, 1212212, 12221122, 1212212, 12221122, 12121221 }
         lu.assertEquals( A, B )
     end
 
     function TestListCompare:test1c()
-        local A, B = { 12211221, 122122212, 111221212121 }, { 12121221, 122122212, 111221212121 }
+        local A = { 12211221, 122122212, 111221212121, 122122212, 111221212121, 122122212, 111221212121, 122122212, 111221212121, 122122212, 111221212121 } 
+        local B = { 12121221, 122122212, 111221212121, 122122212, 111221212121, 122122212, 111221212121, 122122212, 111221212121, 122122212, 111221212121 }
         lu.assertEquals( A, B )
     end
 
 
     -- long list of numbers, same size, swapped values
     function TestListCompare:test2()
-        local stop=20
         local x=7
         local A, B = range(1,20), range(1,20)
         B[x], B[x+1] = B[x+1], B[x]
@@ -44,7 +45,6 @@ TestListCompare = {}
 
     -- long list of numbers, one hole
     function TestListCompare:test3()
-        local stop=20
         local x=7
         local A, B = range(1,20), {}
         local i=1
@@ -60,7 +60,6 @@ TestListCompare = {}
 
     -- long list of numbers, one bigger hole
     function TestListCompare:test4()
-        local stop=20
         local x=7
         local x2=8
         local x3=9
@@ -77,7 +76,6 @@ TestListCompare = {}
 
     -- long list, difference + big hole
     function TestListCompare:sub_test5()
-        local stop=20
         local x=7
         local x2=8
         local x3=9
@@ -102,7 +100,6 @@ TestListCompare = {}
 
     function TestListCompare:test5b()
         local A, B = self:sub_test5()
-        lu.ORDER_ACTUAL_EXPECTED = true
         lu.assertEquals( B, A )
     end
 
@@ -110,10 +107,6 @@ TestListCompare = {}
         local A, B = self   :sub_test5()
         lu.PRINT_TABLE_REF_IN_ERROR_MSG = true
         lu.assertEquals( B, A )
-    end
-
-    function TestListCompare:test5d()
-        lu.PRINT_TABLE_REF_IN_ERROR_MSG = false
     end
 
     function TestListCompare:test6()
@@ -125,9 +118,16 @@ TestListCompare = {}
     end
 
     function TestListCompare:test7()
-        local A = { {1,2,3}, {1,2}, { {1}, {2} }, { 'aa', 'cc'}, 1, 2 }
-        local B = { {1,2,3}, {1,2}, { {2}, {2} }, { 'aa', 'bb'}, 1, 2 }
+        local A = { {1,2,3}, {1,2}, { {1}, {2} }, { 'aa', 'cc'}, 1, 2, 1.33, 1/0, { a=1 }, {} }
+        local B = { {1,2,3}, {1,2}, { {2}, {2} }, { 'aa', 'bb'}, 1, 2, 1.33, 1/0, { a=1 }, {} }
         lu.assertEquals( B, A )
+    end
+
+    function TestListCompare:tearDown()
+        -- cancel effect of test5a
+        lu.ORDER_ACTUAL_EXPECTED = true
+        -- cancel effect of test5c
+        lu.PRINT_TABLE_REF_IN_ERROR_MSG = false
     end
 -- end TestListCompare
 
