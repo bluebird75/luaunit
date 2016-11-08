@@ -32,6 +32,7 @@ Nice to have:
 
 TODO for 3.3 release:
 ===============
+- look at serpent to see how to improve nested table printing
 - doc about scientific computing dedicated functions
 - doc about prettystr
 - doc about usage of prettystr & assertion library
