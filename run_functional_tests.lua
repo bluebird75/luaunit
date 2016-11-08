@@ -199,9 +199,9 @@ local function check_text_output( fileToRun, options, output, refOutput, refExit
     end
     adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
     adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
-    adjustFile( output, refOutput, ': thread: (0?x?[%x]+)', true )
-    adjustFile( output, refOutput, ': function: (0?x?[%x]+)', true )
-    adjustFile( output, refOutput, 'list <table: (0?x?[%x]+)>', true, false )
+    adjustFile( output, refOutput, 'thread: (0?x?[%x]+)', true )
+    adjustFile( output, refOutput, 'function: (0?x?[%x]+)', true )
+    adjustFile( output, refOutput, '<table: (0?x?[%x]+)>', true, false )
     -- For Lua 5.3: stack trace uses "method" instead of "function"
     adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
 
