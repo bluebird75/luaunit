@@ -419,7 +419,6 @@ local function prettystr( v, keeponeline )
 end
 M.prettystr = prettystr
 
-local function prettystrPadded(value1, value2, suffix_a, suffix_b)
 local function prettystrPairs(value1, value2, suffix_a, suffix_b)
     --[[
     This function helps with the recurring task of constructing the "expected
@@ -739,7 +738,7 @@ local function errorMsgEquality(actual, expected)
         expected, actual = actual, expected
     end
     if type(expected) == 'string' or type(expected) == 'table' then
-        expected, actual = prettystrPadded(expected, actual)
+        expected, actual = prettystrPairs(expected, actual)
         return string.format("expected: %s\nactual: %s", expected, actual)
     end
     return string.format("expected: %s, actual: %s",
