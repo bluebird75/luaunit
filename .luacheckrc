@@ -12,8 +12,7 @@ files = {
         ignore = {"LuaUnit", "EXPORT_ASSERT_TO_GLOBALS"}
     },
     ["example_with_luaunit.lua"] = {
-        ignore = {"LuaUnit", "EXPORT_ASSERT_TO_GLOBALS", "[Tt]est[%w_]+",
-        "assertEquals", "assertNotEquals", "assertTrue", "assertFalse"}
+        ignore = {"[Tt]est[%w_]+"}
     },
     ["run_functional_tests.lua"] = {
         ignore = {"test%w+"}

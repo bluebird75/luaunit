@@ -1,9 +1,13 @@
-## LuaUnit  
-by Philippe Fremy
 
+[![License](http://img.shields.io/badge/License-BSD-green.svg)](LICENSE.txt)
 [![Build status](https://ci.appveyor.com/api/projects/status/us6uh4e5q597jj54?svg=true&passingText=Windows%20Build%20passing&failingText=Windows%20Build%20failed)](https://ci.appveyor.com/project/bluebird75/luaunit)
 [![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
 [![Documentation Status](https://readthedocs.org/projects/luaunit/badge/?version=latest)](https://readthedocs.org/projects/luaunit/?badge=latest)
+[![Coverage Status](https://coveralls.io/repos/github/bluebird75/luaunit/badge.svg?branch=master)](https://coveralls.io/github/bluebird75/luaunit?branch=master)
+[![Downloads](https://img.shields.io/badge/downloads-10k-green.svg)](https://luarocks.org/modules/bluebird75/luaunit)
+
+## LuaUnit
+by Philippe Fremy
 
 LuaUnit is a unit-testing framework for Lua. It allows you 
 to write test functions and test classes with test methods, combined with 
@@ -14,7 +18,7 @@ into Continuous Integration platforms (Jenkins, Maven, ...). The integrated comm
 options provide a flexible interface to select tests by name or patterns, control output 
 format, set verbosity, ...
 
-LuaUnit works with Lua 5.1, LuaJIT 2.0, LuaJIT 2.1 beta, Lua 5.2 and Lua 5.3 . It is tested on Windows Seven, Windows Server 2012 R2 (x64) and Ubuntu 14.04 (see 
+LuaUnit works with Lua 5.1, LuaJIT 2.0, LuaJIT 2.1 beta, Lua 5.2 and Lua 5.3 . It is tested on Windows Seven, Windows Server 2012 R2 (x64), MacOs X 10.9.5 and Ubuntu 14.04 (see 
 continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) and [AppVeyor](https://ci.appveyor.com/project/bluebird75/luaunit) ) and should work on all platforms supported by Lua.
 It has no other dependency than Lua itself. 
 
@@ -53,15 +57,15 @@ On Linux, you can also install it into your Lua directories
 Edit `install()` for Lua version and installation directory if that
 fails. It uses, by default, Linux paths that depend on the version. 
 
+**LuaRocks**
+
+LuaUnit v3.2 and above are available on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit).
+
 **bower**
 
 You can also install it with bower :
 
     bower install https://github.com/bluebird75/luaunit.git.
-
-**LuaRocks**
-
-LuaUnit v3.2 and above are available on LuaRocks.
 
 ##Contributors
 * [NiteHawk](https://github.com/n1tehawk)
@@ -77,23 +81,15 @@ LuaUnit v3.2 and above are available on LuaRocks.
 
 ##Successes
 
-Projects using LuaUnit:
-* Gazelle:          https://github.com/haberman/gazelle
-* Lua Wiki Creole:  https://github.com/rrees/luawikicreole
-* lmock:            https://github.com/LuaDist/lmock
-* objectlua: class oriented lua module ( https://github.com/LuaDist/objectlua )
-* luapica: Lua library to handle PICA+ data ( https://github.com/nichtich/luapica )
-* Lua FSM: Finite State Machines in Lua ( https://github.com/cornelisse/LuaFSM )
-* lua framework for ngcp-kamailio config ( https://github.com/sipwise/lua-ngcp-kamailio.git )
-* Fluento: Search for objects in Ultima Online ( https://code.google.com/archive/p/fluentuo/source/default/source )
-* http://wow5box.googlecode.com/svn/trunk/
-* lua-discount      https://github.com/asb/lua-discount/
-* Circles           https://github.com/tkadlubo/Circles.lua
-* Lua Stubs         https://github.com/jivebird/lust
-* Leslie: A lua implementation of the Django template ( https://code.google.com/archive/p/leslie/ )
+LuaUnit is used by hundreds of projects on GitHub (see [LuaUnit search](https://github.com/search?utf8=%E2%9C%93&q=filename%3Aluaunit.lua&type=Code&ref=searchresults) ) has more than 10k download on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit) ).
 
 
 ### History 
+
+#### Version 3.3 - in progress
+* assertTrue and assertFalse are now strict and only succeed with boolean
+* add assertEvalToTrue and assertEvalToFalse with previous assertTrue/False behavior of coercing before asserting
+* randomized testing
 
 #### Version 3.2 - 12. Jul 2016
 * distinguish between failures (failed assertion) and errors

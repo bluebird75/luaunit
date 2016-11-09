@@ -1,7 +1,7 @@
 #!/usr/bin/env lua
 
-EXPORT_ASSERT_TO_GLOBALS = true
-require('luaunit')
+
+local lu = require('luaunit')
 
 TestToto = {} --class
 
@@ -16,48 +16,51 @@ TestToto = {} --class
 
     function TestToto:test1_withFailure()
         -- print( "some stuff test 1" )
-        assertEquals( self.a , 1 )
+        lu.assertEquals( self.a , 1 )
         -- will fail
-        assertEquals( self.a , 2 )
-        assertEquals( self.a , 2 )
+        lu.assertEquals( self.a , 2 )
+        lu.assertEquals( self.a , 2 )
     end
 
     function TestToto:test2_withFailure()
         -- print( "some stuff test 2" )
-        assertEquals( self.a , 1 )
-        assertEquals( self.s , 'hop' )
+        lu.assertEquals( self.a , 1 )
+        lu.assertEquals( self.s , 'hop' )
         -- will fail
-        assertEquals( self.s , 'bof' )
-        assertEquals( self.s , 'bof' )
+        lu.assertEquals( self.s , 'bof' )
+        lu.assertEquals( self.s , 'bof' )
     end
 
     function TestToto:test3()
         -- print( "some stuff test 3" )
-        assertEquals( self.a , 1 )
-        assertEquals( self.s , 'hop' )
-        assertEquals( type(self.a), 'number' )
+        lu.assertEquals( self.a , 1 )
+        lu.assertEquals( self.s , 'hop' )
+        lu.assertEquals( type(self.a), 'number' )
     end
 
     function TestToto:test4()
         -- print( "some stuff test 4" )
-        assertNotEquals( self.a , 1 )
+        lu.assertNotEquals( self.a , 1 )
     end
 
     function TestToto:test5()
         -- print( "some stuff test 5" )
-        assertTrue( self.a )
-        assertFalse( self.a )
+        lu.assertEvalToTrue( self.a )
+        lu.assertEvalToFalse( self.a ) -- will trigger the failure
     end
 
     function TestToto:test6()
         -- print( "some stuff test 6" )
-        assertTrue( false )
+        lu.assertTrue( true )
+        lu.assertFalse( false )
+        lu.assertEvalToFalse( nil )
+        lu.assertFalse( nil ) -- trigger the failure assertFalse is strict
     end
 
     function TestToto:test7()
         -- assertEquals( {1,2}, self.t1 )
         -- assertEquals( {1,2}, self.t2 )
-        assertEquals( {1,2}, self.t3 )
+        lu.assertEquals( {1,2}, self.t3 )
     end
 
     function TestToto:test8a()
@@ -96,25 +99,25 @@ TestTiti = {} --class
 
     function TestTiti:test1_withFailure()
         -- print( "some stuff test 1" )
-        assertEquals( self.a , 1 )
+        lu.assertEquals( self.a , 1 )
         -- will fail
-        assertEquals( self.a , 2 )
-        assertEquals( self.a , 2 )
+        lu.assertEquals( self.a , 2 )
+        lu.assertEquals( self.a , 2 )
     end
 
     function TestTiti:test2_withFailure()
         -- print( "some stuff test 2" )
-        assertEquals( self.a , 1 )
-        assertEquals( self.s , 'hop' )
+        lu.assertEquals( self.a , 1 )
+        lu.assertEquals( self.s , 'hop' )
         -- will fail
-        assertEquals( self.s , 'bof' )
-        assertEquals( self.s , 'bof' )
+        lu.assertEquals( self.s , 'bof' )
+        lu.assertEquals( self.s , 'bof' )
     end
 
     function TestTiti:test3()
         -- print( "some stuff test 3" )
-        assertEquals( self.a , 1 )
-        assertEquals( self.s , 'hop' )
+        lu.assertEquals( self.a , 1 )
+        lu.assertEquals( self.s , 'hop' )
     end
 -- class TestTiti
 
@@ -137,6 +140,6 @@ function test3()
     assert( 'a' == 'a')
 end
 
-local lu = LuaUnit.new()
-lu:setOutputType("tap")
-os.exit( lu:runSuite() )
+local runner = lu.LuaUnit.new()
+runner:setOutputType("tap")
+os.exit( runner:runSuite() )
