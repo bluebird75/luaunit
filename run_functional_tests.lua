@@ -25,15 +25,17 @@ local function escape_lua_pattern(s)
     return s:gsub(LUA_MAGIC_CHARS, "%%%1") -- substitute with '%' + matched char
 end
 
-local function string_sub(s, orig, repl)
+local function string_gsub(s, orig, repl)
     -- replace occurrence of string orig by string repl
     -- just like string.gsub, but with no pattern matching
+    -- print( 'gsub_input '..s..' '..orig..' '..repl)
     return s:gsub( escape_lua_pattern(orig), repl )
 end
 
 function testStringSub()
-    lu.assertEquals( string_sub('aa a % b cc', 'a % b', 'a + b'), 'aa a + b cc' )
-    lu.assertEquals( string_sub('aa: ?cc', ': ?', 'xx?'), 'aaxx?cc' )
+    lu.assertEquals( string_gsub('aa a % b cc', 'a % b', 'a + b'), 'aa a + b cc' )
+    lu.assertEquals( string_gsub('aa: ?cc', ': ?', 'xx?'), 'aaxx?cc' )
+    lu.assertEquals( string_gsub('aa b: cc b: ee', 'b:', 'xx'), 'aa xx cc xx ee' )
 end
 
 local function osExec( ... )
@@ -146,11 +148,11 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
             if verbose then
                 print('Modifying line: '..line )
             end
-            line = string_sub(line, dest, source)
+            line = string_gsub(line, dest, source)
             -- line = line:sub(1,idxStart-1)..source..line:sub(idxEnd+1)
             -- string.gsub( line, dest, source )
             if verbose then
-                print('Result: '..line )
+                print('Result        : '..line )
             end
         end
         table.insert( linesOut, line )
