@@ -4,6 +4,7 @@ VERSION='3.2'
 RELEASE_NAME='luaunit-%s' % VERSION
 RELEASE_DIR='release/' + RELEASE_NAME + '/'
 RELEASE_TAG='LUAUNIT_V3_2_1'
+RELEASE_DIR='release/' + RELEASE_NAME + '/'
 TARGET_ZIP=RELEASE_NAME + '.zip'
 TARGET_TGZ=RELEASE_NAME + '.tgz'
 REPO_PATH='d:/work/luaunit/luaunit-git/luaunit2/'
@@ -108,7 +109,7 @@ OptToFunc = {
 if __name__ == '__main__':
     doingNothing = True
     for arg in sys.argv[1:]:
-        if OptToFunc.has_key(arg):
+        if arg in OptToFunc:
             doingNothing = False
             OptToFunc[arg]()
         else:
