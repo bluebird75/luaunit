@@ -143,7 +143,7 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
     local dest, linesOut = nil, {}
     for line in io.lines(fileOut) do
         idxStart, idxEnd, capture = line:find( pattern )
-        if idxStart ~= nil then
+        while idxStart ~= nil do
             dest = capture
             if verbose then
                 print('Modifying line: '..line )
@@ -154,6 +154,7 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
             if verbose then
                 print('Result        : '..line )
             end
+            idxStart, idxEnd, capture = line:find( pattern, idxEnd )
         end
         table.insert( linesOut, line )
     end
@@ -197,6 +198,10 @@ local function check_text_output( fileToRun, options, output, refOutput, refExit
         adjustFile( output, refOutput, 'Started on (.*)')
     end
     adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
+    adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
+    adjustFile( output, refOutput, 'thread: (0?x?[%x]+)', true )
+    adjustFile( output, refOutput, 'function: (0?x?[%x]+)', true )
+    adjustFile( output, refOutput, '<table: (0?x?[%x]+)>', true, false )
     -- For Lua 5.3: stack trace uses "method" instead of "function"
     adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
 
@@ -493,6 +498,14 @@ function testTestWithXmlQuiet()
         'test/testWithXmlLintQuiet.txt', 'test/ref/testWithXmlQuiet.txt', 'test/ref/testWithXmlQuiet.xml', 2 ) )
 end
 
+function testListComparison()
+    -- run test/some_lists_comparisons and check exit status 
+    lu.assertEquals( 0,
+        check_text_output('test/some_lists_comparisons.lua', '--verbose',
+            'test/some_lists_comparisons.txt', 
+            'test/ref/some_lists_comparisons.txt', 11 ) )
+end
+
 function testLegacyLuaunitUsage()
     -- run test/legacy_example_usage and check exit status (expecting 12 failures)
     osExpectedCodeExec(12, '%s %s  --output text > %s', LUA,
@@ -633,6 +646,11 @@ local filesToGenerateStopOnError = {
         'test/ref/errFailPassTextStopOnError-4.txt'},
 }
 
+local filesToGenerateListsComp = {
+    { 'test/some_lists_comparisons.lua', '', '--output text --verbose',
+        'test/ref/some_lists_comparisons.txt'},
+}
+
 local filesSetIndex = {
     ErrFailPassText=filesToGenerateErrFailPassText,
     ErrFailPassTap=filesToGenerateErrFailPassTap,
@@ -643,6 +661,7 @@ local filesSetIndex = {
     ExampleXml=filesToGenerateExampleXml,
     TestXml=filesToGenerateTestXml,
     StopOnError=filesToGenerateStopOnError,
+    ListsComp=filesToGenerateListsComp,
 }
 
 local function updateRefFiles( filesToGenerate )

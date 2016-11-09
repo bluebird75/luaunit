@@ -31,5 +31,8 @@ files = {
     },
     ["test/test_with_xml.lua"] = {
         ignore = {"Test%w+"}
+    },
+    ["test/some_lists_comparisons.lua"] = {
+        ignore = {"Test%w+"}
     }
 }
