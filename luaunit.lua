@@ -18,7 +18,7 @@ M.private = {}
 M.VERSION='3.2'
 M._VERSION=M.VERSION -- For LuaUnit v2 compatibility
 
---[[ Some people like assertEquals( actual, expected ) and some people prefer 
+--[[ Some people like assertEquals( actual, expected ) and some people prefer
 assertEquals( expected, actual ).
 ]]--
 M.ORDER_ACTUAL_EXPECTED = true
@@ -191,7 +191,7 @@ local function randomizeTable( t )
     end
 end
 M.private.randomizeTable = randomizeTable
- 
+
 local function strsplit(delimiter, text)
 -- Split text into a list consisting of the strings in text, separated
 -- by strings matching delimiter (which may _NOT_ be a pattern).
@@ -420,6 +420,7 @@ end
 M.prettystr = prettystr
 
 local function prettystrPadded(value1, value2, suffix_a, suffix_b)
+local function prettystrPairs(value1, value2, suffix_a, suffix_b)
     --[[
     This function helps with the recurring task of constructing the "expected
     vs. actual" error messages. It takes two arbitrary values and formats
@@ -440,10 +441,11 @@ local function prettystrPadded(value1, value2, suffix_a, suffix_b)
     end
     return str1 .. (suffix_b or ""), str2
 end
-M.private.prettystrPadded = prettystrPadded
+M.private.prettystrPairs = prettystrPairs
 
 local TABLE_TOSTRING_SEP = ", "
 local TABLE_TOSTRING_SEP_LEN = string.len(TABLE_TOSTRING_SEP)
+
 
 local function _table_tostring( tbl, indentLevel, keeponeline, printTableRefs, recursionTable )
     printTableRefs = printTableRefs or M.PRINT_TABLE_REF_IN_ERROR_MSG
@@ -898,7 +900,7 @@ function M.assertStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     if not string.find(str, sub, 1, not useRe) then
-        sub, str = prettystrPadded(sub, str, '\n')
+        sub, str = prettystrPairs(sub, str, '\n')
         fail_fmt(2, 'Error, %s %s was not found in string %s',
                  useRe and 'regexp' or 'substring', sub, str)
     end
@@ -908,7 +910,7 @@ function M.assertStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     if not string.find(str:lower(), sub:lower(), 1, true) then
-        sub, str = prettystrPadded(sub, str, '\n')
+        sub, str = prettystrPairs(sub, str, '\n')
         fail_fmt(2, 'Error, substring %s was not found (case insensitively) in string %s',
                  sub, str)
     end
@@ -918,7 +920,7 @@ function M.assertNotStrContains( str, sub, useRe )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     if string.find(str, sub, 1, not useRe) then
-        sub, str = prettystrPadded(sub, str, '\n')
+        sub, str = prettystrPairs(sub, str, '\n')
         fail_fmt(2, 'Error, %s %s was found in string %s',
                  useRe and 'regexp' or 'substring', sub, str)
     end
@@ -928,7 +930,7 @@ function M.assertNotStrIContains( str, sub )
     -- this relies on lua string.find function
     -- a string always contains the empty string
     if string.find(str:lower(), sub:lower(), 1, true) then
-        sub, str = prettystrPadded(sub, str, '\n')
+        sub, str = prettystrPairs(sub, str, '\n')
         fail_fmt(2, 'Error, substring %s was found (case insensitively) in string %s',
                  sub, str)
     end
@@ -938,7 +940,7 @@ function M.assertStrMatches( str, pattern, start, final )
     -- Verify a full match for the string
     -- for a partial match, simply use assertStrContains with useRe set to true
     if not strMatch( str, pattern, start, final ) then
-        pattern, str = prettystrPadded(pattern, str, '\n')
+        pattern, str = prettystrPairs(pattern, str, '\n')
         fail_fmt(2, 'Error, pattern %s was not matched by string %s',
                  pattern, str)
     end
@@ -952,7 +954,7 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
         failure( 'No error generated when calling function but expected error: "'..expectedMsg..'"', 2 )
     end
     if error_msg ~= expectedMsg then
-        error_msg, expectedMsg = prettystrPadded(error_msg, expectedMsg)
+        error_msg, expectedMsg = prettystrPairs(error_msg, expectedMsg)
         fail_fmt(2, 'Exact error message expected: %s\nError message received: %s\n',
                  expectedMsg, error_msg)
     end
@@ -966,7 +968,7 @@ function M.assertErrorMsgContains( partialMsg, func, ... )
         failure( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), 2 )
     end
     if not string.find( error_msg, partialMsg, nil, true ) then
-        error_msg, partialMsg = prettystrPadded(error_msg, partialMsg)
+        error_msg, partialMsg = prettystrPairs(error_msg, partialMsg)
         fail_fmt(2, 'Error message does not contain: %s\nError message received: %s\n',
                  partialMsg, error_msg)
     end
@@ -980,7 +982,7 @@ function M.assertErrorMsgMatches( expectedMsg, func, ... )
         failure( 'No error generated when calling function but expected error matching: "'..expectedMsg..'"', 2 )
     end
     if not strMatch( error_msg, expectedMsg ) then
-        expectedMsg, error_msg = prettystrPadded(expectedMsg, error_msg)
+        expectedMsg, error_msg = prettystrPairs(expectedMsg, error_msg)
         fail_fmt(2, 'Error message does not match: %s\nError message received: %s\n',
                  expectedMsg, error_msg)
     end
@@ -1005,7 +1007,7 @@ for _, funcName in ipairs(
     M[funcName] = function(value)
         if type(value) ~= typeExpected then
             fail_fmt(2, 'Expected: a %s value, actual: type %s, value %s',
-                     typeExpected, type(value), prettystrPadded(value))
+                     typeExpected, type(value), prettystrPairs(value))
         end
     end
 end
@@ -1045,7 +1047,7 @@ for _, funcName in ipairs(
     M[funcName] = function(value)
         if type(value) == typeUnexpected then
             fail_fmt(2, 'Not expected: a %s type, actual: value %s',
-                     typeUnexpected, prettystrPadded(value))
+                     typeUnexpected, prettystrPairs(value))
         end
     end
 end
@@ -1055,7 +1057,7 @@ function M.assertIs(actual, expected)
         if not M.ORDER_ACTUAL_EXPECTED then
             actual, expected = expected, actual
         end
-        expected, actual = prettystrPadded(expected, actual, '\n', ', ')
+        expected, actual = prettystrPairs(expected, actual, '\n', ', ')
         fail_fmt(2, 'Expected object and actual object are not the same\nExpected: %sactual: %s',
                  expected, actual)
     end
@@ -1067,7 +1069,7 @@ function M.assertNotIs(actual, expected)
             expected = actual
         end
         fail_fmt(2, 'Expected object and actual object are the same object: %s',
-                 prettystrPadded(expected))
+                 prettystrPairs(expected))
     end
 end
 
@@ -1076,7 +1078,7 @@ function M.assertItemsEquals(actual, expected)
     -- are contained in table actual. Warning, this function
     -- is at least O(n^2)
     if not _is_table_items_equals(actual, expected ) then
-        expected, actual = prettystrPadded(expected, actual)
+        expected, actual = prettystrPairs(expected, actual)
         fail_fmt(2, 'Contents of the tables are not identical:\nExpected: %s\nActual: %s',
                  expected, actual)
     end
@@ -1434,7 +1436,7 @@ then OK or FAILED (failures=1, error=1)
 Started
  .
  Finished in 0.002695 seconds.
- 
+
  1 tests, 2 assertions, 0 failures, 0 errors
 
 -- Ruby:
@@ -1443,13 +1445,13 @@ Loaded suite tc_simple_number2
 Started
 F..
 Finished in 0.038617 seconds.
- 
+
   1) Failure:
 test_failure(TestSimpleNumber) [tc_simple_number2.rb:16]:
 Adding doesn't work.
 <3> expected but was
 <4>.
- 
+
 3 tests, 4 assertions, 1 failures, 0 errors
 
 -- Java Junit
@@ -1473,12 +1475,12 @@ Tests run: 8,  Failures: 1,  Errors: 0
  T E S T S
 -------------------------------------------------------
 Running math.AdditionTest
-Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed:
 0.03 sec <<< FAILURE!
 
 Results :
 
-Failed tests: 
+Failed tests:
   testLireSymbole(math.AdditionTest)
 
 Tests run: 2, Failures: 1, Errors: 0, Skipped: 0
@@ -1625,7 +1627,9 @@ end
 
     function M.LuaUnit.asFunction(aObject)
         -- return "aObject" if it is a function, and nil otherwise
-        if 'function' == type(aObject) then return aObject end
+        if 'function' == type(aObject) then
+            return aObject
+        end
     end
 
     function M.LuaUnit.splitClassMethod(someName)
@@ -1967,7 +1971,9 @@ end
 
     function M.LuaUnit:addStatus( err )
         -- "err" is expected to be a table / result from protectedCall()
-        if err.status == NodeStatus.PASS then return end
+        if err.status == NodeStatus.PASS then
+            return
+        end
 
         local node = self.result.currentNode
 
@@ -1982,7 +1988,9 @@ end
         ]]
 
         -- if the node is already in failure/error, just don't report the new error (see above)
-        if node.status ~= NodeStatus.PASS then return end
+        if node.status ~= NodeStatus.PASS then
+            return
+        end
 
         if err.status == NodeStatus.FAIL then
             node:fail( err.msg, err.trace )
@@ -2279,7 +2287,9 @@ end
                 assert(methodInstance ~= nil)
                 self:execOneFunction( className, methodName, instance, methodInstance )
             end
-            if self.result.aborted then break end -- "--error" or "--failure" option triggered
+            if self.result.aborted then
+                break -- "--error" or "--failure" option triggered
+            end
         end
 
         if self.lastClassName ~= nil then
