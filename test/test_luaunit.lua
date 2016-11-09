@@ -362,82 +362,82 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertStrMatches(lu.prettystr(t9, true), '(<table: 0?x?[%x]+>) {"t9", (<table: 0?x?[%x]+>) {}, (<table: 0?x?[%x]+>) {%1}=1}')
     end
 
-    function TestLuaUnitUtilities:test_prettystrPadded()
+    function TestLuaUnitUtilities:test_prettystrPairs()
         local foo, bar, str1, str2
 
         -- test all combinations of: foo = nil, "foo", "fo\no" (embedded
         -- newline); and bar = nil, "bar", "bar\n" (trailing newline)
 
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, "nil")
         lu.assertEquals(str2, "nil")
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, "nil_B")
         lu.assertEquals(str2, "nil")
 
         bar = "bar"
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, "nil")
         lu.assertEquals(str2, '"bar"')
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, "nil_B")
         lu.assertEquals(str2, '"bar"')
 
         bar = "bar\n"
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, "\nnil")
         lu.assertEquals(str2, '\n"bar\n"')
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, "\nnil_A")
         lu.assertEquals(str2, '\n"bar\n"')
 
         foo = "foo"
         bar = nil
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, '"foo"')
         lu.assertEquals(str2, "nil")
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, '"foo"_B')
         lu.assertEquals(str2, "nil")
 
         bar = "bar"
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, '"foo"')
         lu.assertEquals(str2, '"bar"')
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, '"foo"_B')
         lu.assertEquals(str2, '"bar"')
 
         bar = "bar\n"
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, '\n"foo"')
         lu.assertEquals(str2, '\n"bar\n"')
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, '\n"foo"_A')
         lu.assertEquals(str2, '\n"bar\n"')
 
         foo = "fo\no"
         bar = nil
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, '\n"fo\no"')
         lu.assertEquals(str2, "\nnil")
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, '\n"fo\no"_A')
         lu.assertEquals(str2, "\nnil")
 
         bar = "bar"
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, '\n"fo\no"')
         lu.assertEquals(str2, '\n"bar"')
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, '\n"fo\no"_A')
         lu.assertEquals(str2, '\n"bar"')
 
         bar = "bar\n"
-        str1, str2 = lu.private.prettystrPadded(foo, bar)
+        str1, str2 = lu.private.prettystrPairs(foo, bar)
         lu.assertEquals(str1, '\n"fo\no"')
         lu.assertEquals(str2, '\n"bar\n"')
-        str1, str2 = lu.private.prettystrPadded(foo, bar, "_A", "_B")
+        str1, str2 = lu.private.prettystrPairs(foo, bar, "_A", "_B")
         lu.assertEquals(str1, '\n"fo\no"_A')
         lu.assertEquals(str2, '\n"bar\n"')
     end
@@ -1673,7 +1673,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         else
             assertFailureEquals( 'expected: 1.2, actual: 1', lu.assertEquals, 1.0, 1.2)
         end
-        assertFailureMatches( 'expected: {1, 2, 3}\nactual: {3, 2, 1}', lu.assertEquals, {3,2,1}, {1,2,3} )
+        assertFailureMatches( 'expected: {1, 2}\nactual: {2, 1}', lu.assertEquals, {2,1}, {1,2} )
         assertFailureMatches( 'expected: {one=1, two=2}\nactual: {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
         assertFailureEquals( 'expected: 2, actual: nil', lu.assertEquals, nil, 2 )
     end 
@@ -1883,7 +1883,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         local v = {1,2}
         assertFailureMatches( 'Expected object and actual object are the same object: <table: 0?x?[%x]+> {1, 2}', lu.assertNotIs, v, v )
         assertFailureMatches('Contents of the tables are not identical:\nExpected: <table: 0?x?[%x]+> {one=2, two=3}\nActual: <table: 0?x?[%x]+> {1, 2}' , lu.assertItemsEquals, {1,2}, {one=2, two=3} )
-        assertFailureMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', lu.assertEquals, {3,2,1}, {1,2,3} )
+        assertFailureMatches( 'expected: <table: 0?x?[%x]+> {1, 2}\nactual: <table: 0?x?[%x]+> {2, 1}', lu.assertEquals, {2,1}, {1,2} )
         -- trigger multiline prettystr
         assertFailureMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3, 4}\nactual: <table: 0?x?[%x]+> {3, 2, 1, 4}', lu.assertEquals, {3,2,1,4}, {1,2,3,4} )
         assertFailureMatches( 'expected: <table: 0?x?[%x]+> {one=1, two=2}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
