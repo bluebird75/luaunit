@@ -15,6 +15,19 @@ end
 
 -- This is a bit tricky since the test uses the features that it tests.
 
+local function range(start, stop)
+    -- return list of { start ... stop }
+    local i 
+    local ret = {}
+    i=start
+    while i <= stop do
+        table.insert(ret, i)
+        i = i + 1
+    end
+    return ret
+end
+
+
 local lu = require('luaunit')
 
 local Mock = { __class__ = 'Mock' }
@@ -210,6 +223,40 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         A = {}
         A[A] = 1
         lu.assertEquals( A, A )
+    end
+
+    function TestLuaUnitUtilities:test_suitableForMismatchFormatting()
+        lu.assertFalse( lu.private.tryMismatchFormatting( {1,2}, {2,1} ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( nil, { 1,2,3} ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( {1,2,3}, {} ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( "123", "123" ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( "123", "123" ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( {'a','b','c'}, {'c', 'b', 'a'} ))
+        lu.assertFalse( lu.private.tryMismatchFormatting( {1,2,3, toto='titi'}, {1,2,3, toto='tata', tutu="bloup" } ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( {1,2,3, [5]=1000}, {1,2,3} ) )
+
+        local i=0
+        local l1, l2={}, {}
+        while i <= lu.LIST_DIFF_ANALYSIS_THRESHOLD+1 do
+            i = i + 1
+            table.insert( l1, i )
+            table.insert( l2, i+1 )
+        end
+
+        lu.assertTrue( lu.private.tryMismatchFormatting( l1, l2 ) )
+    end
+
+
+    function TestLuaUnitUtilities:test_diffAnalysisThreshold()
+        local threshold =  lu.LIST_DIFF_ANALYSIS_THRESHOLD
+        lu.assertFalse( lu.private.tryMismatchFormatting( range(1,threshold-1), range(1,threshold-2), lu.DEFAULT_DEEP_ANALYSIS ) )
+        lu.assertTrue(  lu.private.tryMismatchFormatting( range(1,threshold),   range(1,threshold),   lu.DEFAULT_DEEP_ANALYSIS ) )
+
+        lu.assertFalse( lu.private.tryMismatchFormatting( range(1,threshold-1), range(1,threshold-2), lu.DISABLE_DEEP_ANALYSIS ) )
+        lu.assertFalse( lu.private.tryMismatchFormatting( range(1,threshold),   range(1,threshold),   lu.DISABLE_DEEP_ANALYSIS ) )
+
+        lu.assertTrue( lu.private.tryMismatchFormatting( range(1,threshold-1), range(1,threshold-2), lu.FORCE_DEEP_ANALYSIS ) ) 
+        lu.assertTrue( lu.private.tryMismatchFormatting( range(1,threshold),   range(1,threshold),   lu.FORCE_DEEP_ANALYSIS ) )
     end
 
     function TestLuaUnitUtilities:test_prettystr()
@@ -1885,8 +1932,11 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureMatches('Contents of the tables are not identical:\nExpected: <table: 0?x?[%x]+> {one=2, two=3}\nActual: <table: 0?x?[%x]+> {1, 2}' , lu.assertItemsEquals, {1,2}, {one=2, two=3} )
         assertFailureMatches( 'expected: <table: 0?x?[%x]+> {1, 2}\nactual: <table: 0?x?[%x]+> {2, 1}', lu.assertEquals, {2,1}, {1,2} )
         -- trigger multiline prettystr
-        assertFailureMatches( 'expected: <table: 0?x?[%x]+> {1, 2, 3, 4}\nactual: <table: 0?x?[%x]+> {3, 2, 1, 4}', lu.assertEquals, {3,2,1,4}, {1,2,3,4} )
         assertFailureMatches( 'expected: <table: 0?x?[%x]+> {one=1, two=2}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
+        -- trigger mismatch formatting
+        lu.assertErrorMsgContains( [[lists <table: ]] , lu.assertEquals, {3,2,1,4,1,1,1,1,1,1,1}, {1,2,3,4,1,1,1,1,1,1,1} )
+        lu.assertErrorMsgContains( [[and <table: ]] , lu.assertEquals, {3,2,1,4,1,1,1,1,1,1,1}, {1,2,3,4,1,1,1,1,1,1,1} )
+
     end
 
 ------------------------------------------------------------------
