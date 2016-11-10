@@ -107,16 +107,19 @@ do
     os.remove(xmllint_output_fname)
 end
 
-local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
+local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, pattern2, verbose )
     --[[ Adjust the content of fileOut by copying lines matching pattern from fileIn
 
     fileIn lines are read and the first line matching pattern is analysed. The first pattern
     capture is memorized.
 
-    fileOut lines are then read, and the first line matching pattern is modified, by applying
+    fileOut lines are then read, and the first line matching pattern2 is modified, by applying
     the first capture of fileIn. fileOut is then rewritten.
+
+    In most cases, pattern2 may be nil in which case, pattern is used when matching in fileout.
     ]]
     local source = nil
+    local pattern2 = pattern2 or pattern
     local idxStart, idxEnd, capture
     for line in io.lines(fileIn) do
         idxStart, idxEnd, capture = line:find( pattern )
@@ -142,8 +145,11 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
 
     local dest, linesOut = nil, {}
     for line in io.lines(fileOut) do
-        idxStart, idxEnd, capture = line:find( pattern )
+        idxStart, idxEnd, capture = line:find( pattern2 )
         while idxStart ~= nil do
+            if capture == nil then
+                print('missing pattern for outfile!')
+            end
             dest = capture
             if verbose then
                 print('Modifying line: '..line )
@@ -154,7 +160,7 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
             if verbose then
                 print('Result        : '..line )
             end
-            idxStart, idxEnd, capture = line:find( pattern, idxEnd )
+            idxStart, idxEnd, capture = line:find( pattern2, idxEnd )
         end
         table.insert( linesOut, line )
     end
@@ -178,8 +184,10 @@ local function check_tap_output( fileToRun, options, output, refOutput, refExitC
 
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
-    -- For Lua 5.3: stack trace uses "method" instead of "function"
-    adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
+    if _VERSION == 'Lua 5.3' then
+        -- For Lua 5.3: stack trace uses "method" instead of "function"
+        adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true )
+    end
 
     if not osExec([[diff -NPw -u -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output) then
         error('TAP Output mismatch for file : '..output)
@@ -201,9 +209,15 @@ local function check_text_output( fileToRun, options, output, refOutput, refExit
     adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
     adjustFile( output, refOutput, 'thread: (0?x?[%x]+)', true )
     adjustFile( output, refOutput, 'function: (0?x?[%x]+)', true )
-    adjustFile( output, refOutput, '<table: (0?x?[%x]+)>', true, false )
-    -- For Lua 5.3: stack trace uses "method" instead of "function"
-    adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
+    adjustFile( output, refOutput, '<table: (0?x?[%x]+)>', true )
+    if _VERSION == 'Lua 5.3' then
+        -- For Lua 5.3: stack trace uses "method" instead of "function"
+        adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true )
+        -- For Lua 5.3: different output for floats which are ints 
+        adjustFile( output, output, '(%d)%.0' )
+        -- For Lua 5.3: different output for inf
+        adjustFile( output, refOutput, '(1%.#INF)', true, '(inf)', false )
+    end
 
     if not osExec([[diff -NPw -u -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output) then
         error('Text Output mismatch for file : '..output)
@@ -238,10 +252,12 @@ local function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintO
     adjustFile( xmlOutput, refXmlOutput, '.*<testcase .*(time=".-").*' )
     -- For Lua 5.1 / 5.2 compatibility
     adjustFile( xmlOutput, refXmlOutput, '.*<property name="Lua Version" value="(Lua 5%..)"/>')
-    -- For Lua 5.3: stack trace uses "method" instead of "function"
-    adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
-    adjustFile( xmlOutput, refXmlOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
 
+    if _VERSION == 'Lua 5.3' then
+        -- For Lua 5.3: stack trace uses "method" instead of "function"
+        adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true )
+        adjustFile( xmlOutput, refXmlOutput, '.*%.lua:%d+: in (%S*) .*', true )
+    end
 
     if HAS_XMLLINT then
         -- General xmllint validation
