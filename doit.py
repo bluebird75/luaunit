@@ -39,7 +39,15 @@ def run_tests():
         if retcode != 0:
             report( 'Invalid retcode when running tests: %d' % retcode )
             sys.exit( retcode )
+    run_luacheck()
     report( 'All tests succeed!' )
+
+def run_luacheck():
+    report('Running luacheck')
+    retcode = subprocess.call( ['luacheck.bat', '*.lua', 'test' ] )
+    if retcode != 0:
+        report( 'Invalid luacheck result' )
+        sys.exit( retcode )
 
 def run_example():
     for lua, luaversion in ALL_LUA:
@@ -99,6 +107,7 @@ def install():
 
 OptToFunc = {
     'runtests'      : run_tests,
+    'runluacheck'   : run_luacheck,
     'runexample'    : run_example,
     'packageit'     : packageit,
     'makedoc'       : makedoc,
