@@ -338,8 +338,8 @@ test/some_lists_comparisons.lua:117: expected:
     "bbb",
     "ccc",
     function: 00E70160,
-    1,
-    2,
+    1.1,
+    2.1,
     8=true,
     9=false,
     10=thread: 00E35480,
@@ -352,8 +352,8 @@ actual:
     "bbb",
     "ccc",
     function: 00E70160,
-    1,
-    2,
+    1.1,
+    2.1,
     8=false,
     9=false,
     10=thread: 00E35480,
@@ -369,8 +369,8 @@ List difference analysis:
   = A[2], B[2]: "bbb"
   = A[3], B[3]: "ccc"
   = A[4], B[4]: function: 00E70160
-  = A[5], B[5]: 1
-  = A[6], B[6]: 2
+  = A[5], B[5]: 1.1
+  = A[6], B[6]: 2.1
   = A[7], B[7]: nil
 * Differing parts:
   - A[8]: false
@@ -771,8 +771,8 @@ test/some_lists_comparisons.lua:117: expected:
     "bbb",
     "ccc",
     function: 00E70160,
-    1,
-    2,
+    1.1,
+    2.1,
     8=true,
     9=false,
     10=thread: 00E35480,
@@ -785,8 +785,8 @@ actual:
     "bbb",
     "ccc",
     function: 00E70160,
-    1,
-    2,
+    1.1,
+    2.1,
     8=false,
     9=false,
     10=thread: 00E35480,
@@ -802,8 +802,8 @@ List difference analysis:
   = A[2], B[2]: "bbb"
   = A[3], B[3]: "ccc"
   = A[4], B[4]: function: 00E70160
-  = A[5], B[5]: 1
-  = A[6], B[6]: 2
+  = A[5], B[5]: 1.1
+  = A[6], B[6]: 2.1
   = A[7], B[7]: nil
 * Differing parts:
   - A[8]: false

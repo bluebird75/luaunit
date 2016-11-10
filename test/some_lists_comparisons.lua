@@ -112,8 +112,8 @@ TestListCompare = {}
     function TestListCompare:test6()
         local f1 = function () return nil end
         local t1 = coroutine.create( function(v) local y=v+1 end )
-        local A = { 'aaa', 'bbb', 'ccc', f1, 1.0, 2.0, nil, true, false, t1, t1, t1 }
-        local B = { 'aaa', 'bbb', 'ccc', f1, 1.0, 2.0, nil, false, false, t1, t1, t1 }
+        local A = { 'aaa', 'bbb', 'ccc', f1, 1.1, 2.1, nil, true, false, t1, t1, t1 }
+        local B = { 'aaa', 'bbb', 'ccc', f1, 1.1, 2.1, nil, false, false, t1, t1, t1 }
         lu.assertEquals( B, A )
     end
 
