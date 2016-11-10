@@ -646,7 +646,7 @@ local filesSetIndex = {
 local function updateRefFiles( filesToGenerate )
     local ret
 
-    for i,v in ipairs(filesToGenerate) do 
+    for _,v in ipairs(filesToGenerate) do 
         report('Generating '..v[4])
         ret = osExec( '%s %s %s %s > %s', LUA, v[1], v[2], v[3], v[4] )
         --[[
@@ -674,7 +674,7 @@ local function main()
         if #arg == 1 then
             -- generate all files
             -- print('Generating all files' )
-            for k,v in pairs(filesSetIndex) do 
+            for _,v in pairs(filesSetIndex) do 
                 -- print('Generating '..v )
                 updateRefFiles( v )
             end
@@ -684,7 +684,7 @@ local function main()
                 local fileSet = filesSetIndex[ arg[i] ]
                 if fileSet == nil then
                     local validTarget = ''
-                    for k,v in pairs(filesSetIndex) do
+                    for k,_ in pairs(filesSetIndex) do
                         validTarget = validTarget .. ' '.. k
                     end
                     error_fmt('Unable to generate files for target %s\nPossible targets: %s\n',

@@ -7,7 +7,7 @@ License: BSD License, see LICENSE.txt
 -- Return a function that appends its arguments to the `callInfo` table
 local function callRecorder( callInfo )
     return function( ... )
-        for i, v in pairs({...}) do
+        for _, v in pairs({...}) do
             table.insert( callInfo, v )
         end
     end
@@ -23,9 +23,9 @@ function Mock.new(runner)
     local t = lu.genericOutput.new(runner)
     t.calls = {}
     local t_MT = {
-        __index = function( t, key )
+        __index = function( tab, key )
             local callInfo = { key }
-            table.insert( t.calls, callInfo )
+            table.insert( tab.calls, callInfo )
             return callRecorder( callInfo )
         end
     }
@@ -69,6 +69,7 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
     function TestLuaUnitUtilities:test_sortedNextWorks()
         local t1 = {}
+        local _
         t1['aaa'] = 'abc'
         t1['ccc'] = 'def'
         t1['bbb'] = 'cba'
@@ -96,7 +97,7 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
         -- run a generic for loop (internally using a separate state)
         local tested = {}
-        for k, v in lu.private.sortedPairs(t1) do table.insert(tested, v) end
+        for _, v in lu.private.sortedPairs(t1) do table.insert(tested, v) end
         lu.assertEquals( tested, {'abc', 'cba', 'def'} )
 
         -- test bisection algorithm by searching for non-existing key values
@@ -117,8 +118,8 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         local t1 = { aaa = 'abc', ccc = 'def' }
         local t2 = { ['3'] = '33', ['1'] = '11' }
 
-        local sortedNext, state1, state2
-        sortedNext, state1 = lu.private.sortedPairs(t1)
+        local sortedNext, state1, state2, _
+        _, state1 = lu.private.sortedPairs(t1)
         sortedNext, state2 = lu.private.sortedPairs(t2)
 
         local k, v = sortedNext( state1, nil )
@@ -363,7 +364,7 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
     end
 
     function TestLuaUnitUtilities:test_prettystrPairs()
-        local foo, bar, str1, str2
+        local foo, bar, str1, str2 = nil, nil
 
         -- test all combinations of: foo = nil, "foo", "fo\no" (embedded
         -- newline); and bar = nil, "bar", "bar\n" (trailing newline)
@@ -456,7 +457,8 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals(prefix, lu.FAILURE_PREFIX)
         lu.assertNotNil(line1)
         _, err = pcall(foo, 2) -- level 2 = error position within foo()
-        local line2, prefix = err:match("test[\\/]test_luaunit%.lua:(%d+): (.*)hex=7B$")
+        local line2
+        line2 , prefix = err:match("test[\\/]test_luaunit%.lua:(%d+): (.*)hex=7B$")
         lu.assertEquals(prefix, lu.FAILURE_PREFIX)
         lu.assertNotNil(line2)
         -- make sure that "line2" position is exactly 3 lines after "line1"
@@ -466,7 +468,7 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
     function TestLuaUnitUtilities:test_IsFunction()
         -- previous LuaUnit.isFunction was superseded by LuaUnit.asFunction
         -- (which can also serve as a boolean expression)
-        lu.assertNotNil( lu.LuaUnit.asFunction( function (a,b) end ) )
+        lu.assertNotNil( lu.LuaUnit.asFunction( function (v,y) end ) )
         lu.assertNil( lu.LuaUnit.asFunction( nil ) )
         lu.assertNil( lu.LuaUnit.asFunction( "not a function" ) )
     end
@@ -616,7 +618,7 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
     end
 
     function TestLuaUnitUtilities:test_expandClasses()
-        local result = {}
+        local result
         result = lu.LuaUnit.expandClasses( {} )
         lu.assertEquals( result, {} )
 
@@ -2790,7 +2792,7 @@ TestLuaUnitResults = { __class__ = 'TestLuaUnitResults' }
         -- MyMocker is an outputter that creates a customized "Mock" instance
         function MyMocker.new(runner)
             local t = Mock.new(runner)
-            function t:startTest( testName )
+            function t:startTest( _ )
                 local node = self.result.currentNode
                 if node.number == 1 then
                     lu.assertEquals( node.number, 1 )
