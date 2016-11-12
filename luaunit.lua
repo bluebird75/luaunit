@@ -88,6 +88,8 @@ Options:
                               TestClass or TestClass.testMethod
 ]]
 
+local is_equal -- defined here to allow calling from mismatchFormattingPureList
+
 ----------------------------------------------------------------
 --
 --                 general utility functions
@@ -541,7 +543,7 @@ local function mismatchFormattingMapping( ta, tb, doDeepAnalysis )
     local k, v
 
     for k,v in pairs( ta ) do
-        if M.private.is_equals( v, tb[k] ) then
+        if is_equal( v, tb[k] ) then
             table.insert( keysCommon, k )
         else 
             if tb[k] == nil then
@@ -553,7 +555,7 @@ local function mismatchFormattingMapping( ta, tb, doDeepAnalysis )
     end
 
     for k,v in pairs( tb ) do
-        if not M.private.is_equals( v, ta[k] ) and ta[k] == nil then
+        if not is_equal( v, ta[k] ) and ta[k] == nil then
             table.insert( keysOnlyTb, k )
         end
     end
@@ -657,7 +659,7 @@ local function mismatchFormattingPureList( ta, tb )
 
     i = 1
     while i <= longest do
-        if not M.private.is_equals(ta[i], tb[i]) then
+        if not is_equal(ta[i], tb[i]) then
             break
         end
 
@@ -667,7 +669,7 @@ local function mismatchFormattingPureList( ta, tb )
 
     i = 0
     while i > -shortest do
-        if not M.private.is_equals(ta[lta+i], tb[ltb+i]) then
+        if not is_equal(ta[lta+i], tb[ltb+i]) then
             break
         end
         i = i - 1
@@ -700,7 +702,7 @@ local function mismatchFormattingPureList( ta, tb )
 
     local function insertABValue(i, bi)
         bi = bi or i
-        if M.private.is_equals( ta[i], tb[bi]) then
+        if is_equal( ta[i], tb[bi]) then
             return extendWithStrFmt( result, '  = A[%d], B[%d]: %s', i, bi, prettystr(ta[i]) ) 
         else
             extendWithStrFmt( result, '  - A[%d]: %s', i, prettystr(ta[i]))
@@ -1041,7 +1043,7 @@ local function _is_table_equals(actual, expected, recursions)
     return true
 end
 M.private._is_table_equals = _is_table_equals
-M.private.is_equals = _is_table_equals
+is_equal = _is_table_equals
 
 local function failure(msg, level)
     -- raise an error indicating a test failure
