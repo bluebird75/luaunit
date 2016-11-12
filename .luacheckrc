@@ -22,8 +22,5 @@ files = {
     },
     ["test/test_luaunit.lua"] = {
         ignore = {"TestMock", "TestLuaUnit%a+", "MyTest%w+", "v", "y" } 
-    },
-    ["test/some_lists_comparisons.lua"] = {
-        ignore = {"Test%w+"}
     }
 }
