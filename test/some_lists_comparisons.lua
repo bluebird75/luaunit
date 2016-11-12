@@ -131,8 +131,8 @@ TestListCompare = {}
     end
 -- end TestListCompare
 
-
-XTestDictCompare = {}
+--[[
+TestDictCompare = {}
     function XTestDictCompare:test1()
         lu.assertEquals( {one=1,two=2, three=3}, {one=1,two=1, three=3} )
     end
@@ -141,6 +141,7 @@ XTestDictCompare = {}
         lu.assertEquals( {one=1,two=2, three=3, four=4, five=5}, {one=1,two=1, three=3, four=4, five=5} )
     end
 -- end TestDictCompare
+]]
 
     
 os.exit( lu.run() )
