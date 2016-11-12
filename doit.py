@@ -107,7 +107,7 @@ def install():
 
 OptToFunc = {
     'runtests'      : run_tests,
-    'runluacheck'   : run_luacheck,
+    'luacheck'      : run_luacheck,
     'runexample'    : run_example,
     'packageit'     : packageit,
     'makedoc'       : makedoc,
