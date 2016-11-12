@@ -67,8 +67,8 @@ else
     curl http://www.lua.org/ftp/lua-5.2.4.tar.gz | tar xz
     cd lua-5.2.4;
   elif [ "$LUA" == "lua5.3" ]; then
-    curl http://www.lua.org/ftp/lua-5.3.2.tar.gz | tar xz
-    cd lua-5.3.2;
+    curl http://www.lua.org/ftp/lua-5.3.3.tar.gz | tar xz
+    cd lua-5.3.3;
   fi
 
   # adjust numerical precision if requested with LUANUMBER=float
