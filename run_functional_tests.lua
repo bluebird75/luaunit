@@ -210,13 +210,13 @@ local function check_text_output( fileToRun, options, output, refOutput, refExit
     adjustFile( output, refOutput, 'thread: (0?x?[%x]+)', true )
     adjustFile( output, refOutput, 'function: (0?x?[%x]+)', true )
     adjustFile( output, refOutput, '<table: (0?x?[%x]+)>', true )
+    -- number infinite displayed as "1.#INF" on Windows, lua 5.1 and 5.2, displayed "inf" on Windows lua 5.3 and linux
+    adjustFile( output, refOutput, '(inf)', true, '(1%.#INF)', false )
     if _VERSION == 'Lua 5.3' then
         -- For Lua 5.3: stack trace uses "method" instead of "function"
         adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true )
         -- For Lua 5.3: different output for floats which are ints 
         adjustFile( output, output, '(%d)%.0' )
-        -- For Lua 5.3: different output for inf
-        adjustFile( output, refOutput, '(1%.#INF)', true, '(inf)', false )
     end
 
     if not osExec([[diff -NPw -u -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output) then

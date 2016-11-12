@@ -381,8 +381,8 @@ List difference analysis:
   = A[11], B[11]: thread: 00E35480
   = A[12], B[12]: thread: 00E35480
     TestListCompare.test7 ... FAIL
-test/some_lists_comparisons.lua:123: expected: {{1, 2, 3}, {1, 2}, {{1}, {2}}, {"aa", "cc"}, 1, 2, 1.33, 1.#INF, {a=1}, {}}
-actual: {{1, 2, 3}, {1, 2}, {{2}, {2}}, {"aa", "bb"}, 1, 2, 1.33, 1.#INF, {a=1}, {}}
+test/some_lists_comparisons.lua:123: expected: {{1, 2, 3}, {1, 2}, {{1}, {2}}, {"aa", "cc"}, 1, 2, 1.33, inf, {a=1}, {}}
+actual: {{1, 2, 3}, {1, 2}, {{2}, {2}}, {"aa", "bb"}, 1, 2, 1.33, inf, {a=1}, {}}
 List difference analysis:
 * lists A (actual) and B (expected) have the same size
 * lists A and B start differing at index 3
@@ -399,7 +399,7 @@ List difference analysis:
   = A[5], B[5]: 1
   = A[6], B[6]: 2
   = A[7], B[7]: 1.33
-  = A[8], B[8]: 1.#INF
+  = A[8], B[8]: inf
   = A[9], B[9]: {a=1}
   = A[10], B[10]: {}
 =========================================================
@@ -817,8 +817,8 @@ stack traceback:
 	test/some_lists_comparisons.lua:117: in function 'TestListCompare.test6'
 
 11) TestListCompare.test7
-test/some_lists_comparisons.lua:123: expected: {{1, 2, 3}, {1, 2}, {{1}, {2}}, {"aa", "cc"}, 1, 2, 1.33, 1.#INF, {a=1}, {}}
-actual: {{1, 2, 3}, {1, 2}, {{2}, {2}}, {"aa", "bb"}, 1, 2, 1.33, 1.#INF, {a=1}, {}}
+test/some_lists_comparisons.lua:123: expected: {{1, 2, 3}, {1, 2}, {{1}, {2}}, {"aa", "cc"}, 1, 2, 1.33, inf, {a=1}, {}}
+actual: {{1, 2, 3}, {1, 2}, {{2}, {2}}, {"aa", "bb"}, 1, 2, 1.33, inf, {a=1}, {}}
 List difference analysis:
 * lists A (actual) and B (expected) have the same size
 * lists A and B start differing at index 3
@@ -835,7 +835,7 @@ List difference analysis:
   = A[5], B[5]: 1
   = A[6], B[6]: 2
   = A[7], B[7]: 1.33
-  = A[8], B[8]: 1.#INF
+  = A[8], B[8]: inf
   = A[9], B[9]: {a=1}
   = A[10], B[10]: {}
 stack traceback:
