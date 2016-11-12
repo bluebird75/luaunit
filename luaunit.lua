@@ -1424,7 +1424,7 @@ end
 ----------------------------------------------------------------
 
 -- for compatibility with LuaUnit v2.x
-function M.wrapFunctions(...)
+function M.wrapFunctions()
     -- In LuaUnit version <= 2.1 , this function was necessary to include
     -- a test function inside the global test suite. Nowadays, the functions
     -- are simply run directly as part of the test discovery process.
@@ -1887,10 +1887,10 @@ TextOutput.__class__ = 'TextOutput'
         end
     end
 
-    function TextOutput:displayOneFailedTest( index, failure )
-        print(index..") "..failure.testName )
-        print( failure.msg )
-        print( failure.stackTrace )
+    function TextOutput:displayOneFailedTest( index, fail )
+        print(index..") "..fail.testName )
+        print( fail.msg )
+        print( fail.stackTrace )
         print()
     end
 
@@ -1912,7 +1912,6 @@ TextOutput.__class__ = 'TextOutput'
         end
         self:displayFailedTests()
         print( M.LuaUnit.statusLine( self.result ) )
-        local ignoredString = ""
         if self.result.notPassedCount == 0 then
             print('OK')
         end
