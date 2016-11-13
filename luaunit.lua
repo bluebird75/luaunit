@@ -532,6 +532,9 @@ local function mismatchFormattingMapping( table_a, table_b, doDeepAnalysis )
                in this case, just use standard assertion message
     * result: if success is true, a multi-line string with deep analysis of the two lists
     ]]
+
+    -- disable for the moment
+    --[[
     local result = {}
     local descrTa, descrTb = getTaTbDescr()
 
@@ -633,6 +636,7 @@ local function mismatchFormattingMapping( table_a, table_b, doDeepAnalysis )
     end    
 
     return true, table.concat( result, '\n')
+    ]]
 end
 M.private.mismatchFormattingMapping = mismatchFormattingMapping
 
