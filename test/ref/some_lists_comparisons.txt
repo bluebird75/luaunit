@@ -31,7 +31,7 @@ actual:
 List difference analysis:
 * lists A (actual) and B (expected) have the same size
 * lists A and B start differing at index 9
-* lists A and B are equals again from index 10
+* lists A and B are equal again from index 10
 * Common parts:
   = A[1], B[1]: 121221
   = A[2], B[2]: 122211
@@ -125,7 +125,7 @@ actual:
 List difference analysis:
 * lists A (actual) and B (expected) have the same size
 * lists A and B start differing at index 1
-* lists A and B are equals again from index 2
+* lists A and B are equal again from index 2
 * Differing parts:
   - A[1]: 122112
   + B[1]: 121212
@@ -146,7 +146,7 @@ actual: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
 * lists A (actual) and B (expected) have the same size
 * lists A and B start differing at index 7
-* lists A and B are equals again from index 9
+* lists A and B are equal again from index 9
 * Common parts:
   = A[1], B[1]: 1
   = A[2], B[2]: 2
@@ -176,9 +176,9 @@ List difference analysis:
 test/some_lists_comparisons.lua:57: expected: {1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 actual: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
-* size of lists differ: list A (actual) has 20 items, list B (expected) has 19 items
+* list sizes differ: list A (actual) has 20 items, list B (expected) has 19 items
 * lists A and B start differing at index 7
-* lists A and B are equals again from index 8 for A, 7 for B
+* lists A and B are equal again from index 8 for A, 7 for B
 * Common parts:
   = A[1], B[1]: 1
   = A[2], B[2]: 2
@@ -206,9 +206,9 @@ List difference analysis:
 test/some_lists_comparisons.lua:74: expected: {1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 actual: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
-* size of lists differ: list A (actual) has 20 items, list B (expected) has 17 items
+* list sizes differ: list A (actual) has 20 items, list B (expected) has 17 items
 * lists A and B start differing at index 7
-* lists A and B are equals again from index 10 for A, 7 for B
+* lists A and B are equal again from index 10 for A, 7 for B
 * Common parts:
   = A[1], B[1]: 1
   = A[2], B[2]: 2
@@ -236,9 +236,9 @@ List difference analysis:
 test/some_lists_comparisons.lua:98: expected: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 actual: {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
-* size of lists differ: list A (expected) has 17 items, list B (actual) has 20 items
+* list sizes differ: list A (expected) has 17 items, list B (actual) has 20 items
 * lists A and B start differing at index 5
-* lists A and B are equals again from index 7 for A, 10 for B
+* lists A and B are equal again from index 7 for A, 10 for B
 * Common parts:
   = A[1], B[1]: 1
   = A[2], B[2]: 2
@@ -269,9 +269,9 @@ List difference analysis:
 test/some_lists_comparisons.lua:103: expected: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 actual: {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
-* size of lists differ: list A (actual) has 17 items, list B (expected) has 20 items
+* list sizes differ: list A (actual) has 17 items, list B (expected) has 20 items
 * lists A and B start differing at index 5
-* lists A and B are equals again from index 7 for A, 10 for B
+* lists A and B are equal again from index 7 for A, 10 for B
 * Common parts:
   = A[1], B[1]: 1
   = A[2], B[2]: 2
@@ -302,9 +302,9 @@ List difference analysis:
 test/some_lists_comparisons.lua:109: expected: <table: 00D04838> {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 actual: <table: 00D04838> {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
-* size of lists differ: list <table: 00D04838> A (actual) has 17 items, list <table: 00D04838> B (expected) has 20 items
+* list sizes differ: list <table: 00D04838> A (actual) has 17 items, list <table: 00D04838> B (expected) has 20 items
 * lists A and B start differing at index 5
-* lists A and B are equals again from index 7 for A, 10 for B
+* lists A and B are equal again from index 7 for A, 10 for B
 * Common parts:
   = A[1], B[1]: 1
   = A[2], B[2]: 2
@@ -363,7 +363,7 @@ actual:
 List difference analysis:
 * lists A (actual) and B (expected) have the same size
 * lists A and B start differing at index 8
-* lists A and B are equals again from index 9
+* lists A and B are equal again from index 9
 * Common parts:
   = A[1], B[1]: "aaa"
   = A[2], B[2]: "bbb"
@@ -386,7 +386,7 @@ actual: {{1, 2, 3}, {1, 2}, {{2}, {2}}, {"aa", "bb"}, 1, 2, 1.33, inf, {a=1}, {}
 List difference analysis:
 * lists A (actual) and B (expected) have the same size
 * lists A and B start differing at index 3
-* lists A and B are equals again from index 5
+* lists A and B are equal again from index 5
 * Common parts:
   = A[1], B[1]: {1, 2, 3}
   = A[2], B[2]: {1, 2}
@@ -437,7 +437,7 @@ actual:
 List difference analysis:
 * lists A (actual) and B (expected) have the same size
 * lists A and B start differing at index 9
-* lists A and B are equals again from index 10
+* lists A and B are equal again from index 10
 * Common parts:
   = A[1], B[1]: 121221
   = A[2], B[2]: 122211
@@ -537,7 +537,7 @@ actual:
 List difference analysis:
 * lists A (actual) and B (expected) have the same size
 * lists A and B start differing at index 1
-* lists A and B are equals again from index 2
+* lists A and B are equal again from index 2
 * Differing parts:
   - A[1]: 122112
   + B[1]: 121212
@@ -561,7 +561,7 @@ actual: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
 * lists A (actual) and B (expected) have the same size
 * lists A and B start differing at index 7
-* lists A and B are equals again from index 9
+* lists A and B are equal again from index 9
 * Common parts:
   = A[1], B[1]: 1
   = A[2], B[2]: 2
@@ -594,9 +594,9 @@ stack traceback:
 test/some_lists_comparisons.lua:57: expected: {1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 actual: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
-* size of lists differ: list A (actual) has 20 items, list B (expected) has 19 items
+* list sizes differ: list A (actual) has 20 items, list B (expected) has 19 items
 * lists A and B start differing at index 7
-* lists A and B are equals again from index 8 for A, 7 for B
+* lists A and B are equal again from index 8 for A, 7 for B
 * Common parts:
   = A[1], B[1]: 1
   = A[2], B[2]: 2
@@ -627,9 +627,9 @@ stack traceback:
 test/some_lists_comparisons.lua:74: expected: {1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 actual: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
-* size of lists differ: list A (actual) has 20 items, list B (expected) has 17 items
+* list sizes differ: list A (actual) has 20 items, list B (expected) has 17 items
 * lists A and B start differing at index 7
-* lists A and B are equals again from index 10 for A, 7 for B
+* lists A and B are equal again from index 10 for A, 7 for B
 * Common parts:
   = A[1], B[1]: 1
   = A[2], B[2]: 2
@@ -660,9 +660,9 @@ stack traceback:
 test/some_lists_comparisons.lua:98: expected: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 actual: {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
-* size of lists differ: list A (expected) has 17 items, list B (actual) has 20 items
+* list sizes differ: list A (expected) has 17 items, list B (actual) has 20 items
 * lists A and B start differing at index 5
-* lists A and B are equals again from index 7 for A, 10 for B
+* lists A and B are equal again from index 7 for A, 10 for B
 * Common parts:
   = A[1], B[1]: 1
   = A[2], B[2]: 2
@@ -696,9 +696,9 @@ stack traceback:
 test/some_lists_comparisons.lua:103: expected: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 actual: {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
-* size of lists differ: list A (actual) has 17 items, list B (expected) has 20 items
+* list sizes differ: list A (actual) has 17 items, list B (expected) has 20 items
 * lists A and B start differing at index 5
-* lists A and B are equals again from index 7 for A, 10 for B
+* lists A and B are equal again from index 7 for A, 10 for B
 * Common parts:
   = A[1], B[1]: 1
   = A[2], B[2]: 2
@@ -732,9 +732,9 @@ stack traceback:
 test/some_lists_comparisons.lua:109: expected: <table: 00D04838> {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 actual: <table: 00D04838> {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
-* size of lists differ: list <table: 00D04838> A (actual) has 17 items, list <table: 00D04838> B (expected) has 20 items
+* list sizes differ: list <table: 00D04838> A (actual) has 17 items, list <table: 00D04838> B (expected) has 20 items
 * lists A and B start differing at index 5
-* lists A and B are equals again from index 7 for A, 10 for B
+* lists A and B are equal again from index 7 for A, 10 for B
 * Common parts:
   = A[1], B[1]: 1
   = A[2], B[2]: 2
@@ -796,7 +796,7 @@ actual:
 List difference analysis:
 * lists A (actual) and B (expected) have the same size
 * lists A and B start differing at index 8
-* lists A and B are equals again from index 9
+* lists A and B are equal again from index 9
 * Common parts:
   = A[1], B[1]: "aaa"
   = A[2], B[2]: "bbb"
@@ -822,7 +822,7 @@ actual: {{1, 2, 3}, {1, 2}, {{2}, {2}}, {"aa", "bb"}, 1, 2, 1.33, inf, {a=1}, {}
 List difference analysis:
 * lists A (actual) and B (expected) have the same size
 * lists A and B start differing at index 3
-* lists A and B are equals again from index 5
+* lists A and B are equal again from index 5
 * Common parts:
   = A[1], B[1]: {1, 2, 3}
   = A[2], B[2]: {1, 2}

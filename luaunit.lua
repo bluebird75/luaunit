@@ -461,7 +461,6 @@ local function tryMismatchFormatting( table_a, table_b, doDeepAnalysis )
                in this case, just use standard assertion message
     * result: if success is true, a multi-line string with deep analysis of the two lists
     ]]
-    local isPureList
 
     -- check if table_a & table_b are suitable for deep analysis
     if type(table_a) ~= 'table' or type(table_b) ~= 'table' then
@@ -472,10 +471,7 @@ local function tryMismatchFormatting( table_a, table_b, doDeepAnalysis )
         return false
     end
 
-    local k1, k2, v1, v2, len_a, len_b
-    len_a = #table_a
-    len_b = #table_b
-    isPureList = true
+    local len_a, len_b, isPureList = #table_a, #table_b, true
 
     for k1, v1 in pairs(table_a) do
         if type(k1) ~= 'number' or k1 > len_a then
@@ -485,11 +481,13 @@ local function tryMismatchFormatting( table_a, table_b, doDeepAnalysis )
         end
     end
 
-    for k2, v2 in pairs(table_b) do
-        if not isPureList or type(k2) ~= 'number' or k2 > len_b then
-            -- this table a mapping
-            isPureList = false
-            break
+    if isPureList then
+        for k2, v2 in pairs(table_b) do
+            if type(k2) ~= 'number' or k2 > len_b then
+                -- this table a mapping
+                isPureList = false
+                break
+            end
         end
     end
 
@@ -510,12 +508,10 @@ end
 M.private.tryMismatchFormatting = tryMismatchFormatting
 
 local function getTaTbDescr()
-    local descrTa, descrTb
-    descrTa, descrTb = 'actual', 'expected'
     if not M.ORDER_ACTUAL_EXPECTED then
-        descrTa, descrTb = descrTb, descrTa
+        return 'expected', 'actual'
     end
-    return descrTa, descrTb
+    return 'actual', 'expected'
 end
 
 local function extendWithStrFmt( res, ... )
@@ -650,114 +646,99 @@ local function mismatchFormattingPureList( table_a, table_b )
                in this case, just use standard assertion message
     * result: if success is true, a multi-line string with deep analysis of the two lists
     ]]
-    local result = {}
-    local descrTa, descrTb = getTaTbDescr()
+    local result, descrTa, descrTb = {}, getTaTbDescr()
 
-    local len_a = #table_a
-    local len_b = #table_b
-    local i
-    local longest  = math.max(len_a, len_b)
-    local shortest = math.min(len_a, len_b)
-    local deltalv  = longest - shortest
-    local commonUntil, commonBackTo
-
-    i = 1
-    while i <= longest do
-        if not is_equal(table_a[i], table_b[i]) then
-            break
-        end
-
-        i = i+1
-    end
-    commonUntil = i-1
-
-    i = 0
-    while i > -shortest do
-        if not is_equal(table_a[len_a+i], table_b[len_b+i]) then
-            break
-        end
-        i = i - 1
-    end
-    commonBackTo = i+1
-
-
-    local refa, refb = '', ''
+    local len_a, len_b, refa, refb = #table_a, #table_b, '', ''
     if M.PRINT_TABLE_REF_IN_ERROR_MSG then
         refa, refb = string.format( '<%s> ', tostring(table_a)), string.format('<%s> ', tostring(table_b) )
     end
+    local longest, shortest = math.max(len_a, len_b), math.min(len_a, len_b)
+    local deltalv  = longest - shortest
+
+    local commonUntil = longest
+    for i = 1, longest do
+        if not is_equal(table_a[i], table_b[i]) then
+            commonUntil = i - 1
+            break
+        end
+    end
+
+    local commonBackTo = shortest - 1
+    for i = 0, shortest - 1 do
+        if not is_equal(table_a[len_a-i], table_b[len_b-i]) then
+            commonBackTo = i - 1
+            break
+        end
+    end
+
 
     table.insert( result, 'List difference analysis:' )    
     if len_a == len_b then
         -- TODO: handle expected/actual naming
         extendWithStrFmt( result, '* lists %sA (%s) and %sB (%s) have the same size', refa, descrTa, refb, descrTb )
     else 
-        extendWithStrFmt( result, '* size of lists differ: list %sA (%s) has %d items, list %sB (%s) has %d items', refa, descrTa, len_a, refb, descrTb, len_b )
+        extendWithStrFmt( result, '* list sizes differ: list %sA (%s) has %d items, list %sB (%s) has %d items', refa, descrTa, len_a, refb, descrTb, len_b )
     end
 
-    i = 1
     extendWithStrFmt( result, '* lists A and B start differing at index %d', commonUntil+1 ) 
-    if commonBackTo < 1 then
+    if commonBackTo >= 0 then
         if deltalv > 0 then
-            extendWithStrFmt( result, '* lists A and B are equals again from index %d for A, %d for B', len_a+commonBackTo, len_b+commonBackTo ) 
+            extendWithStrFmt( result, '* lists A and B are equal again from index %d for A, %d for B', len_a-commonBackTo, len_b-commonBackTo )
         else
-            extendWithStrFmt( result, '* lists A and B are equals again from index %d', len_a+commonBackTo ) 
+            extendWithStrFmt( result, '* lists A and B are equal again from index %d', len_a-commonBackTo )
         end
     end
 
-    local function insertABValue(i, bi)
-        bi = bi or i
-        if is_equal( table_a[i], table_b[bi]) then
-            return extendWithStrFmt( result, '  = A[%d], B[%d]: %s', i, bi, prettystr(table_a[i]) ) 
+    local function insertABValue(ai, bi)
+        bi = bi or ai
+        if is_equal( table_a[ai], table_b[bi]) then
+            return extendWithStrFmt( result, '  = A[%d], B[%d]: %s', ai, bi, prettystr(table_a[ai]) )
         else
-            extendWithStrFmt( result, '  - A[%d]: %s', i, prettystr(table_a[i]))
+            extendWithStrFmt( result, '  - A[%d]: %s', ai, prettystr(table_a[ai]))
             extendWithStrFmt( result, '  + B[%d]: %s', bi, prettystr(table_b[bi]))
         end
     end
 
     -- common parts to list A & B, at the beginning
-    if i <= commonUntil then 
+    if commonUntil > 0 then
         table.insert( result, '* Common parts:' )
-    end
-    while i <= commonUntil do
-        insertABValue( i )
-        i = i + 1
+        for i = 1, commonUntil do
+            insertABValue( i )
+        end
     end
 
     -- diffing parts to list A & B
-    if i <  shortest + commonBackTo then
+    if commonUntil < shortest - commonBackTo - 1 then
         table.insert( result, '* Differing parts:' )
-    end
-    while i <  shortest + commonBackTo do
-        insertABValue( i )
-        i = i + 1
+        for i = commonUntil + 1, shortest - commonBackTo - 1 do
+            insertABValue( i )
+        end
     end
 
     -- display indexes of one list, with no match on other list
-    if i < longest + commonBackTo then
+    if shortest - commonBackTo <= longest - commonBackTo - 1 then
         table.insert( result, '* Present only in one list:' )
-    end
-    while i < longest + commonBackTo do
-        if len_a > len_b then
-            extendWithStrFmt( result, '  - A[%d]: %s', i, prettystr(table_a[i]) ) 
-            -- table.insert( result, '+ (no matching B index)')
-        else
-            -- table.insert( result, '- no matching A index')
-            extendWithStrFmt( result, '  + B[%d]: %s', i, prettystr(table_b[i]) )
+        for i = shortest - commonBackTo, longest - commonBackTo - 1 do
+            if len_a > len_b then
+                extendWithStrFmt( result, '  - A[%d]: %s', i, prettystr(table_a[i]) )
+                -- table.insert( result, '+ (no matching B index)')
+            else
+                -- table.insert( result, '- no matching A index')
+                extendWithStrFmt( result, '  + B[%d]: %s', i, prettystr(table_b[i]) )
+            end
         end
-        i = i + 1
     end
 
     -- common parts to list A & B, at the end
-    if i <= longest then
+    if commonBackTo >= 0 then
         table.insert( result, '* Common parts at the end of the lists' )
-    end
-    while i <= longest do
-        if len_a > len_b then
-            insertABValue( i, i-deltalv )
-        else
-            insertABValue( i-deltalv, i )
+        for i = longest - commonBackTo, longest do
+            if len_a > len_b then
+                insertABValue( i, i-deltalv )
+            else
+                insertABValue( i-deltalv, i )
+            end
         end
-        i = i + 1
     end
 
     return true, table.concat( result, '\n')
