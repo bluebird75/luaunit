@@ -419,6 +419,24 @@ local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recurs
         --end
         return M.private._table_tostring(v, indentLevel, keeponeline,
                                             printTableRefs, recursionTable)
+
+    elseif "number" == type_v then
+        -- eliminate differences in formatting between various Lua versions
+        if v ~= v then
+            return "#NaN" -- "not a number"
+        end
+        if v == math.huge then
+            return "#Inf" -- "infinite"
+        end
+        if v == -math.huge then
+            return "-#Inf"
+        end
+        if _VERSION == "Lua 5.3" then
+            local i = math.tointeger(v)
+            if i then
+                return tostring(i)
+            end
+        end
     end
 
     return tostring(v)
