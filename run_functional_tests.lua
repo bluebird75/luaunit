@@ -107,7 +107,7 @@ do
     os.remove(xmllint_output_fname)
 end
 
-local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, pattern2, verbose )
+local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
     --[[ Adjust the content of fileOut by copying lines matching pattern from fileIn
 
     fileIn lines are read and the first line matching pattern is analysed. The first pattern
@@ -118,9 +118,7 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, pattern2, verb
 
     In most cases, pattern2 may be nil in which case, pattern is used when matching in fileout.
     ]]
-    local source = nil
-    local pattern2 = pattern2 or pattern
-    local idxStart, idxEnd, capture
+    local source, idxStart, idxEnd, capture = nil
     for line in io.lines(fileIn) do
         idxStart, idxEnd, capture = line:find( pattern )
         if idxStart ~= nil then
@@ -145,7 +143,7 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, pattern2, verb
 
     local dest, linesOut = nil, {}
     for line in io.lines(fileOut) do
-        idxStart, idxEnd, capture = line:find( pattern2 )
+        idxStart, idxEnd, capture = line:find( pattern )
         while idxStart ~= nil do
             if capture == nil then
                 print('missing pattern for outfile!')
@@ -160,7 +158,7 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, pattern2, verb
             if verbose then
                 print('Result        : '..line )
             end
-            idxStart, idxEnd, capture = line:find( pattern2, idxEnd )
+            idxStart, idxEnd, capture = line:find( pattern, idxEnd )
         end
         table.insert( linesOut, line )
     end
@@ -210,13 +208,9 @@ local function check_text_output( fileToRun, options, output, refOutput, refExit
     adjustFile( output, refOutput, 'thread: (0?x?[%x]+)', true )
     adjustFile( output, refOutput, 'function: (0?x?[%x]+)', true )
     adjustFile( output, refOutput, '<table: (0?x?[%x]+)>', true )
-    -- number infinite displayed as "1.#INF" on Windows, lua 5.1 and 5.2, displayed "inf" on Windows lua 5.3 and linux
-    adjustFile( output, refOutput, '(inf)', true, '(1%.#INF)', false )
     if _VERSION == 'Lua 5.3' then
         -- For Lua 5.3: stack trace uses "method" instead of "function"
         adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true )
-        -- For Lua 5.3: different output for floats which are ints 
-        adjustFile( output, output, '(%d)%.0' )
     end
 
     if not osExec([[diff -NPw -u -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output) then
