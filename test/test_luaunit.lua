@@ -262,7 +262,11 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
     function TestLuaUnitUtilities:test_prettystr()
         lu.assertEquals( lu.prettystr( 1 ), "1" )
+        lu.assertEquals( lu.prettystr( 1.0 ), "1" )
         lu.assertEquals( lu.prettystr( 1.1 ), "1.1" )
+        lu.assertEquals( lu.prettystr( 1/0 ), "#Inf" )
+        lu.assertEquals( lu.prettystr( -1/0 ), "-#Inf" )
+        lu.assertEquals( lu.prettystr( 0/0 ), "#NaN" )
         lu.assertEquals( lu.prettystr( 'abc' ), '"abc"' )
         lu.assertEquals( lu.prettystr( 'ab\ncd' ), '"ab\ncd"' )
         lu.assertEquals( lu.prettystr( 'ab\ncd', true ), '"ab\\ncd"' )
@@ -1717,11 +1721,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals( 'expected: "exp"\nactual: "act"', lu.assertEquals, 'act', 'exp' )
         assertFailureEquals( 'expected: \n"exp\npxe"\nactual: \n"act\ntca"', lu.assertEquals, 'act\ntca', 'exp\npxe' )
         assertFailureEquals( 'expected: true, actual: false', lu.assertEquals, false, true )
-        if _VERSION == 'Lua 5.3' then
-            assertFailureEquals( 'expected: 1.2, actual: 1.0', lu.assertEquals, 1.0, 1.2)
-        else
-            assertFailureEquals( 'expected: 1.2, actual: 1', lu.assertEquals, 1.0, 1.2)
-        end
+        assertFailureEquals( 'expected: 1.2, actual: 1', lu.assertEquals, 1.0, 1.2)
         assertFailureMatches( 'expected: {1, 2}\nactual: {2, 1}', lu.assertEquals, {2,1}, {1,2} )
         assertFailureMatches( 'expected: {one=1, two=2}\nactual: {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
         assertFailureEquals( 'expected: 2, actual: nil', lu.assertEquals, nil, 2 )
