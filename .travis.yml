@@ -36,8 +36,8 @@ cache:
     - $TRAVIS_BUILD_DIR/install
 
 script: 
-  - lua -v -lluacov run_unit_tests.lua --shuffle
-  - lua run_functional_tests.lua --coverage
+  - lua -v -lluacov run_unit_tests.lua --shuffle --color
+  - lua run_functional_tests.lua --coverage --color
   - luacheck *.lua test/
 
 after_success:
