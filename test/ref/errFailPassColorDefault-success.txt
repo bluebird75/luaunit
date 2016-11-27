@@ -1,0 +1,3 @@
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+[1mRan 5 tests in 0.000 seconds, 5 successes, 0 failures, 10 non-selected[0m
+[32mOK[0m
