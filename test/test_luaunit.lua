@@ -586,12 +586,25 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
     function TestLuaUnitUtilities:test_patternFilter()
         lu.assertEquals( lu.private.patternFilter( nil, 'toto', true), true )
-        lu.assertEquals( lu.private.patternFilter( {}, 'toto', true), false  )
         lu.assertEquals( lu.private.patternFilter( nil, 'titi', false), false )
+        lu.assertEquals( lu.private.patternFilter( {}, 'toto', false), false  )
+        lu.assertEquals( lu.private.patternFilter( {}, 'toto', true), true  )
+
+        -- positive pattern
         lu.assertEquals( lu.private.patternFilter( {'toto'}, 'toto'), true )
         lu.assertEquals( lu.private.patternFilter( {'toto'}, 'yyytotoxxx'), true )
         lu.assertEquals( lu.private.patternFilter( {'titi', 'toto'}, 'yyytotoxxx'), true )
+        lu.assertEquals( lu.private.patternFilter( {'titi', 'toto'}, 'tutu'), false )
         lu.assertEquals( lu.private.patternFilter( {'titi', 'to..'}, 'yyytoxxx'), true )
+
+        -- negative pattern
+        lu.assertEquals( lu.private.patternFilter( {'!toto'}, 'toto'), false )
+        lu.assertEquals( lu.private.patternFilter( {'!t.t.'}, 'titi'), false )
+        lu.assertEquals( lu.private.patternFilter( {'!toto'}, 'titi'), true )
+        lu.assertEquals( lu.private.patternFilter( {'!toto'}, 'yyytotoxxx'), false )
+        lu.assertEquals( lu.private.patternFilter( {'!titi', '!toto'}, 'yyytotoxxx'), false )
+        lu.assertEquals( lu.private.patternFilter( {'!titi', '!toto'}, 'tutu'), true )
+        lu.assertEquals( lu.private.patternFilter( {'!titi', '!to..'}, 'yyytoxxx'), false )
     end
 
     function TestLuaUnitUtilities:test_applyPatternFilter()

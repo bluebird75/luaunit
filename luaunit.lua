@@ -266,17 +266,28 @@ M.private.strMatch = strMatch
 
 local function patternFilter(patterns, expr, nil_result)
     -- Check if any of `patterns` is contained in `expr`. If so, return `true`.
-    -- Return `false` if none of the patterns are contained in expr. If patterns
-    -- is `nil` (= unset), return default value passed in `nil_result`.
-    if patterns ~= nil then
+    -- Return `false` if none of the patterns are contained in expr. 
+    -- If patterns is `nil` (= unset) or empty, return default value passed in `nil_result`.
+
+    if patterns ~= nil and #patterns > 0 then
+        local no_match_result = (patterns[1]:sub(1,1) == '!')
+        -- when no match is found, for inclusive patterns, it means refuse expr
+        -- for negative pattern, it means accept expr
 
         for _, pattern in ipairs(patterns) do
+            local exclude = false
+            if (pattern:sub(1,1) == '!') then
+                exclude = true
+                pattern = pattern:sub(2)
+            end
+            -- print('pattern: ',pattern)
+            -- print('exclude: ',exclude)
             if string.find(expr, pattern) then
-                return true
+                return not exclude
             end
         end
 
-        return false -- no match from patterns
+        return no_match_result -- no match from patterns
     end
 
     return nil_result
