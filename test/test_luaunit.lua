@@ -566,9 +566,10 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'toto' } ), { pattern={'toto'} } )
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'titi', '-p', 'toto' } ), { pattern={'titi', 'toto'} } )
         lu.assertErrorMsgContains( 'Missing argument after -p', lu.LuaUnit.parseCmdLine, { '-p', } )
-        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--exclude', 'toto' } ), { exclude={'toto'} } )
-        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-x', 'toto' } ), { exclude={'toto'} } )
-        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-x', 'titi', '-x', 'toto' } ), { exclude={'titi', 'toto'} } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--exclude', 'toto' } ), { pattern={'!toto'} } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-x', 'toto' } ), { pattern={'!toto'} } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-x', 'titi', '-x', 'toto' } ), { pattern={'!titi', '!toto'} } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-x', 'titi', '-p', 'foo', '-x', 'toto' } ), { pattern={'!titi', 'foo', '!toto'} } )
         lu.assertErrorMsgContains( 'Missing argument after -x', lu.LuaUnit.parseCmdLine, { '-x', } )
 
         -- count
@@ -638,39 +639,44 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         }
 
         -- default action: include everything
-        local included, excluded = lu.LuaUnit.applyPatternFilter( nil, nil, testset )
+        local included, excluded = lu.LuaUnit.applyPatternFilter( nil, testset )
         lu.assertEquals( #included, 8 )
         lu.assertEquals( excluded, {} )
 
         -- single exclude pattern (= select anything not matching "bar")
-        included, excluded = lu.LuaUnit.applyPatternFilter( nil, {'bar'}, testset )
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'!bar'}, testset )
         lu.assertEquals( included, {testset[1], testset[3], testset[5]} )
         lu.assertEquals( #excluded, 5 )
 
         -- single include pattern
-        included, excluded = lu.LuaUnit.applyPatternFilter( {'t.t.'}, nil, testset )
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'t.t.'}, testset )
         lu.assertEquals( #included, 6 )
         lu.assertEquals( excluded, {testset[7], testset[8]} )
 
         -- single include and exclude patterns
-        included, excluded = lu.LuaUnit.applyPatternFilter( {'foo'}, {'test'}, testset )
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'foo', '!test'}, testset )
         lu.assertEquals( included, {testset[1], testset[3], testset[5], testset[7]} )
         lu.assertEquals( #excluded, 4 )
 
         -- multiple (specific) includes
-        included, excluded = lu.LuaUnit.applyPatternFilter( {'toto', 'titi'}, nil, testset )
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'toto', 'titi'}, testset )
         lu.assertEquals( included, {testset[1], testset[2], testset[3], testset[4]} )
         lu.assertEquals( #excluded, 4 )
 
         -- multiple excludes
-        included, excluded = lu.LuaUnit.applyPatternFilter( nil, {'tata', '%.bar'}, testset )
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'!tata', '!%.bar'}, testset )
         lu.assertEquals( included, {testset[1], testset[3], testset[8]} )
         lu.assertEquals( #excluded, 5 )
 
         -- combined test
-        included, excluded = lu.LuaUnit.applyPatternFilter( {'t[oai]', 'bar$', 'test'}, {'%.b', 'titi'}, testset )
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'t[oai]', 'bar$', 'test', '!%.b', '!titi'}, testset )
         lu.assertEquals( included, {testset[1], testset[5], testset[8]} )
         lu.assertEquals( #excluded, 5 )
+
+        --[[ Combining positive and negative filters ]]--
+        included, excluded = lu.LuaUnit.applyPatternFilter( {'foo', 'bar', '!t.t.', '%.bar'}, testset )
+        lu.assertEquals( included, {testset[2], testset[4], testset[6], testset[7], testset[8]} )
+        lu.assertEquals( #excluded, 3 )
     end
 
     function TestLuaUnitUtilities:test_strMatch()
@@ -2672,7 +2678,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( executedTests[7], "MyTestToto2:test1" )
         lu.assertEquals( #executedTests, 7)
 
-        runner:runSuite('-x', 'Toto2', '-p', 'Toto.' )
+        runner:runSuite('-p', 'Toto.', '-x', 'Toto2' )
         lu.assertEquals( runner.result.testCount, 5) -- MyTestToto2 excluded
     end
 

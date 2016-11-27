@@ -265,8 +265,10 @@ end
 M.private.strMatch = strMatch
 
 local function patternFilter(patterns, expr, nil_result)
-    -- Check if any of `patterns` is contained in `expr`. If so, return `true`.
-    -- Return `false` if none of the patterns are contained in expr. 
+    -- Run `expr` through the inclusion and exclusion rules defined in patterns
+    -- and return true if expr shall be included, false for excluded.
+    -- Inclusion pattern are defined as normal patterns, exclusions 
+    -- patterns start with `!` and are followed by a normal pattern
     -- If patterns is `nil` (= unset) or empty, return default value passed in `nil_result`.
 
     if patterns ~= nil and #patterns > 0 then
@@ -2133,10 +2135,11 @@ end
                 end
                 return
             elseif state == SET_EXCLUDE then
-                if result['exclude'] then
-                    table.insert( result['exclude'], cmdArg )
+                local notArg = '!'..cmdArg
+                if result['pattern'] then
+                    table.insert( result['pattern'],  notArg )
                 else
-                    result['exclude'] = { cmdArg }
+                    result['pattern'] = { notArg }
                 end
                 return
             end
@@ -2305,7 +2308,6 @@ end
             startDate = os.date(os.getenv('LUAUNIT_DATEFMT')),
             startIsodate = os.date('%Y-%m-%dT%H:%M:%S'),
             patternIncludeFilter = self.patternIncludeFilter,
-            patternExcludeFilter = self.patternExcludeFilter,
             tests = {},
             failures = {},
             errors = {},
@@ -2609,12 +2611,11 @@ end
         return result
     end
 
-    function M.LuaUnit.applyPatternFilter( patternIncFilter, patternExcFilter, listOfNameAndInst )
+    function M.LuaUnit.applyPatternFilter( patternIncFilter, listOfNameAndInst )
         local included, excluded = {}, {}
         for i, v in ipairs( listOfNameAndInst ) do
             -- local name, instance = v[1], v[2]
-            if  patternFilter( patternIncFilter, v[1], true ) and
-            not patternFilter( patternExcFilter, v[1], false ) then
+            if  patternFilter( patternIncFilter, v[1], true ) then
                 table.insert( included, v )
             else
                 table.insert( excluded, v )
@@ -2636,7 +2637,7 @@ end
             randomizeTable( expandedList )
         end
         local filteredList, filteredOutList = self.applyPatternFilter(
-            self.patternIncludeFilter, self.patternExcludeFilter, expandedList )
+            self.patternIncludeFilter, expandedList )
 
         self:startSuite( #filteredList, #filteredOutList )
 
@@ -2756,7 +2757,6 @@ end
 
         self.exeCount             = options.exeCount
         self.patternIncludeFilter = options.pattern
-        self.patternExcludeFilter = options.exclude
         self.randomize     = options.randomize
 
         if options.output then
