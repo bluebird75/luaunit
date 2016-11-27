@@ -605,6 +605,27 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.private.patternFilter( {'!titi', '!toto'}, 'yyytotoxxx'), false )
         lu.assertEquals( lu.private.patternFilter( {'!titi', '!toto'}, 'tutu'), true )
         lu.assertEquals( lu.private.patternFilter( {'!titi', '!to..'}, 'yyytoxxx'), false )
+
+        -- combine patterns
+        lu.assertEquals( lu.private.patternFilter( { 'foo' }, 'foo'), true )
+        lu.assertEquals( lu.private.patternFilter( { 'foo', '!foo' }, 'foo'), false )
+        lu.assertEquals( lu.private.patternFilter( { 'foo', '!foo', 'foo' }, 'foo'), true )
+        lu.assertEquals( lu.private.patternFilter( { 'foo', '!foo', 'foo', '!foo' }, 'foo'), false )
+
+        lu.assertEquals( lu.private.patternFilter( { '!foo' }, 'foo'), false )
+        lu.assertEquals( lu.private.patternFilter( { '!foo', 'foo' }, 'foo'), true )
+        lu.assertEquals( lu.private.patternFilter( { '!foo', 'foo', '!foo' }, 'foo'), false )
+        lu.assertEquals( lu.private.patternFilter( { '!foo', 'foo', '!foo', 'foo' }, 'foo'), true )
+
+        lu.assertEquals( lu.private.patternFilter( { 'f..', '!foo', '__foo__' }, 'toto'), false )
+        lu.assertEquals( lu.private.patternFilter( { 'f..', '!foo', '__foo__' }, 'fii'), true )
+        lu.assertEquals( lu.private.patternFilter( { 'f..', '!foo', '__foo__' }, 'foo'), false )
+        lu.assertEquals( lu.private.patternFilter( { 'f..', '!foo', '__foo__' }, '__foo__'), true )
+
+        lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, 'toto'), true )
+        lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, 'fii'), false )
+        lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, 'foo'), true )
+        lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, '__foo__'), false )
     end
 
     function TestLuaUnitUtilities:test_applyPatternFilter()

@@ -270,9 +270,8 @@ local function patternFilter(patterns, expr, nil_result)
     -- If patterns is `nil` (= unset) or empty, return default value passed in `nil_result`.
 
     if patterns ~= nil and #patterns > 0 then
-        local no_match_result = (patterns[1]:sub(1,1) == '!')
-        -- when no match is found, for inclusive patterns, it means refuse expr
-        -- for negative pattern, it means accept expr
+        local DONT_KNOW, ACCEPT, REJECT = nil, true, false
+        local result = DONT_KNOW
 
         for _, pattern in ipairs(patterns) do
             local exclude = false
@@ -282,12 +281,31 @@ local function patternFilter(patterns, expr, nil_result)
             end
             -- print('pattern: ',pattern)
             -- print('exclude: ',exclude)
-            if string.find(expr, pattern) then
-                return not exclude
+
+            -- when result is not set or already accepted, match pattern
+            -- only for rejecting
+            if exclude and (result == DONT_KNOW or result == ACCEPT) then
+                if string.find(expr, pattern) then
+                    result = REJECT
+                end
+            end
+
+            -- when result is not set or already rejected, match pattern
+            -- only for accepting
+            if (not exclude) and (result == DONT_KNOW or result == REJECT) then
+                if string.find(expr, pattern) then
+                    result = ACCEPT
+                end
             end
         end
 
-        return no_match_result -- no match from patterns
+        if result == DONT_KNOW then
+            -- when no match is found, for inclusive patterns, it means refuse expr
+            -- for negative pattern, it means accept expr
+            return (patterns[1]:sub(1,1) == '!')
+        end
+
+        return result
     end
 
     return nil_result
