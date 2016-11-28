@@ -73,11 +73,11 @@ Options:
   -q, --quiet:            Set verbosity to minimum
   -e, --error:            Stop on first error
   -f, --failure:          Stop on first failure or error
-  -r, --random            Run tests in random order
+  -s, --shuffle:          Shuffle tests before running them
   -o, --output OUTPUT:    Set output type to OUTPUT
                           Possible values: text, tap, junit, nil
   -n, --name NAME:        For junit only, mandatory name of xml file
-  -c, --count NUM:        Execute all tests NUM times, e.g. to trig the JIT
+  -r, --repeat NUM:       Execute all tests NUM times, e.g. to trig the JIT
   -p, --pattern PATTERN:  Execute all test names matching the Lua PATTERN
                           May be repeated to include severals patterns
                           Make sure you escape magic chars like +? with %
@@ -2020,16 +2020,16 @@ end
         -- --output, -o, + name: select output type
         -- --pattern, -p, + pattern: run test matching pattern, may be repeated
         -- --exclude, -x, + pattern: run test not matching pattern, may be repeated
-        -- --random, -r, : run tests in random order
+        -- --shuffle, -s, : shuffle tests before reunning them
         -- --name, -n, + fname: name of output file for junit, default to stdout
-        -- --count, -c, + num: number of times to execute each test
+        -- --repeat, -r, + num: number of times to execute each test
         -- [testnames, ...]: run selected test names
         --
         -- Returns a table with the following fields:
         -- verbosity: nil, M.VERBOSITY_DEFAULT, M.VERBOSITY_QUIET, M.VERBOSITY_VERBOSE
         -- output: nil, 'tap', 'junit', 'text', 'nil'
         -- testNames: nil or a list of test names to run
-        -- exeCount: num or 1
+        -- exeRepeat: num or 1
         -- pattern: nil or a list of patterns
         -- exclude: nil or a list of patterns
 
@@ -2038,7 +2038,7 @@ end
         local SET_PATTERN = 2
         local SET_EXCLUDE = 3
         local SET_FNAME = 4
-        local SET_XCOUNT = 5
+        local SET_REPEAT = 5
 
         if cmdLine == nil then
             return result
@@ -2063,8 +2063,8 @@ end
             elseif option == '--failure' or option == '-f' then
                 result['quitOnFailure'] = true
                 return
-            elseif option == '--random' or option == '-r' then
-                result['randomize'] = true
+            elseif option == '--shuffle' or option == '-s' then
+                result['shuffle'] = true
                 return
             elseif option == '--output' or option == '-o' then
                 state = SET_OUTPUT
@@ -2072,8 +2072,8 @@ end
             elseif option == '--name' or option == '-n' then
                 state = SET_FNAME
                 return state
-            elseif option == '--count' or option == '-c' then
-                state = SET_XCOUNT
+            elseif option == '--repeat' or option == '-r' then
+                state = SET_REPEAT
                 return state
             elseif option == '--pattern' or option == '-p' then
                 state = SET_PATTERN
@@ -2092,9 +2092,9 @@ end
             elseif state == SET_FNAME then
                 result['fname'] = cmdArg
                 return
-            elseif state == SET_XCOUNT then
-                result['exeCount'] = tonumber(cmdArg)
-                                     or error('Malformed -c argument: '..cmdArg)
+            elseif state == SET_REPEAT then
+                result['exeRepeat'] = tonumber(cmdArg)
+                                     or error('Malformed -r argument: '..cmdArg)
                 return
             elseif state == SET_PATTERN then
                 if result['pattern'] then
@@ -2447,7 +2447,7 @@ end
         -- We do this by stripping the failure prefix from the error message,
         -- while keeping track of the gsub() count. A non-zero value -> failure
         local failed, iter_msg
-        iter_msg = self.exeCount and 'iteration: '..self.currentCount..', '
+        iter_msg = self.exeRepeat and 'iteration: '..self.currentCount..', '
         err.msg, failed = err.msg:gsub(M.FAILURE_PREFIX, iter_msg or '', 1)
         if failed > 0 then
             err.status = NodeStatus.FAIL
@@ -2492,7 +2492,7 @@ end
         self:startTest(prettyFuncName)
 
         local node = self.result.currentNode
-        for iter_n = 1, self.exeCount or 1 do
+        for iter_n = 1, self.exeRepeat or 1 do
             if node:isNotPassed() then
                 break
             end
@@ -2603,7 +2603,7 @@ end
         ]]
 
         local expandedList = self.expandClasses( listOfNameAndInst )
-        if self.randomize then
+        if self.shuffle then
             randomizeTable( expandedList )
         end
         local filteredList, filteredOutList = self.applyPatternFilter(
@@ -2725,10 +2725,10 @@ end
         self.quitOnFailure = options.quitOnFailure
         self.fname         = options.fname
 
-        self.exeCount             = options.exeCount
+        self.exeRepeat            = options.exeRepeat
         self.patternIncludeFilter = options.pattern
         self.patternExcludeFilter = options.exclude
-        self.randomize     = options.randomize
+        self.shuffle              = options.shuffle
 
         if options.output then
             if options.output:lower() == 'junit' and options.fname == nil then
