@@ -25,6 +25,11 @@ TODO Future:
 - see StackTracePlus for printing more stack information: https://github.com/ignacio/StackTracePlus
 - how does busted deal with nested tables ? functions ?
 - look at serpent to see how to improve nested table printing
+- function should be printed as <function>
+- print table of test test_filterWithPattern and see how to improve readability
+- align the "OK" vertically for text output
+- better detection of screen size
+- shuffle should shuffle separately classes and then class methods
 
 Nice to have: 
 ============
