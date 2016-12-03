@@ -571,11 +571,15 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-x', 'titi', '-x', 'toto' } ), { exclude={'titi', 'toto'} } )
         lu.assertErrorMsgContains( 'Missing argument after -x', lu.LuaUnit.parseCmdLine, { '-x', } )
 
-        -- count
-        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--count', '123' } ), { exeCount=123 } )
-        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-c', '123' } ), { exeCount=123 } )
-        lu.assertErrorMsgContains( 'Malformed -c argument', lu.LuaUnit.parseCmdLine, { '-c', 'bad' } )
-        lu.assertErrorMsgContains( 'Missing argument after -c', lu.LuaUnit.parseCmdLine, { '-c', } )
+        -- repeat
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--repeat', '123' } ), { exeRepeat=123 } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-r', '123' } ), { exeRepeat=123 } )
+        lu.assertErrorMsgContains( 'Malformed -r argument', lu.LuaUnit.parseCmdLine, { '-r', 'bad' } )
+        lu.assertErrorMsgContains( 'Missing argument after -r', lu.LuaUnit.parseCmdLine, { '-r', } )
+
+        -- shuffle
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--shuffle' } ), { shuffle=true } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-s' } ), { shuffle=true } )
 
         --megamix
         lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-p', 'toto', 'titi', '-v', 'tata', '-o', 'tintin', '-p', 'tutu', 'prout', '-n', 'toto.xml' } ), 
@@ -2459,19 +2463,19 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
 
-        runner:runSuite( '--count', '5',
+        runner:runSuite( '--repeat', '5',
                          'MyTestWithErrorsAndFailures.testOk')
         lu.assertEquals( runner.result.passedCount, 1 )
         lu.assertEquals( runner.result.failureCount, 0 )
-        lu.assertEquals( runner.exeCount, 5 )
+        lu.assertEquals( runner.exeRepeat, 5 )
         lu.assertEquals( runner.currentCount, 5 )
 
-        runner:runSuite( '--count', '5',
+        runner:runSuite( '--repeat', '5',
                          'MyTestWithErrorsAndFailures.testWithFailure1')
         -- check if the current iteration got reflected in the failure message
         lu.assertEquals( runner.result.passedCount, 0 )
         lu.assertEquals( runner.result.failureCount, 1 )
-        lu.assertEquals( runner.exeCount, 5 )
+        lu.assertEquals( runner.exeRepeat, 5 )
         lu.assertEquals( runner.currentCount, 1 )
         lu.assertStrContains(runner.result.failures[1].msg, "iteration: 1")
 
@@ -2484,19 +2488,19 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         end
 
         -- three iterations will PASS
-        runner:runSuite( '--count', '3',
+        runner:runSuite( '--repeat', '3',
                          'MyTestIterationBasedFailure')
         lu.assertEquals( runner.result.passedCount, 1 )
         lu.assertEquals( runner.result.failureCount, 0 )
-        lu.assertEquals( runner.exeCount, 3 )
+        lu.assertEquals( runner.exeRepeat, 3 )
         lu.assertEquals( runner.currentCount, 3 )
 
         -- more iterations should FAIL (on the fourth one)
-        runner:runSuite( '--count', '5',
+        runner:runSuite( '--repeat', '5',
                          'MyTestIterationBasedFailure')
         lu.assertEquals( runner.result.passedCount, 0 )
         lu.assertEquals( runner.result.failureCount, 1 )
-        lu.assertEquals( runner.exeCount, 5 )
+        lu.assertEquals( runner.exeRepeat, 5 )
         lu.assertEquals( runner.currentCount, 4 )
         lu.assertStrContains(runner.result.failures[1].msg, "iteration: 4")
 
