@@ -79,10 +79,10 @@ Options:
   -n, --name NAME:        For junit only, mandatory name of xml file
   -c, --count NUM:        Execute all tests NUM times, e.g. to trig the JIT
   -p, --pattern PATTERN:  Execute all test names matching the Lua PATTERN
-                          May be repeated to include severals patterns
+                          May be repeated to include several patterns
                           Make sure you escape magic chars like +? with %
   -x, --exclude PATTERN:  Exclude all test names matching the Lua PATTERN
-                          May be repeated to include severals patterns
+                          May be repeated to exclude several patterns
                           Make sure you escape magic chars like +? with %
   testname1, testname2, ... : tests to run in the form of testFunction,
                               TestClass or TestClass.testMethod
@@ -1216,7 +1216,7 @@ function M.assertEquals(actual, expected, doDeepAnalysis)
     end
 end
 
-function M.almostEquals( actual, expected, margin, margin_boost )
+function M.almostEquals( actual, expected, margin )
     if type(actual) ~= 'number' or type(expected) ~= 'number' or type(margin) ~= 'number' then
         error_fmt(3, 'almostEquals: must supply only number arguments.\nArguments supplied: %s, %s, %s',
             prettystr(actual), prettystr(expected), prettystr(margin))
@@ -1224,18 +1224,20 @@ function M.almostEquals( actual, expected, margin, margin_boost )
     if margin < 0 then
         error('almostEquals: margin must not be negative, current value is ' .. margin, 3)
     end
-    local realmargin = margin + (margin_boost or M.EPSILON)
-    return math.abs(expected - actual) <= realmargin
+    return math.abs(expected - actual) <= margin
 end
 
 function M.assertAlmostEquals( actual, expected, margin )
     -- check that two floats are close by margin
+    margin = margin or M.EPSILON
     if not M.almostEquals(actual, expected, margin) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
         end
-        fail_fmt(2, 'Values are not almost equal\nExpected: %s with margin of %s, received: %s',
-                 expected, margin, actual)
+        local delta = math.abs(actual - expected) - margin
+        fail_fmt(2, 'Values are not almost equal\n' ..
+                    'Actual: %s, expected: %s with margin of %s; delta: %s',
+                    actual, expected, margin, delta)
     end
 end
 
@@ -1256,12 +1258,15 @@ end
 
 function M.assertNotAlmostEquals( actual, expected, margin )
     -- check that two floats are not close by margin
+    margin = margin or M.EPSILON
     if M.almostEquals(actual, expected, margin) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
         end
-        fail_fmt(2, 'Values are almost equal\nExpected: %s with a difference above margin of %s, received: %s',
-                 expected, margin, actual)
+        local delta = margin - math.abs(actual - expected)
+        fail_fmt(2, 'Values are almost equal\nActual: %s, expected: %s' ..
+                    ' with a difference above margin of %s; delta: %s',
+                    actual, expected, margin, delta)
     end
 end
 
