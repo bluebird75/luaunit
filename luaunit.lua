@@ -265,18 +265,49 @@ end
 M.private.strMatch = strMatch
 
 local function patternFilter(patterns, expr, nil_result)
-    -- Check if any of `patterns` is contained in `expr`. If so, return `true`.
-    -- Return `false` if none of the patterns are contained in expr. If patterns
-    -- is `nil` (= unset), return default value passed in `nil_result`.
-    if patterns ~= nil then
+    -- Run `expr` through the inclusion and exclusion rules defined in patterns
+    -- and return true if expr shall be included, false for excluded.
+    -- Inclusion pattern are defined as normal patterns, exclusions 
+    -- patterns start with `!` and are followed by a normal pattern
+    -- If patterns is `nil` (= unset) or empty, return default value passed in `nil_result`.
+
+    if patterns ~= nil and #patterns > 0 then
+        local DONT_KNOW, ACCEPT, REJECT = nil, true, false
+        local result = DONT_KNOW
 
         for _, pattern in ipairs(patterns) do
-            if string.find(expr, pattern) then
-                return true
+            local exclude = false
+            if (pattern:sub(1,1) == '!') then
+                exclude = true
+                pattern = pattern:sub(2)
+            end
+            -- print('pattern: ',pattern)
+            -- print('exclude: ',exclude)
+
+            -- when result is not set or already accepted, match pattern
+            -- only for rejecting
+            if exclude and (result == DONT_KNOW or result == ACCEPT) then
+                if string.find(expr, pattern) then
+                    result = REJECT
+                end
+            end
+
+            -- when result is not set or already rejected, match pattern
+            -- only for accepting
+            if (not exclude) and (result == DONT_KNOW or result == REJECT) then
+                if string.find(expr, pattern) then
+                    result = ACCEPT
+                end
             end
         end
 
-        return false -- no match from patterns
+        if result == DONT_KNOW then
+            -- when no match is found, for inclusive patterns, it means refuse expr
+            -- for negative pattern, it means accept expr
+            return (patterns[1]:sub(1,1) == '!')
+        end
+
+        return result
     end
 
     return nil_result
@@ -2104,10 +2135,11 @@ end
                 end
                 return
             elseif state == SET_EXCLUDE then
-                if result['exclude'] then
-                    table.insert( result['exclude'], cmdArg )
+                local notArg = '!'..cmdArg
+                if result['pattern'] then
+                    table.insert( result['pattern'],  notArg )
                 else
-                    result['exclude'] = { cmdArg }
+                    result['pattern'] = { notArg }
                 end
                 return
             end
@@ -2276,7 +2308,6 @@ end
             startDate = os.date(os.getenv('LUAUNIT_DATEFMT')),
             startIsodate = os.date('%Y-%m-%dT%H:%M:%S'),
             patternIncludeFilter = self.patternIncludeFilter,
-            patternExcludeFilter = self.patternExcludeFilter,
             tests = {},
             failures = {},
             errors = {},
@@ -2580,12 +2611,11 @@ end
         return result
     end
 
-    function M.LuaUnit.applyPatternFilter( patternIncFilter, patternExcFilter, listOfNameAndInst )
+    function M.LuaUnit.applyPatternFilter( patternIncFilter, listOfNameAndInst )
         local included, excluded = {}, {}
         for i, v in ipairs( listOfNameAndInst ) do
             -- local name, instance = v[1], v[2]
-            if  patternFilter( patternIncFilter, v[1], true ) and
-            not patternFilter( patternExcFilter, v[1], false ) then
+            if  patternFilter( patternIncFilter, v[1], true ) then
                 table.insert( included, v )
             else
                 table.insert( excluded, v )
@@ -2607,7 +2637,7 @@ end
             randomizeTable( expandedList )
         end
         local filteredList, filteredOutList = self.applyPatternFilter(
-            self.patternIncludeFilter, self.patternExcludeFilter, expandedList )
+            self.patternIncludeFilter, expandedList )
 
         self:startSuite( #filteredList, #filteredOutList )
 
@@ -2727,7 +2757,6 @@ end
 
         self.exeCount             = options.exeCount
         self.patternIncludeFilter = options.pattern
-        self.patternExcludeFilter = options.exclude
         self.randomize     = options.randomize
 
         if options.output then
