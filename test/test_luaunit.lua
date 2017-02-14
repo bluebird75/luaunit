@@ -1358,6 +1358,44 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure(lu.assertItemsEquals, {one=1,two=2,three=3}, {two=2,one=1})
     end
 
+    function TestLuaUnitAssertions:test_assertTableContains()
+        local t = {3, 'some value', 1, 2}
+
+        assertFailure(lu.assertTableContains, t, 0)
+        lu.assertTableContains(t, 1)
+        lu.assertTableContains(t, 2)
+        lu.assertTableContains(t, 3)
+        assertFailure(lu.assertTableContains, t, 4)
+        lu.assertTableContains(t, 'some value')
+        assertFailure(lu.assertTableContains, t, 'other value')
+
+        t = {red = 'cherry', yellow = 'lemon', blue = 'grape'}
+
+        lu.assertTableContains(t, 'lemon')
+        lu.assertTableContains(t, 'grape')
+        lu.assertTableContains(t, 'cherry')
+        assertFailure(lu.assertTableContains, t, 'kiwi')
+    end
+
+    function TestLuaUnitAssertions:test_assertNotTableContains()
+        local t = {3, 'some value', 1, 2}
+
+        lu.assertNotTableContains(t, 0)
+        assertFailure(lu.assertNotTableContains, t, 1)
+        assertFailure(lu.assertNotTableContains, t, 2)
+        assertFailure(lu.assertNotTableContains, t, 3)
+        lu.assertNotTableContains(t, 4)
+        assertFailure(lu.assertNotTableContains, t, 'some value')
+        lu.assertNotTableContains(t, 'other value')
+
+        t = {red = 'cherry', yellow = 'lemon', blue = 'grape'}
+
+        assertFailure(lu.assertNotTableContains, t, 'lemon')
+        assertFailure(lu.assertNotTableContains, t, 'grape')
+        assertFailure(lu.assertNotTableContains, t, 'cherry')
+        lu.assertNotTableContains(t, 'kiwi')
+    end
+
     function TestLuaUnitAssertions:test_assertIsNumber()
         lu.assertIsNumber(1)
         lu.assertIsNumber(1.4)

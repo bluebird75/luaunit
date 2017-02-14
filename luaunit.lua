@@ -1761,6 +1761,25 @@ function M.assertNotIsMinusZero(value, extra_msg_or_nil)
     end
 end
 
+function M.assertTableContains(t, expected)
+    -- checks that table t contains the expected element
+    if table_findkeyof(t, expected) == nil then
+        t, expected = prettystrPairs(t, expected)
+        fail_fmt(2, 'Table %s does NOT contain the expected element %s',
+                 t, expected)
+    end
+end
+
+function M.assertNotTableContains(t, expected)
+    -- checks that table t doesn't contain the expected element
+    local k = table_findkeyof(t, expected)
+    if k ~= nil then
+        t, expected = prettystrPairs(t, expected)
+        fail_fmt(2, 'Table %s DOES contain the unwanted element %s (at key %s)',
+                 t, expected, prettystr(k))
+    end
+end
+
 ----------------------------------------------------------------
 --                     Compatibility layer
 ----------------------------------------------------------------
@@ -1800,6 +1819,8 @@ local list_of_funcs = {
     { 'assertErrorMsgContentEquals', 'assert_error_msg_content_equals' },
     { 'assertIs'                , 'assert_is' },
     { 'assertNotIs'             , 'assert_not_is' },
+    { 'assertTableContains'     , 'assert_table_contains' },
+    { 'assertNotTableContains'  , 'assert_not_table_contains' },
     { 'wrapFunctions'           , 'WrapFunctions' },
     { 'wrapFunctions'           , 'wrap_functions' },
 
