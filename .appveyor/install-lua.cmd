@@ -19,12 +19,18 @@ set LUA="C:\Program Files (x86)\Lua\5.1\lua.exe"
 goto :EOF
 
 :lua51
+@echo off
 if NOT "%LUAENV%"=="lua51" goto lua52
 echo Setting up Lua 5.1 ...
-@echo on
-curl -fLsS -o %ZIP_51% http://sourceforge.net/projects/luabinaries/files/%VER_51%/Tools%%20Executables/%ZIP_51%/download
-unzip %ZIP_51%
-set LUA=lua5.1.exe
+if NOT EXIST "lua51\lua5.1.exe" (
+	@echo on
+    echo Fetching Lua v5.1 from internet
+	curl -fLsS -o %ZIP_51% http://sourceforge.net/projects/luabinaries/files/%VER_51%/Tools%%20Executables/%ZIP_51%/download
+	unzip -d lua51 %ZIP_51%
+) else (
+    echo Using cached version of Lua v5.1
+)
+set LUA="lua51\lua5.1.exe"
 @echo off
 goto :EOF
 
