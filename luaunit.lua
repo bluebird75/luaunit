@@ -264,53 +264,40 @@ local function strMatch(s, pattern, start, final )
 end
 M.private.strMatch = strMatch
 
-local function patternFilter(patterns, expr, nil_result)
+local function patternFilter(patterns, expr)
     -- Run `expr` through the inclusion and exclusion rules defined in patterns
     -- and return true if expr shall be included, false for excluded.
     -- Inclusion pattern are defined as normal patterns, exclusions 
     -- patterns start with `!` and are followed by a normal pattern
-    -- If patterns is `nil` (= unset) or empty, return default value passed in `nil_result`.
 
-    if patterns ~= nil and #patterns > 0 then
-        local DONT_KNOW, ACCEPT, REJECT = nil, true, false
-        local result = DONT_KNOW
+    -- result: nil = UNKNOWN (not matched yet), true = ACCEPT, false = REJECT
+    -- default: true if no explicit "include" is found, set to false otherwise
+    local default, result = true, nil
 
+    if patterns ~= nil then
         for _, pattern in ipairs(patterns) do
-            local exclude = false
-            if (pattern:sub(1,1) == '!') then
-                exclude = true
+            local exclude = pattern:sub(1,1) == '!'
+            if exclude then
                 pattern = pattern:sub(2)
+            else
+                -- at least one include pattern specified, a match is required
+                default = false
             end
             -- print('pattern: ',pattern)
             -- print('exclude: ',exclude)
+            -- print('default: ',default)
 
-            -- when result is not set or already accepted, match pattern
-            -- only for rejecting
-            if exclude and (result == DONT_KNOW or result == ACCEPT) then
-                if string.find(expr, pattern) then
-                    result = REJECT
-                end
-            end
-
-            -- when result is not set or already rejected, match pattern
-            -- only for accepting
-            if (not exclude) and (result == DONT_KNOW or result == REJECT) then
-                if string.find(expr, pattern) then
-                    result = ACCEPT
-                end
+            if string.find(expr, pattern) then
+                -- set result to false when excluding, true otherwise
+                result = not exclude
             end
         end
-
-        if result == DONT_KNOW then
-            -- when no match is found, for inclusive patterns, it means refuse expr
-            -- for negative pattern, it means accept expr
-            return (patterns[1]:sub(1,1) == '!')
-        end
-
-        return result
     end
 
-    return nil_result
+    if result ~= nil then
+        return result
+    end
+    return default
 end
 M.private.patternFilter = patternFilter
 
@@ -2620,7 +2607,7 @@ end
         local included, excluded = {}, {}
         for i, v in ipairs( listOfNameAndInst ) do
             -- local name, instance = v[1], v[2]
-            if  patternFilter( patternIncFilter, v[1], true ) then
+            if  patternFilter( patternIncFilter, v[1] ) then
                 table.insert( included, v )
             else
                 table.insert( excluded, v )

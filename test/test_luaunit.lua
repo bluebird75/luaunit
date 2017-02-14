@@ -586,10 +586,8 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
     end
 
     function TestLuaUnitUtilities:test_patternFilter()
-        lu.assertEquals( lu.private.patternFilter( nil, 'toto', true), true )
-        lu.assertEquals( lu.private.patternFilter( nil, 'titi', false), false )
-        lu.assertEquals( lu.private.patternFilter( {}, 'toto', false), false  )
-        lu.assertEquals( lu.private.patternFilter( {}, 'toto', true), true  )
+        lu.assertEquals( lu.private.patternFilter( nil, 'toto'), true )
+        lu.assertEquals( lu.private.patternFilter( {}, 'toto'), true  )
 
         -- positive pattern
         lu.assertEquals( lu.private.patternFilter( {'toto'}, 'toto'), true )
@@ -623,7 +621,7 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.private.patternFilter( { 'f..', '!foo', '__foo__' }, 'foo'), false )
         lu.assertEquals( lu.private.patternFilter( { 'f..', '!foo', '__foo__' }, '__foo__'), true )
 
-        lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, 'toto'), true )
+        lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, 'toto'), false )
         lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, 'fii'), false )
         lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, 'foo'), true )
         lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, '__foo__'), false )
