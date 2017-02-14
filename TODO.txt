@@ -30,6 +30,8 @@ TODO Future:
 - align the "OK" vertically for text output
 - better detection of screen size
 - shuffle should shuffle separately classes and then class methods
+- catch the os.exit call with a handler or something, to avoid aborting the tests
+- add assertTableContains and assertTableNotContains to check the presence / absence of value in an array
 
 Nice to have: 
 ============
@@ -41,6 +43,8 @@ TODO for 3.3 release:
 - doc about scientific computing dedicated functions
 - doc about prettystr
 - doc about usage of prettystr & assertion library
+- fix include/exclude bug (see https://github.com/bluebird75/luaunit/pull/82 )
+
 
 
 Done since 3.2:
