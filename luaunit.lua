@@ -691,8 +691,8 @@ local function mismatchFormattingPureList( table_a, table_b )
     local longest, shortest = math.max(len_a, len_b), math.min(len_a, len_b)
     local deltalv  = longest - shortest
 
-    local commonUntil = longest
-    for i = 1, longest do
+    local commonUntil = shortest
+    for i = 1, shortest do
         if not is_equal(table_a[i], table_b[i]) then
             commonUntil = i - 1
             break
