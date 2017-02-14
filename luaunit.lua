@@ -772,6 +772,40 @@ function M.assertAlmostEquals( actual, expected, margin )
     end
 end
 
+-- General variant of assertEquals for tables (with margin)
+function M.assertAllAlmostEquals( actual, expected, margin )
+    if (type(actual)   ~= 'table'                               ) or
+       (type(expected) ~= 'table' and type(expected) ~= 'number') or
+       (type(margin)   ~= 'table' and type(margin)   ~= 'number' and magin ~= nil) then
+      error_fmt(3, 'assertAllAlmostEquals: must supply only number or table arguments.\nArguments supplied: %s, %s, %s',
+      prettystr(actual), prettystr(expected), prettystr(margin))
+    end
+
+    if type(expected) ~= 'table' then
+      local value = expected
+      expected = {}
+      for k in pairs(actual) do
+        expected[k] = value
+      end
+    end
+
+    if type(margin) ~= 'table' then
+      local value = margin
+      margin = {}
+      for k in pairs(actual) do
+        margin[k] = value
+      end
+    end
+
+    for k,v in pairs(actual) do
+      if type(v) == 'number' and margin[k] ~= 0 then
+        M.assertAlmostEquals (v, expected[k], margin[k])
+      else
+        M.assertEquals (v, expected[k])
+      end
+    end
+end
+
 function M.assertNotEquals(actual, expected)
     assertCount = assertCount + 1
     if type(actual) ~= type(expected) then
@@ -1023,6 +1057,7 @@ local list_of_funcs = {
 
     -- general assertions
     { 'assertEquals'            , 'assert_equals' },
+    { 'assertAllAlmostEquals'   , 'assert_all_almost_equals' },
     { 'assertItemsEquals'       , 'assert_items_equals' },
     { 'assertNotEquals'         , 'assert_not_equals' },
     { 'assertAlmostEquals'      , 'assert_almost_equals' },
