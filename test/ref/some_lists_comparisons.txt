@@ -1,0 +1,844 @@
+Started on 11/08/16 21:28:53
+    TestListCompare.test1 ... FAIL
+test/some_lists_comparisons.lua:22: expected: 
+{
+    121221,
+    122211,
+    121221,
+    122211,
+    121221,
+    122212,
+    121212,
+    122112,
+    121221,
+    121212,
+    122121
+}
+actual: 
+{
+    121221,
+    122211,
+    121221,
+    122211,
+    121221,
+    122212,
+    121212,
+    122112,
+    122121,
+    121212,
+    122121
+}
+List difference analysis:
+* lists A (actual) and B (expected) have the same size
+* lists A and B start differing at index 9
+* lists A and B are equal again from index 10
+* Common parts:
+  = A[1], B[1]: 121221
+  = A[2], B[2]: 122211
+  = A[3], B[3]: 121221
+  = A[4], B[4]: 122211
+  = A[5], B[5]: 121221
+  = A[6], B[6]: 122212
+  = A[7], B[7]: 121212
+  = A[8], B[8]: 122112
+* Differing parts:
+  - A[9]: 122121
+  + B[9]: 121221
+* Common parts at the end of the lists
+  = A[10], B[10]: 121212
+  = A[11], B[11]: 122121
+    TestListCompare.test1b ... FAIL
+test/some_lists_comparisons.lua:28: expected: 
+{
+    121221,
+    122211,
+    121221,
+    122112,
+    121212,
+    121122,
+    121212,
+    122122,
+    121212,
+    122112,
+    121212
+}
+actual: 
+{
+    121221,
+    122211,
+    121221,
+    122112,
+    121212,
+    121122,
+    121212,
+    122122,
+    121212,
+    122112,
+    122112
+}
+List difference analysis:
+* lists A (actual) and B (expected) have the same size
+* lists A and B start differing at index 11
+* Common parts:
+  = A[1], B[1]: 121221
+  = A[2], B[2]: 122211
+  = A[3], B[3]: 121221
+  = A[4], B[4]: 122112
+  = A[5], B[5]: 121212
+  = A[6], B[6]: 121122
+  = A[7], B[7]: 121212
+  = A[8], B[8]: 122122
+  = A[9], B[9]: 121212
+  = A[10], B[10]: 122112
+* Differing parts:
+  - A[11]: 122112
+  + B[11]: 121212
+    TestListCompare.test1c ... FAIL
+test/some_lists_comparisons.lua:34: expected: 
+{
+    121212,
+    122121,
+    111212,
+    122121,
+    122121,
+    121212,
+    121121,
+    121212,
+    121221,
+    122212,
+    112121
+}
+actual: 
+{
+    122112,
+    122121,
+    111212,
+    122121,
+    122121,
+    121212,
+    121121,
+    121212,
+    121221,
+    122212,
+    112121
+}
+List difference analysis:
+* lists A (actual) and B (expected) have the same size
+* lists A and B start differing at index 1
+* lists A and B are equal again from index 2
+* Differing parts:
+  - A[1]: 122112
+  + B[1]: 121212
+* Common parts at the end of the lists
+  = A[2], B[2]: 122121
+  = A[3], B[3]: 111212
+  = A[4], B[4]: 122121
+  = A[5], B[5]: 122121
+  = A[6], B[6]: 121212
+  = A[7], B[7]: 121121
+  = A[8], B[8]: 121212
+  = A[9], B[9]: 121221
+  = A[10], B[10]: 122212
+  = A[11], B[11]: 112121
+    TestListCompare.test2 ... FAIL
+test/some_lists_comparisons.lua:43: expected: {1, 2, 3, 4, 5, 6, 8, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+List difference analysis:
+* lists A (actual) and B (expected) have the same size
+* lists A and B start differing at index 7
+* lists A and B are equal again from index 9
+* Common parts:
+  = A[1], B[1]: 1
+  = A[2], B[2]: 2
+  = A[3], B[3]: 3
+  = A[4], B[4]: 4
+  = A[5], B[5]: 5
+  = A[6], B[6]: 6
+* Differing parts:
+  - A[7]: 7
+  + B[7]: 8
+  - A[8]: 8
+  + B[8]: 7
+* Common parts at the end of the lists
+  = A[9], B[9]: 9
+  = A[10], B[10]: 10
+  = A[11], B[11]: 11
+  = A[12], B[12]: 12
+  = A[13], B[13]: 13
+  = A[14], B[14]: 14
+  = A[15], B[15]: 15
+  = A[16], B[16]: 16
+  = A[17], B[17]: 17
+  = A[18], B[18]: 18
+  = A[19], B[19]: 19
+  = A[20], B[20]: 20
+    TestListCompare.test3 ... FAIL
+test/some_lists_comparisons.lua:57: expected: {1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+List difference analysis:
+* list sizes differ: list A (actual) has 20 items, list B (expected) has 19 items
+* lists A and B start differing at index 7
+* lists A and B are equal again from index 8 for A, 7 for B
+* Common parts:
+  = A[1], B[1]: 1
+  = A[2], B[2]: 2
+  = A[3], B[3]: 3
+  = A[4], B[4]: 4
+  = A[5], B[5]: 5
+  = A[6], B[6]: 6
+* Present only in one list:
+  - A[7]: 7
+* Common parts at the end of the lists
+  = A[8], B[7]: 8
+  = A[9], B[8]: 9
+  = A[10], B[9]: 10
+  = A[11], B[10]: 11
+  = A[12], B[11]: 12
+  = A[13], B[12]: 13
+  = A[14], B[13]: 14
+  = A[15], B[14]: 15
+  = A[16], B[15]: 16
+  = A[17], B[16]: 17
+  = A[18], B[17]: 18
+  = A[19], B[18]: 19
+  = A[20], B[19]: 20
+    TestListCompare.test4 ... FAIL
+test/some_lists_comparisons.lua:74: expected: {1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+List difference analysis:
+* list sizes differ: list A (actual) has 20 items, list B (expected) has 17 items
+* lists A and B start differing at index 7
+* lists A and B are equal again from index 10 for A, 7 for B
+* Common parts:
+  = A[1], B[1]: 1
+  = A[2], B[2]: 2
+  = A[3], B[3]: 3
+  = A[4], B[4]: 4
+  = A[5], B[5]: 5
+  = A[6], B[6]: 6
+* Present only in one list:
+  - A[7]: 7
+  - A[8]: 8
+  - A[9]: 9
+* Common parts at the end of the lists
+  = A[10], B[7]: 10
+  = A[11], B[8]: 11
+  = A[12], B[9]: 12
+  = A[13], B[10]: 13
+  = A[14], B[11]: 14
+  = A[15], B[12]: 15
+  = A[16], B[13]: 16
+  = A[17], B[14]: 17
+  = A[18], B[15]: 18
+  = A[19], B[16]: 19
+  = A[20], B[17]: 20
+    TestListCompare.test5a ... FAIL
+test/some_lists_comparisons.lua:98: expected: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+List difference analysis:
+* list sizes differ: list A (expected) has 17 items, list B (actual) has 20 items
+* lists A and B start differing at index 5
+* lists A and B are equal again from index 7 for A, 10 for B
+* Common parts:
+  = A[1], B[1]: 1
+  = A[2], B[2]: 2
+  = A[3], B[3]: 3
+  = A[4], B[4]: 4
+* Differing parts:
+  - A[5]: 6
+  + B[5]: 5
+  - A[6]: 5
+  + B[6]: 6
+* Present only in one list:
+  + B[7]: 7
+  + B[8]: 8
+  + B[9]: 9
+* Common parts at the end of the lists
+  = A[7], B[10]: 10
+  = A[8], B[11]: 11
+  = A[9], B[12]: 12
+  = A[10], B[13]: 13
+  = A[11], B[14]: 14
+  = A[12], B[15]: 15
+  = A[13], B[16]: 16
+  = A[14], B[17]: 17
+  = A[15], B[18]: 18
+  = A[16], B[19]: 19
+  = A[17], B[20]: 20
+    TestListCompare.test5b ... FAIL
+test/some_lists_comparisons.lua:103: expected: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+List difference analysis:
+* list sizes differ: list A (actual) has 17 items, list B (expected) has 20 items
+* lists A and B start differing at index 5
+* lists A and B are equal again from index 7 for A, 10 for B
+* Common parts:
+  = A[1], B[1]: 1
+  = A[2], B[2]: 2
+  = A[3], B[3]: 3
+  = A[4], B[4]: 4
+* Differing parts:
+  - A[5]: 6
+  + B[5]: 5
+  - A[6]: 5
+  + B[6]: 6
+* Present only in one list:
+  + B[7]: 7
+  + B[8]: 8
+  + B[9]: 9
+* Common parts at the end of the lists
+  = A[7], B[10]: 10
+  = A[8], B[11]: 11
+  = A[9], B[12]: 12
+  = A[10], B[13]: 13
+  = A[11], B[14]: 14
+  = A[12], B[15]: 15
+  = A[13], B[16]: 16
+  = A[14], B[17]: 17
+  = A[15], B[18]: 18
+  = A[16], B[19]: 19
+  = A[17], B[20]: 20
+    TestListCompare.test5c ... FAIL
+test/some_lists_comparisons.lua:109: expected: <table: 00D04838> {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: <table: 00D04838> {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+List difference analysis:
+* list sizes differ: list <table: 00D04838> A (actual) has 17 items, list <table: 00D04838> B (expected) has 20 items
+* lists A and B start differing at index 5
+* lists A and B are equal again from index 7 for A, 10 for B
+* Common parts:
+  = A[1], B[1]: 1
+  = A[2], B[2]: 2
+  = A[3], B[3]: 3
+  = A[4], B[4]: 4
+* Differing parts:
+  - A[5]: 6
+  + B[5]: 5
+  - A[6]: 5
+  + B[6]: 6
+* Present only in one list:
+  + B[7]: 7
+  + B[8]: 8
+  + B[9]: 9
+* Common parts at the end of the lists
+  = A[7], B[10]: 10
+  = A[8], B[11]: 11
+  = A[9], B[12]: 12
+  = A[10], B[13]: 13
+  = A[11], B[14]: 14
+  = A[12], B[15]: 15
+  = A[13], B[16]: 16
+  = A[14], B[17]: 17
+  = A[15], B[18]: 18
+  = A[16], B[19]: 19
+  = A[17], B[20]: 20
+    TestListCompare.test6 ... FAIL
+test/some_lists_comparisons.lua:117: expected: 
+{
+    "aaa",
+    "bbb",
+    "ccc",
+    function: 00E70160,
+    1.1,
+    2.1,
+    8=true,
+    9=false,
+    10=thread: 00E35480,
+    11=thread: 00E35480,
+    12=thread: 00E35480
+}
+actual: 
+{
+    "aaa",
+    "bbb",
+    "ccc",
+    function: 00E70160,
+    1.1,
+    2.1,
+    8=false,
+    9=false,
+    10=thread: 00E35480,
+    11=thread: 00E35480,
+    12=thread: 00E35480
+}
+List difference analysis:
+* lists A (actual) and B (expected) have the same size
+* lists A and B start differing at index 8
+* lists A and B are equal again from index 9
+* Common parts:
+  = A[1], B[1]: "aaa"
+  = A[2], B[2]: "bbb"
+  = A[3], B[3]: "ccc"
+  = A[4], B[4]: function: 00E70160
+  = A[5], B[5]: 1.1
+  = A[6], B[6]: 2.1
+  = A[7], B[7]: nil
+* Differing parts:
+  - A[8]: false
+  + B[8]: true
+* Common parts at the end of the lists
+  = A[9], B[9]: false
+  = A[10], B[10]: thread: 00E35480
+  = A[11], B[11]: thread: 00E35480
+  = A[12], B[12]: thread: 00E35480
+    TestListCompare.test7 ... FAIL
+test/some_lists_comparisons.lua:123: expected: {{1, 2, 3}, {1, 2}, {{1}, {2}}, {"aa", "cc"}, 1, 2, 1.33, #Inf, {a=1}, {}}
+actual: {{1, 2, 3}, {1, 2}, {{2}, {2}}, {"aa", "bb"}, 1, 2, 1.33, #Inf, {a=1}, {}}
+List difference analysis:
+* lists A (actual) and B (expected) have the same size
+* lists A and B start differing at index 3
+* lists A and B are equal again from index 5
+* Common parts:
+  = A[1], B[1]: {1, 2, 3}
+  = A[2], B[2]: {1, 2}
+* Differing parts:
+  - A[3]: {{2}, {2}}
+  + B[3]: {{1}, {2}}
+  - A[4]: {"aa", "bb"}
+  + B[4]: {"aa", "cc"}
+* Common parts at the end of the lists
+  = A[5], B[5]: 1
+  = A[6], B[6]: 2
+  = A[7], B[7]: 1.33
+  = A[8], B[8]: #Inf
+  = A[9], B[9]: {a=1}
+  = A[10], B[10]: {}
+=========================================================
+Failed tests:
+-------------
+1) TestListCompare.test1
+test/some_lists_comparisons.lua:22: expected: 
+{
+    121221,
+    122211,
+    121221,
+    122211,
+    121221,
+    122212,
+    121212,
+    122112,
+    121221,
+    121212,
+    122121
+}
+actual: 
+{
+    121221,
+    122211,
+    121221,
+    122211,
+    121221,
+    122212,
+    121212,
+    122112,
+    122121,
+    121212,
+    122121
+}
+List difference analysis:
+* lists A (actual) and B (expected) have the same size
+* lists A and B start differing at index 9
+* lists A and B are equal again from index 10
+* Common parts:
+  = A[1], B[1]: 121221
+  = A[2], B[2]: 122211
+  = A[3], B[3]: 121221
+  = A[4], B[4]: 122211
+  = A[5], B[5]: 121221
+  = A[6], B[6]: 122212
+  = A[7], B[7]: 121212
+  = A[8], B[8]: 122112
+* Differing parts:
+  - A[9]: 122121
+  + B[9]: 121221
+* Common parts at the end of the lists
+  = A[10], B[10]: 121212
+  = A[11], B[11]: 122121
+stack traceback:
+	test/some_lists_comparisons.lua:22: in function 'TestListCompare.test1'
+
+2) TestListCompare.test1b
+test/some_lists_comparisons.lua:28: expected: 
+{
+    121221,
+    122211,
+    121221,
+    122112,
+    121212,
+    121122,
+    121212,
+    122122,
+    121212,
+    122112,
+    121212
+}
+actual: 
+{
+    121221,
+    122211,
+    121221,
+    122112,
+    121212,
+    121122,
+    121212,
+    122122,
+    121212,
+    122112,
+    122112
+}
+List difference analysis:
+* lists A (actual) and B (expected) have the same size
+* lists A and B start differing at index 11
+* Common parts:
+  = A[1], B[1]: 121221
+  = A[2], B[2]: 122211
+  = A[3], B[3]: 121221
+  = A[4], B[4]: 122112
+  = A[5], B[5]: 121212
+  = A[6], B[6]: 121122
+  = A[7], B[7]: 121212
+  = A[8], B[8]: 122122
+  = A[9], B[9]: 121212
+  = A[10], B[10]: 122112
+* Differing parts:
+  - A[11]: 122112
+  + B[11]: 121212
+stack traceback:
+	test/some_lists_comparisons.lua:28: in function 'TestListCompare.test1b'
+
+3) TestListCompare.test1c
+test/some_lists_comparisons.lua:34: expected: 
+{
+    121212,
+    122121,
+    111212,
+    122121,
+    122121,
+    121212,
+    121121,
+    121212,
+    121221,
+    122212,
+    112121
+}
+actual: 
+{
+    122112,
+    122121,
+    111212,
+    122121,
+    122121,
+    121212,
+    121121,
+    121212,
+    121221,
+    122212,
+    112121
+}
+List difference analysis:
+* lists A (actual) and B (expected) have the same size
+* lists A and B start differing at index 1
+* lists A and B are equal again from index 2
+* Differing parts:
+  - A[1]: 122112
+  + B[1]: 121212
+* Common parts at the end of the lists
+  = A[2], B[2]: 122121
+  = A[3], B[3]: 111212
+  = A[4], B[4]: 122121
+  = A[5], B[5]: 122121
+  = A[6], B[6]: 121212
+  = A[7], B[7]: 121121
+  = A[8], B[8]: 121212
+  = A[9], B[9]: 121221
+  = A[10], B[10]: 122212
+  = A[11], B[11]: 112121
+stack traceback:
+	test/some_lists_comparisons.lua:34: in function 'TestListCompare.test1c'
+
+4) TestListCompare.test2
+test/some_lists_comparisons.lua:43: expected: {1, 2, 3, 4, 5, 6, 8, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+List difference analysis:
+* lists A (actual) and B (expected) have the same size
+* lists A and B start differing at index 7
+* lists A and B are equal again from index 9
+* Common parts:
+  = A[1], B[1]: 1
+  = A[2], B[2]: 2
+  = A[3], B[3]: 3
+  = A[4], B[4]: 4
+  = A[5], B[5]: 5
+  = A[6], B[6]: 6
+* Differing parts:
+  - A[7]: 7
+  + B[7]: 8
+  - A[8]: 8
+  + B[8]: 7
+* Common parts at the end of the lists
+  = A[9], B[9]: 9
+  = A[10], B[10]: 10
+  = A[11], B[11]: 11
+  = A[12], B[12]: 12
+  = A[13], B[13]: 13
+  = A[14], B[14]: 14
+  = A[15], B[15]: 15
+  = A[16], B[16]: 16
+  = A[17], B[17]: 17
+  = A[18], B[18]: 18
+  = A[19], B[19]: 19
+  = A[20], B[20]: 20
+stack traceback:
+	test/some_lists_comparisons.lua:43: in function 'TestListCompare.test2'
+
+5) TestListCompare.test3
+test/some_lists_comparisons.lua:57: expected: {1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+List difference analysis:
+* list sizes differ: list A (actual) has 20 items, list B (expected) has 19 items
+* lists A and B start differing at index 7
+* lists A and B are equal again from index 8 for A, 7 for B
+* Common parts:
+  = A[1], B[1]: 1
+  = A[2], B[2]: 2
+  = A[3], B[3]: 3
+  = A[4], B[4]: 4
+  = A[5], B[5]: 5
+  = A[6], B[6]: 6
+* Present only in one list:
+  - A[7]: 7
+* Common parts at the end of the lists
+  = A[8], B[7]: 8
+  = A[9], B[8]: 9
+  = A[10], B[9]: 10
+  = A[11], B[10]: 11
+  = A[12], B[11]: 12
+  = A[13], B[12]: 13
+  = A[14], B[13]: 14
+  = A[15], B[14]: 15
+  = A[16], B[15]: 16
+  = A[17], B[16]: 17
+  = A[18], B[17]: 18
+  = A[19], B[18]: 19
+  = A[20], B[19]: 20
+stack traceback:
+	test/some_lists_comparisons.lua:57: in function 'TestListCompare.test3'
+
+6) TestListCompare.test4
+test/some_lists_comparisons.lua:74: expected: {1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+List difference analysis:
+* list sizes differ: list A (actual) has 20 items, list B (expected) has 17 items
+* lists A and B start differing at index 7
+* lists A and B are equal again from index 10 for A, 7 for B
+* Common parts:
+  = A[1], B[1]: 1
+  = A[2], B[2]: 2
+  = A[3], B[3]: 3
+  = A[4], B[4]: 4
+  = A[5], B[5]: 5
+  = A[6], B[6]: 6
+* Present only in one list:
+  - A[7]: 7
+  - A[8]: 8
+  - A[9]: 9
+* Common parts at the end of the lists
+  = A[10], B[7]: 10
+  = A[11], B[8]: 11
+  = A[12], B[9]: 12
+  = A[13], B[10]: 13
+  = A[14], B[11]: 14
+  = A[15], B[12]: 15
+  = A[16], B[13]: 16
+  = A[17], B[14]: 17
+  = A[18], B[15]: 18
+  = A[19], B[16]: 19
+  = A[20], B[17]: 20
+stack traceback:
+	test/some_lists_comparisons.lua:74: in function 'TestListCompare.test4'
+
+7) TestListCompare.test5a
+test/some_lists_comparisons.lua:98: expected: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+List difference analysis:
+* list sizes differ: list A (expected) has 17 items, list B (actual) has 20 items
+* lists A and B start differing at index 5
+* lists A and B are equal again from index 7 for A, 10 for B
+* Common parts:
+  = A[1], B[1]: 1
+  = A[2], B[2]: 2
+  = A[3], B[3]: 3
+  = A[4], B[4]: 4
+* Differing parts:
+  - A[5]: 6
+  + B[5]: 5
+  - A[6]: 5
+  + B[6]: 6
+* Present only in one list:
+  + B[7]: 7
+  + B[8]: 8
+  + B[9]: 9
+* Common parts at the end of the lists
+  = A[7], B[10]: 10
+  = A[8], B[11]: 11
+  = A[9], B[12]: 12
+  = A[10], B[13]: 13
+  = A[11], B[14]: 14
+  = A[12], B[15]: 15
+  = A[13], B[16]: 16
+  = A[14], B[17]: 17
+  = A[15], B[18]: 18
+  = A[16], B[19]: 19
+  = A[17], B[20]: 20
+stack traceback:
+	test/some_lists_comparisons.lua:98: in function 'TestListCompare.test5a'
+
+8) TestListCompare.test5b
+test/some_lists_comparisons.lua:103: expected: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+List difference analysis:
+* list sizes differ: list A (actual) has 17 items, list B (expected) has 20 items
+* lists A and B start differing at index 5
+* lists A and B are equal again from index 7 for A, 10 for B
+* Common parts:
+  = A[1], B[1]: 1
+  = A[2], B[2]: 2
+  = A[3], B[3]: 3
+  = A[4], B[4]: 4
+* Differing parts:
+  - A[5]: 6
+  + B[5]: 5
+  - A[6]: 5
+  + B[6]: 6
+* Present only in one list:
+  + B[7]: 7
+  + B[8]: 8
+  + B[9]: 9
+* Common parts at the end of the lists
+  = A[7], B[10]: 10
+  = A[8], B[11]: 11
+  = A[9], B[12]: 12
+  = A[10], B[13]: 13
+  = A[11], B[14]: 14
+  = A[12], B[15]: 15
+  = A[13], B[16]: 16
+  = A[14], B[17]: 17
+  = A[15], B[18]: 18
+  = A[16], B[19]: 19
+  = A[17], B[20]: 20
+stack traceback:
+	test/some_lists_comparisons.lua:103: in function 'TestListCompare.test5b'
+
+9) TestListCompare.test5c
+test/some_lists_comparisons.lua:109: expected: <table: 00D04838> {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: <table: 00D04838> {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+List difference analysis:
+* list sizes differ: list <table: 00D04838> A (actual) has 17 items, list <table: 00D04838> B (expected) has 20 items
+* lists A and B start differing at index 5
+* lists A and B are equal again from index 7 for A, 10 for B
+* Common parts:
+  = A[1], B[1]: 1
+  = A[2], B[2]: 2
+  = A[3], B[3]: 3
+  = A[4], B[4]: 4
+* Differing parts:
+  - A[5]: 6
+  + B[5]: 5
+  - A[6]: 5
+  + B[6]: 6
+* Present only in one list:
+  + B[7]: 7
+  + B[8]: 8
+  + B[9]: 9
+* Common parts at the end of the lists
+  = A[7], B[10]: 10
+  = A[8], B[11]: 11
+  = A[9], B[12]: 12
+  = A[10], B[13]: 13
+  = A[11], B[14]: 14
+  = A[12], B[15]: 15
+  = A[13], B[16]: 16
+  = A[14], B[17]: 17
+  = A[15], B[18]: 18
+  = A[16], B[19]: 19
+  = A[17], B[20]: 20
+stack traceback:
+	test/some_lists_comparisons.lua:109: in function 'TestListCompare.test5c'
+
+10) TestListCompare.test6
+test/some_lists_comparisons.lua:117: expected: 
+{
+    "aaa",
+    "bbb",
+    "ccc",
+    function: 00E70160,
+    1.1,
+    2.1,
+    8=true,
+    9=false,
+    10=thread: 00E35480,
+    11=thread: 00E35480,
+    12=thread: 00E35480
+}
+actual: 
+{
+    "aaa",
+    "bbb",
+    "ccc",
+    function: 00E70160,
+    1.1,
+    2.1,
+    8=false,
+    9=false,
+    10=thread: 00E35480,
+    11=thread: 00E35480,
+    12=thread: 00E35480
+}
+List difference analysis:
+* lists A (actual) and B (expected) have the same size
+* lists A and B start differing at index 8
+* lists A and B are equal again from index 9
+* Common parts:
+  = A[1], B[1]: "aaa"
+  = A[2], B[2]: "bbb"
+  = A[3], B[3]: "ccc"
+  = A[4], B[4]: function: 00E70160
+  = A[5], B[5]: 1.1
+  = A[6], B[6]: 2.1
+  = A[7], B[7]: nil
+* Differing parts:
+  - A[8]: false
+  + B[8]: true
+* Common parts at the end of the lists
+  = A[9], B[9]: false
+  = A[10], B[10]: thread: 00E35480
+  = A[11], B[11]: thread: 00E35480
+  = A[12], B[12]: thread: 00E35480
+stack traceback:
+	test/some_lists_comparisons.lua:117: in function 'TestListCompare.test6'
+
+11) TestListCompare.test7
+test/some_lists_comparisons.lua:123: expected: {{1, 2, 3}, {1, 2}, {{1}, {2}}, {"aa", "cc"}, 1, 2, 1.33, #Inf, {a=1}, {}}
+actual: {{1, 2, 3}, {1, 2}, {{2}, {2}}, {"aa", "bb"}, 1, 2, 1.33, #Inf, {a=1}, {}}
+List difference analysis:
+* lists A (actual) and B (expected) have the same size
+* lists A and B start differing at index 3
+* lists A and B are equal again from index 5
+* Common parts:
+  = A[1], B[1]: {1, 2, 3}
+  = A[2], B[2]: {1, 2}
+* Differing parts:
+  - A[3]: {{2}, {2}}
+  + B[3]: {{1}, {2}}
+  - A[4]: {"aa", "bb"}
+  + B[4]: {"aa", "cc"}
+* Common parts at the end of the lists
+  = A[5], B[5]: 1
+  = A[6], B[6]: 2
+  = A[7], B[7]: 1.33
+  = A[8], B[8]: #Inf
+  = A[9], B[9]: {a=1}
+  = A[10], B[10]: {}
+stack traceback:
+	test/some_lists_comparisons.lua:123: in function 'TestListCompare.test7'
+
+Ran 11 tests in 0.005 seconds, 0 successes, 11 failures

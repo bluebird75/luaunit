@@ -6,15 +6,15 @@
             <property name="LuaUnit Version" value="3.2"/>
         </properties>
         <testcase classname="TestTiti" name="TestTiti.test1_withFailure" time="0.000">
-            <failure type="example_with_luaunit.lua:101: expected: 2, actual: 1">
+            <failure type="example_with_luaunit.lua:104: expected: 2, actual: 1">
                 <![CDATA[stack traceback:
-	example_with_luaunit.lua:101: in function 'TestTiti.test1_withFailure']]></failure>
+	example_with_luaunit.lua:104: in function 'TestTiti.test1_withFailure']]></failure>
         </testcase>
         <testcase classname="TestTiti" name="TestTiti.test2_withFailure" time="0.000">
-            <failure type="example_with_luaunit.lua:110: expected: &quot;bof&quot;
+            <failure type="example_with_luaunit.lua:113: expected: &quot;bof&quot;
 actual: &quot;hop&quot;">
                 <![CDATA[stack traceback:
-	example_with_luaunit.lua:110: in function 'TestTiti.test2_withFailure']]></failure>
+	example_with_luaunit.lua:113: in function 'TestTiti.test2_withFailure']]></failure>
         </testcase>
         <testcase classname="TestTiti" name="TestTiti.test3" time="0.000">
         </testcase>
@@ -37,43 +37,43 @@ actual: &quot;hop&quot;">
 	example_with_luaunit.lua:43: in function 'TestToto.test4']]></failure>
         </testcase>
         <testcase classname="TestToto" name="TestToto.test5" time="0.000">
-            <failure type="example_with_luaunit.lua:49: expected: false, actual: 1">
+            <failure type="example_with_luaunit.lua:49: expected: false or nil, actual: 1">
                 <![CDATA[stack traceback:
 	example_with_luaunit.lua:49: in function 'TestToto.test5']]></failure>
         </testcase>
         <testcase classname="TestToto" name="TestToto.test6" time="0.000">
-            <failure type="example_with_luaunit.lua:54: expected: true, actual: false">
+            <failure type="example_with_luaunit.lua:57: expected: false, actual: nil">
                 <![CDATA[stack traceback:
-	example_with_luaunit.lua:54: in function 'TestToto.test6']]></failure>
+	example_with_luaunit.lua:57: in function 'TestToto.test6']]></failure>
         </testcase>
         <testcase classname="TestToto" name="TestToto.test7" time="0.000">
-            <failure type="example_with_luaunit.lua:60: expected: {1, 2, three=3}
+            <failure type="example_with_luaunit.lua:63: expected: {1, 2, three=3}
 actual: {1, 2}">
                 <![CDATA[stack traceback:
-	example_with_luaunit.lua:60: in function 'TestToto.test7']]></failure>
+	example_with_luaunit.lua:63: in function 'TestToto.test7']]></failure>
         </testcase>
         <testcase classname="TestToto" name="TestToto.test8a" time="0.000">
-            <error type="example_with_luaunit.lua:78: Bouhouhoum error!">
+            <error type="example_with_luaunit.lua:81: Bouhouhoum error!">
                 <![CDATA[stack traceback:
-	example_with_luaunit.lua:78: in function 'funcWithError'
-	example_with_luaunit.lua:65: in function 'TestToto.test8a']]></error>
+	example_with_luaunit.lua:81: in function 'funcWithError'
+	example_with_luaunit.lua:68: in function 'TestToto.test8a']]></error>
         </testcase>
         <testcase classname="TestToto" name="TestToto.test8b" time="0.000">
-            <error type="example_with_luaunit.lua:78: Bouhouhoum error!">
+            <error type="example_with_luaunit.lua:81: Bouhouhoum error!">
                 <![CDATA[stack traceback:
-	example_with_luaunit.lua:78: in function 'funcWithError'
-	example_with_luaunit.lua:74: in function 'funcWithFuncWithError'
-	example_with_luaunit.lua:70: in function 'TestToto.test8b']]></error>
+	example_with_luaunit.lua:81: in function 'funcWithError'
+	example_with_luaunit.lua:77: in function 'funcWithFuncWithError'
+	example_with_luaunit.lua:73: in function 'TestToto.test8b']]></error>
         </testcase>
         <testcase classname="[TestFunctions]" name="test1_withFailure" time="0.000">
-            <error type="example_with_luaunit.lua:126: assertion failed!">
+            <error type="example_with_luaunit.lua:129: assertion failed!">
                 <![CDATA[stack traceback:
-	example_with_luaunit.lua:126: in function 'test1_withFailure']]></error>
+	example_with_luaunit.lua:129: in function 'test1_withFailure']]></error>
         </testcase>
         <testcase classname="[TestFunctions]" name="test2_withFailure" time="0.000">
-            <error type="example_with_luaunit.lua:132: assertion failed!">
+            <error type="example_with_luaunit.lua:135: assertion failed!">
                 <![CDATA[stack traceback:
-	example_with_luaunit.lua:132: in function 'test2_withFailure']]></error>
+	example_with_luaunit.lua:135: in function 'test2_withFailure']]></error>
         </testcase>
         <testcase classname="[TestFunctions]" name="test3" time="0.000">
         </testcase>

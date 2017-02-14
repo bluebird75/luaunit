@@ -1,13 +1,11 @@
 
 TODO Future:
 ============
+- document prettystr
 - add the ability to count the number of assertions that should have been executed in the test
-- mention that general error are correctly handled by luaunit as failures
-- detect if a functions creates new global variables.
 - validate output with ignored tests (0 failures or some failures)
 - report test duration everywhere
 - allow to skip tests
-- randomized testing
 - parametrize tests
 - coloured output
 - global setup / teardown
@@ -17,16 +15,40 @@ TODO Future:
 	+ expected length of X, got Y
 	+ keys differing in table 1 and 2
 - XML: report system information
-- better error messages for string differences
+- better error messages for string differences (diffing)
+- print local variables upon assertion error:
+	+ debug.get_local( ) will get the local variables in the current context
+	+ debug.get_upvalue( ) will get the upvalues in the current context
+- see inspect for better table printing: https://github.com/kikito/inspect.lua
+	+ print list part separate from the dict part in a table
+	+ print metatables in tables
+- see StackTracePlus for printing more stack information: https://github.com/ignacio/StackTracePlus
+- how does busted deal with nested tables ? functions ?
+- look at serpent to see how to improve nested table printing
 
 Nice to have: 
 ============
 - stack unwrapping like in py.test
 
-TODO for 3.2 release:
-====================
-- document new config: table with key of type table
-- document --error
+TODO for 3.3 release:
+===============
+- look at serpent to see how to improve nested table printing
+- doc about scientific computing dedicated functions
+- doc about prettystr
+- doc about usage of prettystr & assertion library
+
+
+Done since 3.2:
+===============
+
+- better error messages for list assertions:
+	+ expected length of X, got Y
+	+ index differing in table 1 and 2
+- more doc about assertTrue/False/... with a table
+- randomized testing
+- assertions for nan and inf
+- can run a tests numerous times (useful for triggering the JIT effect)
+- can include and exclude tests from the test list
 
 Done since 3.1:
 ===============

@@ -25,15 +25,17 @@ local function escape_lua_pattern(s)
     return s:gsub(LUA_MAGIC_CHARS, "%%%1") -- substitute with '%' + matched char
 end
 
-local function string_sub(s, orig, repl)
+local function string_gsub(s, orig, repl)
     -- replace occurrence of string orig by string repl
     -- just like string.gsub, but with no pattern matching
+    -- print( 'gsub_input '..s..' '..orig..' '..repl)
     return s:gsub( escape_lua_pattern(orig), repl )
 end
 
 function testStringSub()
-    lu.assertEquals( string_sub('aa a % b cc', 'a % b', 'a + b'), 'aa a + b cc' )
-    lu.assertEquals( string_sub('aa: ?cc', ': ?', 'xx?'), 'aaxx?cc' )
+    lu.assertEquals( string_gsub('aa a % b cc', 'a % b', 'a + b'), 'aa a + b cc' )
+    lu.assertEquals( string_gsub('aa: ?cc', ': ?', 'xx?'), 'aaxx?cc' )
+    lu.assertEquals( string_gsub('aa b: cc b: ee', 'b:', 'xx'), 'aa xx cc xx ee' )
 end
 
 local function osExec( ... )
@@ -111,11 +113,12 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
     fileIn lines are read and the first line matching pattern is analysed. The first pattern
     capture is memorized.
 
-    fileOut lines are then read, and the first line matching pattern is modified, by applying
+    fileOut lines are then read, and the first line matching pattern2 is modified, by applying
     the first capture of fileIn. fileOut is then rewritten.
+
+    In most cases, pattern2 may be nil in which case, pattern is used when matching in fileout.
     ]]
-    local source = nil
-    local idxStart, idxEnd, capture
+    local source, idxStart, idxEnd, capture = nil
     for line in io.lines(fileIn) do
         idxStart, idxEnd, capture = line:find( pattern )
         if idxStart ~= nil then
@@ -141,17 +144,21 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
     local dest, linesOut = nil, {}
     for line in io.lines(fileOut) do
         idxStart, idxEnd, capture = line:find( pattern )
-        if idxStart ~= nil then
+        while idxStart ~= nil do
+            if capture == nil then
+                print('missing pattern for outfile!')
+            end
             dest = capture
             if verbose then
                 print('Modifying line: '..line )
             end
-            line = string_sub(line, dest, source)
+            line = string_gsub(line, dest, source)
             -- line = line:sub(1,idxStart-1)..source..line:sub(idxEnd+1)
             -- string.gsub( line, dest, source )
             if verbose then
-                print('Result: '..line )
+                print('Result        : '..line )
             end
+            idxStart, idxEnd, capture = line:find( pattern, idxEnd )
         end
         table.insert( linesOut, line )
     end
@@ -175,8 +182,10 @@ local function check_tap_output( fileToRun, options, output, refOutput, refExitC
 
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
-    -- For Lua 5.3: stack trace uses "method" instead of "function"
-    adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
+    if _VERSION == 'Lua 5.3' then
+        -- For Lua 5.3: stack trace uses "method" instead of "function"
+        adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true )
+    end
 
     if not osExec([[diff -NPw -u -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output) then
         error('TAP Output mismatch for file : '..output)
@@ -195,8 +204,14 @@ local function check_text_output( fileToRun, options, output, refOutput, refExit
         adjustFile( output, refOutput, 'Started on (.*)')
     end
     adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
-    -- For Lua 5.3: stack trace uses "method" instead of "function"
-    adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
+    adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
+    adjustFile( output, refOutput, 'thread: (0?x?[%x]+)', true )
+    adjustFile( output, refOutput, 'function: (0?x?[%x]+)', true )
+    adjustFile( output, refOutput, '<table: (0?x?[%x]+)>', true )
+    if _VERSION == 'Lua 5.3' then
+        -- For Lua 5.3: stack trace uses "method" instead of "function"
+        adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true )
+    end
 
     if not osExec([[diff -NPw -u -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output) then
         error('Text Output mismatch for file : '..output)
@@ -231,10 +246,12 @@ local function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintO
     adjustFile( xmlOutput, refXmlOutput, '.*<testcase .*(time=".-").*' )
     -- For Lua 5.1 / 5.2 compatibility
     adjustFile( xmlOutput, refXmlOutput, '.*<property name="Lua Version" value="(Lua 5%..)"/>')
-    -- For Lua 5.3: stack trace uses "method" instead of "function"
-    adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
-    adjustFile( xmlOutput, refXmlOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
 
+    if _VERSION == 'Lua 5.3' then
+        -- For Lua 5.3: stack trace uses "method" instead of "function"
+        adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true )
+        adjustFile( xmlOutput, refXmlOutput, '.*%.lua:%d+: in (%S*) .*', true )
+    end
 
     if HAS_XMLLINT then
         -- General xmllint validation
@@ -491,6 +508,14 @@ function testTestWithXmlQuiet()
         'test/testWithXmlLintQuiet.txt', 'test/ref/testWithXmlQuiet.txt', 'test/ref/testWithXmlQuiet.xml', 2 ) )
 end
 
+function testListComparison()
+    -- run test/some_lists_comparisons and check exit status 
+    lu.assertEquals( 0,
+        check_text_output('test/some_lists_comparisons.lua', '--verbose',
+            'test/some_lists_comparisons.txt', 
+            'test/ref/some_lists_comparisons.txt', 11 ) )
+end
+
 function testLegacyLuaunitUsage()
     -- run test/legacy_example_usage and check exit status (expecting 12 failures)
     osExpectedCodeExec(12, '%s %s  --output text > %s', LUA,
@@ -631,6 +656,11 @@ local filesToGenerateStopOnError = {
         'test/ref/errFailPassTextStopOnError-4.txt'},
 }
 
+local filesToGenerateListsComp = {
+    { 'test/some_lists_comparisons.lua', '', '--output text --verbose',
+        'test/ref/some_lists_comparisons.txt'},
+}
+
 local filesSetIndex = {
     ErrFailPassText=filesToGenerateErrFailPassText,
     ErrFailPassTap=filesToGenerateErrFailPassTap,
@@ -641,12 +671,13 @@ local filesSetIndex = {
     ExampleXml=filesToGenerateExampleXml,
     TestXml=filesToGenerateTestXml,
     StopOnError=filesToGenerateStopOnError,
+    ListsComp=filesToGenerateListsComp,
 }
 
 local function updateRefFiles( filesToGenerate )
     local ret
 
-    for i,v in ipairs(filesToGenerate) do 
+    for _,v in ipairs(filesToGenerate) do 
         report('Generating '..v[4])
         ret = osExec( '%s %s %s %s > %s', LUA, v[1], v[2], v[3], v[4] )
         --[[
@@ -666,11 +697,15 @@ end
 
 
 local function main()
+    if arg[1] == '--coverage' then
+        LUA = LUA .." -lluacov" -- run tests with LuaCov active
+        table.remove(arg, 1)
+    end
     if arg[1] == '--update' then
         if #arg == 1 then
             -- generate all files
             -- print('Generating all files' )
-            for k,v in pairs(filesSetIndex) do 
+            for _,v in pairs(filesSetIndex) do 
                 -- print('Generating '..v )
                 updateRefFiles( v )
             end
@@ -680,7 +715,7 @@ local function main()
                 local fileSet = filesSetIndex[ arg[i] ]
                 if fileSet == nil then
                     local validTarget = ''
-                    for k,v in pairs(filesSetIndex) do
+                    for k,_ in pairs(filesSetIndex) do
                         validTarget = validTarget .. ' '.. k
                     end
                     error_fmt('Unable to generate files for target %s\nPossible targets: %s\n',
