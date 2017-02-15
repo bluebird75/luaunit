@@ -4,12 +4,12 @@ shallow_clone: true
 # create a build matrix to use various Lua and LuaJIT versions
 environment:
   matrix:
-    - LUAENV: cinst
     - LUAENV: lua51
     - LUAENV: lua52
     - LUAENV: lua53
     - LUAENV: luajit20
     - LUAENV: luajit21
+    - LUAENV: cinst
 
 # cinst occasionally has problems, allow it to fail
 matrix:
