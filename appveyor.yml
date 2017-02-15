@@ -20,6 +20,9 @@ matrix:
 install:
 - cmd: .appveyor\install-lua.cmd
 
+cache:
+  - lua51 -> .appveyor\install-lua.cmd
+
 build: off
 
 test_script:
