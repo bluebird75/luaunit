@@ -10,10 +10,16 @@ set ZIP_52=lua-%VER_52%_Win32_bin.zip
 set ZIP_53=lua-%VER_53%_Win32_bin.zip
 
 :cinst
+@echo off
 if NOT "%LUAENV%"=="cinst" goto lua51
 echo Chocolatey install of Lua ...
-@echo on
-cinst lua
+if NOT EXIST "C:\Program Files (x86)\Lua\5.1\lua.exe" (
+    @echo on
+    cinst lua
+) else (
+    @echo on
+    echo Using cached version of Lua
+)
 set LUA="C:\Program Files (x86)\Lua\5.1\lua.exe"
 @echo off
 goto :EOF
@@ -71,11 +77,11 @@ goto :EOF
 :luajit
 if NOT "%LUAENV%"=="luajit20" goto luajit21
 echo Setting up LuaJIT 2.0 ...
-call %~dp0install-luajit.cmd LuaJIT-2.0.4
-set LUA=luajit.exe
+call %~dp0install-luajit.cmd LuaJIT-2.0.4 luajit20
+set LUA=luajit20\luajit.exe
 goto :EOF
 
 :luajit21
 echo Setting up LuaJIT 2.1 ...
-call %~dp0install-luajit.cmd LuaJIT-2.1.0-beta2
-set LUA=luajit.exe
+call %~dp0install-luajit.cmd LuaJIT-2.1.0-beta2 luajit21
+set LUA=luajit21\luajit.exe
