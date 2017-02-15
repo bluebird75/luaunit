@@ -14,7 +14,8 @@ sed -i "s/BUILDMODE=.*mixed/BUILDMODE=static/" %1\src\Makefile
 mingw32-make TARGET_SYS=Windows -C %1\src
 
 REM copy luajit.exe to project dir
-copy %1\src\luajit.exe %APPVEYOR_BUILD_FOLDER%\%targetdir%
+mkdir %APPVEYOR_BUILD_FOLDER%\%targetdir%
+copy %1\src\luajit.exe %APPVEYOR_BUILD_FOLDER%\%targetdir%\
 
 REM clean up (remove source folders and archive)
 rm -rf %1/*
