@@ -128,5 +128,3 @@ x table assertions
 x sequence asserts
 x compatibilty tests with several version of lua
 x add assertNotEquals
-
-
