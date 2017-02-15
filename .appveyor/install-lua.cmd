@@ -77,11 +77,19 @@ goto :EOF
 :luajit
 if NOT "%LUAENV%"=="luajit20" goto luajit21
 echo Setting up LuaJIT 2.0 ...
-call %~dp0install-luajit.cmd LuaJIT-2.0.4 luajit20
+if NOT EXIST "luajit20\luajit.exe" (
+    call %~dp0install-luajit.cmd LuaJIT-2.0.4 luajit20
+) else (
+    echo Using cached version of LuaJIT 2.0
+)
 set LUA=luajit20\luajit.exe
 goto :EOF
 
 :luajit21
 echo Setting up LuaJIT 2.1 ...
-call %~dp0install-luajit.cmd LuaJIT-2.1.0-beta2 luajit21
+if NOT EXIST "luajit21\luajit.exe" (
+    call %~dp0install-luajit.cmd LuaJIT-2.1.0-beta2 luajit21
+) else (
+    echo Using cached version of LuaJIT 2.1
+)
 set LUA=luajit21\luajit.exe
