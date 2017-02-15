@@ -21,7 +21,12 @@ install:
 - cmd: .appveyor\install-lua.cmd
 
 cache:
-  - lua51 -> .appveyor\install-lua.cmd
+  - lua51       -> .appveyor\install-lua.cmd
+  - lua52       -> .appveyor\install-lua.cmd
+  - lua53       -> .appveyor\install-lua.cmd
+  - luajit20    -> .appveyor\install-lua.cmd
+  - luajit21    -> .appveyor\install-lua.cmd
+  - "C:\Program Files (x86)\Lua\" -> .appveyor\install-lua.cmd
 
 build: off
 
