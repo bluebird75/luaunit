@@ -2357,6 +2357,7 @@ end
         local chr, cnt = '', assertCount
         if cnt > 1000 then cnt, chr = cnt/1000, 'K' end
         if cnt > 1000 then cnt, chr = cnt/1000, 'M' end
+        if cnt > 1000 then cnt, chr = cnt/1000, 'G' end
         assertCount = 0
         -- return status line string according to results
         local s = {
