@@ -93,9 +93,6 @@ Options:
   -x, --exclude PATTERN:  Exclude all test names matching the Lua PATTERN
                           May be repeated to exclude several patterns
                           Make sure you escape magic chars like +? with %
-  -x, --exclude PATTERN:  Exclude all test names matching the Lua PATTERN
-                          May be repeated to include severals patterns
-                          Make sure you escape magic chars like +? with %
   testname1, testname2, ... : tests to run in the form of testFunction,
                               TestClass or TestClass.testMethod
 ]]
