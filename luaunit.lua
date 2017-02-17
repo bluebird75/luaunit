@@ -2870,5 +2870,5 @@ end
 M.set_verbosity = M.setVerbosity
 M.SetVerbosity = M.setVerbosity
 
-
-return { utest = M }
+return M
+-- return { utest = M } -- MAD
