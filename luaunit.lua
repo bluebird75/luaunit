@@ -46,15 +46,6 @@ if math.abs(1.1 - 1 - 0.1) > M.EPSILON then
     M.EPSILON = 2^-23 -- = machine epsilon for "float", ~1.19E-07
 end
 
---[[ EPSILON help Lua in simple corner cases like almostEquals(1.1-0.1, 1),
-which may not work as-is if the user does not provide explicitely some margin
-(e.g. numbers with rational binary representation). The default margin used by
-almostEquals in such case is EPSILON with an initial default value set to
-10^-12. If the user provides a margin, it is used unmodified as a replacement to
-EPSILON, which is then discarded. EPSILON can be changed by the user to suit
-better its needs if the initial default value is not acceptable. ]]--
-M.EPSILON = 2^-52
-
 -- set this to false to debug luaunit
 local STRIP_LUAUNIT_FROM_STACKTRACE = true
 
