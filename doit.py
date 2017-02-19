@@ -96,6 +96,25 @@ def makedoc():
     shutil.copytree('_build/html', 'html')
     os.chdir('..')
 
+def rundoctests():
+    lua = LUA52
+    for l in (
+            [ '-e', "lu = require('luaunit');os.exit(lu.LuaUnit.run())" ],
+            [ 'doc/my_test_suite.lua', '-v', 'TestAdd.testAddPositive', 'TestAdd.testAddZero'],
+            [ 'doc/my_test_suite.lua', '-v' ],
+            [ 'doc/my_test_suite.lua', ],
+            [ 'doc/my_test_suite.lua', '-o','TAP'],
+            [ 'doc/my_test_suite.lua', 'TestAdd', 'TestDiv.testDivError' , '-v'],
+            [ 'doc/my_test_suite.lua', '-v', '-p', 'Err.r', '-p', 'Z.ro' ],
+            [ 'doc/my_test_suite.lua', '-v', '--pattern', 'Add', '--exclude', 'Adder', '--pattern', 'Zero' ],
+            [ 'doc/my_test_suite.lua', '-v', '-x', 'Error', '-x', 'Zero' ],
+        ):
+        print('\n$ lua', ' '.join(l).replace('doc/', '')  )
+        retcode = subprocess.call( [lua] + l )
+        if retcode != 0:
+            report( 'Invalid luacheck result' )
+            sys.exit( retcode )
+
 def install():
     installpath = '/usr/local/share/lua/'
     for lua, luaversion in ALL_LUA:
@@ -111,6 +130,7 @@ OptToFunc = {
     'runexample'    : run_example,
     'packageit'     : packageit,
     'makedoc'       : makedoc,
+    'rundoctests'   : rundoctests,
     'install'       : install,
     'help'          : help,
 }
