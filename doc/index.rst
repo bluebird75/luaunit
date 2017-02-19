@@ -650,7 +650,94 @@ some parameters, like the output format, you must use a slightly different synta
 *runSuite()* behaves like *run()* except that it must be started
 with a LuaUnit instance as first argument, and it will use the LuaUnit
 instance settings.
-  
+ 
+
+.. _including-excluding-tests:
+
+Flexible test selection
+=============================
+
+We will repeat the examples of the *Getting Started* section and proceed then with more advanced test selection.
+
+In the examples, we use a test suite composed of the following test funcions::
+
+    -- class: TestAdd
+    TestAdd.testAddError
+    TestAdd.testAddPositive
+    TestAdd.testAddZero
+    TestAdd.testAdder
+
+    -- class: TestDiv
+    TestDiv.testDivError
+    TestDiv.testDivPositive
+    TestDiv.testDivZero
+
+
+With ``--pattern`` or ``-p``, you can provide a lua pattern and only the tests that contain
+the pattern will actually be run.
+
+Example::
+
+    -- Run all tests of zero testing and error testing
+    -- by using the magic character .
+    $ lua mytest_suite.lua -v -p Err.r -p Z.ro
+    Started on 02/19/17 22:29:45
+        TestAdd.testAddError ... Ok
+        TestAdd.testAddZero ... Ok
+        TestDiv.testDivError ... Ok
+        TestDiv.testDivZero ... Ok
+    =========================================================
+    Ran 4 tests in 0.004 seconds, 4 successes, 0 failures, 3 non-selected
+    OK
+
+The number of tests ignored by the selection is printed, along
+with the test result. The tests *TestAdd.testAdder testAdd.testPositive and
+testDiv.testDivPositive* have been correctly ignored.
+
+The pattern can be any lua pattern. Be sure to exclude all magic
+characters with % (like -+?*) and protect your pattern from the shell
+interpretation by putting it in quotes.
+
+With ``--exclude`` or ``-x``, you can provide a lua pattern of tests which should
+be excluded from execution.
+
+Example::
+
+    -- Run all tests except zero testing and except error testing
+    $ lua mytest_suite.lua -v -x Error -x Zero
+    Started on 02/19/17 22:29:45
+        TestAdd.testAddPositive ... Ok
+        TestAdd.testAdder ... Ok
+        TestDiv.testDivPositive ... Ok
+    =========================================================
+    Ran 3 tests in 0.003 seconds, 3 successes, 0 failures, 4 non-selected
+    OK
+
+You can also combine test selection and test exclusion. The rules are the following:
+
+* if the first argument encountered is a inclusion pattern, the list of tests start empty
+* if the first argument encountered is an exclusion pattern, the list of tests start with all tests of the suite
+* each subsequent inclusion pattern will add new tests to the list
+* each subsequent exclusion pattern will remove test from the list
+* the final list is the list of tests executed
+
+In pure logic term, inclusion is the equivalent of ``or match(pattern)`` and exclusion is ``and not match(pattern)`` .
+
+Let's look at some practical examples::
+
+    -- Add all tests which include the word Add
+    -- except the test Adder
+    -- and also include the Zero tests
+    $ lua my_test_suite.lua -v --pattern Add --exclude Adder --pattern Zero
+    Started on 02/19/17 22:29:45
+        TestAdd.testAddError ... Ok
+        TestAdd.testAddPositive ... Ok
+        TestAdd.testAddZero ... Ok
+        TestDiv.testDivZero ... Ok
+    =========================================================
+    Ran 4 tests in 0.003 seconds, 4 successes, 0 failures, 3 non-selected
+    OK
+
 
 .. _command-line:
 
