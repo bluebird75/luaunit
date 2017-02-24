@@ -98,22 +98,39 @@ def makedoc():
 
 def rundoctests():
     lua = LUA52
-    for l in (
-            [ '-e', "lu = require('luaunit');os.exit(lu.LuaUnit.run())" ],
-            [ 'doc/my_test_suite.lua', '-v', 'TestAdd.testAddPositive', 'TestAdd.testAddZero'],
-            [ 'doc/my_test_suite.lua', '-v' ],
-            [ 'doc/my_test_suite.lua', ],
-            [ 'doc/my_test_suite.lua', '-o','TAP'],
-            [ 'doc/my_test_suite.lua', 'TestAdd', 'TestDiv.testDivError' , '-v'],
-            [ 'doc/my_test_suite.lua', '-v', '-p', 'Err.r', '-p', 'Z.ro' ],
-            [ 'doc/my_test_suite.lua', '-v', '--pattern', 'Add', '--exclude', 'Adder', '--pattern', 'Zero' ],
-            [ 'doc/my_test_suite.lua', '-v', '-x', 'Error', '-x', 'Zero' ],
+    for expretcode, l in (
+            (0, [ '-e', "lu = require('luaunit');os.exit(lu.LuaUnit.run())" ]),
+            (0, [ 'doc/my_test_suite.lua', '-v', 'TestAdd.testAddPositive', 'TestAdd.testAddZero']),
+            (0, [ 'doc/my_test_suite.lua', '-v' ]),
+            (0, [ 'doc/my_test_suite.lua', ]),
+            (0, [ 'doc/my_test_suite.lua', '-o','TAP']),
+            (0, [ 'doc/my_test_suite.lua', 'TestAdd', 'TestDiv.testDivError' , '-v']),
+            (0, [ 'doc/my_test_suite.lua', '-v', '-p', 'Err.r', '-p', 'Z.ro' ]),
+            (0, [ 'doc/my_test_suite.lua', '-v', '--pattern', 'Add', '--exclude', 'Adder', '--pattern', 'Zero' ]),
+            (0, [ 'doc/my_test_suite.lua', '-v', '-x', 'Error', '-x', 'Zero' ]),
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'text' ]),
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'text', '--verbose' ]),
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'tap', '--quiet' ]),
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'tap' ]),
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'tap', '--verbose' ]),
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'nil', '--verbose' ]),
         ):
-        print('\n$ lua', ' '.join(l).replace('doc/', '')  )
+        print( '%s %s' % ('\n$ lua', ' '.join(l).replace('doc/', '')  ) )
         retcode = subprocess.call( [lua] + l )
-        if retcode != 0:
+        if retcode != expretcode:
             report( 'Invalid luacheck result' )
             sys.exit( retcode )
+
+    for expretcode, l in (
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'junit', '-n', 'toto.xml' ]),
+        ):
+        print( '%s %s' % ('\n$ lua', ' '.join(l).replace('doc/', '')  ) )
+        retcode = subprocess.call( [lua] + l )
+        if retcode != expretcode:
+            report( 'Invalid luacheck result' )
+            sys.exit( retcode )
+
+        print( open('toto.xml').read() )
 
 def install():
     installpath = '/usr/local/share/lua/'
