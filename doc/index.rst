@@ -1,4 +1,5 @@
 .. LuaUnit documentation master file, created by
+
    sphinx-quickstart on Thu Aug 21 21:45:55 2014.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -53,7 +54,7 @@ Upgrade note
 LuaUnit development
 ===================
 
-See :ref:`developing-luaunit`
+See `Developing luaunit`_
 
 Version and Changelog
 =====================
@@ -138,7 +139,6 @@ Version 1.1
 * new assertion to check that a function call returns an error
 * display the calling stack when an error is spotted
 * two verbosity level, like in python unittest
-
 
 
 Getting started
@@ -241,7 +241,7 @@ The difference between failures and errors are:
 
 If we continue with our example, we also want to test that when the function receives negative numbers, it generates an error. Use
 :func:`assertError` or even better, :func:`assertErrorMsgContains` to also validate the content
-of the error message. There are other types or error checking functions, see :ref:`assert-error` . Here
+of the error message. There are other types or error checking functions, see `Error assertions`_ . Here
 we use :func:`assertErrorMsgContains` . First argument is the expected message, then the function to call
 and the optional arguments::
 
@@ -258,7 +258,7 @@ Now, suppose we also have the following function to test::
     end
 
 We want to test the type of the value returned by adder and its behavior. LuaUnit
-provides assertion for type testing (see :ref:`assert-type`). In this case, we use
+provides assertion for type testing (see `Type assertions`_ ). In this case, we use
 :func:`assertIsFunction`::
 
     function testAdder()
@@ -435,6 +435,7 @@ Example of TAP format::
     ok     7        TestDiv.testDivZero
     # Ran 7 tests in 0.007 seconds, 7 successes, 0 failures
 
+For a more detailed overview of all formats and their verbosity see the section `Output formats`_ .
 
 
 **List of tests to run**
@@ -502,7 +503,7 @@ For our test suite, it gives the following output::
     Ran 3 tests in 0.003 seconds, 3 successes, 0 failures, 4 non-selected
     OK
 
-You can also combine test selection and test exclusion. See :ref:`including-excluding-tests` 
+You can also combine test selection and test exclusion. See `Flexible test selection`_
 
 Conclusion
 ==========
@@ -511,8 +512,6 @@ You now know enough of LuaUnit to start writing your test suite. Check
 the reference documentation for a complete list of
 assertions, command-line options and specific behavior.
 
-
-.. _reference-documentation:
 
 Reference documentation
 ***********************
@@ -580,8 +579,6 @@ global variable **prior** to importing LuaUnit:
     [...]
 
 
-.. _luaunit-run:
-
 LuaUnit.run() function
 ======================
 
@@ -589,7 +586,7 @@ LuaUnit.run() function
 
 Normally, you should run your test suite with the following line::
 
-    os.exit(lu.LuaUnit.run())
+    os.exit(lu.LauaUnit.run())
 
 The *run()* function returns the number of failures of the test suite. This is
 good for an exit code, 0 meaning success.
@@ -652,12 +649,345 @@ with a LuaUnit instance as first argument, and it will use the LuaUnit
 instance settings.
  
 
-.. _including-excluding-tests:
+Command-line options
+====================
+
+Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ...]
+
+**Test names**
+
+When no test names are supplied, all tests are collected. 
+
+The syntax for supplying test names can be either: name of the function, name of the table
+or [name of the table].[name of the function]. Only the supplied tests will be executed.
+
+Selecting tests with --pattern and --exclude is usually more flexible. See `Flexible test selection`_
+
+**Options**
+
+--output, -o FORMAT    Set output format to FORMAT. Possible values: text, tap, junit, nil . See `Output formats`_
+--name, -n FILENAME    For junit format only, mandatory name of xml file. Ignored for other formats.
+--pattern, -p PATTERN  Execute all test names matching the Lua PATTERN. May be repeated to include severals patterns. See `Flexible test selection`_
+--exclude, -x PATTERN  Exclude all test names matching the Lua PATTERN. May be repeated to exclude severals patterns. See `Flexible test selection`_
+--repeat, -r NUM       Repeat all tests NUM times, e.g. to trigger the JIT
+--shuffle, -s          Shuffle tests before running them
+--error, -e            Stop on first error. See :ref:`stop-on-error`.
+--failure, -f          Stop on first failure or error. See :ref:`stop-on-error`.
+--verbose, -v          Increase verbosity
+--quiet, -q            Set verbosity to minimum
+--help, -h             Print help
+--version              Version information of LuaUnit
+
+Output formats
+------------------
+
+Choose the output format with the syntax ``-o FORMAT`` or ``--output FORMAT``.
+
+Formats available:
+
+* ``text``: the default output format of LuaUnit
+* ``tap``: output compatible with the `Test Anything Protocol`_ 
+* ``junit``: output compatible with the *JUnit XML* format (used by many CI 
+  platforms). The XML is written to the file provided with the ``--name`` or ``-n`` option.
+* ``nil``: no output at all
+
+.. _Test Anything Protocol: http://testanything.org/
+
+To demonstrate the different output formats, we will take the example of the `Getting Started`_
+section and add the following two failing cases:
+
+.. code-block:: lua
+
+    TestWithFailures = {}
+        -- two failing tests
+        
+        function TestWithFailures:testFail1()
+            local a="toto"
+            local b="titi"
+            lu.assertEquals( a, b ) --oops, two values are not equal
+        end
+
+        function TestWithFailures:testFail2()
+            local a=1
+            local b='toto'
+            local c = a + b --oops, can not add string and numbers
+            return c
+        end
+
+
+**Text format**
+
+By default, LuaUnit uses the output format TEXT, with minimum verbosity::
+
+    $ lua my_test_suite.lua
+    .......FE
+    Failed tests:
+    -------------
+    1) TestWithFailures.testFail1
+    doc\my_test_suite_with_failures.lua:79: expected: "titi"
+    actual: "toto"
+    stack traceback:
+            doc\my_test_suite_with_failures.lua:79: in function 'TestWithFailures.testFail1'
+
+    2) TestWithFailures.testFail2
+    doc\my_test_suite_with_failures.lua:85: attempt to perform arithmetic on local 'b' (a string value)
+    stack traceback:
+            [C]: in function 'xpcall'
+
+    Ran 9 tests in 0.001 seconds, 7 successes, 1 failure, 1 error
+
+This format is heavily inspired by python unit-test library. One character is printed
+for every test executed, a dot for a successful test, a **F** for a test with failure and
+a **E** for a test with an error.
+
+At the end of the test suite execution, the details of the failures or errors are given, with an
+informative message and a full stack trace.
+
+The last line sums up the number of test executed, successful, failed, in error and not selected if any.
+When all tests are successful, a line with just OK is added::
+
+    $ lua doc\my_test_suite.lua
+    .......
+    Ran 7 tests in 0.002 seconds, 7 successes, 0 failures
+    OK
+
+
+The text format is also available as a more verbose version, by adding the ``--verbose`` flag::
+
+    $ lua doc\my_test_suite_with_failures.lua --verbose
+    Started on 02/20/17 21:47:21
+        TestAdd.testAddError ... Ok
+        TestAdd.testAddPositive ... Ok
+        TestAdd.testAddZero ... Ok
+        TestAdd.testAdder ... Ok
+        TestDiv.testDivError ... Ok
+        TestDiv.testDivPositive ... Ok
+        TestDiv.testDivZero ... Ok
+        TestWithFailures.testFail1 ... FAIL
+    doc\my_test_suite_with_failures.lua:79: expected: "titi"
+    actual: "toto"
+        TestWithFailures.testFail2 ... ERROR
+    doc\my_test_suite_with_failures.lua:85: attempt to perform arithmetic on local 'b' (a string value)
+    =========================================================
+    Failed tests:
+    -------------
+    1) TestWithFailures.testFail1
+    doc\my_test_suite_with_failures.lua:79: expected: "titi"
+    actual: "toto"
+    stack traceback:
+            doc\my_test_suite_with_failures.lua:79: in function 'TestWithFailures.testFail1'
+
+    2) TestWithFailures.testFail2
+    doc\my_test_suite_with_failures.lua:85: attempt to perform arithmetic on local 'b' (a string value)
+    stack traceback:
+            [C]: in function 'xpcall'
+
+    Ran 9 tests in 0.008 seconds, 7 successes, 1 failure, 1 error
+
+In this format, you get:
+
+* a first line with date-time at which the test was started
+* one line per test executed
+* the test line is ended by **Ok**, **FAIL**, or **ERROR** in case the test is not successful
+* a summary of the failed tests with all details, like in the compact version.
+
+This format is usually interesting if some tests print debug output, to match the output to the test.
+
+**JUNIT format**
+
+The Junit XML format was introduced by the `Java testing framework JUnit`_ and has been then used by many continuous
+integration platform as an interoperability format between test suites and the platform.
+
+.. _Java testing framework JUnit: http://junit.org/junit4/ 
+
+To output in the JUnit XML format, you use the format junit with ``--output junit`` and specify the XML filename with ``--name <filename>`` . On
+the standard output, LuaUnit will print information about the test progress in a simple format.
+
+Let's see with a simple example::
+
+    $ lua my_test_suite_with_failures.lua -o junit -n toto.xml
+    # XML output to toto.xml
+    # Started on 02/24/17 09:54:59
+    # Starting class: TestAdd
+    # Starting test: TestAdd.testAddError
+    # Starting test: TestAdd.testAddPositive
+    # Starting test: TestAdd.testAddZero
+    # Starting test: TestAdd.testAdder
+    # Starting class: TestDiv
+    # Starting test: TestDiv.testDivError
+    # Starting test: TestDiv.testDivPositive
+    # Starting test: TestDiv.testDivZero
+    # Starting class: TestWithFailures
+    # Starting test: TestWithFailures.testFail1
+    # Failure: doc/my_test_suite_with_failures.lua:79: expected: "titi"
+    # actual: "toto"
+    # Starting test: TestWithFailures.testFail2
+    # Error: doc/my_test_suite_with_failures.lua:85: attempt to perform arithmetic on local 'b' (a string value)
+    # Ran 9 tests in 0.007 seconds, 7 successes, 1 failure, 1 error
+
+On the standard output, you will see the date-time, the name of the XML file, one line for each test started, a summary 
+of the failure or errors when they occurs and the usual one line summary of the test execution: number of tests run, successful, failed,
+in error and number of non selected tests if any.
+
+The XML file generated by this execution is the following::
+
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <testsuites>
+        <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="9" timestamp="2017-02-24T09:54:59" time="0.007" errors="1" failures="1">
+            <properties>
+                <property name="Lua Version" value="Lua 5.2"/>
+                <property name="LuaUnit Version" value="3.2"/>
+            </properties>
+            <testcase classname="TestAdd" name="TestAdd.testAddError" time="0.001">
+            </testcase>
+            <testcase classname="TestAdd" name="TestAdd.testAddPositive" time="0.001">
+            </testcase>
+            <testcase classname="TestAdd" name="TestAdd.testAddZero" time="0.000">
+            </testcase>
+            <testcase classname="TestAdd" name="TestAdd.testAdder" time="0.000">
+            </testcase>
+            <testcase classname="TestDiv" name="TestDiv.testDivError" time="0.000">
+            </testcase>
+            <testcase classname="TestDiv" name="TestDiv.testDivPositive" time="0.000">
+            </testcase>
+            <testcase classname="TestDiv" name="TestDiv.testDivZero" time="0.001">
+            </testcase>
+            <testcase classname="TestWithFailures" name="TestWithFailures.testFail1" time="0.000">
+                <failure type="doc/my_test_suite_with_failures.lua:79: expected: &quot;titi&quot;
+    actual: &quot;toto&quot;">
+                    <![CDATA[stack traceback:
+            doc/my_test_suite_with_failures.lua:79: in function 'TestWithFailures.testFail1']]></failure>
+            </testcase>
+            <testcase classname="TestWithFailures" name="TestWithFailures.testFail2" time="0.000">
+                <error type="doc/my_test_suite_with_failures.lua:85: attempt to perform arithmetic on local &apos;b&apos; (a string value)">
+                    <![CDATA[stack traceback:
+            [C]: in function 'xpcall']]></error>
+            </testcase>
+        <system-out/>
+        <system-err/>
+        </testsuite>
+    </testsuites>
+
+As you can see, the XML file is quite rich in terms of information. The verbosity level has no effect on junit output, all verbosity give the same output.
+
+Slight inconsistencies exist in the exact XML format in the different continuous integration suites. LuaUnit provides a compatible output which
+is validated against `Jenkins/Hudson schema`_ 
+and `Ant/Maven schema`_ . If you ever find an problem in the XML formats, please report a bug to us, more testing is always welcome.
+
+.. _Ant/Maven schema:  https://github.com/bluebird75/luaunit/blob/LUAUNIT_V3_2_1/junitxml/junit-apache-ant.xsd 
+.. _Jenkins/Hudson schema: https://github.com/bluebird75/luaunit/blob/LUAUNIT_V3_2_1/junitxml/junit-jenkins.xsd  
+
+**TAP format**
+
+The `TAP format`_ for test results has been around since 1988. LuaUnit produces TAP reports compatible with version 12 of
+the specification.
+
+.. _`TAP format`: https://testanything.org/
+
+Example with minimal verbosiy::
+
+    $ lua my_test_suite_with_failures.lua -o tap --quiet
+    1..9
+    # Started on 02/24/17 22:09:31
+    # Starting class: TestAdd
+    ok     1        TestAdd.testAddError
+    ok     2        TestAdd.testAddPositive
+    ok     3        TestAdd.testAddZero
+    ok     4        TestAdd.testAdder
+    # Starting class: TestDiv
+    ok     5        TestDiv.testDivError
+    ok     6        TestDiv.testDivPositive
+    ok     7        TestDiv.testDivZero
+    # Starting class: TestWithFailures
+    not ok 8        TestWithFailures.testFail1
+    not ok 9        TestWithFailures.testFail2
+    # Ran 9 tests in 0.003 seconds, 7 successes, 1 failure, 1 error
+
+With minimal verbosity, you have one line for each test run, with the status of the test, and one comment line
+when starting the test suite, when starting a new class or when finishing the test.
+
+
+Example with default verbosiy::
+
+    $ lua my_test_suite_with_failures.lua -o tap
+    1..9
+    # Started on 02/24/17 22:09:31
+    # Starting class: TestAdd
+    ok     1        TestAdd.testAddError
+    ok     2        TestAdd.testAddPositive
+    ok     3        TestAdd.testAddZero
+    ok     4        TestAdd.testAdder
+    # Starting class: TestDiv
+    ok     5        TestDiv.testDivError
+    ok     6        TestDiv.testDivPositive
+    ok     7        TestDiv.testDivZero
+    # Starting class: TestWithFailures
+    not ok 8        TestWithFailures.testFail1
+        doc/my_test_suite_with_failures.lua:79: expected: "titi"
+        actual: "toto"
+    not ok 9        TestWithFailures.testFail2
+        doc/my_test_suite_with_failures.lua:85: attempt to perform arithmetic on local 'b' (a string value)
+    # Ran 9 tests in 0.005 seconds, 7 successes, 1 failure, 1 error
+
+In the default mode, the failure or error message is displayed in the failing test diagnostic part.
+
+Example with full verbosiy::
+
+    $ lua my_test_suite_with_failures.lua -o tap --verbose
+    1..9
+    # Started on 02/24/17 22:09:31
+    # Starting class: TestAdd
+    ok     1        TestAdd.testAddError
+    ok     2        TestAdd.testAddPositive
+    ok     3        TestAdd.testAddZero
+    ok     4        TestAdd.testAdder
+    # Starting class: TestDiv
+    ok     5        TestDiv.testDivError
+    ok     6        TestDiv.testDivPositive
+    ok     7        TestDiv.testDivZero
+    # Starting class: TestWithFailures
+    not ok 8        TestWithFailures.testFail1
+        doc/my_test_suite_with_failures.lua:79: expected: "titi"
+        actual: "toto"
+        stack traceback:
+            doc/my_test_suite_with_failures.lua:79: in function 'TestWithFailures.testFail1'
+    not ok 9        TestWithFailures.testFail2
+        doc/my_test_suite_with_failures.lua:85: attempt to perform arithmetic on local 'b' (a string value)
+        stack traceback:
+            [C]: in function 'xpcall'
+    # Ran 9 tests in 0.007 seconds, 7 successes, 1 failure, 1 error
+
+With maximum verbosity, the stack trace is also displayed in the test diagnostic.
+
+**NIL format**
+
+With the nil format output, absolutely nothing is displayed while running the tests. Only the
+exit code of the command can tell whether the test was successful or not::
+
+    $ lua my_test_suite_with_failures.lua -o nil --verbose
+    $
+
+This mode is used by LuaUnit for its internal validation.
+
+
+.. _stop-on-error:
+
+Stopping on first error or failure
+---------------------------------------
+
+If --failure or -f is passed as an option, LuaUnit will stop on the first failure or error and display the test results.
+
+If --error or -e is passed as an option, LuaUnit will stop on the first error (but continue on failures).
+
+**Randomize test order**
+
+If --shuffle or -s is passed as an option, LuaUnit will execute tests in random order. The randomisation works on all test functions
+and methods. As a consequence test methods of a given class may be splitted out in multiple location, generating several test class creation and destruction.
 
 Flexible test selection
-=============================
+-------------------------
 
-We will repeat the examples of the *Getting Started* section and proceed then with more advanced test selection.
+LuaUnit provides very flexible way to select which tests to execute. We will illustrate this with several examples.
 
 In the examples, we use a test suite composed of the following test funcions::
 
@@ -739,76 +1069,6 @@ Let's look at some practical examples::
     OK
 
 
-.. _command-line:
-
-Command-line options
-====================
-
-Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] 
-
-**Test names**
-
-When no test names are supplied, all tests are collected. 
-
-The syntax for supplying test names can be either: name of the function, name of the table
-or name of the table + '.' + name of the function. Only the supplied tests will be executed.
-
-**Selecting output format**
-
-Choose the output format with the syntax ``-o FORMAT`` or ``--output FORMAT``.
-
-Formats available:
-
-* ``text``: the default output format of LuaUnit
-* ``nil``: no output at all
-* ``tap``: output compatible with the `Test Anything Protocol`_ 
-* ``junit``: output compatible with the *JUnit xml* format (used by many CI platforms)
-
-.. _Test Anything Protocol: http://testanything.org/
-
-.. Warning:: 
-
-    In the JUnit format, a destination filename must be supplied with ``--name`` or ``-n``
-
-**Destination filename**
-
-When using the JUnit format, the test suites writes an XML file with the test results. The
-file name is mandatory and must be supplied with: ``--name FILENAME`` or ``-n FILENAME``
-
-**Selecting tests with patterns**
-
-You select a subset of tests by specifying one or more filter patterns, 
-with ``-p PATTERN`` or ``--pattern PATTERN``.
-
-The pattern is looked for on the full test name *TestTable.testMethod* . Only the tests that
-actually match the pattern are selected. When specifying more than one pattern,
-they are tried one by one until the name matches (OR combination).
-
-Make sure you esape magic chars like ``+?-*`` with ``%`` .
-
-You can also combine test selection and test exclusion. See :ref:`including-excluding-tests` 
-
-**Stopping on first error or failure**
-
-If --failure or -f is passed as an option, LuaUnit will stop on the first failure or error and display the test results.
-
-If --error or -e is passed as an option, LuaUnit will stop on the first error (but continue on failures).
-
-**Randomize test order**
-
-If --shuffle or -s is passed as an option, LuaUnit will execute tests in random order. The randomisation works on all test functions
-and methods. As a consequence test methods of a given class may be splitted out in multiple location, generating several test class creation and destruction.
-
-**Other Options:**
-
-*  ``-h``, ``--help``: display the command-line help.
-*  ``--version``: display the version information
-*  ``-v``, ``--verbose``: Increase the output verbosity. The exact effect depends on the output format. May be specified multiple times.
-*  ``-q``, ``--quiet``:  Set verbosity to minimum. The exact effect depends on the output format.
-
-
-.. _assertions-label:
-
 Assertions functions
 =====================
 You will now find the list of all assertion functions. For all functions, When an assertion fails, the failure
@@ -816,8 +1076,6 @@ message tries to be as informative as possible, by displaying the expectation an
 
 .. Note:: see :ref:`table-printing` and :ref:`comparing-table-keys-table` for more dealing with recursive tables and tables containing keys of type table.
 
-
-.. _assert-equality:
 
 Equality assertions
 ----------------------
@@ -876,8 +1134,6 @@ not influence the test itself.
 
     Assert that two floating point numbers are not almost equal.
     
-.. _assert-value:
-
 Value assertions
 ----------------------
 
@@ -986,8 +1242,6 @@ Input Value   assertTrue()   assertEvalToTrue()  assertNotFalse()  assertFalse()
     Assert that two variables are not identical, in the sense that they do not
     refer to the same value. See :func:`assertIs` for more details.
     
-.. _assert-string:
-
 String assertions
 --------------------------
 
@@ -1039,8 +1293,6 @@ Assertions related to string and patterns.
     If *start* and *final* are not provided or are *nil*, the pattern must match the full string, from start to end. The
     functions allows to specify the expected start and end position of the pattern in the string.
     
-
-.. _assert-error:
 
 Error assertions
 --------------------------
@@ -1096,8 +1348,6 @@ Error related assertions, to verify error generation and error messages.
     Note that matching is done from the start to the end of the error message. Be sure to escape magic all magic
     characters with ``%`` (like ``-+.?*``) .
     
-
-.. _assert-type:
 
 Type assertions
 --------------------------
@@ -1290,8 +1540,6 @@ To adjust the config, change it into the luaunit table before running any tests:
     lu.TABLE_EQUALS_KEYBYCONTENT = false
     -- run your tests:
     os.exit( lu.LuaUnit.run() )
-
-.. _developing-luaunit:
 
 Developing LuaUnit
 ******************
