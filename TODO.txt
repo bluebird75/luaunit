@@ -29,23 +29,23 @@ TODO Future:
 - print table of test test_filterWithPattern and see how to improve readability
 - align the "OK" vertically for text output
 - better detection of screen size
-- shuffle should shuffle separately classes and then class methods
-
-Nice to have: 
-============
-- stack unwrapping like in py.test
+- look at serpent to see how to improve nested table printing
 
 TODO for 3.3 release:
 ===============
-- look at serpent to see how to improve nested table printing
+- shuffle should shuffle separately classes and then class methods
 - doc about scientific computing dedicated functions
 - doc about prettystr
 - doc about usage of prettystr & assertion library
+- doc improvements:
+	indicate that example test files are available.
+- for multiline exceptions, junit stdout is not always prefixed with #
+- for multiline exceptions, TAP stdout is not always prefixed with #
 
 
 Done since 3.2:
 ===============
-
+- doc improvements
 - better error messages for list assertions:
 	+ expected length of X, got Y
 	+ index differing in table 1 and 2
