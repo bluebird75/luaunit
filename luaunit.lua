@@ -1731,10 +1731,10 @@ JUnitOutput.__class__ = 'JUnitOutput'
 
     function JUnitOutput:addStatus( node )
         if node:isFailure() then
-            print('# Failure: ' .. node.msg)
+            print( '#   Failure: ' .. prefixString( '#   ', node.msg ):sub(4, nil) )
             -- print('# ' .. node.stackTrace)
         elseif node:isError() then
-            print('# Error: ' .. node.msg)
+            print( '#   Error: ' .. prefixString( '#   '  , node.msg ):sub(4, nil) )
             -- print('# ' .. node.stackTrace)
         end
     end
