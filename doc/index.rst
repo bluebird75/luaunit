@@ -62,23 +62,23 @@ This documentation describes the functionality of LuaUnit v3.2 .
 
 New in version 3.2 - 12. Jul 2016
 ---------------------------------
-* Add command-line option to stop on first error or failure
+* Add command-line option to stop on first error or failure. See `stop-on-error`_
 * Distinguish between failures (failed assertion) and errors
 * Support for new versions: Lua 5.3 and LuaJIT (2.0, 2.1 beta)
 * Validation of all lua versions on Travis CI and AppVeyor
 * Add compatibility layer with forked luaunit v2.x
-* Added documentation about development process
-* Improved support for table containing keys of type table
+* Added documentation about development process. See `Developing luaUnit`_
+* Improved support for table containing keys of type table. See :ref:`comparing-table-keys-table`
 * Small bug fixes, several internal improvements
 * Available with a Luarock package
 
 New in version 3.1 - 10. Mar 2015
 ---------------------------------
-* luaunit no longer pollutes global namespace, unless defining EXPORT_ASSERT_TO_GLOBALS to true
+* luaunit no longer pollutes global namespace, unless defining EXPORT_ASSERT_TO_GLOBALS to true. See  :ref:`luaunit-global-asserts`
 * fixes and validation of JUnit XML generation
 * strip luaunit internal information from stacktrace
 * general improvements of test results with duration and other details
-* improve printing for tables, with an option to always print table id
+* improve printing for tables, with an option to always print table id. See :ref:`table-printing` 
 * fix printing of recursive tables 
 
 **Important note when upgrading to version 3.1** : assertions functions are
