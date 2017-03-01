@@ -1,4 +1,3 @@
-[![](https://stats.sylphide-consulting.com/piwik/piwik.php?idsite=37)]
 [![License](http://img.shields.io/badge/License-BSD-green.svg)](LICENSE.txt)
 [![Build status](https://ci.appveyor.com/api/projects/status/us6uh4e5q597jj54?svg=true&passingText=Windows%20Build%20passing&failingText=Windows%20Build%20failed)](https://ci.appveyor.com/project/bluebird75/luaunit)
 [![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
@@ -177,3 +176,4 @@ Unofficial fork from version 1.3
 - display the calling stack when an error is spotted
 - two verbosity level, like in python unittest
 
+[![stats](https://stats.sylphide-consulting.com/piwik/piwik.php?idsite=37)](stats)
