@@ -192,4 +192,4 @@ Unofficial fork from version 1.3
 - display the calling stack when an error is spotted
 - two verbosity level, like in python unittest
 
-[![stats](https://stats.sylphide-consulting.com/piwik/piwik.php?idsite=37&rec=1)](stats)
+![stats](https://stats.sylphide-consulting.com/piwik/piwik.php?idsite=37&amp;rec=1)
