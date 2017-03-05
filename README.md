@@ -155,8 +155,8 @@ Unofficial fork from version 1.3
 - table deep comparision (also available in 1.4)
 - control verbosity with setVerbosity() SetVerbosity() and set_verbosity()
 - More assertions: 
-    + is<Type>, is_<type>, assert<Type> and assert_<type> (e.g. assert( LuaUnit.isString( getString() ) )
-    + assertNot<Type> and assert_not_<type>
+  - is<Type>, is_<type>, assert<Type> and assert_<type> (e.g. assert( LuaUnit.isString( getString() ) )
+  - assertNot<Type> and assert_not_<type>
 
 #### Version 1.5 - 8. Nov 2012
 - compatibility with Lua 5.1 and 5.2
