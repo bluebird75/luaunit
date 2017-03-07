@@ -2604,6 +2604,11 @@ end
             end
             self.currentCount = iter_n
 
+            -- ensure referencial transparency of classes
+            if classInstance then
+                classInstance = setmetatable({}, {__index=classInstance})
+            end
+
             -- run setUp first (if any)
             if classInstance then
                 local func = self.asFunction( classInstance.setUp ) or
