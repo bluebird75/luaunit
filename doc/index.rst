@@ -60,6 +60,9 @@ Version and Changelog
 =====================
 This documentation describes the functionality of LuaUnit v3.2 .
 
+New in version 3.3 - In progress
+--------------------------------
+
 New in version 3.2 - 12. Jul 2016
 ---------------------------------
 * Add command-line option to stop on first error or failure. See `stop-on-error`_
@@ -70,7 +73,7 @@ New in version 3.2 - 12. Jul 2016
 * Added documentation about development process. See `Developing luaUnit`_
 * Improved support for table containing keys of type table. See :ref:`comparing-table-keys-table`
 * Small bug fixes, several internal improvements
-* Available with a Luarock package
+* Availability of a Luarock package. See `https://luarocks.org/modules/bluebird75/luaunit .
 
 New in version 3.1 - 10. Mar 2015
 ---------------------------------
@@ -90,8 +93,8 @@ New in version 3.0 - 9. Oct 2014
 Because LuaUnit was forked and released as some 2.x version, version number
 is now jumping to 3.0 . 
 
-* full documentation available in text, html and pdf at read-the-docs.org
-* new output format: JUnit, compatible with Bamboo and other CI platforms
+* full documentation available in text, html and pdf at http://luaunit.read-the-docs.org
+* new output format: JUnit, compatible with Bamboo and other CI platforms. See `Output formats`_
 * much better table assertions
 * new assertions for strings, with patterns and case insensitivity: assertStrContains, 
   assertNotStrContains, assertNotStrIContains, assertStrIContains, assertStrMatches
@@ -116,7 +119,7 @@ New in version 1.5 - 8. Nov 2012
 New in version 1.4 - 26. Jul 2012
 ---------------------------------
 * switch from X11 to more popular BSD license
-* add TAP output format for integration into Jenkins
+* add TAP output format for integration into Jenkins. See `Output formats`_
 * official repository now on github
 
 
@@ -124,7 +127,7 @@ New in version 1.3 - 30. Oct 2007
 ---------------------------------
 * port to lua 5.1
 * iterate over the test classes, methods and functions in the alphabetical order
-* change the default order of expected, actual in assertEquals (adjustable with USE_EXPECTED_ACTUAL_IN_ASSERT_EQUALS).
+* change the default order of expected, actual in assertEquals.  See `Equality assertions`_ 
 
 
 Version 1.2 - 13. Jun 2005  
@@ -135,7 +138,7 @@ Version 1.2 - 13. Jun 2005
 Version 1.1
 ------------
 * move global variables to internal variables
-* assertion order is configurable between expected/actual or actual/expected
+* assertion order is configurable between expected/actual or actual/expected. See `Equality assertions`_
 * new assertion to check that a function call returns an error
 * display the calling stack when an error is spotted
 * two verbosity level, like in python unittest
@@ -1117,23 +1120,6 @@ not influence the test itself.
 
     It also uses table deep comparison.
 
-.. function:: assertAlmostEquals( actual, expected, margin )
-
-    **Alias**: *assert_almost_equals()*
-
-    Assert that two floating point numbers are almost equal.
-
-    When comparing floating point numbers, strict equality does not work.
-    Computer arithmetic is so that an operation that mathematically
-    yields 1.00000000 might yield 0.999999999999 in lua . That's why you
-    need an *almost equals* comparison, where you specify the error margin.
-    
-.. function:: assertNotAlmostEquals( actual, expected, margin )
-
-    **Alias**: *assert_not_almost_equals()*
-
-    Assert that two floating point numbers are not almost equal.
-    
 Value assertions
 ----------------------
 
@@ -1434,6 +1420,86 @@ Table assertions
 
         lu.assertItemsEquals( {1,{2,3},4}, {4,{3,2,},1} ) -- assertion fails because {2,3} ~= {3,2}
 
+
+Scientific computing and LuaUnit
+--------------------------------
+
+LuaUnit is used by the CERN for the MAD-NG program, the forefront of computational physics in the field of particle accelerator design and simulation (See MAD_). Thank to the feedback of a scientific computing developer, LuaUnit has been enhanced with some facilities for scientific applications (see below).
+
+.. _MAD: http://mad.web.cern.ch/mad/
+
+The floating point library used by the Lua implementation is provided by the compiler used to compile Lua. It is usually compliant with IEEE_ XXX . As such, it can yields results such as "plus infinity", "minus infinity" or "not a number". The precision of any calculation performed in Lua is related to the smallest floating point value (called EPSILON), which is 2^-52 for 64 bits floats (represented as type double in the C language) and 2^-23 for 32 bits float (represented as type float in C). 
+
+.. _IEEE: XXX
+
+Note: Lua may be compiled with numbers represented either as C 32 bits floats or C 64 bits double (as defined by the macro LUA_FLOAT_TYPE in luaconf.h ). LuaUnit has been validated in both these configurations and in particuluar, the epsilon value EPS is adjusted accordingly.
+
+For more information about performing calculations on computers, please read the reference paper XXX.
+
+If your calculation shall be portable to multiple OS or compilers, you may get different calculation errors depending on the OS/compiler. It is therefore important to verify them on every target.
+
+
+
+.. function:: EPS
+
+    The machine epsilon...
+
+
+.. function:: assertInf( value )
+
+.. function:: assertPlusInf( value )
+
+.. function:: assertMinusInf( value )
+
+.. function:: assertNan( value )
+
+.. function:: assertPositiveZero( value )
+
+assert(type(x) == “number” and x == 0 and 1/x == infinity)
+
+.. function:: assertNegativeZero( value )
+
+assert(type(x) == “number” and x == 0 and 1/x == -infinity)
+
+.. function:: assertAlmostEquals( actual, expected [, margin] )
+
+    **Alias**: *assert_almost_equals()*
+
+    Assert that two floating point numbers are equal by the defined margin. 
+    If margin is not provided, the machine epsilon EPS is used.
+
+.. function:: assertNotAlmostEquals( actual, expected [, margin] )
+
+    **Alias**: *assert_not_almost_equals()*
+
+    Assert that two floating point numbers are not equal by the defined margin.
+    If margin is not provided, the machine epsilon EPS is used.
+
+    Be careful that depending on the calculation, it might make more sense to measure
+    the absolute error or the relative error:
+
+    **Example of absolute versus relative error**
+
+.. code-block:: lua
+
+        -- convert pi/6 radian to 30 degree and pi/3 radian to 60 degrees
+        target1, target2 = 30, 60
+        calculation1, calculation2 = math.deg(math.pi/6), math.deg(math.pi/3)
+
+        print( ( target1 - calculation1 ) / lu.EPSILON ) -- prints: 16
+        print( ( target2 - calculation2 ) / lu.EPSILON ) -- prints: 32
+        -- error is proportional to the input value so absolute error and is
+        -- difficult to control. Equality assertion typically has the form of:
+        assertAlmostEquals( target1 - calculation1, 16 * lu.EPSILON )
+        assertAlmostEquals( target2 - calculation2, 32 * lu.EPSILON )
+
+        -- Better use relative error:
+        print( (( target1 - calculation1 ) / target1) / lu.EPSILON ) ) -- prints: 0.53333
+        print( (( target2 - calculation2 ) / target2) / lu.EPSILON ) ) -- prints: 0.53333
+
+        -- relative error is constant. Assertion can take the form of:
+        assertAlmostEquals( (target1 - calculation1) / target1, lu.EPSILON )
+        assertAlmostEquals( (target2 - calculation2) / target2, lu.EPSILON )
 
 .. _table-printing:
 
