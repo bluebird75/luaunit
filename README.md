@@ -37,7 +37,7 @@ Documentation is available on
 no longer exported directly to the global namespace. See [documentation](http://luaunit.readthedocs.io/en/latest/#luaunit-global-asserts) on how to adjust or restore previous behavior.
 
 
-##Install
+## Install
 
 The version in development on github is always stable and can be used safely.
 
@@ -66,7 +66,7 @@ You can also install it with bower :
 
     bower install https://github.com/bluebird75/luaunit.git.
 
-##Contributors
+## Contributors
 * [NiteHawk](https://github.com/n1tehawk)
 * [AbigailBuccaneer](https://github.com/AbigailBuccaneer)
 * [Juan Julián Merelo Guervós](https://github.com/JJ)
@@ -78,7 +78,7 @@ You can also install it with bower :
 * [Urs Breu](https://github.com/ubreu)
 * Jim Anderson
 
-##Successes
+## Successes
 
 LuaUnit is used by hundreds of projects on GitHub (see [LuaUnit search](https://github.com/search?utf8=%E2%9C%93&q=filename%3Aluaunit.lua&type=Code&ref=searchresults) ) has more than 10k download on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit) ).
 
