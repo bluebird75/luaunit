@@ -1111,6 +1111,13 @@ local function errorMsgEquality(actual, expected, doDeepAnalysis)
                          prettystr(expected), prettystr(actual))
 end
 
+local function createCustomMsg(descr, message)
+  if type(message) == 'string' then
+    return message .. "\n" .. descr
+  end
+  return descr
+end
+
 function M.assertError(f, ...)
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
@@ -1119,87 +1126,93 @@ function M.assertError(f, ...)
     end
 end
 
-function M.assertEvalToTrue(value)
+function M.assertEvalToTrue(value, message)
     if not value then
-        failure("expected: a value evaluating to true, actual: " ..prettystr(value), 2)
+        failure(createCustomMsg("expected: a value evaluating to true, actual: " ..prettystr(value), message), 2)
     end
 end
 
-function M.assertEvalToFalse(value)
+function M.assertEvalToFalse(value, message)
     if value then
-        failure("expected: false or nil, actual: " ..prettystr(value), 2)
+        failure(createCustomMsg("expected: false or nil, actual: " ..prettystr(value), message), 2)
     end
 end
 
-function M.assertIsTrue(value)
+function M.assertIsTrue(value, message)
     if value ~= true then
-        failure("expected: true, actual: " ..prettystr(value), 2)
+        failure(createCustomMsg("expected: true, actual: " ..prettystr(value), message), 2)
     end
 end
 
-function M.assertNotIsTrue(value)
+function M.assertNotIsTrue(value, message)
     if value == true then
-        failure("expected: anything but true, actual: " ..prettystr(value), 2)
+        failure(createCustomMsg("expected: anything but true, actual: " ..prettystr(value), message), 2)
     end
 end
 
-function M.assertIsFalse(value)
+function M.assertIsFalse(value, message)
     if value ~= false then
-        failure("expected: false, actual: " ..prettystr(value), 2)
+        failure(createCustomMsg("expected: false, actual: " ..prettystr(value), message), 2)
     end
 end
 
-function M.assertNotIsFalse(value)
+function M.assertNotIsFalse(value, message)
     if value == false then
-        failure("expected: anything but false, actual: " ..prettystr(value), 2)
+        failure(createCustomMsg("expected: anything but false, actual: " ..prettystr(value), message), 2)
     end
 end
 
-function M.assertIsNil(value)
+function M.assertIsNil(value, message)
     if value ~= nil then
-        failure("expected: nil, actual: " ..prettystr(value), 2)
+        failure(createCustomMsg("expected: nil, actual: " ..prettystr(value), message), 2)
     end
 end
 
-function M.assertNotIsNil(value)
+function M.assertNotIsNil(value, message)
     if value == nil then
-        failure("expected non nil value, received nil", 2)
+        failure(createCustomMsg("expected non nil value, received nil", message), 2)
     end
 end
 
-function M.assertIsNaN(value)
+function M.assertIsNaN(value, message)
     if type(value) ~= "number" or value == value then
-        failure("expected: nan, actual: " ..prettystr(value), 2)
+        failure(createCustomMsg("expected: nan, actual: " ..prettystr(value), message), 2)
     end
 end
 
-function M.assertNotIsNaN(value)
+function M.assertNotIsNaN(value, message)
     if type(value) == "number" and value ~= value then
-        failure("expected non nan value, received nan", 2)
+        failure(createCustomMsg("expected non nan value, received nan", message), 2)
     end
 end
 
-function M.assertIsInf(value)
+function M.assertIsInf(value, message)
     if type(value) ~= "number" or math.abs(value) ~= math.huge then
-        failure("expected: inf, actual: " ..prettystr(value), 2)
+        failure(createCustomMsg("expected: inf, actual: " ..prettystr(value), message), 2)
     end
 end
 
-function M.assertNotIsInf(value)
+function M.assertNotIsInf(value, message)
     if type(value) == "number" and math.abs(value) == math.huge then
-        failure("expected non inf value, received ±inf", 2)
+        failure(createCustomMsg("expected non inf value, received ±inf", message), 2)
     end
 end
 
-function M.assertEquals(actual, expected, doDeepAnalysis)
+function M.assertEquals(actual, expected, doDeepAnalysis, message)
+    local descr
+
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
-            failure( errorMsgEquality(actual, expected, doDeepAnalysis), 2 )
+            descr = errorMsgEquality(actual, expected, doDeepAnalysis)
         end
     elseif type(actual) ~= type(expected) then
-        failure( errorMsgEquality(actual, expected), 2 )
+        descr = errorMsgEquality(actual, expected)
     elseif actual ~= expected then
-        failure( errorMsgEquality(actual, expected), 2 )
+        descr = errorMsgEquality(actual, expected)
+    end
+
+    if type(descr) == 'string' then
+        failure(createCustomMsg(descr, message), 2)
     end
 end
 
@@ -1214,7 +1227,7 @@ function M.almostEquals( actual, expected, margin )
     return math.abs(expected - actual) <= margin
 end
 
-function M.assertAlmostEquals( actual, expected, margin )
+function M.assertAlmostEquals( actual, expected, margin, message)
     -- check that two floats are close by margin
     margin = margin or M.EPSILON
     if not M.almostEquals(actual, expected, margin) then
@@ -1222,13 +1235,15 @@ function M.assertAlmostEquals( actual, expected, margin )
             expected, actual = actual, expected
         end
         local delta = math.abs(actual - expected) - margin
-        fail_fmt(2, 'Values are not almost equal\n' ..
-                    'Actual: %s, expected: %s with margin of %s; delta: %s',
-                    actual, expected, margin, delta)
+
+        local descr = 'Values are not almost equal\n' ..
+                'Actual: %s, expected: %s with margin of %s; delta: %s'
+
+        fail_fmt(2, createCustomMsg(descr, message), actual, expected, margin, delta)
     end
 end
 
-function M.assertNotEquals(actual, expected)
+function M.assertNotEquals(actual, expected, message)
     if type(actual) ~= type(expected) then
         return
     end
@@ -1240,10 +1255,10 @@ function M.assertNotEquals(actual, expected)
     elseif actual ~= expected then
         return
     end
-    fail_fmt(2, 'Received the not expected value: %s', prettystr(actual))
+    fail_fmt(2, createCustomMsg('Received the not expected value: %s', message), prettystr(actual))
 end
 
-function M.assertNotAlmostEquals( actual, expected, margin )
+function M.assertNotAlmostEquals( actual, expected, margin, message)
     -- check that two floats are not close by margin
     margin = margin or M.EPSILON
     if M.almostEquals(actual, expected, margin) then
@@ -1251,59 +1266,56 @@ function M.assertNotAlmostEquals( actual, expected, margin )
             expected, actual = actual, expected
         end
         local delta = margin - math.abs(actual - expected)
-        fail_fmt(2, 'Values are almost equal\nActual: %s, expected: %s' ..
-                    ' with a difference above margin of %s; delta: %s',
-                    actual, expected, margin, delta)
+
+        local descr = 'Values are almost equal\nActual: %s, expected: %s' ..
+                      ' with a difference above margin of %s; delta: %s'
+
+        fail_fmt(2, createCustomMsg(descr, message), actual, expected, margin, delta)
     end
 end
 
-function M.assertStrContains( str, sub, useRe )
+function M.assertStrContains( str, sub, useRe, message)
     -- this relies on lua string.find function
     -- a string always contains the empty string
     if not string.find(str, sub, 1, not useRe) then
         sub, str = prettystrPairs(sub, str, '\n')
-        fail_fmt(2, 'Error, %s %s was not found in string %s',
-                 useRe and 'regexp' or 'substring', sub, str)
+        fail_fmt(2, createCustomMsg('Error, %s %s was not found in string %s', message), useRe and 'regexp' or 'substring', sub, str)
     end
 end
 
-function M.assertStrIContains( str, sub )
+function M.assertStrIContains( str, sub, message)
     -- this relies on lua string.find function
     -- a string always contains the empty string
     if not string.find(str:lower(), sub:lower(), 1, true) then
         sub, str = prettystrPairs(sub, str, '\n')
-        fail_fmt(2, 'Error, substring %s was not found (case insensitively) in string %s',
-                 sub, str)
+        fail_fmt(2, createCustomMsg('Error, substring %s was not found (case insensitively) in string %s', message), sub, str)
     end
 end
 
-function M.assertNotStrContains( str, sub, useRe )
+function M.assertNotStrContains( str, sub, useRe, message)
     -- this relies on lua string.find function
     -- a string always contains the empty string
     if string.find(str, sub, 1, not useRe) then
         sub, str = prettystrPairs(sub, str, '\n')
-        fail_fmt(2, 'Error, %s %s was found in string %s',
-                 useRe and 'regexp' or 'substring', sub, str)
+        fail_fmt(2, createCustomMsg('Error, %s %s was found in string %s', message), useRe and 'regexp' or 'substring', sub, str)
     end
 end
 
-function M.assertNotStrIContains( str, sub )
+function M.assertNotStrIContains( str, sub, message)
     -- this relies on lua string.find function
     -- a string always contains the empty string
     if string.find(str:lower(), sub:lower(), 1, true) then
         sub, str = prettystrPairs(sub, str, '\n')
-        fail_fmt(2, 'Error, substring %s was found (case insensitively) in string %s',
-                 sub, str)
+        fail_fmt(2, createCustomMsg('Error, substring %s was found (case insensitively) in string %s', message), sub, str)
     end
 end
 
-function M.assertStrMatches( str, pattern, start, final )
+function M.assertStrMatches( str, pattern, start, final, message)
     -- Verify a full match for the string
     -- for a partial match, simply use assertStrContains with useRe set to true
     if not strMatch( str, pattern, start, final ) then
         pattern, str = prettystrPairs(pattern, str, '\n')
-        fail_fmt(2, 'Error, pattern %s was not matched by string %s',
-                 pattern, str)
+        fail_fmt(2, createCustomMsg('Error, pattern %s was not matched by string %s', message), pattern, str)
     end
 end
 
@@ -1365,10 +1377,9 @@ for _, funcName in ipairs(
     typeExpected = typeExpected and typeExpected:lower()
                    or error("bad function name '"..funcName.."' for type assertion")
 
-    M[funcName] = function(value)
+    M[funcName] = function(value, message)
         if type(value) ~= typeExpected then
-            fail_fmt(2, 'Expected: a %s value, actual: type %s, value %s',
-                     typeExpected, type(value), prettystrPairs(value))
+            fail_fmt(2, createCustomMsg('Expected: a %s value, actual: type %s, value %s', message), typeExpected, type(value), prettystrPairs(value))
         end
     end
 end
@@ -1405,43 +1416,43 @@ for _, funcName in ipairs(
     typeUnexpected = typeUnexpected and typeUnexpected:lower()
                    or error("bad function name '"..funcName.."' for type assertion")
 
-    M[funcName] = function(value)
+    M[funcName] = function(value, message)
         if type(value) == typeUnexpected then
-            fail_fmt(2, 'Not expected: a %s type, actual: value %s',
-                     typeUnexpected, prettystrPairs(value))
+            fail_fmt(
+              2, createCustomMsg('Not expected: a %s type, actual: value %s', message),
+                typeUnexpected, prettystrPairs(value)
+            )
         end
     end
 end
 
-function M.assertIs(actual, expected)
+function M.assertIs(actual, expected, message)
     if actual ~= expected then
         if not M.ORDER_ACTUAL_EXPECTED then
             actual, expected = expected, actual
         end
         expected, actual = prettystrPairs(expected, actual, '\n', ', ')
-        fail_fmt(2, 'Expected object and actual object are not the same\nExpected: %sactual: %s',
-                 expected, actual)
+        local descr = 'Expected object and actual object are not the same\nExpected: %sactual: %s'
+        fail_fmt(2, createCustomMsg(descr, message), expected, actual)
     end
 end
 
-function M.assertNotIs(actual, expected)
+function M.assertNotIs(actual, expected, message)
     if actual == expected then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected = actual
         end
-        fail_fmt(2, 'Expected object and actual object are the same object: %s',
-                 prettystrPairs(expected))
+        fail_fmt(2, createCustomMsg('Expected object and actual object are the same object: %s', message), prettystrPairs(expected))
     end
 end
 
-function M.assertItemsEquals(actual, expected)
+function M.assertItemsEquals(actual, expected, message)
     -- checks that the items of table expected
     -- are contained in table actual. Warning, this function
     -- is at least O(n^2)
     if not _is_table_items_equals(actual, expected ) then
         expected, actual = prettystrPairs(expected, actual)
-        fail_fmt(2, 'Contents of the tables are not identical:\nExpected: %s\nActual: %s',
-                 expected, actual)
+        fail_fmt(2, createCustomMsg('Contents of the tables are not identical:\nExpected: %s\nActual: %s', message), expected, actual)
     end
 end
 
