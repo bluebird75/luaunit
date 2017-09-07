@@ -1277,6 +1277,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertIsNaN(math.fmod(-inf, 1))
         assertFailure(lu.assertIsNaN, 0 / 1) -- 0.0
         assertFailure(lu.assertIsNaN, 1 / 0) -- inf
+        assertFailure(lu.assertIsNaN, 1 / 2) -- inf
     end
 
     function TestLuaUnitAssertions:test_assertIsInf()
@@ -1792,6 +1793,10 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals( 'expected: 2, actual: nil', lu.assertEquals, nil, 2 )
     end 
 
+    function TestLuaUnitErrorMsg:test_assertEqualsCustomMsg()
+        assertFailureEquals( "custom description\nexpected: 2, actual: 1", lu.assertEquals, 1, 2, false, 'custom description' )
+    end
+
     function TestLuaUnitErrorMsg:test_assertEqualsOrderReversedMsg()
         lu.ORDER_ACTUAL_EXPECTED = false
         assertFailureEquals( 'expected: 1, actual: 2', lu.assertEquals, 1, 2  )
@@ -1800,6 +1805,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsMsg()
         assertFailureEquals('Values are not almost equal\nActual: 2, expected: 1 with margin of 0.1; delta: 0.9', lu.assertAlmostEquals, 2, 1, 0.1 )
+        assertFailureEquals('custom description\nValues are not almost equal\nActual: 2, expected: 1 with margin of 0.1; delta: 0.9', lu.assertAlmostEquals, 2, 1, 0.1, 'custom description' )
     end
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsOrderReversedMsg()
@@ -1810,6 +1816,10 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
         -- single precision math Lua won't output an "exact" delta (0.1) here, so we do a partial match
         assertFailureContains('Values are almost equal\nActual: 1.1, expected: 1 with a difference above margin of 0.2; delta: ', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
+        assertFailureContains(
+            'custom description\nValues are almost equal\nActual: 1.1, expected: 1 with a difference above margin of 0.2; delta: ',
+            lu.assertNotAlmostEquals, 1.1, 1, 0.2, 'custom description'
+        )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsOrderReversedMsg()
@@ -1820,6 +1830,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:test_assertNotEqualsMsg()
         assertFailureEquals( 'Received the not expected value: 1', lu.assertNotEquals, 1, 1  )
+        assertFailureEquals( 'custom description\nReceived the not expected value: 1', lu.assertNotEquals, 1, 1, 'custom description' )
         assertFailureMatches( 'Received the not expected value: {1, 2}', lu.assertNotEquals, {1,2}, {1,2} )
         assertFailureEquals( 'Received the not expected value: nil', lu.assertNotEquals, nil, nil )
     end 
@@ -1832,7 +1843,9 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
     function TestLuaUnitErrorMsg:test_assertTrueFalse()
         assertFailureEquals( 'expected: true, actual: false', lu.assertTrue, false )
         assertFailureEquals( 'expected: true, actual: nil', lu.assertTrue, nil )
+        assertFailureEquals( 'custom description\nexpected: true, actual: nil', lu.assertTrue, nil, 'custom description' )
         assertFailureEquals( 'expected: false, actual: true', lu.assertFalse, true )
+        assertFailureEquals( 'custom description\nexpected: false, actual: true', lu.assertFalse, true, 'custom description' )
         assertFailureEquals( 'expected: false, actual: nil', lu.assertFalse, nil )
         assertFailureEquals( 'expected: false, actual: 0', lu.assertFalse, 0)
         assertFailureMatches( 'expected: false, actual: {}', lu.assertFalse, {})
@@ -1843,7 +1856,9 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
     function TestLuaUnitErrorMsg:test_assertEvalToTrueFalse()
         assertFailureEquals( 'expected: a value evaluating to true, actual: false', lu.assertEvalToTrue, false )
         assertFailureEquals( 'expected: a value evaluating to true, actual: nil', lu.assertEvalToTrue, nil )
+        assertFailureEquals( 'custom description\nexpected: a value evaluating to true, actual: nil', lu.assertEvalToTrue, nil, 'custom description' )
         assertFailureEquals( 'expected: false or nil, actual: true', lu.assertEvalToFalse, true )
+        assertFailureEquals( 'custom description\nexpected: false or nil, actual: true', lu.assertEvalToFalse, true, 'custom description' )
         assertFailureEquals( 'expected: false or nil, actual: 0', lu.assertEvalToFalse, 0)
         assertFailureMatches( 'expected: false or nil, actual: {}', lu.assertEvalToFalse, {})
         assertFailureEquals( 'expected: false or nil, actual: "abc"', lu.assertEvalToFalse, 'abc')
@@ -1852,6 +1867,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:test_assertNil()
         assertFailureEquals( 'expected: nil, actual: false', lu.assertNil, false )
+        assertFailureEquals( 'custom description\nexpected: nil, actual: false', lu.assertNil, false, 'custom description' )
         assertFailureEquals( 'expected non nil value, received nil', lu.assertNotNil, nil )
     end
 
@@ -1868,85 +1884,167 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals( 'Error, regexp "aBc" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'aBc', true )
         assertFailureEquals( 'Error, regexp "xxx" was not found in string ""', lu.assertStrContains, '', 'xxx', true )
 
+        assertFailureEquals( 'custom description\nError, regexp "xxx" was not found in string ""',
+            lu.assertStrContains, '', 'xxx', true, 'custom description' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertStrIContains()
         assertFailureEquals( 'Error, substring "xxx" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'xxx' )
         assertFailureEquals( 'Error, substring "xxx" was not found in string ""', lu.assertStrContains, '', 'xxx' )
+        assertFailureEquals( 'custom message\nError, substring "yyy" was not found (case insensitively) in string "xxx"',
+            lu.assertStrIContains, 'xxx', 'yyy', 'custom message' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotStrContains()
         assertFailureEquals( 'Error, substring "abc" was found in string "abcdef"', lu.assertNotStrContains, 'abcdef', 'abc' )
         assertFailureEquals( 'Error, substring "abc" was found in string "abcdef"', lu.assertNotStrContains, 'abcdef', 'abc', false )
         assertFailureEquals( 'Error, regexp "..." was found in string "abcdef"', lu.assertNotStrContains, 'abcdef', '...', true)
+        assertFailureEquals( 'custom description\nError, regexp "..." was found in string "abcdef"', lu.assertNotStrContains, 'abcdef', '...', true, 'custom description' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotStrIContains()
         assertFailureEquals( 'Error, substring "aBc" was found (case insensitively) in string "abcdef"', lu.assertNotStrIContains, 'abcdef', 'aBc' )
         assertFailureEquals( 'Error, substring "abc" was found (case insensitively) in string "abcdef"', lu.assertNotStrIContains, 'abcdef', 'abc' )
+        assertFailureEquals(
+            'custom description\nError, substring "abc" was found (case insensitively) in string "abcdef"',
+            lu.assertNotStrIContains, 'abcdef', 'abc', 'custom description' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertStrMatches()
         assertFailureEquals('Error, pattern "xxx" was not matched by string "abcdef"', lu.assertStrMatches, 'abcdef', 'xxx' )
+        assertFailureEquals('custom description\nError, pattern "xxx" was not matched by string "abcdef"',
+            lu.assertStrMatches, 'abcdef', 'xxx', nil, nil, 'custom description' )
+
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsNumber()
         assertFailureEquals( 'Expected: a number value, actual: type string, value "abc"', lu.assertIsNumber, 'abc' )
         assertFailureEquals( 'Expected: a number value, actual: type nil, value nil', lu.assertIsNumber, nil )
+        assertFailureEquals( 'custom description\nExpected: a number value, actual: type nil, value nil', lu.assertIsNumber, nil, 'custom description' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsString()
         assertFailureEquals( 'Expected: a string value, actual: type number, value 1.2', lu.assertIsString, 1.2 )
         assertFailureEquals( 'Expected: a string value, actual: type nil, value nil', lu.assertIsString, nil )
+        assertFailureEquals( 'custom description\nExpected: a string value, actual: type nil, value nil', lu.assertIsString, nil, 'custom description' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsTable()
         assertFailureEquals( 'Expected: a table value, actual: type number, value 1.2', lu.assertIsTable, 1.2 )
         assertFailureEquals( 'Expected: a table value, actual: type nil, value nil', lu.assertIsTable, nil )
+        assertFailureEquals( 'custom description\nExpected: a table value, actual: type nil, value nil', lu.assertIsTable, nil, 'custom description' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsBoolean()
         assertFailureEquals( 'Expected: a boolean value, actual: type number, value 1.2', lu.assertIsBoolean, 1.2 )
         assertFailureEquals( 'Expected: a boolean value, actual: type nil, value nil', lu.assertIsBoolean, nil )
+        assertFailureEquals( 'custom description\nExpected: a boolean value, actual: type nil, value nil', lu.assertIsBoolean, nil, 'custom description' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsFunction()
         assertFailureEquals( 'Expected: a function value, actual: type number, value 1.2', lu.assertIsFunction, 1.2 )
         assertFailureEquals( 'Expected: a function value, actual: type nil, value nil', lu.assertIsFunction, nil )
+        assertFailureEquals( 'custom description\nExpected: a function value, actual: type nil, value nil', lu.assertIsFunction, nil, 'custom description' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsThread()
         assertFailureEquals( 'Expected: a thread value, actual: type number, value 1.2', lu.assertIsThread, 1.2 )
         assertFailureEquals( 'Expected: a thread value, actual: type nil, value nil', lu.assertIsThread, nil )
+        assertFailureEquals(
+            'custom description\nExpected: a thread value, actual: type nil, value nil',
+            lu.assertIsThread, nil, 'custom description'
+        )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsUserdata()
         assertFailureEquals( 'Expected: a userdata value, actual: type number, value 1.2', lu.assertIsUserdata, 1.2 )
         assertFailureEquals( 'Expected: a userdata value, actual: type nil, value nil', lu.assertIsUserdata, nil )
+        assertFailureEquals(
+            'custom description\nExpected: a userdata value, actual: type nil, value nil',
+            lu.assertIsUserdata, nil, 'custom description'
+        )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertIsNan()
+        assertFailureEquals( 'custom description\nexpected: nan, actual: "str"', lu.assertIsNaN, 'str', 'custom description' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotIsNan()
+        assertFailureEquals( 'custom description\nexpected non nan value, received nan', lu.assertNotIsNaN, 0 / 0, 'custom description' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertIsInf()
+        assertFailureEquals( 'custom description\nexpected: inf, actual: "str"', lu.assertIsInf, 'str', 'custom description' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotIsInf()
+        assertFailureEquals( 'custom description\nexpected non inf value, received ±inf', lu.assertNotIsInf, 1 / 0, 'custom description' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotIsTrue()
+        assertFailureEquals(
+            'custom description\nexpected: anything but true, actual: true',
+            lu.assertNotIsTrue, true, 'custom description' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotIsFalse()
+        assertFailureEquals(
+            'custom description\nexpected: anything but false, actual: false',
+            lu.assertNotIsFalse, false, 'custom description' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotIsNil()
+        assertFailureEquals(
+            'custom description\nexpected non nil value, received nil',
+            lu.assertNotIsNil, nil, 'custom description' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIsNumber()
         assertFailureEquals( 'Not expected: a number type, actual: value 123', lu.assertNotIsNumber, 123 )
+        assertFailureEquals(
+            'custom description\nNot expected: a number type, actual: value 123',
+            lu.assertNotIsNumber, 123, 'custom description'
+        )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIsString()
         assertFailureEquals( 'Not expected: a string type, actual: value "abc"', lu.assertNotIsString, "abc" )
+        assertFailureEquals(
+            'custom description\nNot expected: a string type, actual: value "abc"',
+            lu.assertNotIsString, "abc", 'custom description'
+        )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIsTable()
         assertFailureEquals( 'Not expected: a table type, actual: value {1, 2, 3}', lu.assertNotIsTable, {1,2,3} )
+        assertFailureEquals(
+            'custom description\nNot expected: a table type, actual: value {1, 2, 3}',
+            lu.assertNotIsTable, {1,2,3 }, 'custom description'
+        )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIsBoolean()
         assertFailureEquals( 'Not expected: a boolean type, actual: value false', lu.assertNotIsBoolean, false )
+        assertFailureEquals(
+            'custom description\nNot expected: a boolean type, actual: value false',
+            lu.assertNotIsBoolean, false, 'custom description'
+        )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIsFunction()
         assertFailureContains( 'Not expected: a function type, actual: value function:', lu.assertNotIsFunction, function() return true end )
+        assertFailureContains(
+            'custom description\nNot expected: a function type, actual: value function:',
+            lu.assertNotIsFunction, function() return true end, 'custom description'
+        )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIsThread()
         assertFailureContains( 'Not expected: a thread type, actual: value thread:', lu.assertNotIsThread, coroutine.create( function(v) local y=v+1 end ) )
+        assertFailureContains(
+            'custom description\nNot expected: a thread type, actual: value thread:',
+            lu.assertNotIsThread, coroutine.create( function(v) local y=v+1 end ), 'custom description'
+        )
     end 
 
     --[[ How do you create UserData ?
@@ -1959,6 +2057,10 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals( 'Expected object and actual object are not the same\nExpected: 1, actual: 2', lu.assertIs, 2, 1 )
         lu.ORDER_ACTUAL_EXPECTED = false
         assertFailureEquals( 'Expected object and actual object are not the same\nExpected: 2, actual: 1', lu.assertIs, 2, 1 )
+        assertFailureEquals(
+            'custom description\nExpected object and actual object are not the same\nExpected: 2, actual: 1',
+            lu.assertIs, 2, 1, 'custom description'
+        )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIs()
@@ -1966,6 +2068,10 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureMatches( 'Expected object and actual object are the same object: {1, 2}', lu.assertNotIs, v, v )
         lu.ORDER_ACTUAL_EXPECTED = false -- order shouldn't matter here, but let's cover it
         assertFailureMatches( 'Expected object and actual object are the same object: {1, 2}', lu.assertNotIs, v, v )
+        assertFailureMatches(
+            'custom description\nExpected object and actual object are the same object: {1, 2}',
+            lu.assertNotIs, v, v, 'custom description'
+        )
     end 
 
     function TestLuaUnitErrorMsg:test_assertItemsEquals()
@@ -1973,6 +2079,9 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureContains('Contents of the tables are not identical' , lu.assertItemsEquals, {}, {1} ) -- actual table empty, = doesn't contain expected value
         assertFailureContains('Contents of the tables are not identical' , lu.assertItemsEquals, nil, 'foobar' ) -- type mismatch
         assertFailureContains('Contents of the tables are not identical' , lu.assertItemsEquals, 'foo', 'bar' ) -- value mismatch
+        assertFailureContains(
+            'custom description\nContents of the tables are not identical',
+            lu.assertItemsEquals, 'foo', 'bar', 'custom description' ) -- value mismatch
     end 
 
     function TestLuaUnitErrorMsg:test_assertError()
@@ -1981,11 +2090,15 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:test_assertErrorMsg()
         assertFailureEquals('No error generated when calling function but expected error: "bla bla bla"' , lu.assertErrorMsgEquals, 'bla bla bla', function( v ) local y = v+1 end, 3 )
+
         assertFailureEquals('No error generated when calling function but expected error containing: "bla bla bla"' , lu.assertErrorMsgContains, 'bla bla bla', function( v ) local y = v+1 end, 3 )
+
         assertFailureEquals('No error generated when calling function but expected error matching: "bla bla bla"' , lu.assertErrorMsgMatches, 'bla bla bla', function( v ) local y = v+1 end, 3 )
 
         assertFailureEquals('Exact error message expected: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgEquals, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+
         assertFailureEquals('Error message does not contain: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgContains, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+
         assertFailureEquals('Error message does not match: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgMatches, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
 
     end 
