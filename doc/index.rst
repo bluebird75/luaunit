@@ -8,9 +8,6 @@
 Welcome to LuaUnit's documentation!
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
-.. toctree::
-   :maxdepth: 3
-
 .. highlight:: lua
 
 

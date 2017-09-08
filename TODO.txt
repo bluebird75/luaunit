@@ -1,4 +1,3 @@
-
 TODO Future:
 ============
 - document prettystr
@@ -25,6 +24,13 @@ TODO Future:
 - see StackTracePlus for printing more stack information: https://github.com/ignacio/StackTracePlus
 - how does busted deal with nested tables ? functions ?
 - look at serpent to see how to improve nested table printing
+- function should be printed as <function>
+- print table of test test_filterWithPattern and see how to improve readability
+- align the "OK" vertically for text output
+- better detection of screen size
+- shuffle should shuffle separately classes and then class methods
+- catch the os.exit call with a handler or something, to avoid aborting the tests
+- add assertTableContains and assertTableNotContains to check the presence / absence of value in an array
 
 Nice to have: 
 ============
@@ -36,6 +42,8 @@ TODO for 3.3 release:
 - doc about scientific computing dedicated functions
 - doc about prettystr
 - doc about usage of prettystr & assertion library
+- fix include/exclude bug (see https://github.com/bluebird75/luaunit/pull/82 )
+
 
 
 Done since 3.2:
@@ -120,5 +128,10 @@ x table assertions
 x sequence asserts
 x compatibilty tests with several version of lua
 x add assertNotEquals
+
+
+
+
+
 
 

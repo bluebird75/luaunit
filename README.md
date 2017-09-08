@@ -1,4 +1,3 @@
-
 [![License](http://img.shields.io/badge/License-BSD-green.svg)](LICENSE.txt)
 [![Build status](https://ci.appveyor.com/api/projects/status/us6uh4e5q597jj54?svg=true&passingText=Windows%20Build%20passing&failingText=Windows%20Build%20failed)](https://ci.appveyor.com/project/bluebird75/luaunit)
 [![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
@@ -38,7 +37,7 @@ Documentation is available on
 no longer exported directly to the global namespace. See [documentation](http://luaunit.readthedocs.io/en/latest/#luaunit-global-asserts) on how to adjust or restore previous behavior.
 
 
-##Install
+## Install
 
 The version in development on github is always stable and can be used safely.
 
@@ -67,7 +66,7 @@ You can also install it with bower :
 
     bower install https://github.com/bluebird75/luaunit.git.
 
-##Contributors
+## Contributors
 * [NiteHawk](https://github.com/n1tehawk)
 * [AbigailBuccaneer](https://github.com/AbigailBuccaneer)
 * [Juan Julián Merelo Guervós](https://github.com/JJ)
@@ -79,7 +78,7 @@ You can also install it with bower :
 * [Urs Breu](https://github.com/ubreu)
 * Jim Anderson
 
-##Successes
+## Successes
 
 LuaUnit is used by hundreds of projects on GitHub (see [LuaUnit search](https://github.com/search?utf8=%E2%9C%93&q=filename%3Aluaunit.lua&type=Code&ref=searchresults) ) has more than 10k download on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit) ).
 
@@ -140,8 +139,8 @@ Unofficial fork from version 1.3
 - table deep comparision (also available in 1.4)
 - control verbosity with setVerbosity() SetVerbosity() and set_verbosity()
 - More assertions: 
-    + is<Type>, is_<type>, assert<Type> and assert_<type> (e.g. assert( LuaUnit.isString( getString() ) )
-    + assertNot<Type> and assert_not_<type>
+  - is<Type>, is_<type>, assert<Type> and assert_<type> (e.g. assert( LuaUnit.isString( getString() ) )
+  - assertNot<Type> and assert_not_<type>
 
 #### Version 1.5 - 8. Nov 2012
 - compatibility with Lua 5.1 and 5.2
@@ -177,3 +176,4 @@ Unofficial fork from version 1.3
 - display the calling stack when an error is spotted
 - two verbosity level, like in python unittest
 
+![stats](https://stats.sylphide-consulting.com/piwik/piwik.php?idsite=37&rec=1)
