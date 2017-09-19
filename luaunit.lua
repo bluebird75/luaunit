@@ -2585,6 +2585,8 @@ end
         self:startTest(prettyFuncName)
 
         local node = self.result.currentNode
+        local class_mt = classInstance and {__index=classInstance}
+
         for iter_n = 1, self.exeCount or 1 do
             if node:isNotPassed() then
                 break
@@ -2592,8 +2594,8 @@ end
             self.currentCount = iter_n
 
             -- ensure referencial transparency of classes
-            if classInstance then
-                classInstance = setmetatable({}, {__index=classInstance})
+            if class_mt then
+                classInstance = setmetatable({}, class_mt)
             end
 
             -- run setUp first (if any)
