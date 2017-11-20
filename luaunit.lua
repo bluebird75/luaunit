@@ -1314,7 +1314,25 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
     if no_error then
         failure( 'No error generated when calling function but expected error: "'..expectedMsg..'"', 2 )
     end
+    local differ = false
     if error_msg ~= expectedMsg then
+        local tr = type(error_msg)
+        local te = type(expectedMsg)
+        if te == 'table' then
+            if tr ~= 'table' then
+                differ = true
+            else
+                 local ok = pcall(M.assertItemsEquals, error_msg, expectedMsg)
+                 if not ok then
+                     differ = true
+                 end
+            end
+        else
+           differ = true
+        end
+    end
+
+    if differ then
         error_msg, expectedMsg = prettystrPairs(error_msg, expectedMsg)
         fail_fmt(2, 'Exact error message expected: %s\nError message received: %s\n',
                  expectedMsg, error_msg)

@@ -1750,6 +1750,17 @@ TestLuaUnitAssertionsError = {}
         assertFailure( lu.assertErrorMsgEquals, 'toto', self.f, x )
         assertFailure( lu.assertErrorMsgEquals, 'is an err', self.f_with_error, x )
         lu.assertErrorMsgEquals( 'This is an error', self.f_with_error, x )
+
+        lu.assertErrorMsgEquals({1,2,3,4}, function() error({1,2,3,4}) end)
+
+        lu.assertErrorMsgEquals({
+            details = {1,2,3,4},
+            id = 10,
+        }, function() error({
+            details = {1,2,3,4},
+            id = 10,
+        }) end)
+
         assertFailure( lu.assertErrorMsgEquals, ' This is an error', self.f_with_error, x )
         assertFailure( lu.assertErrorMsgEquals, 'This .. an error', self.f_with_error, x )
     end
@@ -1987,6 +1998,9 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals('Exact error message expected: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgEquals, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
         assertFailureEquals('Error message does not contain: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgContains, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
         assertFailureEquals('Error message does not match: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgMatches, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+
+        assertFailureEquals('Exact error message expected: {1, 2, 3, 4}\nError message received: {1, 2, 3}\n' , lu.assertErrorMsgEquals, {1,2,3,4}, function( v ) error(v) end, {1,2,3})
+        assertFailureEquals('Exact error message expected: {details="bla bla bla"}\nError message received: {details="ble ble ble"}\n' , lu.assertErrorMsgEquals, {details="bla bla bla"}, function( v ) error(v) end, {details="ble ble ble"})
 
     end 
 
