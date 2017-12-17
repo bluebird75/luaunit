@@ -87,9 +87,25 @@ LuaUnit is used by hundreds of projects on GitHub (see [LuaUnit search](https://
 ### History 
 
 #### Version 3.3 - in progress
-* assertTrue and assertFalse are now strict and only succeed with boolean
-* add assertEvalToTrue and assertEvalToFalse with previous assertTrue/False behavior of coercing before asserting
-* randomized testing
+* assertTrue() and assertFalse() are now strict and only succeed with boolean values
+* add assertEvalToTrue() and assertEvalToFalse() with previous assertTrue()/assertFalse() behavior of coercing to boolean before asserting
+* can now shuffle tests with --shuffle or -s
+* possibility to repeat tests (for example to trigger a JIT), with --repeat NUM or -r NUM
+* More flexible test selection with inclusion (--pattern / -p) or exclusion (--exclude / -x) or combination of both
+* When comparing lists with assertEquals(), failure message includes the precise differences in size and content
+  of the lists
+* added functions dedicated to scientific computing: 
+** assertNan(), assertInf(), assertPlusInf(), assertMinusInf()
+** provide the machine epsilon in lu.eps
+** in assertAlmostEquals( a, b, margin ), remove the 4th margin_boost argument and use a default
+   value of machine epsilon for margin
+* Validate LuaUnit on MacOs platform (thanks to Travis CI)
+* Validate LuaUnit with 32 bits numbers (floats) and 64 bits numbers (double)
+* Add test coverage measurements thank to codecoverage
+* use cache for AppVeyor builds
+* Improve printing of recursive tables
+* Improvements and fixes to JUnit and TAP output
+* General doc improvements (detailed description of all output, more cross-linking between sections)
 
 #### Version 3.2 - 12. Jul 2016
 * distinguish between failures (failed assertion) and errors
