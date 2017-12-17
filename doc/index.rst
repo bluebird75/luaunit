@@ -73,7 +73,7 @@ New in version 3.2 - 12. Jul 2016
 * Added documentation about development process. See `Developing luaUnit`_
 * Improved support for table containing keys of type table. See :ref:`comparing-table-keys-table`
 * Small bug fixes, several internal improvements
-* Availability of a Luarock package. See `https://luarocks.org/modules/bluebird75/luaunit .
+* Availability of a Luarock package. See `https://luarocks.org/modules/bluebird75/luaunit` .
 
 New in version 3.1 - 10. Mar 2015
 ---------------------------------
@@ -1428,21 +1428,31 @@ LuaUnit is used by the CERN for the MAD-NG program, the forefront of computation
 
 .. _MAD: http://mad.web.cern.ch/mad/
 
-The floating point library used by the Lua implementation is provided by the compiler used to compile Lua. It is usually compliant with IEEE_ XXX . As such, it can yields results such as "plus infinity", "minus infinity" or "not a number". The precision of any calculation performed in Lua is related to the smallest floating point value (called EPSILON), which is 2^-52 for 64 bits floats (represented as type double in the C language) and 2^-23 for 32 bits float (represented as type float in C). 
+The floating point library used by Lua is the one provided by the C compiler which built Lua. It is usually compliant with IEEE-754_ . As such, 
+it can yields results such as *plus infinity*, *minus infinity* or *Not a Number* (NaN). The precision of any calculation performed in Lua is 
+related to the smallest representable floating point value (typically called EPS): 2^-52 for 64 bits floats (type double in the C language) and 2^-23 for 32 bits float 
+(type float in C). 
 
-.. _IEEE: XXX
+.. _IEEE-754: https://en.wikipedia.org/wiki/IEEE_754 
 
-Note: Lua may be compiled with numbers represented either as C 32 bits floats or C 64 bits double (as defined by the macro LUA_FLOAT_TYPE in luaconf.h ). LuaUnit has been validated in both these configurations and in particuluar, the epsilon value EPS is adjusted accordingly.
+**Note**: Lua may be compiled with numbers represented either as 32 bits floats or 64 bits double (as defined by the macro LUA_FLOAT_TYPE in luaconf.h ). LuaUnit has been validated in both these configurations and in particuluar, the epsilon value EPS is adjusted accordingly.
 
-For more information about performing calculations on computers, please read the reference paper XXX.
+For more information about performing calculations on computers, please read the reference paper `What Every Computer Scientist Should Know About Floating-Point Arithmetic`_
+
+.. _What Every Computer Scientist Should Know About Floating-Point Arithmetic: https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html 
 
 If your calculation shall be portable to multiple OS or compilers, you may get different calculation errors depending on the OS/compiler. It is therefore important to verify them on every target.
 
 
 
-.. function:: EPS
+**EPS** *constant*
 
-    The machine epsilon...
+The machine epsilon, to be used with :func:`assertAlmostEquals` .
+
+This is either:
+
+* 2^-52 or ~2.22E-16 (with lua number defined as double)
+* 2^-23 or ~1.19E-07 (with lua number defined as float)
 
 
 .. function:: assertInf( value )
@@ -1461,14 +1471,18 @@ assert(type(x) == “number” and x == 0 and 1/x == infinity)
 
 assert(type(x) == “number” and x == 0 and 1/x == -infinity)
 
-.. function:: assertAlmostEquals( actual, expected [, margin] )
+.. function:: assertAlmostEquals( actual, expected [, margin=EPS] )
 
     **Alias**: *assert_almost_equals()*
 
     Assert that two floating point numbers are equal by the defined margin. 
     If margin is not provided, the machine epsilon EPS is used.
 
-.. function:: assertNotAlmostEquals( actual, expected [, margin] )
+    Be careful that depending on the calculation, it might make more sense to measure
+    the absolute error or the relative error (see below):
+
+
+.. function:: assertNotAlmostEquals( actual, expected [, margin=EPS] )
 
     **Alias**: *assert_not_almost_equals()*
 
@@ -1476,30 +1490,30 @@ assert(type(x) == “number” and x == 0 and 1/x == -infinity)
     If margin is not provided, the machine epsilon EPS is used.
 
     Be careful that depending on the calculation, it might make more sense to measure
-    the absolute error or the relative error:
+    the absolute error or the relative error (see below).
 
-    **Example of absolute versus relative error**
-
+**Example of absolute versus relative error**
+    
 .. code-block:: lua
 
-        -- convert pi/6 radian to 30 degree and pi/3 radian to 60 degrees
-        target1, target2 = 30, 60
-        calculation1, calculation2 = math.deg(math.pi/6), math.deg(math.pi/3)
+        -- convert pi/6 radian to 30 degree 
+        pi_div_6_deg_calculated = math.deg(math.pi/6)
+        pi_div_6_deg_expected = 30
 
-        print( ( target1 - calculation1 ) / lu.EPSILON ) -- prints: 16
-        print( ( target2 - calculation2 ) / lu.EPSILON ) -- prints: 32
-        -- error is proportional to the input value so absolute error and is
-        -- difficult to control. Equality assertion typically has the form of:
-        assertAlmostEquals( target1 - calculation1, 16 * lu.EPSILON )
-        assertAlmostEquals( target2 - calculation2, 32 * lu.EPSILON )
+        -- convert pi/3 radian to 60 degree 
+        pi_div_3_deg_calculated = math.deg(math.pi/3)
+        pi_div_3_deg_expected = 60
+
+        print( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / lu.EPS ) -- prints: 16
+        print( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / lu.EPS ) -- prints: 32
 
         -- Better use relative error:
-        print( (( target1 - calculation1 ) / target1) / lu.EPSILON ) ) -- prints: 0.53333
-        print( (( target2 - calculation2 ) / target2) / lu.EPSILON ) ) -- prints: 0.53333
+        print( ( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / pi_div_6_deg_expected) / lu.EPS ) -- prints: 0.53333
+        print( ( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / pi_div_3_deg_expected) / lu.EPS ) -- prints: 0.53333
 
         -- relative error is constant. Assertion can take the form of:
-        assertAlmostEquals( (target1 - calculation1) / target1, lu.EPSILON )
-        assertAlmostEquals( (target2 - calculation2) / target2, lu.EPSILON )
+        assertAlmostEquals( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / pi_div_6_deg_expected, lu.EPS )
+        assertAlmostEquals( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / pi_div_3_deg_expected, lu.EPS )
 
 .. _table-printing:
 
