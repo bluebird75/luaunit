@@ -39,6 +39,8 @@ TODO for 3.3 release:
 - doc about scientific computing dedicated functions
 - doc improvements:
 	indicate that example test files are available.
+- verify that lu.EPS by calculation
+- change margin_boost to deprecated and raise a warning if it is used
 
 
 Done since 3.2:
