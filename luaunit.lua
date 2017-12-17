@@ -28,22 +28,22 @@ M.LINE_LENGTH = 80
 M.TABLE_DIFF_ANALYSIS_THRESHOLD = 10    -- display deep analysis for more than 10 items
 M.LIST_DIFF_ANALYSIS_THRESHOLD  = 10    -- display deep analysis for more than 10 items
 
---[[ M.EPSILON is meant to help with Lua's floating point math in simple corner
+--[[ EPS is meant to help with Lua's floating point math in simple corner
 cases like almostEquals(1.1-0.1, 1), which may not work as-is (e.g. on numbers
 with rational binary representation) if the user doesn't provide some explicit
 error margin.
 
-The default margin used by almostEquals() in such cases is M.EPSILON; and since
+The default margin used by almostEquals() in such cases is EPS; and since
 Lua may be compiled with different numeric precisions (single vs. double), we
 try to select a useful default for it dynamically. Note: If the initial value
 is not acceptable, it can be changed by the user to better suit specific needs.
 
 See also: https://en.wikipedia.org/wiki/Machine_epsilon
 ]]
-M.EPSILON = 2^-52 -- = machine epsilon for "double", ~2.22E-16
-if math.abs(1.1 - 1 - 0.1) > M.EPSILON then
-    -- rounding error is above EPSILON, assume single precision
-    M.EPSILON = 2^-23 -- = machine epsilon for "float", ~1.19E-07
+M.EPS = 2^-52 -- = machine epsilon for "double", ~2.22E-16
+if math.abs(1.1 - 1 - 0.1) > M.EPS then
+    -- rounding error is above EPS, assume single precision
+    M.EPS = 2^-23 -- = machine epsilon for "float", ~1.19E-07
 end
 
 -- set this to false to debug luaunit
@@ -1193,7 +1193,7 @@ function M.almostEquals( actual, expected, margin, margin_boost )
     if margin < 0 then
         error('almostEquals: margin must not be negative, current value is ' .. margin, 3)
     end
-    local realmargin = margin + (margin_boost or M.EPSILON)
+    local realmargin = margin + (margin_boost or M.EPS)
     return math.abs(expected - actual) <= realmargin
 end
 
