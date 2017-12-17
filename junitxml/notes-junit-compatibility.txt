@@ -1,4 +1,5 @@
 Our source information:
+https://github.com/windyroad/JUnit-Schema
 * http://stackoverflow.com/questions/4922867/junit-xml-format-specification-that-hudson-supports
 (Jenkins)
 * https://github.com/jenkinsci/xunit-plugin/tree/master/src/main/resources/org/jenkinsci/plugins/xunit/types/model/xsd
