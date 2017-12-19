@@ -1,35 +1,35 @@
 1..15
-# Started on 01/30/16 22:19:36
+# Started on 02/27/17 18:21:41
 # Starting class: TestTiti
 not ok 1	TestTiti.test1_withFailure
-    example_with_luaunit.lua:104: expected: 2, actual: 1
+#   example_with_luaunit.lua:104: expected: 2, actual: 1
 not ok 2	TestTiti.test2_withFailure
-    example_with_luaunit.lua:113: expected: "bof"
-    actual: "hop"
+#   example_with_luaunit.lua:113: expected: "bof"
+#   actual: "hop"
 ok     3	TestTiti.test3
 # Starting class: TestToto
 not ok 4	TestToto.test1_withFailure
-    example_with_luaunit.lua:21: expected: 2, actual: 1
+#   example_with_luaunit.lua:21: expected: 2, actual: 1
 not ok 5	TestToto.test2_withFailure
-    example_with_luaunit.lua:30: expected: "bof"
-    actual: "hop"
+#   example_with_luaunit.lua:30: expected: "bof"
+#   actual: "hop"
 ok     6	TestToto.test3
 not ok 7	TestToto.test4
-    example_with_luaunit.lua:43: Received the not expected value: 1
+#   example_with_luaunit.lua:43: Received the not expected value: 1
 not ok 8	TestToto.test5
-    example_with_luaunit.lua:49: expected: false or nil, actual: 1
+#   example_with_luaunit.lua:49: expected: false or nil, actual: 1
 not ok 9	TestToto.test6
-    example_with_luaunit.lua:57: expected: false, actual: nil
+#   example_with_luaunit.lua:57: expected: false, actual: nil
 not ok 10	TestToto.test7
-    example_with_luaunit.lua:63: expected: {1, 2, three=3}
-    actual: {1, 2}
+#   example_with_luaunit.lua:63: expected: {1, 2, three=3}
+#   actual: {1, 2}
 not ok 11	TestToto.test8a
-    example_with_luaunit.lua:81: Bouhouhoum error!
+#   example_with_luaunit.lua:81: Bouhouhoum error!
 not ok 12	TestToto.test8b
-    example_with_luaunit.lua:81: Bouhouhoum error!
+#   example_with_luaunit.lua:81: Bouhouhoum error!
 not ok 13	test1_withFailure
-    example_with_luaunit.lua:129: assertion failed!
+#   example_with_luaunit.lua:129: assertion failed!
 not ok 14	test2_withFailure
-    example_with_luaunit.lua:135: assertion failed!
+#   example_with_luaunit.lua:135: assertion failed!
 ok     15	test3
-# Ran 15 tests in 0.000 seconds, 3 successes, 8 failures, 4 errors
+# Ran 15 tests in 0.001 seconds, 3 successes, 8 failures, 4 errors

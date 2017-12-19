@@ -1673,10 +1673,10 @@ TapOutput.__class__ = 'TapOutput'
     function TapOutput:addStatus( node )
         io.stdout:write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
         if self.verbosity > M.VERBOSITY_LOW then
-           print( prefixString( '    ', node.msg ) )
+           print( prefixString( '#   ', node.msg ) )
         end
         if self.verbosity > M.VERBOSITY_DEFAULT then
-           print( prefixString( '    ', node.stackTrace ) )
+           print( prefixString( '#   ', node.stackTrace ) )
         end
     end
 
@@ -1736,10 +1736,10 @@ JUnitOutput.__class__ = 'JUnitOutput'
 
     function JUnitOutput:addStatus( node )
         if node:isFailure() then
-            print('# Failure: ' .. node.msg)
+            print( '#   Failure: ' .. prefixString( '#   ', node.msg ):sub(4, nil) )
             -- print('# ' .. node.stackTrace)
         elseif node:isError() then
-            print('# Error: ' .. node.msg)
+            print( '#   Error: ' .. prefixString( '#   '  , node.msg ):sub(4, nil) )
             -- print('# ' .. node.stackTrace)
         end
     end
