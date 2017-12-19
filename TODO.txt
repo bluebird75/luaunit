@@ -41,6 +41,7 @@ TODO for 3.3 release:
 	indicate that example test files are available.
 - verify that lu.EPS by calculation
 - change margin_boost to deprecated and raise a warning if it is used
+- add new assertion on infinity
 
 
 Done since 3.2:
