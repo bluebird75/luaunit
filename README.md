@@ -1,4 +1,3 @@
-
 [![License](http://img.shields.io/badge/License-BSD-green.svg)](LICENSE.txt)
 [![Build status](https://ci.appveyor.com/api/projects/status/us6uh4e5q597jj54?svg=true&passingText=Windows%20Build%20passing&failingText=Windows%20Build%20failed)](https://ci.appveyor.com/project/bluebird75/luaunit)
 [![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
@@ -38,7 +37,7 @@ Documentation is available on
 no longer exported directly to the global namespace. See [documentation](http://luaunit.readthedocs.io/en/latest/#luaunit-global-asserts) on how to adjust or restore previous behavior.
 
 
-##Install
+## Install
 
 The version in development on github is always stable and can be used safely.
 
@@ -67,7 +66,7 @@ You can also install it with bower :
 
     bower install https://github.com/bluebird75/luaunit.git.
 
-##Contributors
+## Contributors
 * [NiteHawk](https://github.com/n1tehawk)
 * [AbigailBuccaneer](https://github.com/AbigailBuccaneer)
 * [Juan Julián Merelo Guervós](https://github.com/JJ)
@@ -79,7 +78,7 @@ You can also install it with bower :
 * [Urs Breu](https://github.com/ubreu)
 * Jim Anderson
 
-##Successes
+## Successes
 
 LuaUnit is used by hundreds of projects on GitHub (see [LuaUnit search](https://github.com/search?utf8=%E2%9C%93&q=filename%3Aluaunit.lua&type=Code&ref=searchresults) ) has more than 10k download on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit) ).
 
@@ -87,9 +86,25 @@ LuaUnit is used by hundreds of projects on GitHub (see [LuaUnit search](https://
 ### History 
 
 #### Version 3.3 - in progress
-* assertTrue and assertFalse are now strict and only succeed with boolean
-* add assertEvalToTrue and assertEvalToFalse with previous assertTrue/False behavior of coercing before asserting
-* randomized testing
+* assertTrue() and assertFalse() are now strict and only succeed with boolean values
+* add assertEvalToTrue() and assertEvalToFalse() with previous assertTrue()/assertFalse() behavior of coercing to boolean before asserting
+* can now shuffle tests with --shuffle or -s
+* possibility to repeat tests (for example to trigger a JIT), with --repeat NUM or -r NUM
+* More flexible test selection with inclusion (--pattern / -p) or exclusion (--exclude / -x) or combination of both
+* When comparing lists with assertEquals(), failure message includes the precise differences in size and content
+  of the lists
+* added functions dedicated to scientific computing: 
+** assertNan(), assertInf(), assertPlusInf(), assertMinusInf()
+** provide the machine epsilon in lu.eps
+** in assertAlmostEquals( a, b, margin ), remove the 4th margin_boost argument and use a default
+   value of machine epsilon for margin
+* Validate LuaUnit on MacOs platform (thanks to Travis CI)
+* Validate LuaUnit with 32 bits numbers (floats) and 64 bits numbers (double)
+* Add test coverage measurements thank to codecoverage
+* use cache for AppVeyor builds
+* Improve printing of recursive tables
+* Improvements and fixes to JUnit and TAP output
+* General doc improvements (detailed description of all output, more cross-linking between sections)
 
 #### Version 3.2 - 12. Jul 2016
 * distinguish between failures (failed assertion) and errors
@@ -140,8 +155,8 @@ Unofficial fork from version 1.3
 - table deep comparision (also available in 1.4)
 - control verbosity with setVerbosity() SetVerbosity() and set_verbosity()
 - More assertions: 
-    + is<Type>, is_<type>, assert<Type> and assert_<type> (e.g. assert( LuaUnit.isString( getString() ) )
-    + assertNot<Type> and assert_not_<type>
+  - is<Type>, is_<type>, assert<Type> and assert_<type> (e.g. assert( LuaUnit.isString( getString() ) )
+  - assertNot<Type> and assert_not_<type>
 
 #### Version 1.5 - 8. Nov 2012
 - compatibility with Lua 5.1 and 5.2
@@ -177,3 +192,4 @@ Unofficial fork from version 1.3
 - display the calling stack when an error is spotted
 - two verbosity level, like in python unittest
 
+![stats](https://stats.sylphide-consulting.com/piwik/piwik.php?idsite=37&rec=1)

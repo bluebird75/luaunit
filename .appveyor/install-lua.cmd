@@ -10,52 +10,86 @@ set ZIP_52=lua-%VER_52%_Win32_bin.zip
 set ZIP_53=lua-%VER_53%_Win32_bin.zip
 
 :cinst
+@echo off
 if NOT "%LUAENV%"=="cinst" goto lua51
 echo Chocolatey install of Lua ...
-@echo on
-cinst lua
+if NOT EXIST "C:\Program Files (x86)\Lua\5.1\lua.exe" (
+    @echo on
+    cinst lua
+) else (
+    @echo on
+    echo Using cached version of Lua
+)
 set LUA="C:\Program Files (x86)\Lua\5.1\lua.exe"
 @echo off
 goto :EOF
 
 :lua51
+@echo off
 if NOT "%LUAENV%"=="lua51" goto lua52
 echo Setting up Lua 5.1 ...
-@echo on
-curl -fLsS -o %ZIP_51% http://sourceforge.net/projects/luabinaries/files/%VER_51%/Tools%%20Executables/%ZIP_51%/download
-unzip %ZIP_51%
-set LUA=lua5.1.exe
+if NOT EXIST "lua51\lua5.1.exe" (
+    @echo on
+    echo Fetching Lua v5.1 from internet
+    curl -fLsS -o %ZIP_51% http://sourceforge.net/projects/luabinaries/files/%VER_51%/Tools%%20Executables/%ZIP_51%/download
+    unzip -d lua51 %ZIP_51%
+) else (
+    echo Using cached version of Lua v5.1
+)
+set LUA=lua51\lua5.1.exe
 @echo off
 goto :EOF
 
 :lua52
+@echo off
 if NOT "%LUAENV%"=="lua52" goto lua53
 echo Setting up Lua 5.2 ...
+if NOT EXIST "lua52\lua52.exe" (
+    @echo on
+    echo Fetching Lua v5.2 from internet
+    curl -fLsS -o %ZIP_52% http://sourceforge.net/projects/luabinaries/files/%VER_52%/Tools%%20Executables/%ZIP_52%/download
+    unzip -d lua52 %ZIP_52%
+) else (
+    echo Using cached version of Lua v5.2
+)
 @echo on
-curl -fLsS -o %ZIP_52% http://sourceforge.net/projects/luabinaries/files/%VER_52%/Tools%%20Executables/%ZIP_52%/download
-unzip %ZIP_52%
-set LUA=lua52.exe
+set LUA=lua52\lua52.exe
 @echo off
 goto :EOF
 
 :lua53
+@echo off
 if NOT "%LUAENV%"=="lua53" goto luajit
 echo Setting up Lua 5.3 ...
+if NOT EXIST "lua53\lua53.exe" (
+    @echo on
+    echo Fetching Lua v5.3 from internet
+    curl -fLsS -o %ZIP_53% http://sourceforge.net/projects/luabinaries/files/%VER_53%/Tools%%20Executables/%ZIP_53%/download
+    unzip -d lua53 %ZIP_53%
+) else (
+    echo Using cached version of Lua v5.3
+)
 @echo on
-curl -fLsS -o %ZIP_53% http://sourceforge.net/projects/luabinaries/files/%VER_53%/Tools%%20Executables/%ZIP_53%/download
-unzip %ZIP_53%
-set LUA=lua53.exe
+set LUA=lua53\lua53.exe
 @echo off
 goto :EOF
 
 :luajit
 if NOT "%LUAENV%"=="luajit20" goto luajit21
 echo Setting up LuaJIT 2.0 ...
-call %~dp0install-luajit.cmd LuaJIT-2.0.4
-set LUA=luajit.exe
+if NOT EXIST "luajit20\luajit.exe" (
+    call %~dp0install-luajit.cmd LuaJIT-2.0.4 luajit20
+) else (
+    echo Using cached version of LuaJIT 2.0
+)
+set LUA=luajit20\luajit.exe
 goto :EOF
 
 :luajit21
 echo Setting up LuaJIT 2.1 ...
-call %~dp0install-luajit.cmd LuaJIT-2.1.0-beta2
-set LUA=luajit.exe
+if NOT EXIST "luajit21\luajit.exe" (
+    call %~dp0install-luajit.cmd LuaJIT-2.1.0-beta2 luajit21
+) else (
+    echo Using cached version of LuaJIT 2.1
+)
+set LUA=luajit21\luajit.exe

@@ -586,10 +586,8 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
     end
 
     function TestLuaUnitUtilities:test_patternFilter()
-        lu.assertEquals( lu.private.patternFilter( nil, 'toto', true), true )
-        lu.assertEquals( lu.private.patternFilter( nil, 'titi', false), false )
-        lu.assertEquals( lu.private.patternFilter( {}, 'toto', false), false  )
-        lu.assertEquals( lu.private.patternFilter( {}, 'toto', true), true  )
+        lu.assertEquals( lu.private.patternFilter( nil, 'toto'), true )
+        lu.assertEquals( lu.private.patternFilter( {}, 'toto'), true  )
 
         -- positive pattern
         lu.assertEquals( lu.private.patternFilter( {'toto'}, 'toto'), true )
@@ -623,7 +621,7 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.private.patternFilter( { 'f..', '!foo', '__foo__' }, 'foo'), false )
         lu.assertEquals( lu.private.patternFilter( { 'f..', '!foo', '__foo__' }, '__foo__'), true )
 
-        lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, 'toto'), true )
+        lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, 'toto'), false )
         lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, 'fii'), false )
         lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, 'foo'), true )
         lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, '__foo__'), false )
@@ -1752,6 +1750,17 @@ TestLuaUnitAssertionsError = {}
         assertFailure( lu.assertErrorMsgEquals, 'toto', self.f, x )
         assertFailure( lu.assertErrorMsgEquals, 'is an err', self.f_with_error, x )
         lu.assertErrorMsgEquals( 'This is an error', self.f_with_error, x )
+
+        lu.assertErrorMsgEquals({1,2,3,4}, function() error({1,2,3,4}) end)
+
+        lu.assertErrorMsgEquals({
+            details = {1,2,3,4},
+            id = 10,
+        }, function() error({
+            details = {1,2,3,4},
+            id = 10,
+        }) end)
+
         assertFailure( lu.assertErrorMsgEquals, ' This is an error', self.f_with_error, x )
         assertFailure( lu.assertErrorMsgEquals, 'This .. an error', self.f_with_error, x )
     end
@@ -1989,6 +1998,9 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals('Exact error message expected: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgEquals, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
         assertFailureEquals('Error message does not contain: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgContains, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
         assertFailureEquals('Error message does not match: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgMatches, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+
+        assertFailureEquals('Exact error message expected: {1, 2, 3, 4}\nError message received: {1, 2, 3}\n' , lu.assertErrorMsgEquals, {1,2,3,4}, function( v ) error(v) end, {1,2,3})
+        assertFailureEquals('Exact error message expected: {details="bla bla bla"}\nError message received: {details="ble ble ble"}\n' , lu.assertErrorMsgEquals, {details="bla bla bla"}, function( v ) error(v) end, {details="ble ble ble"})
 
     end 
 
