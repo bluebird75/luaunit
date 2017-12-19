@@ -923,9 +923,9 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
     function TestLuaUnitAssertions:test_assertAlmostEquals()
         lu.assertAlmostEquals( 1, 1, 0.1 )
-        lu.assertAlmostEquals( 1, 1 ) -- default margin (= M.EPSILON)
+        lu.assertAlmostEquals( 1, 1 ) -- default margin (= M.EPS)
         lu.assertAlmostEquals( 1, 1, 0 ) -- zero margin
-        assertFailure( lu.assertAlmostEquals, 0, lu.EPSILON, 0 ) -- zero margin
+        assertFailure( lu.assertAlmostEquals, 0, lu.EPS, 0 ) -- zero margin
 
         lu.assertAlmostEquals( 1, 1.1, 0.2 )
         lu.assertAlmostEquals( -1, -1.1, 0.2 )
@@ -939,10 +939,10 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         -- Check that an explicit zero margin gets respected too
         assertFailure( lu.assertAlmostEquals, 1.1 - 1, 0.1, 0 )
         assertFailure( lu.assertAlmostEquals, -1 - (-1.1), 0.1, 0 )
-        -- Tests pass when adding M.EPSILON, either explicitly or implicitly
-        lu.assertAlmostEquals( 1, 1.1, 0.1 + lu.EPSILON)
+        -- Tests pass when adding M.EPS, either explicitly or implicitly
+        lu.assertAlmostEquals( 1, 1.1, 0.1 + lu.EPS)
         lu.assertAlmostEquals( 1.1 - 1, 0.1 )
-        lu.assertAlmostEquals( -1, -1.1, 0.1 + lu.EPSILON )
+        lu.assertAlmostEquals( -1, -1.1, 0.1 + lu.EPS )
         lu.assertAlmostEquals( -1 - (-1.1), 0.1 )
 
         assertFailure( lu.assertAlmostEquals, 1, 1.11, 0.1 )
@@ -980,9 +980,9 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
     function TestLuaUnitAssertions:test_assertNotAlmostEquals()
         lu.assertNotAlmostEquals( 1, 1.2, 0.1 )
-        lu.assertNotAlmostEquals( 1, 1.01 ) -- default margin (= M.EPSILON)
+        lu.assertNotAlmostEquals( 1, 1.01 ) -- default margin (= M.EPS)
         lu.assertNotAlmostEquals( 1, 1.01, 0 ) -- zero margin
-        lu.assertNotAlmostEquals( 0, lu.EPSILON, 0 ) -- zero margin
+        lu.assertNotAlmostEquals( 0, lu.EPS, 0 ) -- zero margin
 
         lu.assertNotAlmostEquals( 1, 1.3, 0.2 )
         lu.assertNotAlmostEquals( -1, -1.3, 0.2 )
@@ -999,10 +999,10 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         -- Check that an explicit zero margin gets respected too
         lu.assertNotAlmostEquals( 1.1 - 1, 0.1, 0 )
         lu.assertNotAlmostEquals( -1 - (-1.1), 0.1, 0 )
-        -- Tests fail when adding M.EPSILON, either explicitly or implicitly
-        assertFailure( lu.assertNotAlmostEquals, 1, 1.1, 0.1 + lu.EPSILON)
+        -- Tests fail when adding M.EPS, either explicitly or implicitly
+        assertFailure( lu.assertNotAlmostEquals, 1, 1.1, 0.1 + lu.EPS)
         assertFailure( lu.assertNotAlmostEquals, 1.1 - 1, 0.1 )
-        assertFailure( lu.assertNotAlmostEquals, -1, -1.1, 0.1 + lu.EPSILON )
+        assertFailure( lu.assertNotAlmostEquals, -1, -1.1, 0.1 + lu.EPS )
         assertFailure( lu.assertNotAlmostEquals, -1 - (-1.1), 0.1 )
 
         assertFailure( lu.assertNotAlmostEquals, 1, 1.11, 0.2 )

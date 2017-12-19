@@ -1216,7 +1216,7 @@ end
 
 function M.assertAlmostEquals( actual, expected, margin )
     -- check that two floats are close by margin
-    margin = margin or M.EPSILON
+    margin = margin or M.EPS
     if not M.almostEquals(actual, expected, margin) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
@@ -1245,7 +1245,7 @@ end
 
 function M.assertNotAlmostEquals( actual, expected, margin )
     -- check that two floats are not close by margin
-    margin = margin or M.EPSILON
+    margin = margin or M.EPS
     if M.almostEquals(actual, expected, margin) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
