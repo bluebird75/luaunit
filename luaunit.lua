@@ -1221,10 +1221,10 @@ function M.assertAlmostEquals( actual, expected, margin )
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
         end
-        local delta = math.abs(actual - expected) - margin
+        local delta = math.abs(actual - expected) 
         fail_fmt(2, 'Values are not almost equal\n' ..
-                    'Actual: %s, expected: %s with margin of %s; delta: %s',
-                    actual, expected, margin, delta)
+                    'Actual: %s, expected: %s, delta %s above margin of %s',
+                    actual, expected, delta, margin)
     end
 end
 
@@ -1250,10 +1250,10 @@ function M.assertNotAlmostEquals( actual, expected, margin )
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
         end
-        local delta = margin - math.abs(actual - expected)
+        local delta = math.abs(actual - expected)
         fail_fmt(2, 'Values are almost equal\nActual: %s, expected: %s' ..
-                    ' with a difference above margin of %s; delta: %s',
-                    actual, expected, margin, delta)
+                    ', delta %s below margin of %s',
+                    actual, expected, delta, margin)
     end
 end
 

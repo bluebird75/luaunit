@@ -1814,23 +1814,23 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
     end 
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsMsg()
-        assertFailureEquals('Values are not almost equal\nActual: 2, expected: 1 with margin of 0.1; delta: 0.9', lu.assertAlmostEquals, 2, 1, 0.1 )
+        assertFailureEquals('Values are not almost equal\nActual: 2, expected: 1, delta 1 above margin of 0.1', lu.assertAlmostEquals, 2, 1, 0.1 )
     end
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsOrderReversedMsg()
         lu.ORDER_ACTUAL_EXPECTED = false
-        assertFailureEquals('Values are not almost equal\nActual: 1, expected: 2 with margin of 0.1; delta: 0.9', lu.assertAlmostEquals, 2, 1, 0.1 )
+        assertFailureEquals('Values are not almost equal\nActual: 1, expected: 2, delta 1 above margin of 0.1', lu.assertAlmostEquals, 2, 1, 0.1 )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
         -- single precision math Lua won't output an "exact" delta (0.1) here, so we do a partial match
-        assertFailureContains('Values are almost equal\nActual: 1.1, expected: 1 with a difference above margin of 0.2; delta: ', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
+        assertFailureContains('Values are almost equal\nActual: 1.1, expected: 1, delta 0.1 below margin of 0.2', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsOrderReversedMsg()
         -- single precision math Lua won't output an "exact" delta (0.1) here, so we do a partial match
         lu.ORDER_ACTUAL_EXPECTED = false
-        assertFailureContains('Values are almost equal\nActual: 1, expected: 1.1 with a difference above margin of 0.2; delta: ', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
+        assertFailureContains('Values are almost equal\nActual: 1, expected: 1.1, delta 0.1 below margin of 0.2', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotEqualsMsg()
