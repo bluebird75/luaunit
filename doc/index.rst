@@ -24,6 +24,8 @@ into Continuous Integration platforms (Jenkins, Maven, ...) . The integrated com
 options provide a flexible interface to select tests by name or patterns, control output 
 format, set verbosity, ...
 
+LuaUnit also provides some dedicated support to scientific computing. See the dedicated section below.
+
 Platform support
 ================
 
@@ -1430,19 +1432,18 @@ LuaUnit is used by the CERN for the MAD-NG program, the forefront of computation
 
 The floating point library used by Lua is the one provided by the C compiler which built Lua. It is usually compliant with IEEE-754_ . As such, 
 it can yields results such as *plus infinity*, *minus infinity* or *Not a Number* (NaN). The precision of any calculation performed in Lua is 
-related to the smallest representable floating point value (typically called EPS): 2^-52 for 64 bits floats (type double in the C language) and 2^-23 for 32 bits float 
+related to the smallest representable floating point value (typically called *EPS*): 2^-52 for 64 bits floats (type double in the C language) and 2^-23 for 32 bits float 
 (type float in C). 
 
 .. _IEEE-754: https://en.wikipedia.org/wiki/IEEE_754 
 
-**Note**: Lua may be compiled with numbers represented either as 32 bits floats or 64 bits double (as defined by the macro LUA_FLOAT_TYPE in luaconf.h ). LuaUnit has been validated in both these configurations and in particuluar, the epsilon value EPS is adjusted accordingly.
+.. Note :: Lua may be compiled with numbers represented either as 32 bits floats or 64 bits double (as defined by the macro LUA_FLOAT_TYPE in luaconf.h ). LuaUnit has been validated in both these configurations and in particuluar, the epsilon value *EPS* is adjusted accordingly.
 
 For more information about performing calculations on computers, please read the reference paper `What Every Computer Scientist Should Know About Floating-Point Arithmetic`_
 
 .. _What Every Computer Scientist Should Know About Floating-Point Arithmetic: https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html 
 
 If your calculation shall be portable to multiple OS or compilers, you may get different calculation errors depending on the OS/compiler. It is therefore important to verify them on every target.
-
 
 
 **EPS** *constant*
@@ -1455,28 +1456,58 @@ This is either:
 * 2^-23 or ~1.19E-07 (with lua number defined as float)
 
 
-.. function:: assertInf( value )
+.. function:: assertNan( value )
+
+    **Alias**: *assert_nan()*
+
+    Assert that a given number is a *NaN* (Not a Number), according to the definition of IEEE-754_ .
+
 
 .. function:: assertPlusInf( value )
 
+    **Alias**: *assert_plus_inf()*
+
+    Assert that a given number is *plus infinity*, according to the definition of IEEE-754_ .
+
+
 .. function:: assertMinusInf( value )
 
-.. function:: assertNan( value )
+    **Alias**: *assert_minus_inf()*
 
-.. function:: assertPositiveZero( value )
+    Assert that a given number is *minus infinity*, according to the definition of IEEE-754_ .
+
+
+.. function:: assertInf( value )
+
+    **Alias**: *assert_inf()*
+
+    Assert that a given number is *infinity* (either positive or negative), according to the definition of IEEE-754_ .
+
+
+.. function:: assertPlusZero( value )
+
+    **Alias**: *assert_plus_zero()*
+
+    Assert that a given number is *+0*, according to the definition of IEEE-754_ . See also :func:`assertMinusZero` .
+
 
 assert(type(x) == “number” and x == 0 and 1/x == infinity)
 
-.. function:: assertNegativeZero( value )
+.. function:: assertMinusZero( value )
+
+    **Alias**: *assert_minus_zero()*
+
+    Assert that a given number is *-0*, according to the definition of IEEE-754_ . See also :func:`assertPlusZero` .
 
 assert(type(x) == “number” and x == 0 and 1/x == -infinity)
+
 
 .. function:: assertAlmostEquals( actual, expected [, margin=EPS] )
 
     **Alias**: *assert_almost_equals()*
 
     Assert that two floating point numbers are equal by the defined margin. 
-    If margin is not provided, the machine epsilon EPS is used.
+    If margin is not provided, the machine epsilon *EPS* is used.
 
     Be careful that depending on the calculation, it might make more sense to measure
     the absolute error or the relative error (see below):
@@ -1487,7 +1518,7 @@ assert(type(x) == “number” and x == 0 and 1/x == -infinity)
     **Alias**: *assert_not_almost_equals()*
 
     Assert that two floating point numbers are not equal by the defined margin.
-    If margin is not provided, the machine epsilon EPS is used.
+    If margin is not provided, the machine epsilon *EPS* is used.
 
     Be careful that depending on the calculation, it might make more sense to measure
     the absolute error or the relative error (see below).
@@ -1504,6 +1535,7 @@ assert(type(x) == “number” and x == 0 and 1/x == -infinity)
         pi_div_3_deg_calculated = math.deg(math.pi/3)
         pi_div_3_deg_expected = 60
 
+        -- check absolute error: it is not constant
         print( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / lu.EPS ) -- prints: 16
         print( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / lu.EPS ) -- prints: 32
 
