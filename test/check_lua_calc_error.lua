@@ -3,6 +3,8 @@ local lu = require('luaunit')
 
 print( lu.EPS )
 
+local pi_div_6_deg_expected, pi_div_6_deg_calculated, pi_div_3_deg_expected, pi_div_3_deg_calculated
+
 pi_div_6_deg_calculated = math.deg(math.pi/6)
 pi_div_6_deg_expected = 30
 
