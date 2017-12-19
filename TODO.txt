@@ -31,24 +31,27 @@ TODO Future:
 - shuffle should shuffle separately classes and then class methods
 - catch the os.exit call with a handler or something, to avoid aborting the tests
 - add assertTableContains and assertTableNotContains to check the presence / absence of value in an array
-
-Nice to have: 
-============
-- stack unwrapping like in py.test
+- look at serpent to see how to improve nested table printing
+- doc about prettystr
+- doc about usage of prettystr & assertion library
 
 TODO for 3.3 release:
 ===============
-- look at serpent to see how to improve nested table printing
+- shuffle should shuffle separately classes and then class methods
 - doc about scientific computing dedicated functions
-- doc about prettystr
-- doc about usage of prettystr & assertion library
+- doc improvements:
+	indicate that example test files are available.
 - fix include/exclude bug (see https://github.com/bluebird75/luaunit/pull/82 )
 
+- verify that lu.EPS by calculation
+- change margin_boost to deprecated and raise a warning if it is used
+- add new assertion on infinity
 
 
 Done since 3.2:
 ===============
-
+- fixes for junit and tap output
+- doc improvements
 - better error messages for list assertions:
 	+ expected length of X, got Y
 	+ index differing in table 1 and 2

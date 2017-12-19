@@ -32,6 +32,6 @@ build: off
 
 test_script:
 - cmd: >-
-    %LUA% -v run_unit_tests.lua --random
+    %LUA% -v run_unit_tests.lua --shuffle
 
     %LUA% run_functional_tests.lua

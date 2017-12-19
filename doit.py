@@ -96,6 +96,42 @@ def makedoc():
     shutil.copytree('_build/html', 'html')
     os.chdir('..')
 
+def rundoctests():
+    lua = LUA52
+    for expretcode, l in (
+            (0, [ '-e', "lu = require('luaunit');os.exit(lu.LuaUnit.run())" ]),
+            (0, [ 'doc/my_test_suite.lua', '-v', 'TestAdd.testAddPositive', 'TestAdd.testAddZero']),
+            (0, [ 'doc/my_test_suite.lua', '-v' ]),
+            (0, [ 'doc/my_test_suite.lua', ]),
+            (0, [ 'doc/my_test_suite.lua', '-o','TAP']),
+            (0, [ 'doc/my_test_suite.lua', 'TestAdd', 'TestDiv.testDivError' , '-v']),
+            (0, [ 'doc/my_test_suite.lua', '-v', '-p', 'Err.r', '-p', 'Z.ro' ]),
+            (0, [ 'doc/my_test_suite.lua', '-v', '--pattern', 'Add', '--exclude', 'Adder', '--pattern', 'Zero' ]),
+            (0, [ 'doc/my_test_suite.lua', '-v', '-x', 'Error', '-x', 'Zero' ]),
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'text' ]),
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'text', '--verbose' ]),
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'tap', '--quiet' ]),
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'tap' ]),
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'tap', '--verbose' ]),
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'nil', '--verbose' ]),
+        ):
+        print( '%s %s' % ('\n$ lua', ' '.join(l).replace('doc/', '')  ) )
+        retcode = subprocess.call( [lua] + l )
+        if retcode != expretcode:
+            report( 'Invalid luacheck result' )
+            sys.exit( retcode )
+
+    for expretcode, l in (
+            (2, [ 'doc/my_test_suite_with_failures.lua', '-o', 'junit', '-n', 'toto.xml' ]),
+        ):
+        print( '%s %s' % ('\n$ lua', ' '.join(l).replace('doc/', '')  ) )
+        retcode = subprocess.call( [lua] + l )
+        if retcode != expretcode:
+            report( 'Invalid luacheck result' )
+            sys.exit( retcode )
+
+        print( open('toto.xml').read() )
+
 def install():
     installpath = '/usr/local/share/lua/'
     for lua, luaversion in ALL_LUA:
@@ -111,6 +147,7 @@ OptToFunc = {
     'runexample'    : run_example,
     'packageit'     : packageit,
     'makedoc'       : makedoc,
+    'rundoctests'   : rundoctests,
     'install'       : install,
     'help'          : help,
 }
