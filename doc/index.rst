@@ -64,7 +64,7 @@ New in version 3.3 - In progress
 
 New in version 3.2 - 12. Jul 2016
 ---------------------------------
-* Add command-line option to stop on first error or failure. See `stop-on-error`_
+* Add command-line option to stop on first error or failure. See `Other options`_
 * Distinguish between failures (failed assertion) and errors
 * Support for new versions: Lua 5.3 and LuaJIT (2.0, 2.1 beta)
 * Validation of all lua versions on Travis CI and AppVeyor
@@ -671,10 +671,10 @@ Selecting tests with --pattern and --exclude is usually more flexible. See `Flex
 --name, -n FILENAME    For junit format only, mandatory name of xml file. Ignored for other formats.
 --pattern, -p PATTERN  Execute all test names matching the Lua PATTERN. May be repeated to include severals patterns. See `Flexible test selection`_
 --exclude, -x PATTERN  Exclude all test names matching the Lua PATTERN. May be repeated to exclude severals patterns. See `Flexible test selection`_
---repeat, -r NUM       Repeat all tests NUM times, e.g. to trigger the JIT
---shuffle, -s          Shuffle tests before running them
---error, -e            Stop on first error. See :ref:`stop-on-error`.
---failure, -f          Stop on first failure or error. See :ref:`stop-on-error`.
+--repeat, -r NUM       Repeat all tests NUM times, e.g. to trigger the JIT. See `Other options`_
+--shuffle, -s          Shuffle tests before running them. See `Other options`_
+--error, -e            Stop on first error. See `Other options`_
+--failure, -f          Stop on first failure or error. See `Other options`_
 --verbose, -v          Increase verbosity
 --quiet, -q            Set verbosity to minimum
 --help, -h             Print help
@@ -972,10 +972,11 @@ exit code of the command can tell whether the test was successful or not::
 This mode is used by LuaUnit for its internal validation.
 
 
-.. _stop-on-error:
 
-Stopping on first error or failure
----------------------------------------
+Other options
+--------------
+
+**Stopping on first error or failure**
 
 If --failure or -f is passed as an option, LuaUnit will stop on the first failure or error and display the test results.
 
@@ -984,7 +985,12 @@ If --error or -e is passed as an option, LuaUnit will stop on the first error (b
 **Randomize test order**
 
 If --shuffle or -s is passed as an option, LuaUnit will execute tests in random order. The randomisation works on all test functions
-and methods. As a consequence test methods of a given class may be splitted out in multiple location, generating several test class creation and destruction.
+and methods. As a consequence test methods of a given class may be splitted into multiple location, generating several test class creation and destruction.
+
+**Repeat test**
+
+When using luajit, the just-in-time compiler will kick in only after a given function has been executed a sufficient number of times. To make sure
+that the JIT is not introducing any bug, LuaUnit provides a way to repeat a test may times, with --repeat or -r followed by a number.
 
 Flexible test selection
 -------------------------
