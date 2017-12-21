@@ -1167,6 +1167,11 @@ function M.assertNotIsNil(value)
     end
 end
 
+------------------------------------------------------------------
+--              Scientific assertions
+------------------------------------------------------------------
+
+
 function M.assertIsNaN(value)
     if type(value) ~= "number" or value == value then
         failure("expected: nan, actual: " ..prettystr(value), 2)
@@ -1185,11 +1190,77 @@ function M.assertIsInf(value)
     end
 end
 
+function M.assertIsPlusInf(value)
+    if type(value) ~= "number" or value ~= math.huge then
+        failure("expected: +inf, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertIsMinusInf(value)
+    if type(value) ~= "number" or value ~= -math.huge then
+        failure("expected: -inf, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertNotIsPlusInf(value)
+    if type(value) == "number" and value == math.huge then
+        failure("expected not +inf value, received +inf", 2)
+    end
+end
+
+function M.assertNotIsMinusInf(value)
+    if type(value) == "number" and value == -math.huge then
+        failure("expected not -inf value, received -inf", 2)
+    end
+end
+
 function M.assertNotIsInf(value)
     if type(value) == "number" and math.abs(value) == math.huge then
         failure("expected non inf value, received ±inf", 2)
     end
 end
+
+function M.assertIsPlusZero(value)
+    if type(value) ~= 'number' or value ~= 0 then
+        failure("expected: +0.0, actual: " ..prettystr(value), 2)
+    else if (1/value == -math.huge) then
+            -- more precise error diagnosis
+            failure("expected: +0.0, actual: -0.0", 2)
+        else if (1/value ~= math.huge) then
+                -- strange, case should have already been covered
+                failure("expected: +0.0, actual: " ..prettystr(value), 2)
+            end
+        end
+    end
+end
+
+function M.assertIsMinusZero(value)
+    if type(value) ~= 'number' or value ~= 0 then
+        failure("expected: -0.0, actual: " ..prettystr(value), 2)
+    else if (1/value == math.huge) then
+            -- more precise error diagnosis
+            failure("expected: -0.0, actual: +0.0", 2)
+        else if (1/value ~= -math.huge) then
+                -- strange, case should have already been covered
+                failure("expected: -0.0, actual: " ..prettystr(value), 2)
+            end
+        end
+    end
+end
+
+function M.assertNotIsPlusZero(value)
+    if type(value) == 'number' and value == 0 and (1/value ~= math.huge) then
+        failure("expected: not +0.0, actual: +0.0", 2)
+    end
+end
+
+function M.assertNotIsMinusZero(value)
+    if type(value) == 'number' and value == 0 and (1/value ~= -math.huge) then
+        failure("expected: not +0.0, actual: +0.0", 2)
+    end
+end
+
+------------------------------------------------------------------
 
 function M.assertEquals(actual, expected, doDeepAnalysis)
     if type(actual) == 'table' and type(expected) == 'table' then
@@ -1514,6 +1585,10 @@ local list_of_funcs = {
     { 'assertIsFalse'           , 'assert_is_false' },
     { 'assertIsNaN'             , 'assert_is_nan' },
     { 'assertIsInf'             , 'assert_is_inf' },
+    { 'assertIsPlusInf'         , 'assert_is_plus_inf' },
+    { 'assertIsMinusInf'        , 'assert_is_minus_inf' },
+    { 'assertIsPlusZero'        , 'assert_is_plus_zero' },
+    { 'assertIsMinusZero'       , 'assert_is_minus_zero' },
     { 'assertIsFunction'        , 'assert_is_function' },
     { 'assertIsThread'          , 'assert_is_thread' },
     { 'assertIsUserdata'        , 'assert_is_userdata' },
@@ -1528,6 +1603,10 @@ local list_of_funcs = {
     { 'assertIsFalse'           , 'assertFalse' },
     { 'assertIsNaN'             , 'assertNaN' },
     { 'assertIsInf'             , 'assertInf' },
+    { 'assertIsPlusInf'         , 'assertPlusInf' },
+    { 'assertIsMinusInf'        , 'assertMinusInf' },
+    { 'assertIsPlusZero'        , 'assertPlusZero' },
+    { 'assertIsMinusZero'       , 'assertMinusZero'},
     { 'assertIsFunction'        , 'assertFunction' },
     { 'assertIsThread'          , 'assertThread' },
     { 'assertIsUserdata'        , 'assertUserdata' },
@@ -1542,6 +1621,10 @@ local list_of_funcs = {
     { 'assertIsFalse'           , 'assert_false' },
     { 'assertIsNaN'             , 'assert_nan' },
     { 'assertIsInf'             , 'assert_inf' },
+    { 'assertIsPlusInf'         , 'assert_plus_inf' },
+    { 'assertIsMinusInf'        , 'assert_minus_inf' },
+    { 'assertIsPlusZero'        , 'assert_plus_zero' },
+    { 'assertIsMinusZero'       , 'assert_minus_zero' },
     { 'assertIsFunction'        , 'assert_function' },
     { 'assertIsThread'          , 'assert_thread' },
     { 'assertIsUserdata'        , 'assert_userdata' },
@@ -1556,6 +1639,10 @@ local list_of_funcs = {
     { 'assertNotIsFalse'        , 'assert_not_is_false' },
     { 'assertNotIsNaN'          , 'assert_not_is_nan' },
     { 'assertNotIsInf'          , 'assert_not_is_inf' },
+    { 'assertNotIsPlusInf'      , 'assert_not_plus_inf' },
+    { 'assertNotIsMinusInf'     , 'assert_not_minus_inf' },
+    { 'assertNotIsPlusZero'     , 'assert_not_plus_zero' },
+    { 'assertNotIsMinusZero'    , 'assert_not_minus_zero' },
     { 'assertNotIsFunction'     , 'assert_not_is_function' },
     { 'assertNotIsThread'       , 'assert_not_is_thread' },
     { 'assertNotIsUserdata'     , 'assert_not_is_userdata' },
@@ -1570,6 +1657,10 @@ local list_of_funcs = {
     { 'assertNotIsFalse'        , 'assertNotFalse' },
     { 'assertNotIsNaN'          , 'assertNotNaN' },
     { 'assertNotIsInf'          , 'assertNotInf' },
+    { 'assertNotIsPlusInf'      , 'assertNotPlusInf' },
+    { 'assertNotIsMinusInf'     , 'assertNotMinusInf' },
+    { 'assertNotIsPlusZero'     , 'assertNotPlusZero' },
+    { 'assertNotIsMinusZero'    , 'assertNotMinusZero' },
     { 'assertNotIsFunction'     , 'assertNotFunction' },
     { 'assertNotIsThread'       , 'assertNotThread' },
     { 'assertNotIsUserdata'     , 'assertNotUserdata' },
@@ -1584,6 +1675,10 @@ local list_of_funcs = {
     { 'assertNotIsFalse'        , 'assert_not_false' },
     { 'assertNotIsNaN'          , 'assert_not_nan' },
     { 'assertNotIsInf'          , 'assert_not_inf' },
+    { 'assertNotIsPlusInf'      , 'assert_not_plus_inf' },
+    { 'assertNotIsMinusInf'     , 'assert_not_minus_inf' },
+    { 'assertNotIsPlusZero'     , 'assert_not_plus_zero' },
+    { 'assertNotIsMinusZero'    , 'assert_not_minus_zero' },
     { 'assertNotIsFunction'     , 'assert_not_function' },
     { 'assertNotIsThread'       , 'assert_not_thread' },
     { 'assertNotIsUserdata'     , 'assert_not_userdata' },
