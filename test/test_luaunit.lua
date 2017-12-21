@@ -1281,6 +1281,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertIsNaN(math.fmod(-inf, 1))
         assertFailure(lu.assertIsNaN, 0 / 1) -- 0.0
         assertFailure(lu.assertIsNaN, 1 / 0) -- inf
+        assertFailure(lu.assertIsNaN, -1 / 0)-- -inf
     end
 
     function TestLuaUnitAssertions:test_assertIsInf()
@@ -1290,13 +1291,108 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure(lu.assertIsInf, {1,2,3})
         assertFailure(lu.assertIsInf, {1})
         assertFailure(lu.assertIsInf, coroutine.create( function(v) local y=v+1 end ) )
+
+        assertFailure(lu.assertIsInf, 0 )
+        assertFailure(lu.assertIsInf, 1 )
         assertFailure(lu.assertIsInf, 0 / 0) -- NaN
+        assertFailure(lu.assertIsInf, -0 / 0) -- NaN
         assertFailure(lu.assertIsInf, 0 / 1) -- 0.0
+
         lu.assertIsInf(1 / 0) -- inf
         lu.assertIsInf(math.log(0)) -- -inf
         lu.assertIsInf(math.huge) -- inf
         lu.assertIsInf(-math.huge) -- -inf
     end
+
+    function TestLuaUnitAssertions:test_assertIsPlusInf()
+        assertFailure(lu.assertIsPlusInf, "hi there!")
+        assertFailure(lu.assertIsPlusInf, nil)
+        assertFailure(lu.assertIsPlusInf, {})
+        assertFailure(lu.assertIsPlusInf, {1,2,3})
+        assertFailure(lu.assertIsPlusInf, {1})
+        assertFailure(lu.assertIsPlusInf, coroutine.create( function(v) local y=v+1 end ) )
+
+        assertFailure(lu.assertIsPlusInf, 0 )
+        assertFailure(lu.assertIsPlusInf, 1 )
+        assertFailure(lu.assertIsPlusInf, 0 / 0) -- NaN
+        assertFailure(lu.assertIsPlusInf, -0 / 0) -- NaN
+        assertFailure(lu.assertIsPlusInf, 0 / 1) -- 0.0
+        assertFailure(lu.assertIsPlusInf, math.log(0)) -- -inf
+        assertFailure(lu.assertIsPlusInf, -math.huge) -- -inf
+
+        lu.assertIsPlusInf(1 / 0) -- inf
+        lu.assertIsPlusInf(math.huge) -- inf
+    end
+
+
+    function TestLuaUnitAssertions:test_assertIsMinusInf()
+        assertFailure(lu.assertIsMinusInf, "hi there!")
+        assertFailure(lu.assertIsMinusInf, nil)
+        assertFailure(lu.assertIsMinusInf, {})
+        assertFailure(lu.assertIsMinusInf, {1,2,3})
+        assertFailure(lu.assertIsMinusInf, {1})
+        assertFailure(lu.assertIsMinusInf, coroutine.create( function(v) local y=v+1 end ) )
+
+        assertFailure(lu.assertIsMinusInf, 0 )
+        assertFailure(lu.assertIsMinusInf, 1 )
+        assertFailure(lu.assertIsMinusInf, 0 / 0) -- NaN
+        assertFailure(lu.assertIsMinusInf, -0 / 0) -- NaN
+        assertFailure(lu.assertIsMinusInf, 0 / 1) -- 0.0
+        assertFailure(lu.assertIsMinusInf, -math.log(0)) -- inf
+        assertFailure(lu.assertIsMinusInf, math.huge)    -- inf
+
+        lu.assertIsMinusInf( math.log(0)) -- -inf
+        lu.assertIsMinusInf(-1 / 0)       -- -inf
+        lu.assertIsMinusInf(-math.huge)   -- -inf
+    end
+
+    function TestLuaUnitAssertions:test_assertIsPlusZero()
+        assertFailure(lu.assertIsPlusZero, "hi there!")
+        assertFailure(lu.assertIsPlusZero, nil)
+        assertFailure(lu.assertIsPlusZero, {})
+        assertFailure(lu.assertIsPlusZero, {1,2,3})
+        assertFailure(lu.assertIsPlusZero, {1})
+        assertFailure(lu.assertIsPlusZero, coroutine.create( function(v) local y=v+1 end ) )
+
+        local inf = 1/0
+        assertFailure(lu.assertIsPlusZero, 1 )
+        assertFailure(lu.assertIsPlusZero, 0 / 0) -- NaN
+        assertFailure(lu.assertIsPlusZero, -0 / 0) -- NaN
+        assertFailure(lu.assertIsPlusZero, math.log(0))  -- inf
+        assertFailure(lu.assertIsPlusZero, math.huge)    -- inf
+        assertFailure(lu.assertIsPlusZero, -math.huge)   -- -inf
+        assertFailure(lu.assertIsPlusZero, -1/inf)       -- -0.0
+
+        lu.assertIsPlusZero( 0 / 1)
+        lu.assertIsPlusZero( 0 )
+        lu.assertIsPlusZero( -0 )
+        lu.assertIsPlusZero( 1/inf )    
+    end
+
+
+    function TestLuaUnitAssertions:test_assertIsMinusZero()
+        assertFailure(lu.assertIsMinusZero, "hi there!")
+        assertFailure(lu.assertIsMinusZero, nil)
+        assertFailure(lu.assertIsMinusZero, {})
+        assertFailure(lu.assertIsMinusZero, {1,2,3})
+        assertFailure(lu.assertIsMinusZero, {1})
+        assertFailure(lu.assertIsMinusZero, coroutine.create( function(v) local y=v+1 end ) )
+
+        local inf = 1/0
+        assertFailure(lu.assertIsMinusZero, 1 )
+        assertFailure(lu.assertIsMinusZero, 0 / 0) -- NaN
+        assertFailure(lu.assertIsMinusZero, -0 / 0) -- NaN
+        assertFailure(lu.assertIsMinusZero, math.log(0))  -- inf
+        assertFailure(lu.assertIsMinusZero, math.huge)    -- inf
+        assertFailure(lu.assertIsMinusZero, -math.huge)   -- -inf
+        assertFailure(lu.assertIsMinusZero, 1/inf)        -- -0.0
+        assertFailure(lu.assertIsMinusZero, 0 )
+        assertFailure(lu.assertIsMinusZero, -0 )
+
+        lu.assertIsPlusZero( 0 / 1)
+        lu.assertIsMinusZero( -1/inf )    
+    end
+
 
     function TestLuaUnitAssertions:test_assertIsString()
         assertFailure(lu.assertIsString, 1)
