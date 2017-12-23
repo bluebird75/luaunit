@@ -798,6 +798,17 @@ local function prettystrPairs(value1, value2, suffix_a, suffix_b)
 end
 M.private.prettystrPairs = prettystrPairs
 
+local function _table_raw_tostring( t )
+    -- return the default tostring() for tables, with the table ID, even if the table has a metatable
+    -- with the __tostring converter
+    local mt = getmetatable( t )
+    if mt then setmetatable( t, nil ) end
+    local ref = tostring(t)
+    if mt then setmetatable( t, mt ) end
+    return ref
+end
+M.private._table_raw_tostring = _table_raw_tostring
+
 local TABLE_TOSTRING_SEP = ", "
 local TABLE_TOSTRING_SEP_LEN = string.len(TABLE_TOSTRING_SEP)
 
@@ -817,50 +828,84 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
         return prettystr_sub(k, indentLevel+1, printTableRefs, recursionTable)
     end
 
-    local entry, count, seq_index = nil, 0, 1
-    for k, v in sortedPairs( tbl ) do
-        if k == seq_index then
-            -- for the sequential part of tables, we'll skip the "<key>=" output
-            entry = ''
-            seq_index = seq_index + 1
-        elseif recursionTable[k] then
-            -- recursion in the key detected
-            recursionTable.recursionDetected = true
-            entry = "<"..tostring(k)..">="
-        else
-            entry = keytostring(k) .. "="
+    local mt = getmetatable( tbl )
+
+    if mt and mt.__tostring then
+        -- if table has a __tostring() function in its metatable, use it to display the table
+        -- else, compute a regular table
+        result = strsplit( '\n', tostring(tbl) )
+        return M.private._table_tostring_format_multiline_string( result, indentLevel )
+
+    else
+        -- no metatable, compute the table representation
+
+        local entry, count, seq_index = nil, 0, 1
+        for k, v in sortedPairs( tbl ) do
+
+            -- key part
+            if k == seq_index then
+                -- for the sequential part of tables, we'll skip the "<key>=" output
+                entry = ''
+                seq_index = seq_index + 1
+            elseif recursionTable[k] then
+                -- recursion in the key detected
+                recursionTable.recursionDetected = true
+                entry = "<".._table_raw_tostring(k)..">="
+            else
+                entry = keytostring(k) .. "="
+            end
+
+            -- value part 
+            if recursionTable[v] then
+                -- recursion in the value detected!
+                recursionTable.recursionDetected = true
+                entry = entry .. "<".._table_raw_tostring(v)..">"
+            else
+                entry = entry ..
+                    prettystr_sub( v, indentLevel+1, printTableRefs, recursionTable )
+            end
+            count = count + 1
+            result[count] = entry
         end
-        if recursionTable[v] then
-            -- recursion in the value detected!
-            recursionTable.recursionDetected = true
-            entry = entry .. "<"..tostring(v)..">"
-        else
-            entry = entry ..
-                prettystr_sub( v, indentLevel+1, keeponeline, printTableRefs, recursionTable )
-        end
-        count = count + 1
-        result[count] = entry
+        return M.private._table_tostring_format_result( tbl, result, indentLevel, printTableRefs )
     end
 
-    if not keeponeline then
-        -- set dispOnMultLines if the maximum LINE_LENGTH would be exceeded
-        local totalLength = 0
-        for k, v in ipairs( result ) do
-            totalLength = totalLength + string.len( v )
-            if totalLength >= M.LINE_LENGTH then
-                dispOnMultLines = true
-                break
-            end
-        end
+end
+M.private._table_tostring = _table_tostring -- prettystr_sub() needs it
 
-        if not dispOnMultLines then
-            -- adjust with length of separator(s):
-            -- two items need 1 sep, three items two seps, ... plus len of '{}'
-            if count > 0 then
-                totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * (count - 1)
-            end
-            dispOnMultLines = totalLength + 2 >= M.LINE_LENGTH
+local function _table_tostring_format_multiline_string( tbl_str, indentLevel )
+    local indentString = '\n'..string.rep("    ", indentLevel - 1)
+    return table.concat( tbl_str, indentString )
+
+end
+M.private._table_tostring_format_multiline_string = _table_tostring_format_multiline_string
+
+
+local function _table_tostring_format_result( tbl, result, indentLevel, printTableRefs )
+    -- final function called in _table_to_string() to format the resulting list of 
+    -- string describing the table.
+
+    local dispOnMultLines = false
+
+    -- set dispOnMultLines to true if the maximum LINE_LENGTH would be exceeded with the values
+    local totalLength = 0
+    for k, v in ipairs( result ) do
+        totalLength = totalLength + string.len( v )
+        if totalLength >= M.LINE_LENGTH then
+            dispOnMultLines = true
+            break
         end
+    end
+
+    -- set dispOnMultLines to true if the max LINE_LENGTH would be exceeded
+    -- with the values and the separators.
+    if not dispOnMultLines then
+        -- adjust with length of separator(s):
+        -- two items need 1 sep, three items two seps, ... plus len of '{}'
+        if #result > 0 then
+            totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * (#result - 1)
+        end
+        dispOnMultLines = (totalLength + 2 >= M.LINE_LENGTH)
     end
 
     -- now reformat the result table (currently holding element strings)
@@ -878,11 +923,11 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
         result = {"{", table.concat(result, TABLE_TOSTRING_SEP), "}"}
     end
     if printTableRefs then
-        table.insert(result, 1, "<"..tostring(tbl).."> ") -- prepend table ref
+        table.insert(result, 1, "<".._table_raw_tostring(tbl).."> ") -- prepend table ref
     end
     return table.concat(result)
 end
-M.private._table_tostring = _table_tostring -- prettystr_sub() needs it
+M.private._table_tostring_format_result = _table_tostring_format_result -- prettystr_sub() needs it
 
 local function _table_contains(t, element)
     if type(t) == "table" then

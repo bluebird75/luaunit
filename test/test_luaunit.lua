@@ -264,23 +264,43 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertTrue( lu.private.tryMismatchFormatting( range(1,threshold),   range(1,threshold),   lu.FORCE_DEEP_ANALYSIS ) )
     end
 
-    function TestLuaUnitUtilities:test_prettystr()
+    function TestLuaUnitUtilities:test_table_raw_tostring()
+        local t1 = {'1','2'}
+        lu.assertStrMatches( tostring(t1), 'table: 0?x?[%x]+' )
+        lu.assertStrMatches( lu.private._table_raw_tostring(t1), 'table: 0?x?[%x]+' )
+
+        ts = function(t) return t[1]..t[2] end
+        local mt = { __tostring = ts }
+        setmetatable( t1, mt )
+        lu.assertStrMatches( tostring(t1), '12' )
+        lu.assertStrMatches( lu.private._table_raw_tostring(t1), 'table: 0?x?[%x]+' )
+    end
+
+    function TestLuaUnitUtilities:test_prettystr_numbers()
         lu.assertEquals( lu.prettystr( 1 ), "1" )
         lu.assertEquals( lu.prettystr( 1.0 ), "1" )
         lu.assertEquals( lu.prettystr( 1.1 ), "1.1" )
         lu.assertEquals( lu.prettystr( 1/0 ), "#Inf" )
         lu.assertEquals( lu.prettystr( -1/0 ), "-#Inf" )
         lu.assertEquals( lu.prettystr( 0/0 ), "#NaN" )
+    end
+
+    function TestLuaUnitUtilities:test_prettystr_strings()
         lu.assertEquals( lu.prettystr( 'abc' ), '"abc"' )
         lu.assertEquals( lu.prettystr( 'ab\ncd' ), '"ab\ncd"' )
         lu.assertEquals( lu.prettystr( 'ab"cd' ), "'ab\"cd'" )
         lu.assertEquals( lu.prettystr( "ab'cd" ), '"ab\'cd"' )
+    end
+
+    function TestLuaUnitUtilities:test_prettystr_tables1()
         lu.assertEquals( lu.prettystr( {1,2,3} ), "{1, 2, 3}" )
         lu.assertEquals( lu.prettystr( {a=1,bb=2,ab=3} ), '{a=1, ab=3, bb=2}' )
         lu.assertEquals( lu.prettystr( { [{}] = 1 }), '{{}=1}' )
         lu.assertEquals( lu.prettystr( { 1, [{}] = 1, 2 }), '{1, 2, {}=1}' )
         lu.assertEquals( lu.prettystr( { 1, [{one=1}] = 1, 2, "test", false }), '{1, 2, "test", false, {one=1}=1}' )
+    end
 
+    function TestLuaUnitUtilities:test_prettystr_tables2()
         -- test the (private) key string formatting within _table_tostring()
         lu.assertEquals( lu.prettystr( {a = 1} ), '{a=1}' )
         lu.assertEquals( lu.prettystr( {a0 = 2} ), '{a0=2}' )
@@ -289,6 +309,32 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 bar"=1}]] )
         lu.assertEquals( lu.prettystr( {["foo'bar"] = 2}), [[{"foo'bar"=2}]] )
         lu.assertEquals( lu.prettystr( {['foo"bar'] = 3}), [[{'foo"bar'=3}]] )
+    end
+
+    function TestLuaUnitUtilities:test_prettystr_tables3()
+        -- test with a table containing a metatable for __tostring
+        local t1 = {'1','2'}
+        lu.assertStrMatches( tostring(t1), 'table: 0?x?[%x]+' )
+        lu.assertEquals( lu.prettystr(t1), '{"1", "2"}' )
+
+        -- add metatable
+        local function ts(t) return t[1]..'x'..t[2] end
+        setmetatable( t1, { __tostring = ts } )
+
+        lu.assertEquals( tostring(t1), '1x2' )
+        lu.assertEquals( lu.prettystr(t1), '1x2' )
+
+        local function ts2(t) 
+            return 'Content:\n    '..t[1]..'\n    '..t[2] 
+        end
+        setmetatable( t1, { __tostring = ts2 } )
+
+        lu.assertEquals( tostring(t1), [[Content:
+    1
+    2]] )
+        lu.assertEquals( lu.prettystr(t1), [[Content:
+    1
+    2]] )
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
