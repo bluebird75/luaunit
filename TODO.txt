@@ -10,9 +10,6 @@ TODO Future:
 - global setup / teardown
 - class setup / teardown
 - add date and duration to tap output
-- better error messages for table assertions:
-	+ expected length of X, got Y
-	+ keys differing in table 1 and 2
 - XML: report system information
 - better error messages for string differences (diffing)
 - print local variables upon assertion error:
@@ -32,24 +29,24 @@ TODO Future:
 - catch the os.exit call with a handler or something, to avoid aborting the tests
 - add assertTableContains and assertTableNotContains to check the presence / absence of value in an array
 - look at serpent to see how to improve nested table printing
-- doc about prettystr
 - doc about usage of prettystr & assertion library
+- add fail() to force test failure, success() to force test success
 
 TODO for 3.3 release:
 ===============
-- shuffle should shuffle separately classes and then class methods
-- doc about scientific computing dedicated functions
+- add fail() and success()
+- doc about prettystr
 - doc improvements:
 	indicate that example test files are available.
-- fix include/exclude bug (see https://github.com/bluebird75/luaunit/pull/82 )
-
 - verify that lu.EPS by calculation
 - change margin_boost to deprecated and raise a warning if it is used
-- add new assertion on infinity
 
 
 Done since 3.2:
 ===============
+- fix include/exclude bug (see https://github.com/bluebird75/luaunit/pull/82 )
+- doc about scientific computing dedicated functions
+- assertions for nan and inf and +/- zero
 - fixes for junit and tap output
 - doc improvements
 - better error messages for list assertions:
@@ -57,7 +54,6 @@ Done since 3.2:
 	+ index differing in table 1 and 2
 - more doc about assertTrue/False/... with a table
 - randomized testing
-- assertions for nan and inf
 - can run a tests numerous times (useful for triggering the JIT effect)
 - can include and exclude tests from the test list
 
