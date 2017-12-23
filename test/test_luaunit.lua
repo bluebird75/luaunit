@@ -318,23 +318,46 @@ bar"=1}]] )
         lu.assertEquals( lu.prettystr(t1), '{"1", "2"}' )
 
         -- add metatable
-        local function ts(t) return t[1]..'x'..t[2] end
+        local function ts(t) return string.format( 'Point<%s,%s>', t[1], t[2] ) end
         setmetatable( t1, { __tostring = ts } )
 
-        lu.assertEquals( tostring(t1), '1x2' )
-        lu.assertEquals( lu.prettystr(t1), '1x2' )
+        lu.assertEquals( tostring(t1), 'Point<1,2>' )
+        lu.assertEquals( lu.prettystr(t1), 'Point<1,2>' )
 
         local function ts2(t) 
-            return 'Content:\n    '..t[1]..'\n    '..t[2] 
+            return string.format( 'Point:\n    x=%s\n    y=%s', t[1], t[2] )
         end
-        setmetatable( t1, { __tostring = ts2 } )
 
-        lu.assertEquals( tostring(t1), [[Content:
-    1
-    2]] )
-        lu.assertEquals( lu.prettystr(t1), [[Content:
-    1
-    2]] )
+        local t2 = {'1','2'}
+        setmetatable( t2, { __tostring = ts2 } )
+
+        lu.assertEquals( tostring(t2), [[Point:
+    x=1
+    y=2]] )
+        lu.assertEquals( lu.prettystr(t2), [[Point:
+    x=1
+    y=2]] )
+
+        -- nested table
+        local t3 = {'3', t1}
+        lu.assertEquals( lu.prettystr(t3), [[{"3", Point<1,2>}]] )
+
+        local t4 = {'3', t2}
+        lu.assertEquals( lu.prettystr(t4), [[{"3", Point:
+        x=1
+        y=2}]] )
+
+        local t5 = {1,2,{3,4},string.rep('W', lu.LINE_LENGTH), t2, 33}
+        lu.assertEquals( lu.prettystr(t5), [[{
+    1,
+    2,
+    {3, 4},
+    "]]..string.rep('W', lu.LINE_LENGTH)..[[",
+    Point:
+        x=1
+        y=2,
+    33
+}]] )
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
