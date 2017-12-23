@@ -1458,7 +1458,10 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure(lu.assertIsMinusZero, -math.huge)   -- -inf
         assertFailure(lu.assertIsMinusZero, 1/inf)        -- -0.0
         assertFailure(lu.assertIsMinusZero, 0 )
-        assertFailure(lu.assertIsMinusZero, -0 )
+
+        -- behavior with -0 is lua version dependant:
+        -- lua51, lua53: lu.assertIsMinusZero( -0 ) succeeds
+        -- lua52: lu.assertIsMinusZero( -0 ) fails
 
         lu.assertIsPlusZero( 0 / 1)
         lu.assertIsMinusZero( -1/inf )    
