@@ -167,6 +167,10 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
     end
 
     function TestLuaUnitUtilities:test_strSplitOneCharDelim()
+        local t = lu.private.strsplit( '\n', '122333' )
+        lu.assertEquals( t[1], '122333')
+        lu.assertEquals( #t, 1 )
+
         local t = lu.private.strsplit( '\n', '1\n22\n333\n' )
         lu.assertEquals( t[1], '1')
         lu.assertEquals( t[2], '22')
@@ -269,7 +273,6 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.prettystr( 0/0 ), "#NaN" )
         lu.assertEquals( lu.prettystr( 'abc' ), '"abc"' )
         lu.assertEquals( lu.prettystr( 'ab\ncd' ), '"ab\ncd"' )
-        lu.assertEquals( lu.prettystr( 'ab\ncd', true ), '"ab\\ncd"' )
         lu.assertEquals( lu.prettystr( 'ab"cd' ), "'ab\"cd'" )
         lu.assertEquals( lu.prettystr( "ab'cd" ), '"ab\'cd"' )
         lu.assertEquals( lu.prettystr( {1,2,3} ), "{1, 2, 3}" )
@@ -282,7 +285,8 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.prettystr( {a = 1} ), '{a=1}' )
         lu.assertEquals( lu.prettystr( {a0 = 2} ), '{a0=2}' )
         lu.assertEquals( lu.prettystr( {['a0!'] = 3} ), '{"a0!"=3}' )
-        lu.assertEquals( lu.prettystr( {["foo\nbar"] = 1}), [[{"foo\nbar"=1}]] )
+        lu.assertEquals( lu.prettystr( {["foo\nbar"] = 1}), [[{"foo
+bar"=1}]] )
         lu.assertEquals( lu.prettystr( {["foo'bar"] = 2}), [[{"foo'bar"=2}]] )
         lu.assertEquals( lu.prettystr( {['foo"bar'] = 3}), [[{'foo"bar'=3}]] )
     end
@@ -305,9 +309,7 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
             '}',
         } , '\n' ) )
 
-        -- make sure that prettystr(t, true) respects "keeponeline"
         lu.assertTrue( lu.private.hasNewLine( lu.prettystr(t2)) )
-        lu.assertFalse( lu.private.hasNewLine( lu.prettystr(t2, true)) )
 
         local t2bis = { 1,2,3,'12345678901234567890123456789012345678901234567890123456789012345678901234567890', 4,5,6 }
         lu.assertEquals(lu.prettystr(t2bis), [[{

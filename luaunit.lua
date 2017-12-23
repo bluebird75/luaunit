@@ -416,13 +416,9 @@ end
 M.private.stripLuaunitTrace = stripLuaunitTrace
 
 
-local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
+local function prettystr_sub(v, indentLevel, printTableRefs, recursionTable )
     local type_v = type(v)
     if "string" == type_v  then
-        if keeponeline then
-            v = v:gsub("\n", "\\n") -- escape newline(s)
-        end
-
         -- use clever delimiters according to content:
         -- enclose with single quotes if string contains ", but no '
         if v:find('"', 1, true) and not v:find("'", 1, true) then
@@ -435,8 +431,7 @@ local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recurs
         --if v.__class__ then
         --    return string.gsub( tostring(v), 'table', v.__class__ )
         --end
-        return M.private._table_tostring(v, indentLevel, keeponeline,
-                                            printTableRefs, recursionTable)
+        return M.private._table_tostring(v, indentLevel, printTableRefs, recursionTable)
 
     elseif "number" == type_v then
         -- eliminate differences in formatting between various Lua versions
@@ -460,21 +455,20 @@ local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recurs
     return tostring(v)
 end
 
-local function prettystr( v, keeponeline )
-    --[[ Better string conversion, to display nice variable content:
-    For strings, if keeponeline is set to true, string is displayed on one line, with visible \n
+local function prettystr( v )
+    --[[ Pretty string conversion, to display the full content of a variable of any type.
+
     * string are enclosed with " by default, or with ' if string contains a "
-    * if table is a class, display class name
-    * tables are expanded
+    * tables are expanded to show their full content, with indentation in case of nested tables
     ]]--
     local recursionTable = {}
-    local s = prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
+    local s = prettystr_sub(v, 1, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
     if recursionTable.recursionDetected and not M.PRINT_TABLE_REF_IN_ERROR_MSG then
         -- some table contain recursive references,
         -- so we must recompute the value by including all table references
         -- else the result looks like crap
         recursionTable = {}
-        s = prettystr_sub(v, 1, keeponeline, true, recursionTable)
+        s = prettystr_sub(v, 1, true, recursionTable)
     end
     return s
 end
@@ -807,8 +801,7 @@ M.private.prettystrPairs = prettystrPairs
 local TABLE_TOSTRING_SEP = ", "
 local TABLE_TOSTRING_SEP_LEN = string.len(TABLE_TOSTRING_SEP)
 
-
-local function _table_tostring( tbl, indentLevel, keeponeline, printTableRefs, recursionTable )
+local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable )
     printTableRefs = printTableRefs or M.PRINT_TABLE_REF_IN_ERROR_MSG
     recursionTable = recursionTable or {}
     recursionTable[tbl] = true
@@ -821,7 +814,7 @@ local function _table_tostring( tbl, indentLevel, keeponeline, printTableRefs, r
         if "string" == type(k) and k:match("^[_%a][_%w]*$") then
             return k
         end
-        return prettystr_sub(k, indentLevel+1, true, printTableRefs, recursionTable)
+        return prettystr_sub(k, indentLevel+1, printTableRefs, recursionTable)
     end
 
     local entry, count, seq_index = nil, 0, 1
@@ -873,9 +866,14 @@ local function _table_tostring( tbl, indentLevel, keeponeline, printTableRefs, r
     -- now reformat the result table (currently holding element strings)
     if dispOnMultLines then
         local indentString = string.rep("    ", indentLevel - 1)
-        result = {"{\n    ", indentString,
-                  table.concat(result, ",\n    " .. indentString), "\n",
-                  indentString, "}"}
+        result = {  
+                    "{\n    ", 
+                    indentString,
+                    table.concat(result, ",\n    " .. indentString), 
+                    "\n",
+                    indentString, 
+                    "}"
+                }
     else
         result = {"{", table.concat(result, TABLE_TOSTRING_SEP), "}"}
     end
