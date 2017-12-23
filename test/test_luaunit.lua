@@ -269,7 +269,7 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertStrMatches( tostring(t1), 'table: 0?x?[%x]+' )
         lu.assertStrMatches( lu.private._table_raw_tostring(t1), 'table: 0?x?[%x]+' )
 
-        ts = function(t) return t[1]..t[2] end
+        local ts = function(t) return t[1]..t[2] end
         local mt = { __tostring = ts }
         setmetatable( t1, mt )
         lu.assertStrMatches( tostring(t1), '12' )
