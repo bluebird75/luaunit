@@ -492,7 +492,7 @@ bar"=1}]] )
                 <table: 0x7f984a50d410> {<table: 0x7f984a50d200>}=1
             }'
             ]]
-            lu.assertStrMatches(lu.prettystr(t9, true), '(<table: 0?x?[%x]+>) {\n\s+"t9",\n\s+(<table: 0?x?[%x]+>) {},\n\s+(<table: 0?x?[%x]+>) {%1}=1\n\s+}')
+            lu.assertStrMatches(lu.prettystr(t9, true), '(<table: 0?x?[%x]+>) {\n%s+"t9",\n%s+(<table: 0?x?[%x]+>) {},\n%s+(<table: 0?x?[%x]+>) {%1}=1\n}')
         else
             lu.assertStrMatches(lu.prettystr(t9, true), '(<table: 0?x?[%x]+>) {"t9", (<table: 0?x?[%x]+>) {}, (<table: 0?x?[%x]+>) {%1}=1}')
         end
