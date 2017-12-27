@@ -896,6 +896,17 @@ bar"=1}]] )
 
     end
 
+    function TestLuaUnitUtilities:test_eps_value()
+        -- calculate epsilon 
+        local local_eps = 1.0
+        while (1.0 + 0.5 * local_eps) ~= 1.0 do
+            local_eps = 0.5 * local_eps
+        end
+        -- print( local_eps, lu.EPS)
+        lu.assertEquals( local_eps, lu.EPS )
+    end
+
+
 ------------------------------------------------------------------
 --
 --                        Outputter Tests
