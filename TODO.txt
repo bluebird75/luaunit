@@ -1,5 +1,7 @@
 TODO Future:
 ============
+- pretty function formatting: https://github.com/luarocks/luarocks/blob/master/src/luarocks/core/util.lua
+- platform detection:
 - document prettystr
 - add the ability to count the number of assertions that should have been executed in the test
 - validate output with ignored tests (0 failures or some failures)
