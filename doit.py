@@ -1,3 +1,5 @@
+# My universal runner for this project, the equivalent of a Makefile
+
 import subprocess, sys, os, shutil, os.path, optparse
 
 VERSION='3.2'
@@ -26,19 +28,26 @@ os.environ["nodosfilewarning"] = "1"
 def report( s ):
     print( '[[[[[[[[[[[[[ %s ]]]]]]]]]]]]]' % s )
 
-def run_tests():
-    '''Run tests with all versions of lua'''
+def run_unit_tests():
+    '''Run unit-tests with all versions of lua'''
     for lua, luaversion in ALL_LUA:
         report( 'Running unit-tests tests with %s' % luaversion )
         retcode = subprocess.call( [lua, 'run_unit_tests.lua'] )
         if retcode != 0:
             report( 'Invalid retcode when running tests: %d' % retcode )
             sys.exit( retcode )
+
+def run_tests():
+    '''Run tests with all versions of lua'''
+    run_unit_tests()
+
+    for lua, luaversion in ALL_LUA:
         report( 'Running functional tests tests with %s' % luaversion )
         retcode = subprocess.call( [lua, 'run_functional_tests.lua'] )
         if retcode != 0:
             report( 'Invalid retcode when running tests: %d' % retcode )
             sys.exit( retcode )
+
     run_luacheck()
     report( 'All tests succeed!' )
 
@@ -85,7 +94,7 @@ def packageit():
 
 def help():
     print( 'Available actions:')
-    for opt in OptToFunc:
+    for opt in sorted(OptToFunc.keys()):
         print( '\t%s' % opt )
 
 def makedoc():
@@ -142,6 +151,7 @@ def install():
 
 
 OptToFunc = {
+    'rununittests'  : run_unit_tests,
     'runtests'      : run_tests,
     'luacheck'      : run_luacheck,
     'runexample'    : run_example,
