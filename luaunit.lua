@@ -1303,7 +1303,7 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
     if no_error then
         failure( 'No error generated when calling function but expected error: "'..expectedMsg..'"', 2 )
     end
-    if type(error_msg) ~= "string" then
+    if type(expectedMsg) == "string" and type(error_msg) ~= "string" then
         error_msg = tostring(error_msg)
     end
     local differ = false
