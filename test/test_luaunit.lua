@@ -1929,6 +1929,7 @@ TestLuaUnitAssertionsError = {}
         lu.assertErrorMsgContains( 'This is an error', self.f_with_error, x )
         assertFailure( lu.assertErrorMsgContains, ' This is an error', self.f_with_error, x )
         assertFailure( lu.assertErrorMsgContains, 'This .. an error', self.f_with_error, x )
+        lu.assertErrorMsgContains("50", function() error(500) end)
     end
 
     function TestLuaUnitAssertionsError:test_assertErrorMsgEquals()
@@ -1947,6 +1948,8 @@ TestLuaUnitAssertionsError = {}
             id = 10,
         }) end)
 
+        lu.assertErrorMsgEquals("500", function() error(500) end)
+
         assertFailure( lu.assertErrorMsgEquals, ' This is an error', self.f_with_error, x )
         assertFailure( lu.assertErrorMsgEquals, 'This .. an error', self.f_with_error, x )
     end
@@ -1957,6 +1960,7 @@ TestLuaUnitAssertionsError = {}
         assertFailure( lu.assertErrorMsgMatches, 'is an err', self.f_with_error, x )
         lu.assertErrorMsgMatches( 'This is an error', self.f_with_error, x )
         lu.assertErrorMsgMatches( 'This is .. error', self.f_with_error, x )
+        lu.assertErrorMsgMatches("^500$", function() error(500) end)
         assertFailure( lu.assertErrorMsgMatches, ' This is an error', self.f_with_error, x )
     end
 
