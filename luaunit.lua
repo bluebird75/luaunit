@@ -1428,6 +1428,9 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
     if no_error then
         failure( 'No error generated when calling function but expected error: "'..expectedMsg..'"', 2 )
     end
+    if type(error_msg) ~= "string" then
+        error_msg = tostring(error_msg)
+    end
     local differ = false
     if error_msg ~= expectedMsg then
         local tr = type(error_msg)
@@ -1460,6 +1463,9 @@ function M.assertErrorMsgContains( partialMsg, func, ... )
     if no_error then
         failure( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), 2 )
     end
+    if type(error_msg) ~= "string" then
+        error_msg = tostring(error_msg)
+    end
     if not string.find( error_msg, partialMsg, nil, true ) then
         error_msg, partialMsg = prettystrPairs(error_msg, partialMsg)
         fail_fmt(2, 'Error message does not contain: %s\nError message received: %s\n',
@@ -1473,6 +1479,9 @@ function M.assertErrorMsgMatches( expectedMsg, func, ... )
     local no_error, error_msg = pcall( func, ... )
     if no_error then
         failure( 'No error generated when calling function but expected error matching: "'..expectedMsg..'"', 2 )
+    end
+    if type(error_msg) ~= "string" then
+        error_msg = tostring(error_msg)
     end
     if not strMatch( error_msg, expectedMsg ) then
         expectedMsg, error_msg = prettystrPairs(expectedMsg, error_msg)
