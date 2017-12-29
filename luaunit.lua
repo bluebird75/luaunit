@@ -1161,148 +1161,8 @@ function M.assertError(f, ...)
         failure( "Expected an error when calling function but no error generated", 2 )
     end
 end
-
-function M.assertEvalToTrue(value)
-    if not value then
-        failure("expected: a value evaluating to true, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertEvalToFalse(value)
-    if value then
-        failure("expected: false or nil, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertIsTrue(value)
-    if value ~= true then
-        failure("expected: true, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertNotIsTrue(value)
-    if value == true then
-        failure("expected: anything but true, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertIsFalse(value)
-    if value ~= false then
-        failure("expected: false, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertNotIsFalse(value)
-    if value == false then
-        failure("expected: anything but false, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertIsNil(value)
-    if value ~= nil then
-        failure("expected: nil, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertNotIsNil(value)
-    if value == nil then
-        failure("expected non nil value, received nil", 2)
-    end
-end
-
 ------------------------------------------------------------------
---              Scientific assertions
-------------------------------------------------------------------
-
-
-function M.assertIsNaN(value)
-    if type(value) ~= "number" or value == value then
-        failure("expected: nan, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertNotIsNaN(value)
-    if type(value) == "number" and value ~= value then
-        failure("expected non nan value, received nan", 2)
-    end
-end
-
-function M.assertIsInf(value)
-    if type(value) ~= "number" or math.abs(value) ~= math.huge then
-        failure("expected: inf, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertIsPlusInf(value)
-    if type(value) ~= "number" or value ~= math.huge then
-        failure("expected: +inf, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertIsMinusInf(value)
-    if type(value) ~= "number" or value ~= -math.huge then
-        failure("expected: -inf, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertNotIsPlusInf(value)
-    if type(value) == "number" and value == math.huge then
-        failure("expected not +inf value, received +inf", 2)
-    end
-end
-
-function M.assertNotIsMinusInf(value)
-    if type(value) == "number" and value == -math.huge then
-        failure("expected not -inf value, received -inf", 2)
-    end
-end
-
-function M.assertNotIsInf(value)
-    if type(value) == "number" and math.abs(value) == math.huge then
-        failure("expected non inf value, received ±inf", 2)
-    end
-end
-
-function M.assertIsPlusZero(value)
-    if type(value) ~= 'number' or value ~= 0 then
-        failure("expected: +0.0, actual: " ..prettystr(value), 2)
-    else if (1/value == -math.huge) then
-            -- more precise error diagnosis
-            failure("expected: +0.0, actual: -0.0", 2)
-        else if (1/value ~= math.huge) then
-                -- strange, case should have already been covered
-                failure("expected: +0.0, actual: " ..prettystr(value), 2)
-            end
-        end
-    end
-end
-
-function M.assertIsMinusZero(value)
-    if type(value) ~= 'number' or value ~= 0 then
-        failure("expected: -0.0, actual: " ..prettystr(value), 2)
-    else if (1/value == math.huge) then
-            -- more precise error diagnosis
-            failure("expected: -0.0, actual: +0.0", 2)
-        else if (1/value ~= -math.huge) then
-                -- strange, case should have already been covered
-                failure("expected: -0.0, actual: " ..prettystr(value), 2)
-            end
-        end
-    end
-end
-
-function M.assertNotIsPlusZero(value)
-    if type(value) == 'number' and value == 0 and (1/value ~= math.huge) then
-        failure("expected: not +0.0, actual: +0.0", 2)
-    end
-end
-
-function M.assertNotIsMinusZero(value)
-    if type(value) == 'number' and value == 0 and (1/value ~= -math.huge) then
-        failure("expected: not +0.0, actual: +0.0", 2)
-    end
-end
-
+--                  Equality assertion
 ------------------------------------------------------------------
 
 function M.assertEquals(actual, expected, doDeepAnalysis)
@@ -1370,6 +1230,21 @@ function M.assertNotAlmostEquals( actual, expected, margin )
                     actual, expected, delta, margin)
     end
 end
+
+function M.assertItemsEquals(actual, expected)
+    -- checks that the items of table expected
+    -- are contained in table actual. Warning, this function
+    -- is at least O(n^2)
+    if not _is_table_items_equals(actual, expected ) then
+        expected, actual = prettystrPairs(expected, actual)
+        fail_fmt(2, 'Contents of the tables are not identical:\nExpected: %s\nActual: %s',
+                 expected, actual)
+    end
+end
+
+------------------------------------------------------------------
+--                  String assertion
+------------------------------------------------------------------
 
 function M.assertStrContains( str, sub, useRe )
     -- this relies on lua string.find function
@@ -1481,6 +1356,58 @@ function M.assertErrorMsgMatches( expectedMsg, func, ... )
     end
 end
 
+------------------------------------------------------------------
+--              Type assertions
+------------------------------------------------------------------
+
+function M.assertEvalToTrue(value)
+    if not value then
+        failure("expected: a value evaluating to true, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertEvalToFalse(value)
+    if value then
+        failure("expected: false or nil, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertIsTrue(value)
+    if value ~= true then
+        failure("expected: true, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertNotIsTrue(value)
+    if value == true then
+        failure("expected: anything but true, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertIsFalse(value)
+    if value ~= false then
+        failure("expected: false, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertNotIsFalse(value)
+    if value == false then
+        failure("expected: anything but false, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertIsNil(value)
+    if value ~= nil then
+        failure("expected: nil, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertNotIsNil(value)
+    if value == nil then
+        failure("expected non nil value, received nil", 2)
+    end
+end
+
 --[[
 Add type assertion functions to the module table M. Each of these functions
 takes a single parameter "value", and checks that its Lua type matches the
@@ -1566,14 +1493,97 @@ function M.assertNotIs(actual, expected)
     end
 end
 
-function M.assertItemsEquals(actual, expected)
-    -- checks that the items of table expected
-    -- are contained in table actual. Warning, this function
-    -- is at least O(n^2)
-    if not _is_table_items_equals(actual, expected ) then
-        expected, actual = prettystrPairs(expected, actual)
-        fail_fmt(2, 'Contents of the tables are not identical:\nExpected: %s\nActual: %s',
-                 expected, actual)
+
+------------------------------------------------------------------
+--              Scientific assertions
+------------------------------------------------------------------
+
+
+function M.assertIsNaN(value)
+    if type(value) ~= "number" or value == value then
+        failure("expected: nan, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertNotIsNaN(value)
+    if type(value) == "number" and value ~= value then
+        failure("expected non nan value, received nan", 2)
+    end
+end
+
+function M.assertIsInf(value)
+    if type(value) ~= "number" or math.abs(value) ~= math.huge then
+        failure("expected: inf, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertIsPlusInf(value)
+    if type(value) ~= "number" or value ~= math.huge then
+        failure("expected: +inf, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertIsMinusInf(value)
+    if type(value) ~= "number" or value ~= -math.huge then
+        failure("expected: -inf, actual: " ..prettystr(value), 2)
+    end
+end
+
+function M.assertNotIsPlusInf(value)
+    if type(value) == "number" and value == math.huge then
+        failure("expected not +inf value, received +inf", 2)
+    end
+end
+
+function M.assertNotIsMinusInf(value)
+    if type(value) == "number" and value == -math.huge then
+        failure("expected not -inf value, received -inf", 2)
+    end
+end
+
+function M.assertNotIsInf(value)
+    if type(value) == "number" and math.abs(value) == math.huge then
+        failure("expected non inf value, received ±inf", 2)
+    end
+end
+
+function M.assertIsPlusZero(value)
+    if type(value) ~= 'number' or value ~= 0 then
+        failure("expected: +0.0, actual: " ..prettystr(value), 2)
+    else if (1/value == -math.huge) then
+            -- more precise error diagnosis
+            failure("expected: +0.0, actual: -0.0", 2)
+        else if (1/value ~= math.huge) then
+                -- strange, case should have already been covered
+                failure("expected: +0.0, actual: " ..prettystr(value), 2)
+            end
+        end
+    end
+end
+
+function M.assertIsMinusZero(value)
+    if type(value) ~= 'number' or value ~= 0 then
+        failure("expected: -0.0, actual: " ..prettystr(value), 2)
+    else if (1/value == math.huge) then
+            -- more precise error diagnosis
+            failure("expected: -0.0, actual: +0.0", 2)
+        else if (1/value ~= -math.huge) then
+                -- strange, case should have already been covered
+                failure("expected: -0.0, actual: " ..prettystr(value), 2)
+            end
+        end
+    end
+end
+
+function M.assertNotIsPlusZero(value)
+    if type(value) == 'number' and value == 0 and (1/value ~= math.huge) then
+        failure("expected: not +0.0, actual: +0.0", 2)
+    end
+end
+
+function M.assertNotIsMinusZero(value)
+    if type(value) == 'number' and value == 0 and (1/value ~= -math.huge) then
+        failure("expected: not +0.0, actual: +0.0", 2)
     end
 end
 
