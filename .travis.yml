@@ -26,8 +26,10 @@ matrix:
   allow_failures:
     - env: LUA=luajit2.0
     - env: LUA=luajit2.1
-
+    
 before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libxml2
   - source .travis/setenv_lua.sh
   - luarocks install luacheck
   - luarocks install luacov-coveralls
