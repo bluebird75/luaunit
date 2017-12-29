@@ -39,6 +39,7 @@ mkdir -p "$LUA_HOME_DIR"
 
 if [ "$LUAJIT" == "yes" ]; then
 
+  echo "Downloading LuaJIT"
   if [ "$LUA" == "luajit" ]; then
     curl --location https://github.com/LuaJIT/LuaJIT/archive/v$LUAJIT_VERSION.tar.gz | tar xz;
   else
@@ -53,6 +54,7 @@ if [ "$LUAJIT" == "yes" ]; then
     perl -i -pe 's/INSTALL_TNAME=.+/INSTALL_TNAME= luajit/' Makefile
   fi
 
+  echo "Compiling LuaJIT"
   make && make install PREFIX="$LUA_HOME_DIR"
 
   ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/luajit
@@ -60,6 +62,7 @@ if [ "$LUAJIT" == "yes" ]; then
 
 else
 
+  echo "Downloading $LUA"
   if [ "$LUA" == "lua5.1" ]; then
     curl http://www.lua.org/ftp/lua-5.1.5.tar.gz | tar xz
     cd lua-5.1.5;
@@ -94,6 +97,7 @@ else
 
   # Build Lua without backwards compatibility for testing
   perl -i -pe 's/-DLUA_COMPAT_(ALL|5_2)//' src/Makefile
+  echo "Compiling $LUA"
   make $PLATFORM
   make INSTALL_TOP="$LUA_HOME_DIR" install;
 
@@ -106,12 +110,13 @@ cd $TRAVIS_BUILD_DIR
 
 lua -v
 
+echo "Downloading luarocks"
 LUAROCKS_BASE=luarocks-$LUAROCKS
-
 curl --location http://luarocks.org/releases/$LUAROCKS_BASE.tar.gz | tar xz
 
 cd $LUAROCKS_BASE
 
+echo "Compiling luarocks"
 if [ "$LUA" == "luajit" ]; then
   ./configure --lua-suffix=jit --with-lua-include="$LUA_HOME_DIR/include/luajit-2.0" --prefix="$LR_HOME_DIR";
 elif [ "$LUA" == "luajit2.0" ]; then
@@ -141,3 +146,10 @@ elif [ "$LUA" == "lua5.2" ]; then
 elif [ "$LUA" == "lua5.3" ]; then
   rm -rf lua-5.3.2;
 fi
+
+echo "Installation status"
+echo "home=$HOME"
+echo "TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR"
+echo "pwd=`pwd`"
+echo "Content of travid build dir"
+find $TRAVIS_BUILD_DIR
