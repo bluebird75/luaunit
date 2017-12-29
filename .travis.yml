@@ -29,8 +29,11 @@ matrix:
 
 before_install:
   - source .travis/setenv_lua.sh
-  - luarocks install luacheck
-  - luarocks install luacov-coveralls
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y libxml2-utils; fi
+
+cache:
+  directories:
+    - $TRAVIS_BUILD_DIR/install
 
 script: 
   - lua -v -lluacov run_unit_tests.lua --shuffle
