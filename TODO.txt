@@ -5,14 +5,8 @@ TODO Future:
 - document prettystr
 - add the ability to count the number of assertions that should have been executed in the test
 - validate output with ignored tests (0 failures or some failures)
-- report test duration everywhere
-- allow to skip tests
 - parametrize tests
 - coloured output
-- global setup / teardown
-- class setup / teardown
-- add date and duration to tap output
-- XML: report system information
 - better error messages for string differences (diffing)
 - print local variables upon assertion error:
 	+ debug.get_local( ) will get the local variables in the current context
@@ -25,27 +19,38 @@ TODO Future:
 - look at serpent to see how to improve nested table printing
 - function should be printed as <function>
 - print table of test test_filterWithPattern and see how to improve readability
-- align the "OK" vertically for text output
-- better detection of screen size
 - shuffle should shuffle separately classes and then class methods
-- catch the os.exit call with a handler or something, to avoid aborting the tests
 - add assertTableContains and assertTableNotContains to check the presence / absence of value in an array
 - look at serpent to see how to improve nested table printing
 - doc about usage of prettystr & assertion library
-- add fail() to force test failure, success() to force test success
+
+Version 3.4:
+============
+- global setup / teardown
+- class setup / teardown
+- report test duration everywhere
+- allow to skip tests
+- add date and duration to tap output
+- XML: report system information
+- align the "OK" vertically for text output
+- better detection of screen size
+- catch the os.exit call with a handler or something, to avoid aborting the tests
+
 
 TODO for 3.3 release:
 ===============
+- check rock installation of luaunit
+- add fail() to force test failure, success() to force test success
+- strcuture documentation into overview, tutorial, examples, reference documentation
 - add fail() and success()
 - doc about prettystr
 - doc improvements:
 	indicate that example test files are available.
-- verify that lu.EPS by calculation
-- change margin_boost to deprecated and raise a warning if it is used
-
 
 Done since 3.2:
 ===============
+- assertAlmostEqual no longer includes a default margin, margin must always be explicitly specified.
+- verify that lu.EPS by calculation
 - fix include/exclude bug (see https://github.com/bluebird75/luaunit/pull/82 )
 - doc about scientific computing dedicated functions
 - assertions for nan and inf and +/- zero
