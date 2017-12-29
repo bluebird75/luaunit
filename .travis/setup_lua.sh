@@ -152,6 +152,9 @@ else # -e $LUA_HOME_DIR
     # cleanup luarocks
     rm -rf $LUAROCKS_BASE
 
+    luarocks --version
+    luarocks install luacheck
+    luarocks install luacov-coveralls
 
 fi # -e $LUA_HOME_DIR
 
@@ -162,11 +165,3 @@ ln -s $LR_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
 cd $TRAVIS_BUILD_DIR
 
 lua -v
-luarocks --version
-
-echo "Installation status"
-echo "home=$HOME"
-echo "TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR"
-echo "pwd=`pwd`"
-echo "Content of travid build dir"
-find $TRAVIS_BUILD_DIR

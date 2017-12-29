@@ -31,8 +31,6 @@ before_install:
   - os: linux
     - sudo apt-get install -y libxml2-utils
   - source .travis/setenv_lua.sh
-  - luarocks install luacheck
-  - luarocks install luacov-coveralls
 
 cache:
   directories:
