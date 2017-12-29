@@ -28,9 +28,7 @@ matrix:
     - env: LUA=luajit2.1
     
 before_install:
-  - sudo apt-get -qq update
   - sudo apt-get install -y libxml2-utils
-  - xmllint --version
   - source .travis/setenv_lua.sh
   - luarocks install luacheck
   - luarocks install luacov-coveralls
