@@ -30,6 +30,7 @@ matrix:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libxml2-dev
+  - xmllint --version
   - source .travis/setenv_lua.sh
   - luarocks install luacheck
   - luarocks install luacov-coveralls
