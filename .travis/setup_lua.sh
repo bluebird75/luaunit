@@ -43,9 +43,25 @@ then
 
     # remove links to other version of lua and luarocks
     rm -f $HOME/.lua/lua
+    rm -f $HOME/.lua/luajit
     rm -f $HOME/.lua/luac
     rm -f $HOME/.lua/luarocks
 
+    # recreating the links 
+    if [ "$LUAJIT" == "yes" ]; then
+        ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/luajit
+        ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/lua
+    else
+        ln -s $LUA_HOME_DIR/bin/lua $HOME/.lua/lua
+        ln -s $LUA_HOME_DIR/bin/luac $HOME/.lua/luac
+    fi
+    ln -s $LR_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
+
+    # installation is ok ?
+    lua -v
+    luarocks --version
+    luarocks list
+    
 else # -e $LUA_HOME_DIR
 
     echo ">> Compiling lua into $LUA_HOME_DIR"
@@ -71,9 +87,6 @@ else # -e $LUA_HOME_DIR
 
         echo ">> Compiling LuaJIT"
         make && make install PREFIX="$LUA_HOME_DIR"
-
-        ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/luajit
-        ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/lua;
 
     else # $LUAJIT == "yes"
 
@@ -119,7 +132,7 @@ else # -e $LUA_HOME_DIR
         
     fi # $LUAJIT == "yes"
 
-    # cleanup LUA
+    # cleanup LUA build dir
     if [ "$LUAJIT" == "yes" ]; then
         rm -rf $LUAJIT_BASE;
     elif [ "$LUA" == "lua5.1" ]; then
@@ -129,6 +142,17 @@ else # -e $LUA_HOME_DIR
     elif [ "$LUA" == "lua5.3" ]; then
         rm -rf lua-5.3.2;
     fi
+
+    if [ "$LUAJIT" == "yes" ]; then
+        ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/luajit
+        ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/lua
+    else
+        ln -s $LUA_HOME_DIR/bin/lua $HOME/.lua/lua
+        ln -s $LUA_HOME_DIR/bin/luac $HOME/.lua/luac
+    fi
+
+    # lua is OK ?
+    lua -v
 
     echo ">> Downloading luarocks"
     LUAROCKS_BASE=luarocks-$LUAROCKS
@@ -152,16 +176,12 @@ else # -e $LUA_HOME_DIR
     # cleanup luarocks
     rm -rf $LUAROCKS_BASE
 
+    ln -s $LR_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
     luarocks --version
     luarocks install luacheck
     luarocks install luacov-coveralls
 
 fi # -e $LUA_HOME_DIR
 
-ln -s $LUA_HOME_DIR/bin/lua $HOME/.lua/lua
-ln -s $LUA_HOME_DIR/bin/luac $HOME/.lua/luac
-ln -s $LR_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
-
 cd $TRAVIS_BUILD_DIR
 
-lua -v
