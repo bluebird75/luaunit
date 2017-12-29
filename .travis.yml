@@ -33,6 +33,10 @@ before_install:
   - luarocks install luacheck
   - luarocks install luacov-coveralls
 
+cache:
+  directories:
+    - $TRAVIS_BUILD_DIR/install
+
 script: 
   - lua -v -lluacov run_unit_tests.lua --shuffle
   - lua run_functional_tests.lua --coverage
