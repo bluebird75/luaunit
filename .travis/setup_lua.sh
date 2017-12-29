@@ -13,8 +13,7 @@ LUAJIT_BASE="LuaJIT-$LUAJIT_VERSION"
 
 source .travis/platform.sh
 
-LUA_HOME_DIR=$TRAVIS_BUILD_DIR/install/lua
-
+LUA_HOME_DIR=$TRAVIS_BUILD_DIR/install/$LUA
 LR_HOME_DIR=$TRAVIS_BUILD_DIR/install/luarocks
 
 mkdir $HOME/.lua
