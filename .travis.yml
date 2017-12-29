@@ -26,10 +26,10 @@ matrix:
   allow_failures:
     - env: LUA=luajit2.0
     - env: LUA=luajit2.1
-    
+
 before_install:
-  # sudo apt-get install -y libxml2-utils
   - source .travis/setenv_lua.sh
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y libxml2-utils; fi
 
 cache:
   directories:
