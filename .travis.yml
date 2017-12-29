@@ -28,8 +28,7 @@ matrix:
     - env: LUA=luajit2.1
     
 before_install:
-  - os: linux
-    - sudo apt-get install -y libxml2-utils
+  # sudo apt-get install -y libxml2-utils
   - source .travis/setenv_lua.sh
 
 cache:
