@@ -958,6 +958,7 @@ local function assertBadMethodNil( ... )
     lu.assertErrorMsgMatches( ".* attempt to call .*a nil value.*", ... )
 end
 
+
 TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
     function TestLuaUnitAssertions:test_assertEquals()
@@ -2737,6 +2738,22 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( runner.result.notPassed[1].status, lu.NodeStatus.FAIL  )
     end
 
+
+    function TestLuaUnitExecution:test_failFromTest()
+
+        function my_test_fails()
+            lu.assertEquals( 1, 1 )
+            lu.fail( 'Stop early.')
+        end
+
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType( "NIL" )
+        runner:runSuiteByInstances( { { 'my_test_fails', my_test_fails } } )
+        lu.assertEquals( runner.result.testCount, 1 )
+        lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertStrContains( runner.result.failures[1].msg, 'Stop early.' )
+    end
+
     function TestLuaUnitExecution:testWithCount()
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
@@ -3157,5 +3174,6 @@ TestLuaUnitResults = { __class__ = 'TestLuaUnitResults' }
         lu.assertEquals( m.calls[1][1], 'startSuite' )
         lu.assertEquals(#m.calls[1], 2 )
     end
+
 
 -- To execute me , use: lua run_unit_tests.lua

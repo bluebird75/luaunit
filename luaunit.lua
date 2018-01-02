@@ -1161,6 +1161,11 @@ function M.assertError(f, ...)
         failure( "Expected an error when calling function but no error generated", 2 )
     end
 end
+
+function M.fail( msg )
+    -- stops a test due to a failure
+    failure( msg, 2 )
+end
 ------------------------------------------------------------------
 --                  Equality assertion
 ------------------------------------------------------------------
