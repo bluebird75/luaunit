@@ -2641,9 +2641,13 @@ end
             return {status = NodeStatus.PASS}
         end
 
-        -- determine if the error was a failed test:
-        -- We do this by stripping the failure prefix from the error message,
-        -- while keeping track of the gsub() count. A non-zero value -> failure
+        -- Failure message usually looks like:
+        -- "./test\\test_luaunit.lua:2241: LuaUnit test FAILURE: expected: 2, actual: 1"
+
+        -- If failure prefix is present, we assume this is a failure
+        -- we strip the prefix, and insert the iteration number along the way if relevant
+        -- we only strip one failure prefix of course.
+
         local failed, iter_msg
         iter_msg = self.exeRepeat and 'iteration: '..self.currentCount..', '
         err.msg, failed = err.msg:gsub(M.FAILURE_PREFIX, iter_msg or '', 1)
@@ -2760,7 +2764,7 @@ end
                 table.insert( result, { name, instance } )
             else
                 if type(instance) ~= 'table' then
-                    error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
+                    error( 'Instance must be a table or a function, not a '..type(instance)..' with value '..prettystr(instance))
                 end
                 local className, methodName = M.LuaUnit.splitClassMethod( name )
                 if className then
@@ -2792,8 +2796,7 @@ end
     end
 
     function M.LuaUnit:runSuiteByInstances( listOfNameAndInst )
-        --[[ Run an explicit list of tests. All test instances and names must be supplied.
-        each test must be one of:
+        --[[ Run an explicit list of tests. Each item of the list must be one of:
         * { function name, function instance }
         * { class name, class instance }
         * { class.method name, class instance }
