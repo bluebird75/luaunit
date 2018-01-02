@@ -2754,6 +2754,43 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertStrContains( runner.result.failures[1].msg, 'Stop early.' )
     end
 
+    function TestLuaUnitExecution:test_failIfFromTest()
+
+        function my_test_fails()
+            lu.assertEquals( 1, 1 )
+            lu.failIf( false, 'NOOOOOOOOOO')
+            lu.failIf( nil, 'NOOOOOOOOOO')
+            lu.failIf( 1 == 1, 'YESSS')
+        end
+
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType( "NIL" )
+        runner:runSuiteByInstances( { { 'my_test_fails', my_test_fails } } )
+        lu.assertEquals( runner.result.testCount, 1 )
+        lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertStrContains( runner.result.failures[1].msg, 'YESS' )
+    end
+
+    --[[ Disable for now
+    function TestLuaUnitExecution:XXXtest_failUnlessFromTest()
+
+        function my_test_fails()
+            lu.assertEquals( 1, 1 )
+            lu.continueIf( true, 'NOOOOOOOOOO')
+            lu.continueIf( 1, 'NOOOOOOOOOO')
+            lu.continueIf( 1 == 1, 'NOOOOOO')
+            lu.continueIf( 1 == 0, 'YESSS')
+        end
+
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType( "NIL" )
+        runner:runSuiteByInstances( { { 'my_test_fails', my_test_fails } } )
+        lu.assertEquals( runner.result.testCount, 1 )
+        lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertStrContains( runner.result.failures[1].msg, 'YESS' )
+    end
+    ]]
+
     function TestLuaUnitExecution:testWithCount()
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )

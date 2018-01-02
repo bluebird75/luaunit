@@ -1166,6 +1166,15 @@ function M.fail( msg )
     -- stops a test due to a failure
     failure( msg, 2 )
 end
+
+function M.failIf( cond, msg )
+    -- Fails a test with "msg" if condition is true
+    if cond then
+        failure( msg, 2 )
+    end
+end
+
+
 ------------------------------------------------------------------
 --                  Equality assertion
 ------------------------------------------------------------------
