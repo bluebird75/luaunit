@@ -49,6 +49,7 @@ TODO for 3.3 release:
 
 Done since 3.2:
 ===============
+- use caching on travis-ci
 - assertAlmostEqual no longer includes a default margin, margin must always be explicitly specified.
 - verify that lu.EPS by calculation
 - fix include/exclude bug (see https://github.com/bluebird75/luaunit/pull/82 )
