@@ -2741,7 +2741,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
     function TestLuaUnitExecution:test_failFromTest()
 
-        function my_test_fails()
+        local function my_test_fails()
             lu.assertEquals( 1, 1 )
             lu.fail( 'Stop early.')
         end
@@ -2756,7 +2756,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
     function TestLuaUnitExecution:test_failIfFromTest()
 
-        function my_test_fails()
+        local function my_test_fails()
             lu.assertEquals( 1, 1 )
             lu.failIf( false, 'NOOOOOOOOOO')
             lu.failIf( nil, 'NOOOOOOOOOO')
