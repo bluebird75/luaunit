@@ -363,7 +363,7 @@ by calling the function *initLog()*.
 The tests for these functions would take advantage of the *setup/teardown*
 functionality to prepare a log filename shared
 by all tests, make sure that all tests start with a non existing
-log file name, and erase the log filename after every test::
+log file name, and delete the log filename after every test::
 
     TestLogger = {}
         function TestLogger:setUp()
@@ -586,7 +586,7 @@ LuaUnit.run() function
 
 **Return value**
 
-Normally, you should run your test suite with the following line::
+Run your test suite with the following line::
 
     os.exit(lu.LauaUnit.run())
 
@@ -609,7 +609,7 @@ Example::
 **Choice of tests**
 
 If test names were supplied, only those
-tests are executed. When test names are supplied, they don't have
+tests are executed. When test names are supplied as arguments, they don't have
 to start with *test*, they are run anyway.
 
 If no test names were supplied, a general test collection process starts
@@ -1129,11 +1129,11 @@ Value assertions
 ----------------------
 
 LuaUnit contains several flavours of true/false assertions, to be used in different contexts.
-Usually, when asserting for true or false, you want strict assertions (nil should not 
-assert to false); assertTrue and assertFalse are the functions for this purpose. In some cases though,
-you want Lua coercion rules to apply (value 1, string "hello" yields true) and the right functions to use
-are assertEvalToTrue and assertEvalToFalse. Finally, you have the assertNotTrue and assertNotFalse to verify
-that a value is anything but the boolean true or false.
+Usually, when asserting for *true* or *false*, you want strict assertions (*nil* should not 
+assert to *false*); *assertTrue()* and *assertFalse()* are the functions for this purpose. In some cases though,
+you want Lua coercion rules to apply (e.g. value *1* or string *"hello"* yields *true*) and the right functions to use
+are *assertEvalToTrue()* and *assertEvalToFalse()*. Finally, you have the *assertNotTrue()* and *assertNotFalse()* to verify
+that a value is anything but the boolean *true* or *false*.
 
 The below table sums it up:
 
@@ -1318,7 +1318,7 @@ Error related assertions, to verify error generation and error messages.
     Be careful when using this function that error messages usually contain the file name and
     line number information of where the error was generated. This is usually inconvenient. To 
     ignore the filename and line number information, you can either use a pattern with :func:`assertErrorMsgMatches`
-    or simply check for the message containt with :func:`assertErrorMsgContains` .
+    or simply check for the message content with :func:`assertErrorMsgContains` .
     
 .. function:: assertErrorMsgContains( partialMsg, func, ... )
 
@@ -1392,10 +1392,18 @@ Type assertions
     
 .. function:: assertIsCoroutine(value)
 
-    **Aliases**: *assertCoroutine()*, *assert_is_coroutine()*, *assert_coroutine()*, *assertIsThread()*, *assertThread()*, *assert_is_thread()*, *assert_thread()*
+    **Aliases**: *assertCoroutine()*, *assert_is_coroutine()*, *assert_coroutine()*
 
     Assert that the argument is a coroutine (an object with type *thread* ).
     
+.. function:: assertIsThread(value)
+
+    **Aliases**: *assertIsThread()*, *assertThread()*, *assert_is_thread()*, *assert_thread()*
+
+    Same function as :func:assertIsCoroutine . Since Lua coroutines have the type thread, it's not
+    clear which name is the clearer, so we provide syntax for both names.
+
+
 .. _assert-table:
 
 Table assertions
@@ -1502,7 +1510,7 @@ assert(type(x) == “number” and x == 0 and 1/x == infinity)
 
     Assert that a given number is *-0*, according to the definition of IEEE-754_ . See also :func:`assertPlusZero` .
 
-assert(type(x) == “number” and x == 0 and 1/x == -infinity)
+    assert(type(x) == “number” and x == 0 and 1/x == -infinity)
 
 
 .. function:: assertAlmostEquals( actual, expected [, margin=EPS] )
@@ -1670,12 +1678,7 @@ Bugs or feature requests should be reported using `GitHub issues`_.
 
 .. _Github issues: https://github.com/bluebird75/luaunit/issues
 
-Usage and development may be discussed on `LuaUnit mailing-list`_ . If you are using LuaUnit for your
-project, please drop us an note.
-
-.. _LuaUnit mailing-list: http://lists.freehackers.org/list/luaunit%40freehackers.org/ 
-
-It is released under the BSD license.
+LuaUnit is released under the BSD license.
 
 This documentation is available at `Read-the-docs`_.
 
@@ -1684,11 +1687,15 @@ This documentation is available at `Read-the-docs`_.
 
 Contributing
 =============
-You may contribute to LuaUnit by reporting bugs, fixing reported bugs or developing new features.
+You may contribute to LuaUnit by reporting bugs or wishes, or by contributing code directly with a pull request.
 
-Some issues on github are marked with label *enhancement*. Feel free to pick up such tasks and implement them.
+Some issues on github are marked with label *enhancement*. Feel also free to pick up such tasks and implement them.
 
 Changes should be proposed as *Pull Requests* on github.
+
+Thank to our continous integration setup with Travis-Ci and AppVeyor, all unit-tests and functional tests are run on Linux, Windows and MacOs, with all versions of Lua. So
+any *Pull Request* will show immediatly if anything is going unexpected.
+
 
 Unit-tests
 -------------------
@@ -1812,6 +1819,8 @@ Functional tests may start failing when:
 
 1. Increasing LuaUnit version
 2. Improving or breaking LuaUnit output
+
+This a good place to start looking if you see failures occuring.
 
 
 Index and Search page
