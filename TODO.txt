@@ -39,16 +39,36 @@ Version 3.4:
 
 TODO for 3.3 release:
 ===============
+- build luarocks
 - check rock installation of luaunit
-- add fail() to force test failure, success() to force test success
 - strcuture documentation into overview, tutorial, examples, reference documentation
-- add fail() and success()
+- add success() to terminate test successfully
 - doc about prettystr
 - doc improvements:
 	indicate that example test files are available.
+- update download badge
+- update contributors
+
+- Documentation:
+	+ tutorial:
+		+ basic luaunit usage
+	+ examples
+		+ output formats
+		+ playing with command line
+		+ scientific computing
+
+
+- README content:
+	Details:
+	+ wide range of assertions
+	+ flexible command-line
+	+ BSD license
+	+ Advanced list comparison, example
+
 
 Done since 3.2:
 ===============
+- add fail() to force test failure
 - use caching on travis-ci
 - assertAlmostEqual no longer includes a default margin, margin must always be explicitly specified.
 - verify that lu.EPS by calculation
