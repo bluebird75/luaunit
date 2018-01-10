@@ -8,38 +8,73 @@
 ## LuaUnit
 by Philippe Fremy
 
-LuaUnit is a unit-testing framework for Lua. It allows you 
-to write test functions and test classes with test methods, combined with 
-setup/teardown functionality. A wide range of assertions are supported.
+LuaUnit is a popular unit-testing framework for Lua, with an interface typical
+of xUnit libraries (Python unittest, Junit, NUnit, ...). It supports 
+several output formats (Text, TAP, JUnit, ...) to be used directly or work with Continuous Integration platforms
+(Jenkins, Maven, ...).
 
-LuaUnit supports several output formats, like JUnit or TAP, for easier integration
-into Continuous Integration platforms (Jenkins, Maven, ...). The integrated command-line 
-options provide a flexible interface to select tests by name or patterns, control output 
-format, set verbosity, ...
+For simplicity, LuaUnit is contained into a single-file and has no external dependency. To start using it, 
+just add the file *luaunit.lua* to your project. A LuaRocks package is also available.
 
-LuaUnit works with Lua 5.1, LuaJIT 2.0, LuaJIT 2.1 beta, Lua 5.2 and Lua 5.3 . It is tested on Windows Seven, Windows Server 2012 R2 (x64), MacOs X 10.9.5 and Ubuntu 14.04 (see 
-continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) and [AppVeyor](https://ci.appveyor.com/project/bluebird75/luaunit) ) and should work on all platforms supported by Lua.
-It has no other dependency than Lua itself. 
-
-LuaUnit is packed into a single-file. To make start using it, just add the file to your project.
-
-LuaUnit is maintained on github:
-https://github.com/bluebird75/luaunit
-
-For more information on LuaUnit development, please check: [Developing LuaUnit](http://luaunit.readthedocs.org/en/latest/#developing-luaunit)
-
-It is released under the BSD license.
-
-Documentation is available on
+Tutorial and reference documentation is available on
 [read-the-docs](http://luaunit.readthedocs.org/en/latest/)
 
-**Important note when upgrading to version 3.1 and above** : break of backward compatibility, assertions functions are
-no longer exported directly to the global namespace. See [documentation](http://luaunit.readthedocs.io/en/latest/#luaunit-global-asserts) on how to adjust or restore previous behavior.
+## More Details
 
+LuaUnit provides a wide range of assertions and goes into great efforts to provide the most useful output. For example
+since version 3.3 , comparing lists will provide a detailed difference analysis:
+
+	-- lua test code. Can you spot the difference ?
+    function TestListCompare:test1()
+        local A = { 121221, 122211, 121221, 122211, 121221, 122212, 121212, 122112, 122121, 121212, 122121 } 
+        local B = { 121221, 122211, 121221, 122211, 121221, 122212, 121212, 122112, 121221, 121212, 122121 }
+        lu.assertEquals( A, B )
+    end
+
+    $ lua test_some_lists_comparison.lua
+
+    TestListCompare.test1 ... FAIL
+	test/some_lists_comparisons.lua:22: expected: 
+
+	List difference analysis:
+	* lists A (actual) and B (expected) have the same size
+	* lists A and B start differing at index 9
+	* lists A and B are equal again from index 10
+	* Common parts:
+	  = A[1], B[1]: 121221
+	  = A[2], B[2]: 122211
+	  = A[3], B[3]: 121221
+	  = A[4], B[4]: 122211
+	  = A[5], B[5]: 121221
+	  = A[6], B[6]: 122212
+	  = A[7], B[7]: 121212
+	  = A[8], B[8]: 122112
+	* Differing parts:
+	  - A[9]: 122121
+	  + B[9]: 121221
+	* Common parts at the end of the lists
+	  = A[10], B[10]: 121212
+	  = A[11], B[11]: 122121
+
+
+The command-line options provide a flexible interface to select tests by name or patterns, control output
+format, set verbosity and more. See [the documentation](http://luaunit.readthedocs.io/en/latest/#command-line-options)
+
+LuaUnit also provides some dedicated support to scientific computing. See [the documentation](http://luaunit.readthedocs.io/en/latest/#scientific-computing-and-luaunit)
+
+LuaUnit is very well tested: code coverage is 99.5% . The test suite is run on every version of Lua (Lua 5.1 to 5.3, LuaJIT 2.0 and 2.1 beta)
+and on many OS (Windows Seven, Windows Server 2012, MacOs X and Ubuntu). You can check the continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) and [AppVeyor](https://ci.appveyor.com/project/bluebird75/luaunit).
+
+LuaUnit is maintained on Github: https://github.com/bluebird75/luaunit . We gladly accept feature requests and even better Pull Requests.
+For more information on LuaUnit development, please check: [Developing LuaUnit](http://luaunit.readthedocs.org/en/latest/#developing-luaunit) . 
+
+LuaUnit is released under the BSD license.
 
 ## Install
 
-The version in development on github is always stable and can be used safely.
+**LuaRocks**
+
+LuaUnit v3.3 is available on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit).
 
 **github** 
 
@@ -49,22 +84,14 @@ The simplest way to install LuaUnit is to fetch the github version:
 
 Then copy the file luaunit.lua into your project or the Lua libs directory.
 
+The version in development on github is always stable and can be used safely.
+
 On Linux, you can also install it into your Lua directories
 
     sudo python doit.py install
 
 Edit `install()` for Lua version and installation directory if that
 fails. It uses, by default, Linux paths that depend on the version. 
-
-**LuaRocks**
-
-LuaUnit v3.2 and above are available on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit).
-
-**bower**
-
-You can also install it with bower :
-
-    bower install https://github.com/bluebird75/luaunit.git.
 
 ## Contributors
 * [NiteHawk](https://github.com/n1tehawk)
@@ -80,30 +107,33 @@ You can also install it with bower :
 
 ## Successes
 
-LuaUnit is used by hundreds of projects on GitHub (see [LuaUnit search](https://github.com/search?utf8=%E2%9C%93&q=filename%3Aluaunit.lua&type=Code&ref=searchresults) ) has more than 10k download on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit) ).
-
+LuaUnit is used by thousands of projects on GitHub XXX (see [LuaUnit search](https://github.com/search?utf8=%E2%9C%93&q=filename%3Aluaunit.lua&type=Code&ref=searchresults) ) has more than 200k download on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit) ). LuaUnit is the testing framework for a scientific application
+at the CERN.
 
 ### History 
 
 #### Version 3.3 - in progress
-* assertTrue() and assertFalse() are now strict and only succeed with boolean values
-* add assertEvalToTrue() and assertEvalToFalse() with previous assertTrue()/assertFalse() behavior of coercing to boolean before asserting
-* can now shuffle tests with --shuffle or -s
-* possibility to repeat tests (for example to trigger a JIT), with --repeat NUM or -r NUM
-* More flexible test selection with inclusion (--pattern / -p) or exclusion (--exclude / -x) or combination of both
-* When comparing lists with assertEquals(), failure message includes the precise differences in size and content
-  of the lists
-* added functions dedicated to scientific computing: 
-** assertNan(), assertInf(), assertPlusInf(), assertMinusInf()
-** provide the machine epsilon in lu.eps
-** in assertAlmostEquals( a, b, margin ), remove the 4th margin_boost argument and use a default
-   value of machine epsilon for margin
-* Validate LuaUnit on MacOs platform (thanks to Travis CI)
-* Validate LuaUnit with 32 bits numbers (floats) and 64 bits numbers (double)
-* Add test coverage measurements thank to codecoverage
-* use cache for AppVeyor builds
-* Improve printing of recursive tables
-* Improvements and fixes to JUnit and TAP output
+* General
+	** when comparing lists with assertEquals(), failure message provides an advanced comparison of the lists
+	** assertErrorMsgEquals() can check for error raised as tables
+	** tests may be finished early with fail() or success()
+	** improve printing of recursive tables
+	** improvements and fixes to JUnit and TAP output
+	** stricter assertTrue() and assertFalse(): they only succeed with boolean values
+	** add assertEvalToTrue() and assertEvalToFalse() with previous assertTrue()/assertFalse() behavior of coercing to boolean before asserting
+* New command-line arguments:
+	** can now shuffle tests with --shuffle or -s
+	** possibility to repeat tests (for example to trigger a JIT), with --repeat NUM or -r NUM
+	** more flexible test selection with inclusion (--pattern / -p) or exclusion (--exclude / -x) or combination of both
+* Scientific computing dedicated support (see documentation):
+	** provide the machine epsilon in lu.EPS
+	** new functions: assertNan(), assertInf(), assertPlusInf(), assertMinusInf(), assertPlusZero(), assertMinusZero()
+	** in assertAlmostEquals( a, b, margin ), margin no longer provides a default value of 1E-11, the machine epsilon is used instead
+* Platform and continuous integration support:
+	** validate LuaUnit on MacOs platform (thank to Travis CI)
+	** validate LuaUnit with 32 bits numbers (floats) and 64 bits numbers (double)
+	** add test coverage measurements thank to coveralls.io . Status: 99.76% of the code is verified.
+	** use cache for AppVeyor and Travis builds
 * General doc improvements (detailed description of all output, more cross-linking between sections)
 
 #### Version 3.2 - 12. Jul 2016
