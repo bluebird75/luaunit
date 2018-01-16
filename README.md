@@ -104,6 +104,9 @@ fails. It uses, by default, Linux paths that depend on the version.
 * [Victor Seva](https://github.com/linuxmaniac)
 * [Urs Breu](https://github.com/ubreu)
 * Jim Anderson
+* [Douglas Jacobsen](https://github.com/dmjacobsen)
+* [Mayama Takeshi](https://github.com/MayamaTakeshi)
+
 
 ## Successes
 
