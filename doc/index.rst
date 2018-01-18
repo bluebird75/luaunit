@@ -1445,11 +1445,29 @@ Table assertions
 
 
 
-Finishing test early
+Ending test 
 ---------------------
 
-LuaUnit 
+LuaUnit allows to force test ending, either positevely or negatively, with the following functions.
 
+.. function:: fail( message )
+
+    Stops the ongoing test and mark it as failed with the given message.
+
+
+.. function:: failIf( cond, message )
+
+    If the condition *cond* evaluated to true, stops the ongoing test and mark it as failed with the given message.
+    Else, continue the test execution normally.
+
+.. function:: success()
+
+    Stops the ongoing test and mark it as successful.
+
+.. function:: successIf( cond )
+
+    If the condition *cond* evaluated to true, stops the ongoing test and mark it as successful.
+    Else, continue the test execution normally.
 
 
 Scientific computing and LuaUnit
