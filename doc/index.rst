@@ -146,6 +146,9 @@ Version 1.1
 Getting started
 ***************
 
+This section will guide you through a step by step usage of *LuaUnit* . If you want to see
+the final file directly, you can find it in the doc directory, under the name *my_test_suite.lua*
+
 Setting up your test script
 ===========================
 

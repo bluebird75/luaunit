@@ -1,4 +1,8 @@
 
+--
+-- The examples described in the documentation are below.
+--
+
 lu = require('luaunit')
 
 function add(v1,v2)
@@ -71,6 +75,28 @@ TestDiv = {}
     function TestDiv:testDivError()
         lu.assertErrorMsgContains('Can only divide positive or null numbers, received 2 and -3', div, 2, -3)
     end
+-- end of table TestDiv
+
+--[[
+--
+--      Uncomment this section to see how failures are displayed
+--
+TestWithFailures = {}
+    -- two failing tests
+
+    function TestWithFailures:testFail1()
+        lu.assertEquals( "toto", "titi")
+    end
+
+    function TestWithFailures:testFail2()
+        local a=1
+        local b='toto'
+        local c = a + b -- oops, can not add string and numbers
+        return c
+    end
+-- end of table TestWithFailures
+]]
+
 
 --[[
 TestLogger = {}
@@ -94,8 +120,8 @@ TestLogger = {}
         -- cleanup our log file after all tests
         os.remove(self.fname)
     end
+-- end of table TestLogger
 
--- end of table TestDiv
 ]]
 
 os.exit(lu.LuaUnit.run())
