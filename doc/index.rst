@@ -21,7 +21,14 @@ into Continuous Integration platforms (Jenkins, Maven, ...) . The integrated com
 options provide a flexible interface to select tests by name or patterns, control output 
 format, set verbosity, ...
 
-LuaUnit also provides some dedicated support to scientific computing. See the dedicated section below.
+LuaUnit also provides some dedicated support to scientific computing. See the section `Scientific computing and LuaUnit`_
+
+LuaUnit may also be used as an assertion library. In that case, you will call the assertion functions, which generate errors
+when the assertion fails. The error includes a detailed analysis of the failed assertion, exactly when executing a test suite.
+
+LuaUnit provides another generic usage function: :func:`prettystr` which converts any value to a nicely
+formatted string. It supports in particular tables, nested table and even recursive tables.
+
 
 Platform support
 ================
@@ -143,8 +150,8 @@ Version 1.1
 * two verbosity level, like in python unittest
 
 
-Getting started
-***************
+Getting started with LuaUnit
+****************************
 
 This section will guide you through a step by step usage of *LuaUnit* . If you want to see
 the final file directly, you can find it in the doc directory, under the name *my_test_suite.lua*
@@ -1437,6 +1444,14 @@ Table assertions
         lu.assertItemsEquals( {1,{2,3},4}, {4,{3,2,},1} ) -- assertion fails because {2,3} ~= {3,2}
 
 
+
+Finishing test early
+---------------------
+
+LuaUnit 
+
+
+
 Scientific computing and LuaUnit
 --------------------------------
 
@@ -1560,6 +1575,30 @@ assert(type(x) == “number” and x == 0 and 1/x == infinity)
         -- relative error is constant. Assertion can take the form of:
         assertAlmostEquals( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / pi_div_6_deg_expected, lu.EPS )
         assertAlmostEquals( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / pi_div_3_deg_expected, lu.EPS )
+
+
+Pretty printing
+----------------
+
+.. function:: prettystr( value )
+
+    Converts the value to a nicely formatted string, whatever the type of the value.
+    It supports in particular tables, nested table and even recursive tables.
+
+**Example of prettystr()**
+    
+.. code-block:: lua
+
+        > lu = require('luaunit')
+        > t1 = {1,2,3}
+        > t1['toto'] = 'titi'
+        > t1.f = function () end
+        > t1.fa = (1 == 0)
+        > t1.tr = (1 == 1)
+        > print( lu.prettystr(t1) )
+        {1, 2, 3, f=function: 00635d68, fa=false, toto="titi", tr=true}
+
+
 
 .. _table-printing:
 
