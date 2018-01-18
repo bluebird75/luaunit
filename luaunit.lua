@@ -15,7 +15,7 @@ local M={}
 -- private exported functions (for testing)
 M.private = {}
 
-M.VERSION='3.2'
+M.VERSION='3.3'
 M._VERSION=M.VERSION -- For LuaUnit v2 compatibility
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer

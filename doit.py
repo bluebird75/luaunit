@@ -2,10 +2,10 @@
 
 import subprocess, sys, os, shutil, os.path, optparse
 
-VERSION='3.2'
+VERSION='3.3'
 RELEASE_NAME='luaunit-%s' % VERSION
 RELEASE_DIR='release/' + RELEASE_NAME + '/'
-RELEASE_TAG='LUAUNIT_V3_2_1'
+RELEASE_TAG='LUAUNIT_V3_3_0'
 RELEASE_DIR='release/' + RELEASE_NAME + '/'
 TARGET_ZIP=RELEASE_NAME + '.zip'
 TARGET_TGZ=RELEASE_NAME + '.tgz'
