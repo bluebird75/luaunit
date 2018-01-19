@@ -14,12 +14,32 @@ several output formats (Text, TAP, JUnit, ...) to be used directly or work with 
 (Jenkins, Maven, ...).
 
 For simplicity, LuaUnit is contained into a single-file and has no external dependency. To start using it, 
-just add the file *luaunit.lua* to your project. A LuaRocks package is also available.
+just add the file *luaunit.lua* to your project. A [LuaRocks package](https://luarocks.org/modules/bluebird75/luaunit) is also available.
 
 Tutorial and reference documentation is available on
 [read-the-docs](http://luaunit.readthedocs.org/en/latest/)
 
-## More Details
+LuaUnit may also be used as an assertion library, to validate assertions inside a running program. In addition, it provides
+a pretty stringifier, to convert any type into a nicely formatted string (including complex nested or recursive tables).
+
+## LuaUnit successes
+
+LuaUnit is used in some very nice technological products. I like to mention:
+
+* [SchedMD/Slurm](https://www.schedmd.com/): Slurm is an open-source cluster resource management and job scheduling 
+system that strives to be simple, scalable, portable, fault-tolerant, and interconnect agnostic. On the June 2017 Top 500 computer 
+list, Slurm was performing workload management on six of the ten most powerful computers in the world including the number 1 system, 
+Sunway TaihuLight with 10,649,600 computing cores. LuaUnit is used by Slurm to validate plugins written in Lua. Thanks Douglas Jacobsen
+to contribute back to LuaUnit. See the [Github repository of Slurm](https://github.com/SchedMD/slurm)
+
+* [MAD by the CERN](http://mad.web.cern.ch/mad/): CERN is the European Organization for Nuclear Research, where physicists and engineers are 
+probing the fundamental structure of the universe. MAD is one of the CERN project: MAD aims to be at the forefront of computational physics in 
+the field of particle accelerator design and simulation. Its scripting language is de facto the standard to describe particle accelerators, simulate 
+beam dynamics and optimize beam optics at CERN. Lua is the main language of MAD-ng, the new generatino of MAD. A fork of LuaUnit is used extensively 
+for all MAD calculation and framework validation. Thanks Laurent Deniau for contributing back to LuaUnit. See the [Github repository of MAD](https://github.com/MethodicalAcceleratorDesign/MAD)
+
+
+## More details
 
 LuaUnit provides a wide range of assertions and goes into great efforts to provide the most useful output. For example
 since version 3.3 , comparing lists will provide a detailed difference analysis:
