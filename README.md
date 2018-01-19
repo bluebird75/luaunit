@@ -1,9 +1,9 @@
-[![License](http://img.shields.io/badge/License-BSD-green.svg)](LICENSE.txt)
 [![Build status](https://ci.appveyor.com/api/projects/status/us6uh4e5q597jj54?svg=true&passingText=Windows%20Build%20passing&failingText=Windows%20Build%20failed)](https://ci.appveyor.com/project/bluebird75/luaunit)
 [![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
 [![Documentation Status](https://readthedocs.org/projects/luaunit/badge/?version=latest)](https://readthedocs.org/projects/luaunit/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/bluebird75/luaunit/badge.svg?branch=master)](https://coveralls.io/github/bluebird75/luaunit?branch=master)
-[![Downloads](https://img.shields.io/badge/downloads-10k-green.svg)](https://luarocks.org/modules/bluebird75/luaunit)
+[![Downloads](https://img.shields.io/badge/downloads-235k-brightgreen.svg)](https://luarocks.org/modules/bluebird75/luaunit)
+[![License](http://img.shields.io/badge/License-BSD-green.svg)](LICENSE.txt)
 
 ## LuaUnit
 by Philippe Fremy
@@ -21,23 +21,6 @@ Tutorial and reference documentation is available on
 
 LuaUnit may also be used as an assertion library, to validate assertions inside a running program. In addition, it provides
 a pretty stringifier, to convert any type into a nicely formatted string (including complex nested or recursive tables).
-
-## LuaUnit successes
-
-LuaUnit is used in some very nice technological products. I like to mention:
-
-* [SchedMD/Slurm](https://www.schedmd.com/): Slurm is an open-source cluster resource management and job scheduling 
-system that strives to be simple, scalable, portable, fault-tolerant, and interconnect agnostic. On the June 2017 Top 500 computer 
-list, Slurm was performing workload management on six of the ten most powerful computers in the world including the number 1 system, 
-Sunway TaihuLight with 10,649,600 computing cores. LuaUnit is used by Slurm to validate plugins written in Lua. Thanks Douglas Jacobsen
-to contribute back to LuaUnit. See the [Github repository of Slurm](https://github.com/SchedMD/slurm)
-
-* [MAD by the CERN](http://mad.web.cern.ch/mad/): CERN is the European Organization for Nuclear Research, where physicists and engineers are 
-probing the fundamental structure of the universe. MAD is one of the CERN project: MAD aims to be at the forefront of computational physics in 
-the field of particle accelerator design and simulation. Its scripting language is de facto the standard to describe particle accelerators, simulate 
-beam dynamics and optimize beam optics at CERN. Lua is the main language of MAD-ng, the new generatino of MAD. A fork of LuaUnit is used extensively 
-for all MAD calculation and framework validation. Thanks Laurent Deniau for contributing back to LuaUnit. See the [Github repository of MAD](https://github.com/MethodicalAcceleratorDesign/MAD)
-
 
 ## More details
 
@@ -85,33 +68,28 @@ LuaUnit also provides some dedicated support to scientific computing. See [the d
 LuaUnit is very well tested: code coverage is 99.5% . The test suite is run on every version of Lua (Lua 5.1 to 5.3, LuaJIT 2.0 and 2.1 beta)
 and on many OS (Windows Seven, Windows Server 2012, MacOs X and Ubuntu). You can check the continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) and [AppVeyor](https://ci.appveyor.com/project/bluebird75/luaunit).
 
-LuaUnit is maintained on Github: https://github.com/bluebird75/luaunit . We gladly accept feature requests and even better Pull Requests.
+LuaUnit is maintained on GitHub: https://github.com/bluebird75/luaunit . We gladly accept feature requests and even better Pull Requests.
 For more information on LuaUnit development, please check: [Developing LuaUnit](http://luaunit.readthedocs.org/en/latest/#developing-luaunit) . 
 
 LuaUnit is released under the BSD license.
 
-## Install
+## LuaUnit successes
 
-**LuaRocks**
+Version 3.2 of LuaUnit has been downloaded more than 235 000 times on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit)
 
-LuaUnit v3.3 is available on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit).
+LuaUnit is used in some very nice technological products. I like to mention:
 
-**github** 
+* [SchedMD/Slurm](https://www.schedmd.com/): Slurm is an open-source cluster resource management and job scheduling 
+system that strives to be simple, scalable, portable, fault-tolerant, and interconnect agnostic. On the June 2017 Top 500 computer 
+list, Slurm was performing workload management on six of the ten most powerful computers in the world including the number 1 system, 
+Sunway TaihuLight with 10,649,600 computing cores. LuaUnit is used by Slurm to validate plugins written in Lua. Thanks Douglas Jacobsen
+to contribute back to LuaUnit. See the [GitHub repository of Slurm](https://github.com/SchedMD/slurm)
 
-The simplest way to install LuaUnit is to fetch the github version:
-
-    git clone git@github.com:bluebird75/luaunit.git
-
-Then copy the file luaunit.lua into your project or the Lua libs directory.
-
-The version in development on github is always stable and can be used safely.
-
-On Linux, you can also install it into your Lua directories
-
-    sudo python doit.py install
-
-Edit `install()` for Lua version and installation directory if that
-fails. It uses, by default, Linux paths that depend on the version. 
+* [MAD by the CERN](http://mad.web.cern.ch/mad/): CERN is the European Organization for Nuclear Research, where physicists and engineers are 
+probing the fundamental structure of the universe. MAD is one of the CERN project: MAD aims to be at the forefront of computational physics in 
+the field of particle accelerator design and simulation. Its scripting language is de facto the standard to describe particle accelerators, simulate 
+beam dynamics and optimize beam optics at CERN. Lua is the main language of MAD-ng, the new generatino of MAD. A fork of LuaUnit is used extensively 
+for all MAD calculation and framework validation. Thanks Laurent Deniau for contributing back to LuaUnit. See the [GitHub repository of MAD](https://github.com/MethodicalAcceleratorDesign/MAD)
 
 ## Contributors
 * [NiteHawk](https://github.com/n1tehawk)
@@ -128,10 +106,29 @@ fails. It uses, by default, Linux paths that depend on the version.
 * [Mayama Takeshi](https://github.com/MayamaTakeshi)
 
 
-## Successes
+## Install
 
-LuaUnit is used by thousands of projects on GitHub XXX (see [LuaUnit search](https://github.com/search?utf8=%E2%9C%93&q=filename%3Aluaunit.lua&type=Code&ref=searchresults) ) has more than 200k download on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit) ). LuaUnit is the testing framework for a scientific application
-at the CERN.
+**LuaRocks**
+
+LuaUnit v3.3 is available on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit).
+
+**GitHub** 
+
+The simplest way to install LuaUnit is to fetch the GitHub version:
+
+    git clone git@github.com:bluebird75/luaunit.git
+
+Then copy the file luaunit.lua into your project or the Lua libs directory.
+
+The version in development on GitHub is always stable and can be used safely.
+
+On Linux, you can also install it into your Lua directories
+
+    sudo python doit.py install
+
+Edit `install()` for Lua version and installation directory if that
+fails. It uses, by default, Linux paths that depend on the version. 
+
 
 ### History 
 
@@ -225,7 +222,7 @@ Unofficial fork from version 1.3
 - table deep comparison
 - switch from X11 to more popular BSD license
 - add TAP output format for integration into Jenkins
-- official repository now on github
+- official repository now on GitHub
 
 
 #### Version 1.3 - 30. Oct 2007
