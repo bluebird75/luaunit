@@ -12,43 +12,119 @@ Welcome to LuaUnit's documentation!
 Introduction
 ************
 
-LuaUnit is a unit-testing framework for Lua. It allows you 
-to write test functions and test classes with test methods, combined with 
-setup/teardown functionality. A wide range of assertions are supported.
+LuaUnit is a popular unit-testing framework for Lua, with an interface typical
+of xUnit libraries (Python unittest, Junit, NUnit, ...). It supports 
+several output formats (Text, TAP, JUnit, ...) to be used directly or work with Continuous Integration platforms
+(Jenkins, Maven, ...).
 
-LuaUnit supports several output format, like Junit or TAP, for easier integration
-into Continuous Integration platforms (Jenkins, Maven, ...) . The integrated command-line 
-options provide a flexible interface to select tests by name or patterns, control output 
-format, set verbosity, ...
+For simplicity, LuaUnit is contained into a single-file and has no external dependency. To start using it, 
+just add the file *luaunit.lua* to your project. A `LuaRocks package`_  is also available.
+
+.. _LuaRocks package: https://luarocks.org/modules/bluebird75/luaunit
+
+Tutorial and reference documentation is available on `Read-the-docs`_ .
+
+.. _Read-the-docs: http://luaunit.readthedocs.org/en/latest/
 
 LuaUnit also provides some dedicated support to scientific computing. See the section `Scientific computing and LuaUnit`_
 
 LuaUnit may also be used as an assertion library. In that case, you will call the assertion functions, which generate errors
-when the assertion fails. The error includes a detailed analysis of the failed assertion, exactly when executing a test suite.
+when the assertion fails. The error includes a detailed analysis of the failed assertion, like when executing a test suite.
 
 LuaUnit provides another generic usage function: :func:`prettystr` which converts any value to a nicely
 formatted string. It supports in particular tables, nested table and even recursive tables.
 
 
-Platform support
-================
+More details
+************
 
-LuaUnit works with Lua 5.1, LuaJIT 2.0, LuaJIT 2.1 beta, Lua 5.2 and Lua 5.3 . It is tested on Windows Seven, Windows Server 2012 R2 (x64) and Ubuntu 14.04 (see 
-continuous build results on `Travis-CI`_  and `AppVeyor`_  ) and should work on all platforms supported by Lua.
-It has no other dependency than Lua itself.
+LuaUnit provides a wide range of assertions and goes into great efforts to provide the most useful output. For example
+since version 3.3 , comparing lists will provide a detailed difference analysis:
 
+.. code-block:: lua
+
+    -- lua test code. Can you spot the difference ?
+    function TestListCompare:test1()
+        local A = { 121221, 122211, 121221, 122211, 121221, 122212, 121212, 122112, 122121, 121212, 122121 } 
+        local B = { 121221, 122211, 121221, 122211, 121221, 122212, 121212, 122112, 121221, 121212, 122121 }
+        lu.assertEquals( A, B )
+    end
+
+    $ lua test_some_lists_comparison.lua
+
+    TestListCompare.test1 ... FAIL
+    test/some_lists_comparisons.lua:22: expected: 
+
+    List difference analysis:
+    * lists A (actual) and B (expected) have the same size
+    * lists A and B start differing at index 9
+    * lists A and B are equal again from index 10
+    * Common parts:
+      = A[1], B[1]: 121221
+      = A[2], B[2]: 122211
+      = A[3], B[3]: 121221
+      = A[4], B[4]: 122211
+      = A[5], B[5]: 121221
+      = A[6], B[6]: 122212
+      = A[7], B[7]: 121212
+      = A[8], B[8]: 122112
+    * Differing parts:
+      - A[9]: 122121
+      + B[9]: 121221
+    * Common parts at the end of the lists
+      = A[10], B[10]: 121212
+      = A[11], B[11]: 122121
+
+
+The command-line options provide a flexible interface to select tests by name or patterns, control output
+format, set verbosity and more. See `Using the command-line`_ .
+
+LuaUnit is very well tested: code coverage is 99.5% . The test suite is run on every version of Lua (Lua 5.1 to 5.3, LuaJIT 2.0 and 2.1 beta)
+and on many OS (Windows Seven, Windows Server 2012, MacOs X and Ubuntu). You can check the continuous build results on `Travis-CI`_ and `AppVeyor`_ .
 
 .. _Travis-CI: https://travis-ci.org/bluebird75/luaunit
 .. _AppVeyor: https://ci.appveyor.com/project/bluebird75/luaunit/history
 
-LuaUnit is packed into a single-file. To make start using it, just add the file to your project. Other installation methods are described in the `README.md`_ file.
+LuaUnit is maintained on GitHub: https://github.com/bluebird75/luaunit . We gladly accept feature requests and even better Pull Requests.
 
-.. _README.md: https://github.com/bluebird75/luaunit
+LuaUnit is released under the BSD license.
 
-LuaUnit is maintained on github:
-https://github.com/bluebird75/luaunit
 
-It is released under the BSD license.
+Installation
+============
+
+LuaUnit is packed into a single-file. To make start using it, just add the file to your project. 
+
+Several installation methods are available.
+
+LuaRocks
+--------
+
+LuaUnit v3.3 is available as a `LuaRocks package`_ .
+
+.. _LuaRocks package: https://luarocks.org/modules/bluebird75/luaunit
+
+GitHub
+------
+
+The simplest way to install LuaUnit is to fetch the GitHub version:
+
+.. code-block:: bash
+
+    git clone git@github.com:bluebird75/luaunit.git
+
+Then copy the file luaunit.lua into your project or the Lua libs directory.
+
+The version in development on GitHub is always stable and can be used safely.
+
+On Linux, you can also install it into your Lua directories
+
+.. code-block:: bash
+
+    sudo python doit.py install
+
+If that fail, edit the function *install()* in the file *doit.py* to adjust
+the Lua version and installation directory. It uses, by default, Linux paths that depend on the version.
 
 
 Upgrade note
@@ -68,6 +144,29 @@ This documentation describes the functionality of LuaUnit v3.2 .
 
 New in version 3.3 - In progress
 --------------------------------
+* General
+    * when comparing lists with :func:`assertEquals`, failure message provides an advanced comparison of the lists
+    * :func:`assertErrorMsgEquals` can check for error raised as tables
+    * tests may be finished early with :func:`fail` or :func:`success`
+    * improve printing of recursive tables
+    * improvements and fixes to JUnit and TAP output
+    * stricter :func:`assertTrue` and :func:`assertFalse`: they only succeed with boolean values
+    * add :func:`assertEvalToTrue` and :func:`assertEvalToFalse` with previous :func:`assertTrue`/:func:`assertFalse` behavior of coercing to boolean before asserting
+* New command-line arguments:
+    * can now shuffle tests with ``--shuffle`` or ``-s``
+    * possibility to repeat tests (for example to trigger a JIT), with ``--repeat NUM`` or ``-r NUM``
+    * more flexible test selection with inclusion (``--pattern`` / ``-p``) or exclusion (``--exclude`` / ``-x``) or combination of both
+* Scientific computing dedicated support (see documentation):
+    * provide the machine epsilon in EPS
+    * new functions: :func:`assertNan`, :func:`assertInf`, :func:`assertPlusInf`, :func:`assertMinusInf`, :func:`assertPlusZero`, :func:`assertMinusZero`
+    * in :func:`assertAlmostEquals`, margin no longer provides a default value of 1E-11, the machine epsilon is used instead
+* Platform and continuous integration support:
+    * validate LuaUnit on MacOs platform (thank to Travis CI)
+    * validate LuaUnit with 32 bits numbers (floats) and 64 bits numbers (double)
+    * add test coverage measurements thank to coveralls.io . Status: 99.76% of the code is verified.
+    * use cache for AppVeyor and Travis builds
+* General doc improvements (detailed description of all output, more cross-linking between sections)
+
 
 New in version 3.2 - 12. Jul 2016
 ---------------------------------
@@ -126,7 +225,7 @@ New in version 1.4 - 26. Jul 2012
 ---------------------------------
 * switch from X11 to more popular BSD license
 * add TAP output format for integration into Jenkins. See `Output formats`_
-* official repository now on github
+* official repository now on GitHub
 
 
 New in version 1.3 - 30. Oct 2007
@@ -224,7 +323,7 @@ You write the following tests::
 :func:`assertEquals` is the most commonly used assertion function. It 
 verifies that both argument are equals, in the order actual value, expected value.
 
-Rerun your test script (-v is to activate a more verbose output)::
+Rerun your test script (``-v`` is to activate a more verbose output)::
 
     $ lua my_test_suite.lua -v
 
@@ -420,7 +519,7 @@ Choose the test output format with ``-o`` or ``--output``. Available formats are
 
 * text: the default output format
 * nil: no output at all
-* TAP: TAP format
+* tap: TAP format
 * junit: output junit xml
 
 Example of non-verbose text format::
@@ -705,7 +804,7 @@ Formats available:
 
 .. _Test Anything Protocol: http://testanything.org/
 
-To demonstrate the different output formats, we will take the example of the `Getting Started`_
+To demonstrate the different output formats, we will take the example of the `Getting started with LuaUnit`_
 section and add the following two failing cases:
 
 .. code-block:: lua
@@ -988,19 +1087,19 @@ Other options
 
 **Stopping on first error or failure**
 
-If --failure or -f is passed as an option, LuaUnit will stop on the first failure or error and display the test results.
+If ``--failure`` or ``-f`` is passed as an option, LuaUnit will stop on the first failure or error and display the test results.
 
-If --error or -e is passed as an option, LuaUnit will stop on the first error (but continue on failures).
+If ``--error`` or ``-e`` is passed as an option, LuaUnit will stop on the first error (but continue on failures).
 
 **Randomize test order**
 
-If --shuffle or -s is passed as an option, LuaUnit will execute tests in random order. The randomisation works on all test functions
+If ``--shuffle`` or ``-s`` is passed as an option, LuaUnit will execute tests in random order. The randomisation works on all test functions
 and methods. As a consequence test methods of a given class may be splitted into multiple location, generating several test class creation and destruction.
 
 **Repeat test**
 
 When using luajit, the just-in-time compiler will kick in only after a given function has been executed a sufficient number of times. To make sure
-that the JIT is not introducing any bug, LuaUnit provides a way to repeat a test may times, with --repeat or -r followed by a number.
+that the JIT is not introducing any bug, LuaUnit provides a way to repeat a test may times, with ``--repeat`` or ``-r`` followed by a number.
 
 Flexible test selection
 -------------------------
@@ -1043,7 +1142,7 @@ with the test result. The tests *TestAdd.testAdder testAdd.testPositive and
 testDiv.testDivPositive* have been correctly ignored.
 
 The pattern can be any lua pattern. Be sure to exclude all magic
-characters with % (like -+?*) and protect your pattern from the shell
+characters with % (like ``-+?*``) and protect your pattern from the shell
 interpretation by putting it in quotes.
 
 With ``--exclude`` or ``-x``, you can provide a lua pattern of tests which should
@@ -1492,6 +1591,7 @@ For more information about performing calculations on computers, please read the
 
 If your calculation shall be portable to multiple OS or compilers, you may get different calculation errors depending on the OS/compiler. It is therefore important to verify them on every target.
 
+.. _EPS:
 
 **EPS** *constant*
 
@@ -1730,13 +1830,13 @@ Developing LuaUnit
 Development ecosystem
 ======================
 
-LuaUnit is developed on `Github`_.
+LuaUnit is developed on `GitHub`_.
 
-.. _Github: https://github.com/bluebird75/luaunit
+.. _GitHub: https://github.com/bluebird75/luaunit
 
 Bugs or feature requests should be reported using `GitHub issues`_.
 
-.. _Github issues: https://github.com/bluebird75/luaunit/issues
+.. _GitHub issues: https://github.com/bluebird75/luaunit/issues
 
 LuaUnit is released under the BSD license.
 
@@ -1749,9 +1849,9 @@ Contributing
 =============
 You may contribute to LuaUnit by reporting bugs or wishes, or by contributing code directly with a pull request.
 
-Some issues on github are marked with label *enhancement*. Feel also free to pick up such tasks and implement them.
+Some issues on GitHub are marked with label *enhancement*. Feel also free to pick up such tasks and implement them.
 
-Changes should be proposed as *Pull Requests* on github.
+Changes should be proposed as *Pull Requests* on GitHub.
 
 Thank to our continous integration setup with Travis-Ci and AppVeyor, all unit-tests and functional tests are run on Linux, Windows and MacOs, with all versions of Lua. So
 any *Pull Request* will show immediatly if anything is going unexpected.

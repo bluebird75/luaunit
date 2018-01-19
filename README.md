@@ -106,7 +106,7 @@ for all MAD calculation and framework validation. Thanks Laurent Deniau for cont
 * [Mayama Takeshi](https://github.com/MayamaTakeshi)
 
 
-## Install
+## Installation
 
 **LuaRocks**
 
@@ -126,8 +126,8 @@ On Linux, you can also install it into your Lua directories
 
     sudo python doit.py install
 
-Edit `install()` for Lua version and installation directory if that
-fails. It uses, by default, Linux paths that depend on the version. 
+If that fail, edit the function `install()` in the file `doit.py` to adjust
+the Lua version and installation directory. It uses, by default, Linux paths that depend on the version.
 
 
 ### History 
