@@ -61,9 +61,9 @@ since version 3.3 , comparing lists will provide a detailed difference analysis:
 
 
 The command-line options provide a flexible interface to select tests by name or patterns, control output
-format, set verbosity and more. See [the documentation](http://luaunit.readthedocs.io/en/latest/#command-line-options)
+format, set verbosity and more. See [the documentation](http://luaunit.readthedocs.io/en/latest/#command-line-options) .
 
-LuaUnit also provides some dedicated support to scientific computing. See [the documentation](http://luaunit.readthedocs.io/en/latest/#scientific-computing-and-luaunit)
+LuaUnit also provides some dedicated support to scientific computing. See [the documentation](http://luaunit.readthedocs.io/en/latest/#scientific-computing-and-luaunit) .
 
 LuaUnit is very well tested: code coverage is 99.5% . The test suite is run on every version of Lua (Lua 5.1 to 5.3, LuaJIT 2.0 and 2.1 beta)
 and on many OS (Windows Seven, Windows Server 2012, MacOs X and Ubuntu). You can check the continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) and [AppVeyor](https://ci.appveyor.com/project/bluebird75/luaunit).
@@ -83,13 +83,13 @@ LuaUnit is used in some very nice technological products. I like to mention:
 system that strives to be simple, scalable, portable, fault-tolerant, and interconnect agnostic. On the June 2017 Top 500 computer 
 list, Slurm was performing workload management on six of the ten most powerful computers in the world including the number 1 system, 
 Sunway TaihuLight with 10,649,600 computing cores. LuaUnit is used by Slurm to validate plugins written in Lua. Thanks Douglas Jacobsen
-to contribute back to LuaUnit. See the [GitHub repository of Slurm](https://github.com/SchedMD/slurm)
+to contribute back to LuaUnit. See the [GitHub repository of Slurm](https://github.com/SchedMD/slurm) .
 
 * [MAD by the CERN](http://mad.web.cern.ch/mad/): CERN is the European Organization for Nuclear Research, where physicists and engineers are 
 probing the fundamental structure of the universe. MAD is one of the CERN project: MAD aims to be at the forefront of computational physics in 
 the field of particle accelerator design and simulation. Its scripting language is de facto the standard to describe particle accelerators, simulate 
 beam dynamics and optimize beam optics at CERN. Lua is the main language of MAD-ng, the new generatino of MAD. A fork of LuaUnit is used extensively 
-for all MAD calculation and framework validation. Thanks Laurent Deniau for contributing back to LuaUnit. See the [GitHub repository of MAD](https://github.com/MethodicalAcceleratorDesign/MAD)
+for all MAD calculation and framework validation. Thanks Laurent Deniau for contributing back to LuaUnit. See the [GitHub repository of MAD](https://github.com/MethodicalAcceleratorDesign/MAD) .
 
 ## Contributors
 * [NiteHawk](https://github.com/n1tehawk)
