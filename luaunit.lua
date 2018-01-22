@@ -2595,7 +2595,7 @@ end
 
             -- ensure referencial transparency of classes
             if class_mt then
-                classInstance = setmetatable({}, class_mt)
+                classInstance = setmetatable({testName=prettyFuncName}, class_mt)
             end
 
             -- run setUp first (if any)
@@ -2616,6 +2616,7 @@ end
 
             -- lastly, run tearDown (if any)
             if classInstance then
+                classInstance.testPassed = node:isPassed()
                 local func = self.asFunction( classInstance.tearDown ) or
                              self.asFunction( classInstance.TearDown ) or
                              self.asFunction( classInstance.teardown ) or
