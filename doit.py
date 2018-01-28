@@ -1,15 +1,14 @@
 # My universal runner for this project, the equivalent of a Makefile
 
-import subprocess, sys, os, shutil, os.path, optparse
+import subprocess, sys, os, shutil, os.path, optparse, glob
 
 VERSION='3.3'
 RELEASE_NAME='luaunit-%s' % VERSION
 RELEASE_DIR='release/' + RELEASE_NAME + '/'
-RELEASE_TAG='LUAUNIT_V3_3_0'
-RELEASE_DIR='release/' + RELEASE_NAME + '/'
+RELEASE_TAG='LUAUNIT_V3_3-rc1'
 TARGET_ZIP=RELEASE_NAME + '.zip'
 TARGET_TGZ=RELEASE_NAME + '.tgz'
-REPO_PATH='d:/work/luaunit/luaunit-git/luaunit2/'
+REPO_PATH='d:/work/luaunit/luaunit-git/luaunit3/'
 
 # LUA50='d:/program/dev/lua/lua50/lua50.exe'
 LUA51='d:/program/dev/lua/lua51/lua51.exe'
@@ -80,10 +79,22 @@ def packageit():
     # Release dir cleanup 
     shutil.rmtree('.git')
     os.unlink('.gitignore')
+    shutil.rmtree('.travis')
+    os.unlink('.travis.yml')
+    shutil.rmtree('.appveyor')
+    os.unlink('appveyor.yml')
+    os.unlink('doit.py')
+    os.unlink('TODO.txt')
+    shutil.rmtree('junitxml/')
+    for p in glob.glob('*.rockspec'):
+        os.unlink(p) 
+    makedoc()
+    os.rename( 'doc', 'olddoc' )
+    shutil.copytree( 'olddoc/html', 'doc')
+    shutil.rmtree('olddoc/')
     run_tests()
     run_example()
-    makedoc()
-    shutil.rmtree('doc/_build')
+    os.unlink('.luacheckrc')    # keep it to run the tests successfully
 
     # Packaging
     os.chdir('..')

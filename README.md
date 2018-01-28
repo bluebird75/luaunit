@@ -154,6 +154,7 @@ the Lua version and installation directory. It uses, by default, Linux paths tha
 	** validate LuaUnit with 32 bits numbers (floats) and 64 bits numbers (double)
 	** add test coverage measurements thank to coveralls.io . Status: 99.76% of the code is verified.
 	** use cache for AppVeyor and Travis builds
+	** support for luarocks doc command
 * General doc improvements (detailed description of all output, more cross-linking between sections)
 
 #### Version 3.2 - 12. Jul 2016

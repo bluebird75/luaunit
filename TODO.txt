@@ -39,12 +39,15 @@ Version 3.4:
 
 TODO for 3.3 release:
 ===============
-- build luarocks
+- explain that prettystr() is used in assertions
 - check rock installation of luaunit
 - add success() to terminate test successfully
+- add annex to documentation with full source code of example
+- add annex with BSD license
 
 Done since 3.2:
 ===============
+- build luarocks
 - update contributors
 - update download badge
 - doc about prettystr
