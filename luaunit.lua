@@ -1216,19 +1216,19 @@ function M.assertError(f, ...)
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     if pcall( f, ... ) then
-        failure( "Expected an error when calling function but no error generated", 2 )
+        failure( "Expected an error when calling function but no error generated", nil, 2 )
     end
 end
 
 function M.fail( msg )
     -- stops a test due to a failure
-    failure( msg, 2 )
+    failure( msg, nil, 2 )
 end
 
 function M.failIf( cond, msg )
     -- Fails a test with "msg" if condition is true
     if cond then
-        failure( msg, 2 )
+        failure( msg, nil, 2 )
     end
 end
 
@@ -1385,9 +1385,10 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        failure( 'No error generated when calling function but expected error: "'..expectedMsg..'"', 2 )
+        failure( 'No error generated when calling function but expected error: "'..expectedMsg..'"', nil, 2 )
     end
     if type(expectedMsg) == "string" and type(error_msg) ~= "string" then
+        -- table are converted to string automatically
         error_msg = tostring(error_msg)
     end
     local differ = false
@@ -1410,7 +1411,7 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
 
     if differ then
         error_msg, expectedMsg = prettystrPairs(error_msg, expectedMsg)
-        fail_fmt(2, 'Exact error message expected: %s\nError message received: %s\n',
+        fail_fmt(2, nil, 'Exact error message expected: %s\nError message received: %s\n',
                  expectedMsg, error_msg)
     end
 end
@@ -1420,14 +1421,14 @@ function M.assertErrorMsgContains( partialMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        failure( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), 2 )
+        failure( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), nil, 2 )
     end
     if type(error_msg) ~= "string" then
         error_msg = tostring(error_msg)
     end
     if not string.find( error_msg, partialMsg, nil, true ) then
         error_msg, partialMsg = prettystrPairs(error_msg, partialMsg)
-        fail_fmt(2, 'Error message does not contain: %s\nError message received: %s\n',
+        fail_fmt(2, nil, 'Error message does not contain: %s\nError message received: %s\n',
                  partialMsg, error_msg)
     end
 end
@@ -1437,14 +1438,14 @@ function M.assertErrorMsgMatches( expectedMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        failure( 'No error generated when calling function but expected error matching: "'..expectedMsg..'"', 2 )
+        failure( 'No error generated when calling function but expected error matching: "'..expectedMsg..'"', nil, 2 )
     end
     if type(error_msg) ~= "string" then
         error_msg = tostring(error_msg)
     end
     if not strMatch( error_msg, expectedMsg ) then
         expectedMsg, error_msg = prettystrPairs(expectedMsg, error_msg)
-        fail_fmt(2, 'Error message does not match: %s\nError message received: %s\n',
+        fail_fmt(2, nil, 'Error message does not match: %s\nError message received: %s\n',
                  expectedMsg, error_msg)
     end
 end

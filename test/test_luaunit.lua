@@ -580,8 +580,11 @@ bar"=1}]] )
 
     function TestLuaUnitUtilities:test_FailFmt()
         -- raise failure from within nested functions
+        local function babar(level)
+            lu.private.fail_fmt(level, 'toto', "hex=%X", 123)
+        end
         local function bar(level)
-            lu.private.fail_fmt(level, "hex=%X", 123)
+            lu.private.fail_fmt(level, nil, "hex=%X", 123)
         end
         local function foo(level)
             bar(level)
@@ -591,6 +594,7 @@ bar"=1}]] )
         local line1, prefix = err:match("test[\\/]test_luaunit%.lua:(%d+): (.*)hex=7B$")
         lu.assertEquals(prefix, lu.FAILURE_PREFIX)
         lu.assertNotNil(line1)
+
         _, err = pcall(foo, 2) -- level 2 = error position within foo()
         local line2
         line2 , prefix = err:match("test[\\/]test_luaunit%.lua:(%d+): (.*)hex=7B$")
@@ -598,6 +602,11 @@ bar"=1}]] )
         lu.assertNotNil(line2)
         -- make sure that "line2" position is exactly 3 lines after "line1"
         lu.assertEquals(tonumber(line2), tonumber(line1) + 3)
+
+        _, err = pcall(babar, 1)
+        local _, prefix = err:match("test[\\/]test_luaunit%.lua:(%d+): (.*)hex=7B$")
+        lu.assertEquals(prefix, lu.FAILURE_PREFIX .. 'toto\n')
+
     end
 
     function TestLuaUnitUtilities:test_IsFunction()
@@ -2104,6 +2113,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureMatches( 'expected: {1, 2}\nactual: {2, 1}', lu.assertEquals, {2,1}, {1,2} )
         assertFailureMatches( 'expected: {one=1, two=2}\nactual: {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
         assertFailureEquals( 'expected: 2, actual: nil', lu.assertEquals, nil, 2 )
+        assertFailureEquals( 'toto\nexpected: 2, actual: nil', lu.assertEquals, nil, 2, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertEqualsOrderReversedMsg()
@@ -2114,6 +2124,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsMsg()
         assertFailureEquals('Values are not almost equal\nActual: 2, expected: 1, delta 1 above margin of 0.1', lu.assertAlmostEquals, 2, 1, 0.1 )
+        assertFailureEquals('toto\nValues are not almost equal\nActual: 2, expected: 1, delta 1 above margin of 0.1', lu.assertAlmostEquals, 2, 1, 0.1, 'toto' )
     end
 
     function TestLuaUnitErrorMsg:test_assertAlmostEqualsOrderReversedMsg()
@@ -2124,6 +2135,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
         -- single precision math Lua won't output an "exact" delta (0.1) here, so we do a partial match
         assertFailureContains('Values are almost equal\nActual: 1.1, expected: 1, delta 0.1 below margin of 0.2', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
+        assertFailureContains('toto\nValues are almost equal\nActual: 1.1, expected: 1, delta 0.1 below margin of 0.2', lu.assertNotAlmostEquals, 1.1, 1, 0.2, 'toto' )
     end
 
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsOrderReversedMsg()
@@ -2136,6 +2148,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals( 'Received the not expected value: 1', lu.assertNotEquals, 1, 1  )
         assertFailureMatches( 'Received the not expected value: {1, 2}', lu.assertNotEquals, {1,2}, {1,2} )
         assertFailureEquals( 'Received the not expected value: nil', lu.assertNotEquals, nil, nil )
+        assertFailureEquals( 'toto\nReceived the not expected value: 1', lu.assertNotEquals, 1, 1, 'toto'  )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotEqualsOrderReversedMsg()
@@ -2152,6 +2165,9 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureMatches( 'expected: false, actual: {}', lu.assertFalse, {})
         assertFailureEquals( 'expected: false, actual: "abc"', lu.assertFalse, 'abc')
         assertFailureContains( 'expected: false, actual: function', lu.assertFalse, function () end )
+
+        assertFailureEquals( 'toto\nexpected: true, actual: false', lu.assertTrue, false, 'toto' )
+        assertFailureEquals( 'toto\nexpected: false, actual: 0', lu.assertFalse, 0, 'toto')
     end 
 
     function TestLuaUnitErrorMsg:test_assertEvalToTrueFalse()
@@ -2162,11 +2178,15 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureMatches( 'expected: false or nil, actual: {}', lu.assertEvalToFalse, {})
         assertFailureEquals( 'expected: false or nil, actual: "abc"', lu.assertEvalToFalse, 'abc')
         assertFailureContains( 'expected: false or nil, actual: function', lu.assertEvalToFalse, function () end )
+        assertFailureEquals( 'toto\nexpected: a value evaluating to true, actual: false', lu.assertEvalToTrue, false, 'toto' )
+        assertFailureEquals( 'toto\nexpected: false or nil, actual: 0', lu.assertEvalToFalse, 0, 'toto')
     end 
 
     function TestLuaUnitErrorMsg:test_assertNil()
         assertFailureEquals( 'expected: nil, actual: false', lu.assertNil, false )
         assertFailureEquals( 'expected non nil value, received nil', lu.assertNotNil, nil )
+        assertFailureEquals( 'toto\nexpected: nil, actual: false', lu.assertNil, false, 'toto' )
+        assertFailureEquals( 'toto\nexpected non nil value, received nil', lu.assertNotNil, nil, 'toto' )
     end
 
     function TestLuaUnitErrorMsg:test_assertStrContains()
@@ -2181,7 +2201,6 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals( 'Error, regexp "xxx" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'xxx', true )
         assertFailureEquals( 'Error, regexp "aBc" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'aBc', true )
         assertFailureEquals( 'Error, regexp "xxx" was not found in string ""', lu.assertStrContains, '', 'xxx', true )
-
     end 
 
     function TestLuaUnitErrorMsg:test_assertStrIContains()
@@ -2294,7 +2313,8 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
     end 
 
     function TestLuaUnitErrorMsg:test_assertErrorMsg()
-        assertFailureEquals('No error generated when calling function but expected error: "bla bla bla"' , lu.assertErrorMsgEquals, 'bla bla bla', function( v ) local y = v+1 end, 3 )
+        assertFailureEquals('No error generated when calling function but expected error: "bla bla bla"' , 
+            lu.assertErrorMsgEquals, 'bla bla bla', function( v ) local y = v+1 end, 3 )
         assertFailureEquals('No error generated when calling function but expected error containing: "bla bla bla"' , lu.assertErrorMsgContains, 'bla bla bla', function( v ) local y = v+1 end, 3 )
         assertFailureEquals('No error generated when calling function but expected error matching: "bla bla bla"' , lu.assertErrorMsgMatches, 'bla bla bla', function( v ) local y = v+1 end, 3 )
 
