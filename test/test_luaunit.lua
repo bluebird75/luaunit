@@ -1994,6 +1994,107 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         lu.PRINT_TABLE_REF_IN_ERROR_MSG = self.old_PRINT_TABLE_REF_IN_ERROR_MSG
     end
 
+    function TestLuaUnitErrorMsg:test_adjust_err_msg_with_iter()
+        local err_msg, status
+
+        --------------- FAIL ---------------------
+        -- file-line info, strip failure prefix, no iteration info
+        err_msg, status = lu.adjust_err_msg_with_iter( 
+            '.\\test\\test_luaunit.lua:2247: LuaUnit test FAILURE: Expected an error when calling function but no error generated',
+            nil )
+        lu.assertEquals( { err_msg, status },           
+            { '.\\test\\test_luaunit.lua:2247: Expected an error when calling function but no error generated',
+                lu.NodeStatus.FAIL } )
+
+        -- file-line info, strip failure prefix, with iteration info
+        err_msg, status = lu.adjust_err_msg_with_iter( 
+            '.\\test\\test_luaunit.lua:2247: LuaUnit test FAILURE: Expected an error when calling function but no error generated',
+            'iteration 33' )
+        lu.assertEquals( { err_msg, status },
+            { '.\\test\\test_luaunit.lua:2247: iteration 33, Expected an error when calling function but no error generated', 
+                lu.NodeStatus.FAIL } )
+
+        -- no file-line info, strip failure prefix, no iteration info
+        err_msg, status = lu.adjust_err_msg_with_iter( 
+            'LuaUnit test FAILURE: Expected an error when calling function but no error generated',
+            nil )
+        lu.assertEquals( { err_msg, status },           
+            { 'Expected an error when calling function but no error generated',
+                lu.NodeStatus.FAIL } )
+
+        -- no file-line info, strip failure prefix, with iteration info
+        err_msg, status = lu.adjust_err_msg_with_iter( 
+            'LuaUnit test FAILURE: Expected an error when calling function but no error generated',
+            'iteration 33' )
+        lu.assertEquals( { err_msg, status },
+            { 'iteration 33, Expected an error when calling function but no error generated', 
+                lu.NodeStatus.FAIL } )
+
+        --------------- ERROR ---------------------
+        -- file-line info, pure error, no iteration info, do nothing
+        err_msg, status = lu.adjust_err_msg_with_iter( 
+            '.\\test\\test_luaunit.lua:2723: teardown error',
+            nil )
+        lu.assertEquals( { err_msg, status },           
+            { '.\\test\\test_luaunit.lua:2723: teardown error', 
+                lu.NodeStatus.ERROR } )
+
+        -- file-line info, pure error, add iteration info
+        err_msg, status = lu.adjust_err_msg_with_iter( 
+            '.\\test\\test_luaunit.lua:2723: teardown error',
+            'iteration 33' )
+        lu.assertEquals( { err_msg, status },
+            { '.\\test\\test_luaunit.lua:2723: iteration 33, teardown error', 
+                lu.NodeStatus.ERROR } )
+
+        -- no file-line info, pure error, no iteration info, do nothing
+        err_msg, status = lu.adjust_err_msg_with_iter( 
+            'teardown error',
+            nil )
+        lu.assertEquals( { err_msg, status },           
+            { 'teardown error', 
+                lu.NodeStatus.ERROR } )
+
+        -- no file-line info, pure error, add iteration info
+        err_msg, status = lu.adjust_err_msg_with_iter( 
+            'teardown error',
+            'iteration 33' )
+        lu.assertEquals( { err_msg, status },
+            { 'iteration 33, teardown error', 
+                lu.NodeStatus.ERROR } )
+
+        --------------- PASS ---------------------
+        -- file-line info, success, return empty error message
+        err_msg, status = lu.adjust_err_msg_with_iter( 
+            '.\\test\\test_luaunit.lua:2247: LuaUnit test SUCCESS: the test did actually work !',
+            nil )
+        lu.assertEquals( { err_msg, status },           
+            { nil, lu.NodeStatus.PASS } )
+
+        -- file-line info, success, return empty error message, even with iteration
+        err_msg, status = lu.adjust_err_msg_with_iter( 
+            '.\\test\\test_luaunit.lua:2247: LuaUnit test SUCCESS: the test did actually work !',
+            'iteration 33' )
+        lu.assertEquals( { err_msg, status },
+            { nil, lu.NodeStatus.PASS } )
+
+        -- no file-line info, success, return empty error message
+        err_msg, status = lu.adjust_err_msg_with_iter( 
+            'LuaUnit test SUCCESS: the test did actually work !',
+            nil )
+        lu.assertEquals( { err_msg, status },           
+            { nil, lu.NodeStatus.PASS } )
+
+        -- no file-line info, success, return empty error message, even with iteration
+        err_msg, status = lu.adjust_err_msg_with_iter( 
+            'LuaUnit test SUCCESS: the test did actually work !',
+            'iteration 33' )
+        lu.assertEquals( { err_msg, status },
+            { nil, lu.NodeStatus.PASS } )
+
+    end
+
+
     function TestLuaUnitErrorMsg:test_assertEqualsMsg()
         assertFailureEquals( 'expected: 2, actual: 1', lu.assertEquals, 1, 2  )
         assertFailureEquals( 'expected: "exp"\nactual: "act"', lu.assertEquals, 'act', 'exp' )
@@ -2812,52 +2913,63 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertStrContains( runner.result.errors[1].msg, 'titi' )
     end
 
-    function TestLuaUnitExecution:testWithCount()
+    function TestLuaUnitExecution:testWithRepeat()
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
+        local nbIter = 0
 
+        -- for runSuite() we need a function in the global scope
+        local function MyTestWithIteration()
+            nbIter = nbIter + 1
+            lu.assertTrue( nbIter <= 5 )
+        end
+
+        _G.MyTestWithIteration = MyTestWithIteration
+        nbIter = 0
         runner:runSuite( '--repeat', '5',
-                         'MyTestWithErrorsAndFailures.testOk')
+                         'MyTestWithIteration')
+        _G.MyTestWithIteration = nil -- clean up
         lu.assertEquals( runner.result.passedCount, 1 )
         lu.assertEquals( runner.result.failureCount, 0 )
         lu.assertEquals( runner.exeRepeat, 5 )
         lu.assertEquals( runner.currentCount, 5 )
+        lu.assertEquals( nbIter, 5 )
 
-        runner:runSuite( '--repeat', '5',
-                         'MyTestWithErrorsAndFailures.testWithFailure1')
+        _G.MyTestWithIteration = MyTestWithIteration
+        nbIter = 0
+        runner:runSuite( '--repeat', '10',
+                         'MyTestWithIteration')
+        _G.MyTestWithIteration = nil -- clean up
         -- check if the current iteration got reflected in the failure message
         lu.assertEquals( runner.result.passedCount, 0 )
         lu.assertEquals( runner.result.failureCount, 1 )
-        lu.assertEquals( runner.exeRepeat, 5 )
-        lu.assertEquals( runner.currentCount, 1 )
-        lu.assertStrContains(runner.result.failures[1].msg, "iteration: 1")
+        lu.assertEquals( runner.exeRepeat, 10 )
+        lu.assertEquals( runner.currentCount, 6 )
+        -- print( lu.prettystr( runner.result ) )
+        lu.assertStrContains(runner.result.failures[1].msg, "iteration 6")
+        lu.assertStrContains(runner.result.failures[1].msg, "expected: true, ")
 
-        --[[ Test failure based on iteration count ]]--
-
-        -- for runSuite() we need a function in the global scope
-        function _G.MyTestIterationBasedFailure()
-            -- this will pass three iterations, and only then start to fail
-            lu.assertTrue(runner.currentCount <= 3)
+        local function MyTestWithIteration()
+            nbIter = nbIter + 1
+            if nbIter > 5 then
+                error( 'Exceeding 5')
+            end
         end
 
-        -- three iterations will PASS
-        runner:runSuite( '--repeat', '3',
-                         'MyTestIterationBasedFailure')
-        lu.assertEquals( runner.result.passedCount, 1 )
-        lu.assertEquals( runner.result.failureCount, 0 )
-        lu.assertEquals( runner.exeRepeat, 3 )
-        lu.assertEquals( runner.currentCount, 3 )
-
-        -- more iterations should FAIL (on the fourth one)
-        runner:runSuite( '--repeat', '5',
-                         'MyTestIterationBasedFailure')
+        _G.MyTestWithIteration = MyTestWithIteration
+        nbIter = 0
+        runner:runSuite( '--repeat', '10',
+                         'MyTestWithIteration')
+        _G.MyTestWithIteration = nil -- clean up
+        -- check if the current iteration got reflected in the failure message
         lu.assertEquals( runner.result.passedCount, 0 )
-        lu.assertEquals( runner.result.failureCount, 1 )
-        lu.assertEquals( runner.exeRepeat, 5 )
-        lu.assertEquals( runner.currentCount, 4 )
-        lu.assertStrContains(runner.result.failures[1].msg, "iteration: 4")
-
-        _G.MyTestIterationBasedFailure = nil -- clean up
+        lu.assertEquals( runner.result.failureCount, 0 )
+        lu.assertEquals( runner.result.errorCount, 1 )
+        lu.assertEquals( runner.exeRepeat, 10 )
+        lu.assertEquals( runner.currentCount, 6 )
+        -- print( lu.prettystr( runner.result ) )
+        lu.assertStrContains(runner.result.errors[1].msg, "iteration 6")
+        lu.assertStrContains(runner.result.errors[1].msg, "Exceeding 5" )
     end
 
 

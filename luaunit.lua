@@ -64,6 +64,9 @@ M.DISABLE_DEEP_ANALYSIS = false
 local cmdline_argv = rawget(_G, "arg")
 
 M.FAILURE_PREFIX = 'LuaUnit test FAILURE: ' -- prefix string for failed tests
+M.SUCCESS_PREFIX = 'LuaUnit test SUCCESS: ' -- prefix string for successful tests finished early
+
+
 
 M.USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
 Options:
@@ -473,6 +476,55 @@ local function prettystr( v )
     return s
 end
 M.prettystr = prettystr
+
+function M.adjust_err_msg_with_iter( err_msg, iter_msg )
+    --[[ Adjust the error message err_msg: trim the FAILURE_PREFIX or SUCCESS_PREFIX information if needed, 
+    add the iteration message if any and return the result.
+
+    err_msg:  string, error message captured with pcall
+    iter_msg: a string describing the current iteration ("iteration N") or nil
+              if there is no iteration in this test.
+
+    Returns: (new_err_msg, test_status)
+        new_err_msg: string, adjusted error message, or nil in case of success
+        test_status: M.NodeStatus.FAIL, SUCCESS or ERROR according to the information
+                     contained in the error message.
+    ]]
+    if iter_msg then
+        iter_msg = iter_msg..', '
+    else
+        iter_msg = ''
+    end
+
+    local RE_FILE_LINE = '.*:%d+: '
+
+    if (err_msg:find( M.SUCCESS_PREFIX ) == 1) or err_msg:match( '('..RE_FILE_LINE..')' .. M.SUCCESS_PREFIX .. ".*" ) then
+        -- test finished early with success()
+        return nil, M.NodeStatus.PASS
+    end
+
+    if (err_msg:find( M.FAILURE_PREFIX ) == 1) or (err_msg:match( '('..RE_FILE_LINE..')' .. M.FAILURE_PREFIX .. ".*" ) ~= nil) then
+        -- substitute prefix by iteration message
+        err_msg = err_msg:gsub(M.FAILURE_PREFIX, iter_msg, 1)
+        -- print("failure detected")
+        return err_msg, M.NodeStatus.FAIL
+    else
+        -- print("error detected")
+        -- regular error, not a failure
+        if iter_msg then
+            local match
+            -- "./test\\test_luaunit.lua:2241: some error msg
+            match = err_msg:match( '(.*:%d+: ).*' ) 
+            if match then
+                err_msg = err_msg:gsub( match, match .. iter_msg )
+            else
+                -- no file:line: infromation, just add the iteration info at the beginning of the line
+                err_msg = iter_msg .. err_msg
+            end
+        end
+        return err_msg, M.NodeStatus.ERROR
+    end
+end
 
 local function tryMismatchFormatting( table_a, table_b, doDeepAnalysis )
     --[[
@@ -2667,18 +2719,14 @@ end
             return {status = NodeStatus.PASS}
         end
 
-        -- Failure message usually looks like:
-        -- "./test\\test_luaunit.lua:2241: LuaUnit test FAILURE: expected: 2, actual: 1"
+        local iter_msg
+        iter_msg = self.exeRepeat and 'iteration '..self.currentCount
 
-        -- If failure prefix is present, we assume this is a failure
-        -- we strip the prefix, and insert the iteration number along the way if relevant
-        -- we only strip one failure prefix of course.
+        err.msg, err.status = M.adjust_err_msg_with_iter( err.msg, iter_msg )
 
-        local failed, iter_msg
-        iter_msg = self.exeRepeat and 'iteration: '..self.currentCount..', '
-        err.msg, failed = err.msg:gsub(M.FAILURE_PREFIX, iter_msg or '', 1)
-        if failed > 0 then
-            err.status = NodeStatus.FAIL
+        if err.status == NodeStatus.PASS then
+            err.trace = nil
+            return err
         end
 
         -- reformat / improve the stack trace
