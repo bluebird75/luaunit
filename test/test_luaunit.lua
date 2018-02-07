@@ -2771,25 +2771,46 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertStrContains( runner.result.failures[1].msg, 'YESS' )
     end
 
-    --[[ Disable for now
-    function TestLuaUnitExecution:XXXtest_failUnlessFromTest()
+    function TestLuaUnitExecution:test_successFromTest()
 
-        function my_test_fails()
+        local function my_test_success()
             lu.assertEquals( 1, 1 )
-            lu.continueIf( true, 'NOOOOOOOOOO')
-            lu.continueIf( 1, 'NOOOOOOOOOO')
-            lu.continueIf( 1 == 1, 'NOOOOOO')
-            lu.continueIf( 1 == 0, 'YESSS')
+            lu.success()
+            error('toto')
         end
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstances( { { 'my_test_fails', my_test_fails } } )
+        runner:runSuiteByInstances( { { 'my_test_success', my_test_success } } )
         lu.assertEquals( runner.result.testCount, 1 )
-        lu.assertEquals( runner.result.failureCount, 1 )
-        lu.assertStrContains( runner.result.failures[1].msg, 'YESS' )
+        lu.assertEquals( runner.result.failureCount, 0 )
+        lu.assertEquals( runner.result.passedCount, 1 )
     end
-    ]]
+
+    function TestLuaUnitExecution:test_successIfFromTest()
+
+        local function my_test_fails()
+            lu.assertEquals( 1, 1 )
+            lu.successIf( false )
+            error('titi')
+        end
+
+        local function my_test_success()
+            lu.assertEquals( 1, 1 )
+            lu.successIf( true )
+            error('toto')
+        end
+
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType( "NIL" )
+        runner:runSuiteByInstances( { { 'my_test_fails', my_test_fails }, {'my_test_success', my_test_success} } )
+        lu.assertEquals( runner.result.testCount, 2 )
+        -- print( lu.prettystr( runner.result ) )
+        lu.assertEquals( runner.result.failureCount, 0 )
+        lu.assertEquals( runner.result.passedCount, 1 )
+        lu.assertEquals( runner.result.errorCount, 1 )
+        lu.assertStrContains( runner.result.errors[1].msg, 'titi' )
+    end
 
     function TestLuaUnitExecution:testWithCount()
         local runner = lu.LuaUnit.new()

@@ -147,7 +147,7 @@ New in version 3.3 - In progress
 * General
     * when comparing lists with :func:`assertEquals`, failure message provides an advanced comparison of the lists
     * :func:`assertErrorMsgEquals` can check for error raised as tables
-    * tests may be finished early with :func:`fail` or :func:`success`
+    * tests may be finished early with :func:`fail`, :func:`failIf`, :func:`success` or :func:`successIf`
     * improve printing of recursive tables
     * improvements and fixes to JUnit and TAP output
     * stricter :func:`assertTrue` and :func:`assertFalse`: they only succeed with boolean values
@@ -1557,7 +1557,7 @@ LuaUnit allows to force test ending, either positevely or negatively, with the f
 
 .. function:: failIf( cond, message )
 
-    If the condition *cond* evaluated to true, stops the ongoing test and mark it as failed with the given message.
+    If the condition *cond* evaluates to *true*, stops the ongoing test and mark it as failed with the given message.
     Else, continue the test execution normally.
 
 .. function:: success()
@@ -1566,7 +1566,7 @@ LuaUnit allows to force test ending, either positevely or negatively, with the f
 
 .. function:: successIf( cond )
 
-    If the condition *cond* evaluated to true, stops the ongoing test and mark it as successful.
+    If the condition *cond* evaluates to *true*, stops the ongoing test and mark it as successful.
     Else, continue the test execution normally.
 
 

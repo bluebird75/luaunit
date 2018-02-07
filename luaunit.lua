@@ -1174,6 +1174,18 @@ function M.failIf( cond, msg )
     end
 end
 
+function M.success()
+    -- stops a test with a success
+    error(M.SUCCESS_PREFIX, 2)
+end
+
+function M.successIf( cond )
+    -- stops a test with a success if condition is met
+    if cond then
+        error(M.SUCCESS_PREFIX, 2)
+    end
+end
+
 
 ------------------------------------------------------------------
 --                  Equality assertion

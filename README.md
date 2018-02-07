@@ -136,7 +136,7 @@ the Lua version and installation directory. It uses, by default, Linux paths tha
 * General
 	** when comparing lists with assertEquals(), failure message provides an advanced comparison of the lists
 	** assertErrorMsgEquals() can check for error raised as tables
-	** tests may be finished early with fail() or success()
+	** tests may be finished early with fail(), failIf(), success() or successIf()
 	** improve printing of recursive tables
 	** improvements and fixes to JUnit and TAP output
 	** stricter assertTrue() and assertFalse(): they only succeed with boolean values
