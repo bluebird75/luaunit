@@ -2201,85 +2201,106 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals( 'Error, regexp "xxx" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'xxx', true )
         assertFailureEquals( 'Error, regexp "aBc" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'aBc', true )
         assertFailureEquals( 'Error, regexp "xxx" was not found in string ""', lu.assertStrContains, '', 'xxx', true )
+
+        assertFailureEquals( 'toto\nError, regexp "xxx" was not found in string ""', lu.assertStrContains, '', 'xxx', true, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertStrIContains()
-        assertFailureEquals( 'Error, substring "xxx" was not found in string "abcdef"', lu.assertStrContains, 'abcdef', 'xxx' )
-        assertFailureEquals( 'Error, substring "xxx" was not found in string ""', lu.assertStrContains, '', 'xxx' )
+        assertFailureEquals( 'Error, substring "xxx" was not found (case insensitively) in string "abcdef"', lu.assertStrIContains, 'abcdef', 'xxx' )
+        assertFailureEquals( 'Error, substring "xxx" was not found (case insensitively) in string ""', lu.assertStrIContains, '', 'xxx' )
+
+        assertFailureEquals( 'toto\nError, substring "xxx" was not found (case insensitively) in string "abcdef"', lu.assertStrIContains, 'abcdef', 'xxx', 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotStrContains()
         assertFailureEquals( 'Error, substring "abc" was found in string "abcdef"', lu.assertNotStrContains, 'abcdef', 'abc' )
         assertFailureEquals( 'Error, substring "abc" was found in string "abcdef"', lu.assertNotStrContains, 'abcdef', 'abc', false )
         assertFailureEquals( 'Error, regexp "..." was found in string "abcdef"', lu.assertNotStrContains, 'abcdef', '...', true)
+
+        assertFailureEquals( 'toto\nError, substring "abc" was found in string "abcdef"', lu.assertNotStrContains, 'abcdef', 'abc', false, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotStrIContains()
         assertFailureEquals( 'Error, substring "aBc" was found (case insensitively) in string "abcdef"', lu.assertNotStrIContains, 'abcdef', 'aBc' )
         assertFailureEquals( 'Error, substring "abc" was found (case insensitively) in string "abcdef"', lu.assertNotStrIContains, 'abcdef', 'abc' )
+        assertFailureEquals( 'toto\nError, substring "abc" was found (case insensitively) in string "abcdef"', lu.assertNotStrIContains, 'abcdef', 'abc', 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertStrMatches()
         assertFailureEquals('Error, pattern "xxx" was not matched by string "abcdef"', lu.assertStrMatches, 'abcdef', 'xxx' )
+        assertFailureEquals('toto\nError, pattern "xxx" was not matched by string "abcdef"', lu.assertStrMatches, 'abcdef', 'xxx', nil, nil, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsNumber()
         assertFailureEquals( 'Expected: a number value, actual: type string, value "abc"', lu.assertIsNumber, 'abc' )
         assertFailureEquals( 'Expected: a number value, actual: type nil, value nil', lu.assertIsNumber, nil )
+        assertFailureEquals( 'toto\nExpected: a number value, actual: type string, value "abc"', lu.assertIsNumber, 'abc', 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsString()
         assertFailureEquals( 'Expected: a string value, actual: type number, value 1.2', lu.assertIsString, 1.2 )
         assertFailureEquals( 'Expected: a string value, actual: type nil, value nil', lu.assertIsString, nil )
+        assertFailureEquals( 'toto\nExpected: a string value, actual: type nil, value nil', lu.assertIsString, nil, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsTable()
         assertFailureEquals( 'Expected: a table value, actual: type number, value 1.2', lu.assertIsTable, 1.2 )
         assertFailureEquals( 'Expected: a table value, actual: type nil, value nil', lu.assertIsTable, nil )
+        assertFailureEquals( 'toto\nExpected: a table value, actual: type nil, value nil', lu.assertIsTable, nil, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsBoolean()
         assertFailureEquals( 'Expected: a boolean value, actual: type number, value 1.2', lu.assertIsBoolean, 1.2 )
         assertFailureEquals( 'Expected: a boolean value, actual: type nil, value nil', lu.assertIsBoolean, nil )
+        assertFailureEquals( 'toto\nExpected: a boolean value, actual: type nil, value nil', lu.assertIsBoolean, nil, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsFunction()
         assertFailureEquals( 'Expected: a function value, actual: type number, value 1.2', lu.assertIsFunction, 1.2 )
         assertFailureEquals( 'Expected: a function value, actual: type nil, value nil', lu.assertIsFunction, nil )
+        assertFailureEquals( 'toto\nExpected: a function value, actual: type nil, value nil', lu.assertIsFunction, nil, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsThread()
         assertFailureEquals( 'Expected: a thread value, actual: type number, value 1.2', lu.assertIsThread, 1.2 )
         assertFailureEquals( 'Expected: a thread value, actual: type nil, value nil', lu.assertIsThread, nil )
+        assertFailureEquals( 'toto\nExpected: a thread value, actual: type nil, value nil', lu.assertIsThread, nil, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertIsUserdata()
         assertFailureEquals( 'Expected: a userdata value, actual: type number, value 1.2', lu.assertIsUserdata, 1.2 )
         assertFailureEquals( 'Expected: a userdata value, actual: type nil, value nil', lu.assertIsUserdata, nil )
+        assertFailureEquals( 'toto\nExpected: a userdata value, actual: type nil, value nil', lu.assertIsUserdata, nil, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIsNumber()
         assertFailureEquals( 'Not expected: a number type, actual: value 123', lu.assertNotIsNumber, 123 )
+        assertFailureEquals( 'toto\nNot expected: a number type, actual: value 123', lu.assertNotIsNumber, 123, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIsString()
         assertFailureEquals( 'Not expected: a string type, actual: value "abc"', lu.assertNotIsString, "abc" )
+        assertFailureEquals( 'toto\nNot expected: a string type, actual: value "abc"', lu.assertNotIsString, "abc", 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIsTable()
         assertFailureEquals( 'Not expected: a table type, actual: value {1, 2, 3}', lu.assertNotIsTable, {1,2,3} )
+        assertFailureEquals( 'toto\nNot expected: a table type, actual: value {1, 2, 3}', lu.assertNotIsTable, {1,2,3}, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIsBoolean()
         assertFailureEquals( 'Not expected: a boolean type, actual: value false', lu.assertNotIsBoolean, false )
+        assertFailureEquals( 'toto\nNot expected: a boolean type, actual: value false', lu.assertNotIsBoolean, false, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIsFunction()
         assertFailureContains( 'Not expected: a function type, actual: value function:', lu.assertNotIsFunction, function() return true end )
+        assertFailureContains( 'toto\nNot expected: a function type, actual: value function:', lu.assertNotIsFunction, function() return true end, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIsThread()
         assertFailureContains( 'Not expected: a thread type, actual: value thread:', lu.assertNotIsThread, coroutine.create( function(v) local y=v+1 end ) )
+        assertFailureContains( 'toto\nNot expected: a thread type, actual: value thread:', lu.assertNotIsThread, coroutine.create( function(v) local y=v+1 end ), 'toto' )
     end 
 
     --[[ How do you create UserData ?
@@ -2292,6 +2313,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals( 'Expected object and actual object are not the same\nExpected: 1, actual: 2', lu.assertIs, 2, 1 )
         lu.ORDER_ACTUAL_EXPECTED = false
         assertFailureEquals( 'Expected object and actual object are not the same\nExpected: 2, actual: 1', lu.assertIs, 2, 1 )
+        assertFailureEquals( 'toto\nExpected object and actual object are not the same\nExpected: 2, actual: 1', lu.assertIs, 2, 1, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIs()
@@ -2299,6 +2321,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureMatches( 'Expected object and actual object are the same object: {1, 2}', lu.assertNotIs, v, v )
         lu.ORDER_ACTUAL_EXPECTED = false -- order shouldn't matter here, but let's cover it
         assertFailureMatches( 'Expected object and actual object are the same object: {1, 2}', lu.assertNotIs, v, v )
+        assertFailureMatches( 'toto\nExpected object and actual object are the same object: {1, 2}', lu.assertNotIs, v, v, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertItemsEquals()
@@ -2306,6 +2329,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureContains('Contents of the tables are not identical' , lu.assertItemsEquals, {}, {1} ) -- actual table empty, = doesn't contain expected value
         assertFailureContains('Contents of the tables are not identical' , lu.assertItemsEquals, nil, 'foobar' ) -- type mismatch
         assertFailureContains('Contents of the tables are not identical' , lu.assertItemsEquals, 'foo', 'bar' ) -- value mismatch
+        assertFailureContains('toto\nContents of the tables are not identical' , lu.assertItemsEquals, 'foo', 'bar', 'toto' ) -- value mismatch
     end 
 
     function TestLuaUnitErrorMsg:test_assertError()
