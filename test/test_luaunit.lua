@@ -2271,6 +2271,51 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals( 'expected: a userdata value, actual: type number, value 1.2', lu.assertIsUserdata, 1.2 )
         assertFailureEquals( 'expected: a userdata value, actual: nil', lu.assertIsUserdata, nil )
         assertFailureEquals( 'toto\nexpected: a userdata value, actual: nil', lu.assertIsUserdata, nil, 'toto' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertIsNan()
+        assertFailureEquals( 'expected: NaN, actual: 33', lu.assertIsNaN, 33 )
+        assertFailureEquals( 'toto\nexpected: NaN, actual: 33', lu.assertIsNaN, 33, 'toto' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotIsNan()
+        assertFailureEquals( 'expected non NaN value, received NaN', lu.assertNotIsNaN, 0 / 0 )
+        assertFailureEquals( 'toto\nexpected non NaN value, received NaN', lu.assertNotIsNaN, 0 / 0, 'toto' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertIsInf()
+        assertFailureEquals( 'expected: inf, actual: "str"', lu.assertIsInf, 'str' )
+        assertFailureEquals( 'toto\nexpected: inf, actual: "str"', lu.assertIsInf, 'str', 'toto' )
+    end
+
+    -- isPlusInf
+    -- isMinusInf
+    -- isPlusZero
+    -- isMinusZero
+
+
+    function TestLuaUnitErrorMsg:test_assertNotIsInf()
+        assertFailureEquals( 'expected non inf value, received ±inf', lu.assertNotIsInf, 1 / 0 )
+        assertFailureEquals( 'toto\nexpected non inf value, received ±inf', lu.assertNotIsInf, 1 / 0, 'toto' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotIsTrue()
+        assertFailureEquals('expected: anything but true, actual: true', lu.assertNotIsTrue, true )
+        assertFailureEquals('toto\nexpected: anything but true, actual: true', lu.assertNotIsTrue, true, 'toto' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotIsFalse()
+        assertFailureEquals('expected: anything but false, actual: false', lu.assertNotIsFalse, false )
+        assertFailureEquals('toto\nexpected: anything but false, actual: false', lu.assertNotIsFalse, false, 'toto' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotIsNil()
+        assertFailureEquals(
+            'expected non nil value, received nil',
+            lu.assertNotIsNil, nil )
+        assertFailureEquals(
+            'toto\nexpected non nil value, received nil',
+            lu.assertNotIsNil, nil, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertNotIsNumber()
