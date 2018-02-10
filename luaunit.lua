@@ -1600,13 +1600,13 @@ end
 
 function M.assertIsNaN(value, extra_msg_or_nil)
     if type(value) ~= "number" or value == value then
-        failure("expected: nan, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+        failure("expected: NaN, actual: " ..prettystr(value), extra_msg_or_nil, 2)
     end
 end
 
 function M.assertNotIsNaN(value, extra_msg_or_nil)
     if type(value) == "number" and value ~= value then
-        failure("expected non nan value, received nan", extra_msg_or_nil, 2)
+        failure("expected non NaN value, received NaN", extra_msg_or_nil, 2)
     end
 end
 
