@@ -2315,16 +2315,22 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
     function TestLuaUnitErrorMsg:test_assertErrorMsg()
         assertFailureEquals('No error generated when calling function but expected error: "bla bla bla"' , 
             lu.assertErrorMsgEquals, 'bla bla bla', function( v ) local y = v+1 end, 3 )
-        assertFailureEquals('No error generated when calling function but expected error containing: "bla bla bla"' , lu.assertErrorMsgContains, 'bla bla bla', function( v ) local y = v+1 end, 3 )
-        assertFailureEquals('No error generated when calling function but expected error matching: "bla bla bla"' , lu.assertErrorMsgMatches, 'bla bla bla', function( v ) local y = v+1 end, 3 )
+        assertFailureEquals('No error generated when calling function but expected error containing: "bla bla bla"' , 
+            lu.assertErrorMsgContains, 'bla bla bla', function( v ) local y = v+1 end, 3 )
+        assertFailureEquals('No error generated when calling function but expected error matching: "bla bla bla"' , 
+            lu.assertErrorMsgMatches, 'bla bla bla', function( v ) local y = v+1 end, 3 )
 
-        assertFailureEquals('Exact error message expected: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgEquals, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
-        assertFailureEquals('Error message does not contain: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgContains, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
-        assertFailureEquals('Error message does not match: "bla bla bla"\nError message received: "toto xxx"\n' , lu.assertErrorMsgMatches, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+        assertFailureEquals('Exact error message expected: "bla bla bla"\nError message received: "toto xxx"\n' , 
+            lu.assertErrorMsgEquals, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+        assertFailureEquals('Error message does not contain: "bla bla bla"\nError message received: "toto xxx"\n' , 
+            lu.assertErrorMsgContains, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+        assertFailureEquals('Error message does not match: "bla bla bla"\nError message received: "toto xxx"\n' , 
+            lu.assertErrorMsgMatches, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
 
-        assertFailureEquals('Exact error message expected: {1, 2, 3, 4}\nError message received: {1, 2, 3}\n' , lu.assertErrorMsgEquals, {1,2,3,4}, function( v ) error(v) end, {1,2,3})
-        assertFailureEquals('Exact error message expected: {details="bla bla bla"}\nError message received: {details="ble ble ble"}\n' , lu.assertErrorMsgEquals, {details="bla bla bla"}, function( v ) error(v) end, {details="ble ble ble"})
-
+        assertFailureEquals('Exact error message expected: {1, 2, 3, 4}\nError message received: {1, 2, 3}\n' , 
+            lu.assertErrorMsgEquals, {1,2,3,4}, function( v ) error(v) end, {1,2,3})
+        assertFailureEquals('Exact error message expected: {details="bla bla bla"}\nError message received: {details="ble ble ble"}\n' , 
+            lu.assertErrorMsgEquals, {details="bla bla bla"}, function( v ) error(v) end, {details="ble ble ble"})
     end 
 
     function TestLuaUnitErrorMsg:test_printTableWithRef()
