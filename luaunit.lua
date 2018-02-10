@@ -1520,8 +1520,13 @@ for _, funcName in ipairs(
 
     M[funcName] = function(value, extra_msg_or_nil)
         if type(value) ~= typeExpected then
-            fail_fmt(2, extra_msg_or_nil, 'Expected: a %s value, actual: type %s, value %s',
-                     typeExpected, type(value), prettystrPairs(value))
+            if type(value) == 'nil' then
+                fail_fmt(2, extra_msg_or_nil, 'expected: a %s value, actual: nil',
+                         typeExpected, type(value), prettystrPairs(value))
+            else
+                fail_fmt(2, extra_msg_or_nil, 'expected: a %s value, actual: type %s, value %s',
+                         typeExpected, type(value), prettystrPairs(value))
+            end
         end
     end
 end
@@ -1572,7 +1577,7 @@ function M.assertIs(actual, expected, extra_msg_or_nil)
             actual, expected = expected, actual
         end
         expected, actual = prettystrPairs(expected, actual, '\n', ', ')
-        fail_fmt(2, extra_msg_or_nil, 'Expected object and actual object are not the same\nExpected: %sactual: %s',
+        fail_fmt(2, extra_msg_or_nil, 'expected object and actual object are not the same\nExpected: %sactual: %s',
                  expected, actual)
     end
 end
@@ -1582,7 +1587,7 @@ function M.assertNotIs(actual, expected, extra_msg_or_nil)
         if not M.ORDER_ACTUAL_EXPECTED then
             expected = actual
         end
-        fail_fmt(2, extra_msg_or_nil, 'Expected object and actual object are the same object: %s',
+        fail_fmt(2, extra_msg_or_nil, 'expected object and actual object are the same object: %s',
                  prettystrPairs(expected))
     end
 end
