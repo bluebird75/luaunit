@@ -1385,7 +1385,7 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        failure( 'No error generated when calling function but expected error: "'..expectedMsg..'"', nil, 2 )
+        failure( 'No error generated when calling function but expected error: '..M.prettystr(expectedMsg), nil, 2 )
     end
     if type(expectedMsg) == "string" and type(error_msg) ~= "string" then
         -- table are converted to string automatically

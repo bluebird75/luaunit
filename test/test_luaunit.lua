@@ -2191,6 +2191,14 @@ TestLuaUnitAssertionsError = {}
             local y = v + 2
             error('This is an error', 2)
         end
+
+        self.f_with_table_error = function (v)
+            local y = v + 2
+            local ts = { __tostring = function() return 'This table has error!' end }
+            error( setmetatable( { this_table="has error" }, ts ) )
+        end
+
+
     end
 
     function TestLuaUnitAssertionsError:test_assertError()
@@ -2223,6 +2231,10 @@ TestLuaUnitAssertionsError = {}
 
         assertFailureEquals( "Expected an error when calling function but no error generated",
                              lu.assertError, f_with_multi_arguments, 1, 1, 1 )
+
+        -- error generated as table
+        lu.assertError( self.f_with_table_error, 1 )
+
     end
 
     function TestLuaUnitAssertionsError:test_assertErrorMsgContains()
@@ -2233,16 +2245,23 @@ TestLuaUnitAssertionsError = {}
         assertFailure( lu.assertErrorMsgContains, ' This is an error', self.f_with_error, x )
         assertFailure( lu.assertErrorMsgContains, 'This .. an error', self.f_with_error, x )
         lu.assertErrorMsgContains("50", function() error(500) end)
+
+        -- error message is a table which converts to a string
+        lu.assertErrorMsgContains( 'This table has error', self.f_with_table_error, 1 )
     end
 
     function TestLuaUnitAssertionsError:test_assertErrorMsgEquals()
         local x = 1
         assertFailure( lu.assertErrorMsgEquals, 'toto', self.f, x )
         assertFailure( lu.assertErrorMsgEquals, 'is an err', self.f_with_error, x )
+
+        -- expected string, receive string
         lu.assertErrorMsgEquals( 'This is an error', self.f_with_error, x )
 
+        -- expected table, receive table
         lu.assertErrorMsgEquals({1,2,3,4}, function() error({1,2,3,4}) end)
 
+        -- expected complex table, receive complex table
         lu.assertErrorMsgEquals({
             details = {1,2,3,4},
             id = 10,
@@ -2251,10 +2270,23 @@ TestLuaUnitAssertionsError = {}
             id = 10,
         }) end)
 
+        -- expected string, receive number converted to string
         lu.assertErrorMsgEquals("500", function() error(500, 2) end)
 
+        -- one space added at the beginning
         assertFailure( lu.assertErrorMsgEquals, ' This is an error', self.f_with_error, x )
+
+        -- pattern does not work
         assertFailure( lu.assertErrorMsgEquals, 'This .. an error', self.f_with_error, x )
+
+        -- expected string, receive table which converts to string
+        lu.assertErrorMsgEquals( "This table has error!", self.f_with_table_error, x)
+
+        -- expected table, no error generated
+        assertFailure( lu.assertErrorMsgEquals, { 1 }, function( v ) return "{ 1 }" end, 33 )
+
+        -- expected table, error generated as string, no match
+        assertFailure( lu.assertErrorMsgEquals, { 1 }, function( v ) error( "{ 1 }" ) end, 33 )
     end
 
     function TestLuaUnitAssertionsError:test_assertErrorMsgMatches()
@@ -2264,7 +2296,14 @@ TestLuaUnitAssertionsError = {}
         lu.assertErrorMsgMatches( 'This is an error', self.f_with_error, x )
         lu.assertErrorMsgMatches( 'This is .. error', self.f_with_error, x )
         lu.assertErrorMsgMatches(".*500$", function() error(500, 2) end)
+        lu.assertErrorMsgMatches("This .* has error!", self.f_with_table_error, 33 )
+
+        -- one space added to cause failure
         assertFailure( lu.assertErrorMsgMatches, ' This is an error', self.f_with_error, x )
+        assertFailure( lu.assertErrorMsgMatches,  "This", self.f_with_table_error, 33 )
+
+
+
     end
 
 ------------------------------------------------------------------
@@ -2706,28 +2745,32 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals('Expected an error when calling function but no error generated' , lu.assertError, function( v ) local y = v+1 end, 3 )
     end 
 
-    function TestLuaUnitErrorMsg:test_assertErrorMsg()
+    function TestLuaUnitErrorMsg:test_assertErrorMsgEquals()
         assertFailureEquals('No error generated when calling function but expected error: "bla bla bla"' , 
             lu.assertErrorMsgEquals, 'bla bla bla', function( v ) local y = v+1 end, 3 )
-        assertFailureEquals('No error generated when calling function but expected error containing: "bla bla bla"' , 
-            lu.assertErrorMsgContains, 'bla bla bla', function( v ) local y = v+1 end, 3 )
-        assertFailureEquals('No error generated when calling function but expected error matching: "bla bla bla"' , 
-            lu.assertErrorMsgMatches, 'bla bla bla', function( v ) local y = v+1 end, 3 )
-
         assertFailureEquals('Error message expected: "bla bla bla"\n' ..
                             'Error message received: "toto xxx"\n' , 
             lu.assertErrorMsgEquals, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
-
-        assertFailureEquals('Error message does not contain: "bla bla bla"\nError message received: "toto xxx"\n' , 
-            lu.assertErrorMsgContains, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
-        assertFailureEquals('Error message does not match pattern: "bla bla bla"\n' ..
-                            'Error message received: "toto xxx"\n' , 
-            lu.assertErrorMsgMatches, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
-
         assertFailureEquals('Error message expected: {1, 2, 3, 4}\nError message received: {1, 2, 3}\n' , 
             lu.assertErrorMsgEquals, {1,2,3,4}, function( v ) error(v) end, {1,2,3})
         assertFailureEquals('Error message expected: {details="bla bla bla"}\nError message received: {details="ble ble ble"}\n' , 
             lu.assertErrorMsgEquals, {details="bla bla bla"}, function( v ) error(v) end, {details="ble ble ble"})
+    end
+
+    function TestLuaUnitErrorMsg:test_assertErrorMsgContains()
+        assertFailureEquals('No error generated when calling function but expected error containing: "bla bla bla"' , 
+            lu.assertErrorMsgContains, 'bla bla bla', function( v ) local y = v+1 end, 3 )
+        assertFailureEquals('Error message does not contain: "bla bla bla"\nError message received: "toto xxx"\n' , 
+            lu.assertErrorMsgContains, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertErrorMsgMatches()
+        assertFailureEquals('No error generated when calling function but expected error matching: "bla bla bla"' , 
+            lu.assertErrorMsgMatches, 'bla bla bla', function( v ) local y = v+1 end, 3 )
+
+        assertFailureEquals('Error message does not match pattern: "bla bla bla"\n' ..
+                            'Error message received: "toto xxx"\n' , 
+            lu.assertErrorMsgMatches, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
     end 
 
     function TestLuaUnitErrorMsg:test_printTableWithRef()
