@@ -1573,7 +1573,7 @@ LuaUnit allows to force test ending, either positevely or negatively, with the f
 Scientific computing and LuaUnit
 --------------------------------
 
-LuaUnit is used by the CERN for the MAD-NG program, the forefront of computational physics in the field of particle accelerator design and simulation (See MAD_). Thank to the feedback of a scientific computing developer, LuaUnit has been enhanced with some facilities for scientific applications (see below).
+LuaUnit is used by the CERN for the MAD-NG program, the forefront of computational physics in the field of particle accelerator design and simulation (See MAD_). Thank to the feedback of a scientific computing developer, LuaUnit has been enhanced with some facilities for scientific applications (see all assertions functions below).
 
 .. _MAD: http://mad.web.cern.ch/mad/
 
@@ -1592,6 +1592,15 @@ For more information about performing calculations on computers, please read the
 
 If your calculation shall be portable to multiple OS or compilers, you may get different calculation errors depending on the OS/compiler. It is therefore important to verify them on every target.
 
+
+.. _MinusZero: 
+
+.. Note:: 
+    If you need to deal with value *minus zero*, be very careful because Lua versions are inconsistent on how they treat the syntax *-0* : it creates either
+    a *plus zero* or a *minus zero* . Multiplying or dividing *0* by *-1* also yields inconsistent results. The reliable way to create the *-0* 
+    value is : minusZero = -1 / (1/0)
+
+
 .. _EPS:
 
 **EPS** *constant*
@@ -1609,6 +1618,13 @@ This is either:
     **Alias**: *assert_nan()*
 
     Assert that a given number is a *NaN* (Not a Number), according to the definition of IEEE-754_ .
+
+
+.. function:: assertNotNan( value )
+
+    **Alias**: *assert_not_nan()*
+
+    Assert that a given number is NOT a *NaN* (Not a Number), according to the definition of IEEE-754_ .
 
 
 .. function:: assertPlusInf( value )
@@ -1632,22 +1648,61 @@ This is either:
     Assert that a given number is *infinity* (either positive or negative), according to the definition of IEEE-754_ .
 
 
+.. function:: assertNotPlusInf( value )
+
+    **Alias**: *assert_not_plus_inf()*
+
+    Assert that a given number is NOT *plus infinity*, according to the definition of IEEE-754_ .
+
+
+.. function:: assertNotMinusInf( value )
+
+    **Alias**: *assert_not_minus_inf()*
+
+    Assert that a given number is NOT *minus infinity*, according to the definition of IEEE-754_ .
+
+
+.. function:: assertNotInf( value )
+
+    **Alias**: *assert_not_inf()*
+
+    Assert that a given number is neither *infinity* nor *minus infinity*, according to the definition of IEEE-754_ .
+
+
 .. function:: assertPlusZero( value )
 
     **Alias**: *assert_plus_zero()*
 
-    Assert that a given number is *+0*, according to the definition of IEEE-754_ . See also :func:`assertMinusZero` .
+    Assert that a given number is *+0*, according to the definition of IEEE-754_ . The
+    verification is done by dividing by the provided number and verifying that it yields
+    *infinity* .
 
+    Be careful when dealing with *+0* and *-0*, see note above.
 
-assert(type(x) == “number” and x == 0 and 1/x == infinity)
 
 .. function:: assertMinusZero( value )
 
     **Alias**: *assert_minus_zero()*
 
-    Assert that a given number is *-0*, according to the definition of IEEE-754_ . See also :func:`assertPlusZero` .
+    Assert that a given number is *-0*, according to the definition of IEEE-754_ . The
+    verification is done by dividing by the provided number and verifying that it yields
+    *minus infinity* .
 
-    assert(type(x) == “number” and x == 0 and 1/x == -infinity)
+    Be careful when dealing with *+0* and *-0*, see :ref:`MinusZero`
+
+
+.. function:: assertNotPlusZero( value )
+
+    **Alias**: *assert_not_plus_zero()*
+
+    Assert that a given number is NOT *+0*, according to the definition of IEEE-754_ .
+
+
+.. function:: assertNotMinusZero( value )
+
+    **Alias**: *assert_not_minus_zero()*
+
+    Assert that a given number is NOT *-0*, according to the definition of IEEE-754_ .
 
 
 .. function:: assertAlmostEquals( actual, expected [, margin=EPS] )
