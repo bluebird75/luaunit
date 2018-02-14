@@ -1321,7 +1321,7 @@ function M.assertItemsEquals(actual, expected, extra_msg_or_nil)
     -- is at least O(n^2)
     if not _is_table_items_equals(actual, expected ) then
         expected, actual = prettystrPairs(expected, actual)
-        fail_fmt(2, extra_msg_or_nil, 'Contents of the tables are not identical:\nExpected: %s\nActual: %s',
+        fail_fmt(2, extra_msg_or_nil, 'Content of the tables are not identical:\nExpected: %s\nActual: %s',
                  expected, actual)
     end
 end
@@ -1335,8 +1335,8 @@ function M.assertStrContains( str, sub, useRe, extra_msg_or_nil )
     -- a string always contains the empty string
     if not string.find(str, sub, 1, not useRe) then
         sub, str = prettystrPairs(sub, str, '\n')
-        fail_fmt(2, extra_msg_or_nil, 'Error, %s %s was not found in string %s',
-                 useRe and 'regexp' or 'substring', sub, str)
+        fail_fmt(2, extra_msg_or_nil, 'Could not find %s %s in string %s',
+                 useRe and 'pattern' or 'substring', sub, str)
     end
 end
 
@@ -1345,7 +1345,7 @@ function M.assertStrIContains( str, sub, extra_msg_or_nil )
     -- a string always contains the empty string
     if not string.find(str:lower(), sub:lower(), 1, true) then
         sub, str = prettystrPairs(sub, str, '\n')
-        fail_fmt(2, extra_msg_or_nil, 'Error, substring %s was not found (case insensitively) in string %s',
+        fail_fmt(2, extra_msg_or_nil, 'Could not find (case insensitively) substring %s in string %s',
                  sub, str)
     end
 end
@@ -1355,8 +1355,8 @@ function M.assertNotStrContains( str, sub, useRe, extra_msg_or_nil )
     -- a string always contains the empty string
     if string.find(str, sub, 1, not useRe) then
         sub, str = prettystrPairs(sub, str, '\n')
-        fail_fmt(2, extra_msg_or_nil, 'Error, %s %s was found in string %s',
-                 useRe and 'regexp' or 'substring', sub, str)
+        fail_fmt(2, extra_msg_or_nil, 'Found the not expected %s %s in string %s',
+                 useRe and 'pattern' or 'substring', sub, str)
     end
 end
 
@@ -1365,7 +1365,7 @@ function M.assertNotStrIContains( str, sub, extra_msg_or_nil )
     -- a string always contains the empty string
     if string.find(str:lower(), sub:lower(), 1, true) then
         sub, str = prettystrPairs(sub, str, '\n')
-        fail_fmt(2, extra_msg_or_nil, 'Error, substring %s was found (case insensitively) in string %s',
+        fail_fmt(2, extra_msg_or_nil, 'Found (case insensitively) the not expected substring %s in string %s',
                  sub, str)
     end
 end
@@ -1375,7 +1375,7 @@ function M.assertStrMatches( str, pattern, start, final, extra_msg_or_nil )
     -- for a partial match, simply use assertStrContains with useRe set to true
     if not strMatch( str, pattern, start, final ) then
         pattern, str = prettystrPairs(pattern, str, '\n')
-        fail_fmt(2, extra_msg_or_nil, 'Error, pattern %s was not matched by string %s',
+        fail_fmt(2, extra_msg_or_nil, 'Could not match pattern %s with string %s',
                  pattern, str)
     end
 end
@@ -1411,7 +1411,7 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
 
     if differ then
         error_msg, expectedMsg = prettystrPairs(error_msg, expectedMsg)
-        fail_fmt(2, nil, 'Exact error message expected: %s\nError message received: %s\n',
+        fail_fmt(2, nil, 'Error message expected: %s\nError message received: %s\n',
                  expectedMsg, error_msg)
     end
 end
@@ -1445,7 +1445,7 @@ function M.assertErrorMsgMatches( expectedMsg, func, ... )
     end
     if not strMatch( error_msg, expectedMsg ) then
         expectedMsg, error_msg = prettystrPairs(expectedMsg, error_msg)
-        fail_fmt(2, nil, 'Error message does not match: %s\nError message received: %s\n',
+        fail_fmt(2, nil, 'Error message does not match pattern: %s\nError message received: %s\n',
                  expectedMsg, error_msg)
     end
 end
@@ -1474,7 +1474,7 @@ end
 
 function M.assertNotIsTrue(value, extra_msg_or_nil)
     if value == true then
-        failure("expected: anything but true, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+        failure("expected: not true, actual: " ..prettystr(value), extra_msg_or_nil, 2)
     end
 end
 
@@ -1486,7 +1486,7 @@ end
 
 function M.assertNotIsFalse(value, extra_msg_or_nil)
     if value == false then
-        failure("expected: anything but false, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+        failure("expected: not false, actual: " ..prettystr(value), extra_msg_or_nil, 2)
     end
 end
 
@@ -1498,7 +1498,7 @@ end
 
 function M.assertNotIsNil(value, extra_msg_or_nil)
     if value == nil then
-        failure("expected non nil value, received nil", extra_msg_or_nil, 2)
+        failure("expected: not nil, actual: nil", extra_msg_or_nil, 2)
     end
 end
 
@@ -1565,7 +1565,7 @@ for _, funcName in ipairs(
 
     M[funcName] = function(value, extra_msg_or_nil)
         if type(value) == typeUnexpected then
-            fail_fmt(2, extra_msg_or_nil, 'Not expected: a %s type, actual: value %s',
+            fail_fmt(2, extra_msg_or_nil, 'expected: not a %s type, actual: value %s',
                      typeUnexpected, prettystrPairs(value))
         end
     end
@@ -1576,8 +1576,8 @@ function M.assertIs(actual, expected, extra_msg_or_nil)
         if not M.ORDER_ACTUAL_EXPECTED then
             actual, expected = expected, actual
         end
-        expected, actual = prettystrPairs(expected, actual, '\n', ', ')
-        fail_fmt(2, extra_msg_or_nil, 'expected object and actual object are not the same\nExpected: %sactual: %s',
+        expected, actual = prettystrPairs(expected, actual, '\n', '')
+        fail_fmt(2, extra_msg_or_nil, 'expected and actual object should not be different\nExpected: %s\nReceived: %s',
                  expected, actual)
     end
 end
@@ -1587,7 +1587,7 @@ function M.assertNotIs(actual, expected, extra_msg_or_nil)
         if not M.ORDER_ACTUAL_EXPECTED then
             expected = actual
         end
-        fail_fmt(2, extra_msg_or_nil, 'expected object and actual object are the same object: %s',
+        fail_fmt(2, extra_msg_or_nil, 'expected and actual object should be different: %s',
                  prettystrPairs(expected))
     end
 end
@@ -1606,43 +1606,44 @@ end
 
 function M.assertNotIsNaN(value, extra_msg_or_nil)
     if type(value) == "number" and value ~= value then
-        failure("expected non NaN value, received NaN", extra_msg_or_nil, 2)
+        failure("expected: not NaN, actual: NaN", extra_msg_or_nil, 2)
     end
 end
 
 function M.assertIsInf(value, extra_msg_or_nil)
     if type(value) ~= "number" or math.abs(value) ~= math.huge then
-        failure("expected: inf, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+        failure("expected: #Inf, actual: " ..prettystr(value), extra_msg_or_nil, 2)
     end
 end
 
 function M.assertIsPlusInf(value, extra_msg_or_nil)
     if type(value) ~= "number" or value ~= math.huge then
-        failure("expected: +inf, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+        failure("expected: #Inf, actual: " ..prettystr(value), extra_msg_or_nil, 2)
     end
 end
 
 function M.assertIsMinusInf(value, extra_msg_or_nil)
     if type(value) ~= "number" or value ~= -math.huge then
-        failure("expected: -inf, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+        failure("expected: -#Inf, actual: " ..prettystr(value), extra_msg_or_nil, 2)
     end
 end
 
 function M.assertNotIsPlusInf(value, extra_msg_or_nil)
     if type(value) == "number" and value == math.huge then
-        failure("expected non +inf value, received +inf", extra_msg_or_nil, 2)
+        failure("expected: not #Inf, actual: #Inf", extra_msg_or_nil, 2)
     end
 end
 
 function M.assertNotIsMinusInf(value, extra_msg_or_nil)
     if type(value) == "number" and value == -math.huge then
-        failure("expected non -inf value, received -inf", extra_msg_or_nil, 2)
+        failure("expected: not -#Inf, actual: -#Inf", extra_msg_or_nil, 2)
     end
 end
 
 function M.assertNotIsInf(value, extra_msg_or_nil)
     if type(value) == "number" and math.abs(value) == math.huge then
-        failure("expected non inf value, received ±inf", extra_msg_or_nil, 2)
+        local inf_descr = pretty
+        failure("expected: not infinity, actual: " .. prettystr(value), extra_msg_or_nil, 2)
     end
 end
 
