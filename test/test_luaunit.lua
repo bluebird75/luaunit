@@ -1389,6 +1389,48 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure(lu.assertIsNaN, -1 / 0)-- -inf
     end
 
+    function TestLuaUnitAssertions:test_assertNotIsNaN()
+        -- not NaN
+        lu.assertNotIsNaN( "hi there!")
+        lu.assertNotIsNaN( nil)
+        lu.assertNotIsNaN( {})
+        lu.assertNotIsNaN( {1,2,3})
+        lu.assertNotIsNaN( {1})
+        lu.assertNotIsNaN( coroutine.create( function(v) local y=v+1 end ) )
+
+        -- is NaN
+        lu.assertFailure( assertNotIsNaN, 0 / 0)
+        lu.assertFailure( assertNotIsNaN, -0 / 0)
+        lu.assertFailure( assertNotIsNaN, 0 / -0)
+        lu.assertFailure( assertNotIsNaN, -0 / -0)
+        local inf = math.huge
+        lu.assertFailure( assertNotIsNaN, inf / inf)
+        lu.assertFailure( assertNotIsNaN, -inf / inf)
+        lu.assertFailure( assertNotIsNaN, inf / -inf)
+        lu.assertFailure( assertNotIsNaN, -inf / -inf)
+        lu.assertFailure( assertNotIsNaN, inf - inf)
+        lu.assertFailure( assertNotIsNaN, (-inf) + inf)
+        lu.assertFailure( assertNotIsNaN, inf + (-inf))
+        lu.assertFailure( assertNotIsNaN, (-inf) - (-inf))
+        lu.assertFailure( assertNotIsNaN, 0 * inf)
+        lu.assertFailure( assertNotIsNaN, -0 * inf)
+        lu.assertFailure( assertNotIsNaN, 0 * -inf)
+        lu.assertFailure( assertNotIsNaN, -0 * -inf)
+        lu.assertFailure( assertNotIsNaN, math.sqrt(-1))
+        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.2" then
+            -- Lua 5.3 will complain/error "bad argument #2 to 'fmod' (zero)"
+            lu.assertFailure( assertNotIsNaN, math.fmod(1, 0))
+            lu.assertFailure( assertNotIsNaN, math.fmod(1, -0))
+        end
+        lu.assertFailure( assertNotIsNaN, math.fmod(inf, 1))
+        lu.assertFailure( assertNotIsNaN, math.fmod(-inf, 1))
+
+        -- not NaN
+        assertFailure(lu.assertNotIsNaN, 0 / 1) -- 0.0
+        assertFailure(lu.assertNotIsNaN, 1 / 0) -- inf
+        assertFailure(lu.assertNotIdNaN, -1 / 0) -- -inf
+    end
+
     function TestLuaUnitAssertions:test_assertIsInf()
         assertFailure(lu.assertIsInf, "hi there!")
         assertFailure(lu.assertIsInf, nil)
