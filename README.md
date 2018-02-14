@@ -141,6 +141,7 @@ the Lua version and installation directory. It uses, by default, Linux paths tha
 	** improvements and fixes to JUnit and TAP output
 	** stricter assertTrue() and assertFalse(): they only succeed with boolean values
 	** add assertEvalToTrue() and assertEvalToFalse() with previous assertTrue()/assertFalse() behavior of coercing to boolean before asserting
+    ** all assertion functions accept an optional extra message, to be printed along the failure
 * New command-line arguments:
 	** can now shuffle tests with --shuffle or -s
 	** possibility to repeat tests (for example to trigger a JIT), with --repeat NUM or -r NUM

@@ -152,13 +152,15 @@ New in version 3.3 - In progress
     * improvements and fixes to JUnit and TAP output
     * stricter :func:`assertTrue` and :func:`assertFalse`: they only succeed with boolean values
     * add :func:`assertEvalToTrue` and :func:`assertEvalToFalse` with previous :func:`assertTrue`/:func:`assertFalse` behavior of coercing to boolean before asserting
+    * all assertion functions accept an optional extra message, to be printed along the failure
 * New command-line arguments:
     * can now shuffle tests with ``--shuffle`` or ``-s``
     * possibility to repeat tests (for example to trigger a JIT), with ``--repeat NUM`` or ``-r NUM``
     * more flexible test selection with inclusion (``--pattern`` / ``-p``) or exclusion (``--exclude`` / ``-x``) or combination of both
 * Scientific computing dedicated support (see documentation):
     * provide the machine epsilon in EPS
-    * new functions: :func:`assertNan`, :func:`assertInf`, :func:`assertPlusInf`, :func:`assertMinusInf`, :func:`assertPlusZero`, :func:`assertMinusZero`
+    * new functions: :func:`assertNan`, :func:`assertInf`, :func:`assertPlusInf`, :func:`assertMinusInf`, :func:`assertPlusZero`, :func:`assertMinusZero` and
+      their negative version
     * in :func:`assertAlmostEquals`, margin no longer provides a default value of 1E-11, the machine epsilon is used instead
 * Platform and continuous integration support:
     * validate LuaUnit on MacOs platform (thank to Travis CI)
