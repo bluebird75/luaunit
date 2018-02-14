@@ -23,6 +23,9 @@ TODO Future:
 - add assertTableContains and assertTableNotContains to check the presence / absence of value in an array
 - look at serpent to see how to improve nested table printing
 - doc about usage of prettystr & assertion library
+- assertListContainsElements
+- assertListContainsElements
+- checkXXX for every assertXXX
 
 Version 3.4:
 ============
@@ -35,18 +38,21 @@ Version 3.4:
 - align the "OK" vertically for text output
 - better detection of screen size
 - catch the os.exit call with a handler or something, to avoid aborting the tests
+- move all file:line description to stack trace
 
 
 TODO for 3.3 release:
 ===============
-- explain that prettystr() is used in assertions
-- check rock installation of luaunit
-- add success() to terminate test successfully
+- verify that assertError functions all work with tables, review implementation in detail
 - add annex to documentation with full source code of example
 - add annex with BSD license
 
 Done since 3.2:
 ===============
+- add success() to terminate test successfully
+- doc: explain that prettystr() is used in assertions
+- check rock installation of luaunit
+- add custom message support
 - build luarocks
 - update contributors
 - update download badge
