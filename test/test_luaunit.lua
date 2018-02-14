@@ -2566,20 +2566,56 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
     end
 
     function TestLuaUnitErrorMsg:test_assertIsInf()
-        assertFailureEquals( 'expected: inf, actual: "str"', lu.assertIsInf, 'str' )
-        assertFailureEquals( 'toto\nexpected: inf, actual: "str"', lu.assertIsInf, 'str', 'toto' )
+        assertFailureEquals( 'expected: inf, actual: 33', lu.assertIsInf, 33 )
+        assertFailureEquals( 'toto\nexpected: inf, actual: 33', lu.assertIsInf, 33, 'toto' )
     end
 
-    -- isPlusInf
-    -- isMinusInf
-    -- isPlusZero
-    -- isMinusZero
+    function TestLuaUnitErrorMsg:test_assertIsPlusInf()
+        assertFailureEquals( 'expected: +inf, actual: 33', lu.assertIsPlusInf, 33 )
+        assertFailureEquals( 'toto\nexpected: +inf, actual: 33', lu.assertIsPlusInf, 33, 'toto' )
+    end
 
+    function TestLuaUnitErrorMsg:test_assertIsMinusInf()
+        assertFailureEquals( 'expected: -inf, actual: 33', lu.assertIsMinusInf, 33 )
+        assertFailureEquals( 'toto\nexpected: -inf, actual: 33', lu.assertIsMinusInf, 33, 'toto' )
+    end
 
     function TestLuaUnitErrorMsg:test_assertNotIsInf()
         assertFailureEquals( 'expected non inf value, received ±inf', lu.assertNotIsInf, 1 / 0 )
         assertFailureEquals( 'toto\nexpected non inf value, received ±inf', lu.assertNotIsInf, 1 / 0, 'toto' )
     end
+
+    function TestLuaUnitErrorMsg:test_assertNotIsPlusInf()
+        assertFailureEquals( 'expected non +inf value, received +inf', lu.assertNotIsPlusInf, 1 / 0 )
+        assertFailureEquals( 'toto\nexpected non +inf value, received +inf', lu.assertNotIsPlusInf, 1 / 0, 'toto' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotIsMinusInf()
+        assertFailureEquals( 'expected non -inf value, received -inf', lu.assertNotIsMinusInf, -1 / 0 )
+        assertFailureEquals( 'toto\nexpected non -inf value, received -inf', lu.assertNotIsMinusInf, -1 / 0, 'toto' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertIsPlusZero()
+        assertFailureEquals( 'expected: +0.0, actual: 33', lu.assertIsPlusZero, 33 )
+        assertFailureEquals( 'toto\nexpected: +0.0, actual: 33', lu.assertIsPlusZero, 33, 'toto' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertIsMinusZero()
+        assertFailureEquals( 'expected: -0.0, actual: 33', lu.assertIsMinusZero, 33 )
+        assertFailureEquals( 'toto\nexpected: -0.0, actual: 33', lu.assertIsMinusZero, 33, 'toto' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotIsPlusZero()
+        assertFailureEquals( 'expected: not +0.0, actual: +0.0', lu.assertNotIsPlusZero, 0 )
+        assertFailureEquals( 'toto\nexpected: not +0.0, actual: +0.0', lu.assertNotIsPlusZero, 0, 'toto' )
+    end
+
+    function TestLuaUnitErrorMsg:test_assertNotIsMinusZero()
+        local minusZero = -1 / (1/0)
+        assertFailureEquals( 'expected: not -0.0, actual: -0.0', lu.assertNotIsMinusZero, minusZero )
+        assertFailureEquals( 'toto\nexpected: not -0.0, actual: -0.0', lu.assertNotIsMinusZero, minusZero, 'toto' )
+    end
+
 
     function TestLuaUnitErrorMsg:test_assertNotIsTrue()
         assertFailureEquals('expected: anything but true, actual: true', lu.assertNotIsTrue, true )
