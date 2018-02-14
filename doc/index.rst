@@ -1189,8 +1189,11 @@ Let's look at some practical examples::
 
 Assertions functions
 =====================
-You will now find the list of all assertion functions. For all functions, When an assertion fails, the failure
-message tries to be as informative as possible, by displaying the expectation and value that caused the failure.
+We will now list all assertion functions. For every functions, the failure
+message tries to be as informative as possible, by displaying the expectation and value that caused the failure. It
+relies on the :func:`prettystr` for printing nicely formatted values.
+
+All function accept an optional extra message which if provided, is printed along with the failure message.
 
 .. Note:: see :ref:`table-printing` and :ref:`comparing-table-keys-table` for more dealing with recursive tables and tables containing keys of type table.
 
@@ -1211,7 +1214,7 @@ The order only matters for the message that is displayed in case of failures. It
 not influence the test itself.
 
 
-.. function:: assertEquals(actual, expected)
+.. function:: assertEquals(actual, expected [, extra_msg] )
 
     **Alias**: *assert_equals()*
 
@@ -1224,16 +1227,19 @@ not influence the test itself.
     * each key must contain the same values. The values
       are also compared recursively with deep comparison.
 
-    LuaUnit provides other table-related assertions, see :ref:`assert-table`
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
-.. function:: assertNotEquals(actual, expected)
+    LuaUnit provides other table-related assertions, see :ref:`assert-table` .
+
+
+.. function:: assertNotEquals(actual, expected [, extra_msg])
 
     **Alias**: *assert_not_equals()*
 
     Assert that two values are different. The assertion
-    fails if the two values are identical.
+    fails if the two values are identical. Like the previous function, it uses table deep comparison.
 
-    It also uses table deep comparison.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 Value assertions
 ----------------------
@@ -1262,62 +1268,69 @@ Input Value   assertTrue()   assertEvalToTrue()  assertNotFalse()  assertFalse()
 
 
 
-.. function:: assertEvalToTrue(value)
+.. function:: assertEvalToTrue(value [, extra_msg])
 
     **Alias**: *assert_eval_to_true()*
 
     Assert that a given value evals to ``true``. Lua coercion rules are applied
-    so that values like ``0``, ``""``, ``1.17`` **succeed** in this assertion.
-    
+    so that values like ``0``, ``""``, ``1.17`` **succeed** in this assertion. If provided, 
+    extra_msg is a string which will be printed along with the failure message.
+
     See :func:`assertTrue` for a strict assertion to boolean ``true``.
 
-.. function:: assertEvalToFalse(value)
+.. function:: assertEvalToFalse(value [, extra_msg])
 
     **Alias**: *assert_eval_to_false()*
 
     Assert that a given value eval to ``false``. Lua coercion rules are applied
-    so that ``nil`` and ``false``  **succeed** in this assertion.
+    so that ``nil`` and ``false``  **succeed** in this assertion. If provided, extra_msg 
+    is a string which will be printed along with the failure message.
 
     See :func:`assertFalse` for a strict assertion to boolean ``false``.
     
-.. function:: assertTrue(value)
+.. function:: assertTrue(value [, extra_msg])
 
     **Alias**: *assert_true()*
 
     Assert that a given value is strictly ``true``. Lua coercion rules do not apply
-    so that values like ``0``, ``""``, ``1.17`` **fail** in this assertion.
+    so that values like ``0``, ``""``, ``1.17`` **fail** in this assertion. If provided, 
+    extra_msg is a string which will be printed along with the failure message.
 
-    See :func:`assertEvalToTrue` for an assertion with lua coerction rules to ``true``.
+    See :func:`assertEvalToTrue` for an assertion to ``true`` where Lua coercion rules apply.
     
-.. function:: assertFalse(value)
+.. function:: assertFalse(value [, extra_msg])
 
     **Alias**: *assert_false()*
 
     Assert that a given value is strictly ``false``. Lua coercion rules do not apply
-    so that ``nil`` **fails** in this assertion.
+    so that ``nil`` **fails** in this assertion. If provided, *extra_msg* is a string 
+    which will be printed along with the failure message.
 
-    See :func:`assertEvalToFalse` for an assertion with lua coerction rules to ``false``.
+    See :func:`assertEvalToFalse` for an assertion to ``false`` where Lua coertion fules apply.
     
-.. function:: assertNil(value)
+.. function:: assertNil(value [, extra_msg])
 
     **Aliases**: *assert_nil()*, *assertIsNil()*, *assert_is_nil()*
 
-    Assert that a given value is *nil* .
+    Assert that a given value is *nil* . If provided, *extra_msg* is 
+    a string which will be printed along with the failure message.
     
-.. function:: assertNotNil(value)
+.. function:: assertNotNil(value [, extra_msg])
 
     **Aliases**: *assert_not_nil()*, *assertNotIsNil()*, *assert_not_is_nil()*
 
     Assert that a given value is not *nil* . Lua coercion rules are applied
     so that values like ``0``, ``""``, ``false`` all validate the assertion.
-    
-.. function:: assertIs(actual, expected)
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
+
+.. function:: assertIs(actual, expected [, extra_msg])
 
     **Alias**: *assert_is()*
 
     Assert that two variables are identical. For string, numbers, boolean and for nil, 
     this gives the same result as :func:`assertEquals` . For the other types, identity
     means that the two variables refer to the same object. 
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
     **Example :**
 
@@ -1336,63 +1349,75 @@ Input Value   assertTrue()   assertEvalToTrue()  assertNotFalse()  assertFalse()
         lu.assertIs(t1,t2) -- fail
         lu.assertIs(v1,v2) -- fail
     
-.. function:: assertNotIs(actual, expected)
+.. function:: assertNotIs(actual, expected [, extra_msg])
 
     **Alias**: *assert_not_is()*
 
     Assert that two variables are not identical, in the sense that they do not
-    refer to the same value. See :func:`assertIs` for more details.
+    refer to the same value. If provided, *extra_msg* is a string which will be printed along with the failure message.
+
+    See :func:`assertIs` for more details.
     
+
 String assertions
 --------------------------
 
 Assertions related to string and patterns.
 
-.. function:: assertStrContains( str, sub [, useRe] )
+.. function:: assertStrContains( str, sub [, useRe [, extra_msg ]] )
 
     **Alias**: *assert_str_contains()*
 
-    Assert that a string contains the given substring or pattern. 
+    Assert that the string *str* contains the substring or pattern *sub*. 
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
     By default, substring is searched in the string. If *useRe*
     is provided and is true, *sub* is treated as a pattern which
     is searched inside the string *str* .
     
-.. function:: assertStrIContains( str, sub )
+
+.. function:: assertStrIContains( str, sub [, extra_msg] )
 
     **Alias**: *assert_str_icontains()*
 
-    Assert that a string contains the given substring, irrespective of the case. 
+    Assert that the string *str* contains the given substring *sub*, irrespective of the case. 
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
-    Not that unlike :func:`assertStrcontains`, you can not search for a pattern.
+    Note that unlike :func:`assertStrcontains`, you can not search for a pattern.
 
 
-.. function:: assertNotStrContains( str, sub, useRe )
+
+.. function:: assertNotStrContains( str, sub, [useRe [, extra_msg]] )
 
     **Alias**: *assert_not_str_contains()*
 
-    Assert that a string does not contain a given substring or pattern.
+    Assert that the string *str* does not contain the substring or pattern *sub*.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
-    By default, substring is searched in the string. If *useRe*
+    By default, the substring is searched in the string. If *useRe*
     is provided and is true, *sub* is treated as a pattern which
     is searched inside the string *str* .
     
-.. function:: assertNotStrIContains( str, sub )
+
+.. function:: assertNotStrIContains( str, sub [, extra_msg] )
 
     **Alias**: *assert_not_str_icontains()*
 
-    Assert that a string does not contain the given substring, irrespective of the case. 
+    Assert that the string *str* does not contain the substring *sub*, irrespective of the case. 
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
-    Not that unlike :func:`assertNotStrcontains`, you can not search for a pattern.
+    Note that unlike :func:`assertNotStrcontains`, you can not search for a pattern.
 
-.. function:: assertStrMatches( str, pattern [, start [, final] ] )
+
+.. function:: assertStrMatches( str, pattern [, start [, final [, extra_msg ]]]  )
 
     **Alias**: *assert_str_matches()*
 
-    Assert that a string matches the full pattern *pattern*.
+    Assert that the string *str* matches the full pattern *pattern*.
 
     If *start* and *final* are not provided or are *nil*, the pattern must match the full string, from start to end. The
-    functions allows to specify the expected start and end position of the pattern in the string.
+    function allows to specify the expected start and end position of the pattern in the string. If provided, 
+    *extra_msg* is a string which will be printed along with the failure message.
     
 
 Error assertions
@@ -1458,60 +1483,69 @@ Type assertions
     the expected type, the received type and the received value to help you
     identify better the problem.
 
-.. function:: assertIsNumber(value)
+.. function:: assertIsNumber(value [, extra_msg])
 
     **Aliases**: *assertNumber()*, *assert_is_number()*, *assert_number()*
 
-    Assert that the argument is a number (integer or float)
+    Assert that the argument is a number (integer or float).
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsString(value)
+.. function:: assertIsString(value [, extra_msg])
 
     **Aliases**: *assertString()*, *assert_is_string()*, *assert_string()*
 
     Assert that the argument is a string.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsTable(value)
+.. function:: assertIsTable(value [, extra_msg])
 
     **Aliases**: *assertTable()*, *assert_is_table()*, *assert_table()*
 
     Assert that the argument is a table.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsBoolean(value)
+.. function:: assertIsBoolean(value [, extra_msg])
 
     **Aliases**: *assertBoolean()*, *assert_is_boolean()*, *assert_boolean()*
 
     Assert that the argument is a boolean.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsNil(value)
+.. function:: assertIsNil(value [, extra_msg])
 
     **Aliases**: *assertNil()*, *assert_is_nil()*, *assert_nil()*
 
-    Assert that the argument is a nil.
+    Assert that the argument is nil.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsFunction(value)
+.. function:: assertIsFunction(value [, extra_msg])
 
     **Aliases**: *assertFunction()*, *assert_is_function()*, *assert_function()*
 
     Assert that the argument is a function.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsUserdata(value)
+.. function:: assertIsUserdata(value [, extra_msg])
 
     **Aliases**: *assertUserdata()*, *assert_is_userdata()*, *assert_userdata()*
 
     Assert that the argument is a userdata.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsCoroutine(value)
+.. function:: assertIsCoroutine(value [, extra_msg])
 
     **Aliases**: *assertCoroutine()*, *assert_is_coroutine()*, *assert_coroutine()*
 
     Assert that the argument is a coroutine (an object with type *thread* ).
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsThread(value)
+.. function:: assertIsThread(value [, extra_msg])
 
     **Aliases**: *assertIsThread()*, *assertThread()*, *assert_is_thread()*, *assert_thread()*
 
     Same function as :func:assertIsCoroutine . Since Lua coroutines have the type thread, it's not
     clear which name is the clearer, so we provide syntax for both names.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
 .. _assert-table:
@@ -1519,11 +1553,12 @@ Type assertions
 Table assertions
 --------------------------
 
-.. function:: assertItemsEquals(actual, expected)
+.. function:: assertItemsEquals(actual, expected [, extra_msg])
 
     **Alias**: *assert_items_equals()*
 
     Assert that two tables contain the same items, irrespective of their keys.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
     This function is practical for example if you want to compare two lists but
     where items are not in the same order:
@@ -1613,115 +1648,131 @@ This is either:
 * 2^-23 or ~1.19E-07 (with lua number defined as float)
 
 
-.. function:: assertNan( value )
+.. function:: assertNan( value  [, extra_msg])
 
     **Alias**: *assert_nan()*
 
     Assert that a given number is a *NaN* (Not a Number), according to the definition of IEEE-754_ .
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertNotNan( value )
+.. function:: assertNotNan( value  [, extra_msg])
 
     **Alias**: *assert_not_nan()*
 
     Assert that a given number is NOT a *NaN* (Not a Number), according to the definition of IEEE-754_ .
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertPlusInf( value )
+.. function:: assertPlusInf( value  [, extra_msg])
 
     **Alias**: *assert_plus_inf()*
 
     Assert that a given number is *plus infinity*, according to the definition of IEEE-754_ .
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertMinusInf( value )
+.. function:: assertMinusInf( value  [, extra_msg])
 
     **Alias**: *assert_minus_inf()*
 
     Assert that a given number is *minus infinity*, according to the definition of IEEE-754_ .
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertInf( value )
+.. function:: assertInf( value  [, extra_msg])
 
     **Alias**: *assert_inf()*
 
     Assert that a given number is *infinity* (either positive or negative), according to the definition of IEEE-754_ .
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertNotPlusInf( value )
+.. function:: assertNotPlusInf( value  [, extra_msg])
 
     **Alias**: *assert_not_plus_inf()*
 
     Assert that a given number is NOT *plus infinity*, according to the definition of IEEE-754_ .
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertNotMinusInf( value )
+.. function:: assertNotMinusInf( value  [, extra_msg])
 
     **Alias**: *assert_not_minus_inf()*
 
     Assert that a given number is NOT *minus infinity*, according to the definition of IEEE-754_ .
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertNotInf( value )
+.. function:: assertNotInf( value  [, extra_msg])
 
     **Alias**: *assert_not_inf()*
 
     Assert that a given number is neither *infinity* nor *minus infinity*, according to the definition of IEEE-754_ .
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertPlusZero( value )
+.. function:: assertPlusZero( value  [, extra_msg])
 
     **Alias**: *assert_plus_zero()*
 
     Assert that a given number is *+0*, according to the definition of IEEE-754_ . The
     verification is done by dividing by the provided number and verifying that it yields
-    *infinity* .
+    *infinity* . If provided, *extra_msg* is a string which will be printed along with the failure message.
 
     Be careful when dealing with *+0* and *-0*, see note above.
 
 
-.. function:: assertMinusZero( value )
+.. function:: assertMinusZero( value  [, extra_msg])
 
     **Alias**: *assert_minus_zero()*
 
     Assert that a given number is *-0*, according to the definition of IEEE-754_ . The
     verification is done by dividing by the provided number and verifying that it yields
-    *minus infinity* .
+    *minus infinity* . If provided, *extra_msg* is a string which will be printed along with the failure message.
 
     Be careful when dealing with *+0* and *-0*, see :ref:`MinusZero`
 
 
-.. function:: assertNotPlusZero( value )
+.. function:: assertNotPlusZero( value  [, extra_msg])
 
     **Alias**: *assert_not_plus_zero()*
 
     Assert that a given number is NOT *+0*, according to the definition of IEEE-754_ .
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
+
+    Be careful when dealing with *+0* and *-0*, see :ref:`MinusZero`
 
 
-.. function:: assertNotMinusZero( value )
+.. function:: assertNotMinusZero( value  [, extra_msg])
 
     **Alias**: *assert_not_minus_zero()*
 
     Assert that a given number is NOT *-0*, according to the definition of IEEE-754_ .
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
+
+    Be careful when dealing with *+0* and *-0*, see :ref:`MinusZero`
 
 
-.. function:: assertAlmostEquals( actual, expected [, margin=EPS] )
+.. function:: assertAlmostEquals( actual, expected [, margin=EPS [, extra_msg]] )
 
     **Alias**: *assert_almost_equals()*
 
     Assert that two floating point numbers are equal by the defined margin. 
     If margin is not provided, the machine epsilon *EPS* is used.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
     Be careful that depending on the calculation, it might make more sense to measure
     the absolute error or the relative error (see below):
 
 
-.. function:: assertNotAlmostEquals( actual, expected [, margin=EPS] )
+.. function:: assertNotAlmostEquals( actual, expected [, margin=EPS [, extra_msg]] )
 
     **Alias**: *assert_not_almost_equals()*
 
     Assert that two floating point numbers are not equal by the defined margin.
     If margin is not provided, the machine epsilon *EPS* is used.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
     Be careful that depending on the calculation, it might make more sense to measure
     the absolute error or the relative error (see below).
@@ -1823,6 +1874,8 @@ helps identifying tables:
 
 Comparing tables with keys of type table
 ===========================================
+
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
 This is a very uncommon scenario but there are a few programs out there which use tables as keys for other tables. LuaUnit has been adjusted to deal intelligently with this scenario.
