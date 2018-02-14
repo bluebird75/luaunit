@@ -1807,8 +1807,10 @@ Pretty printing
 
 .. function:: prettystr( value )
 
-    Converts the value to a nicely formatted string, whatever the type of the value.
+    Converts *value* to a nicely formatted string, whatever the type of the value.
     It supports in particular tables, nested table and even recursive tables.
+
+    You can use it in your code to replace calls to *tostring()* .
 
 **Example of prettystr()**
     
@@ -1825,115 +1827,7 @@ Pretty printing
 
 
 
-.. _table-printing:
-
-More on table printing
-===========================
-
-When asserting tables equality, by default, the table content is printed in case of failures. LuaUnit tries to print
-tables in a readable format. It is 
-possible to always display the table id along with the content, by setting a module parameter PRINT_TABLE_REF_IN_ERROR_MSG . This
-helps identifying tables:
-
-.. code-block:: lua
-
-    local lu = require('luaunit')
-
-    local t1 = {1,2,3}
-    -- normally, t1 is dispalyed as: "{1,2,3}"
-
-    -- if setting this:
-    lu.PRINT_TABLE_REF_IN_ERROR_MSG = true
-
-    -- display of table t1 becomes: "<table: 0x29ab56> {1,2,3}"
-
-
-.. Note :: table loops
-
-    When displaying table content, it is possible to encounter loops, if for example two table references eachother. In such
-    cases, LuaUnit display the full table content once, along with the table id, and displays only the table id for the looping
-    reference.
-
-**Example:** displaying a table with reference loop
-
-.. code-block:: lua
-
-    local t1 = {}
-    local t2 = {}
-    t1.t2 = t2
-    t1.a = {1,2,3}
-    t2.t1 = t1
-
-    -- when displaying table t1:
-    --   table t1 inside t2 is only displayed by its id because t1 is already being displayed
-    --   table t2 is displayed along with its id because it is part of a loop.
-    -- t1: "<table: 0x29ab56> { a={1,2,3}, t2=<table: 0x27ab23> {t1=<table: 0x29ab56>} }"
-
-
-.. _comparing-table-keys-table:
-
-Comparing tables with keys of type table
-===========================================
-
-    If provided, *extra_msg* is a string which will be printed along with the failure message.
-
-
-This is a very uncommon scenario but there are a few programs out there which use tables as keys for other tables. LuaUnit has been adjusted to deal intelligently with this scenario.
-
-A small code block is worth a thousand pictures :
-
-.. code-block:: lua
-
-    local lu = require('luaunit')
-
-    -- let's define two tables
-    t1 = { 1, 2 }
-    t2 = { 1, 2 }
-    lu.assertEquals( t1, t2 ) -- succeeds
-
-    -- let's define three tables, with the two above tables as keys
-    t3 = { t1='a' }
-    t4 = { t2='a' }
-    t5 = { t2='a' }
-
-There are two ways to treat comparison of tables t3 and t4:
-
-**Method 1: table keys are compared by content**
-
-* t3 contain one key: t1
-* t4 contain one key: t2, which has exactly the same content as t1
-* the two keys compare equally with assertEquals, so assertEquals( t3, t4 ) succeeds
-
-**Method 2: table keys are compared by reference**
-
-* t3 contain one key: t1
-* t4 contain one key: t2, which is not the same table as t1, its reference is different
-* the two keys are different because t1 is a different object than t2 so assertEquals( t3, t4 ) fails
-
-Whether method 1 or method 2 is more appropriate is up for debate.
-
-LuaUnit has been adjusted to support both scenarios, with the config variable: *TABLE_EQUALS_KEYBYCONTENT*
-
-* TABLE_EQUALS_KEYBYCONTENT = true (default): method 1 - table keys compared by content
-* TABLE_EQUALS_KEYBYCONTENT = false: method 2 - table keys compared by reference
-
-In any case, assertEquals( t4, t5 ) always succeeds.
-
-To adjust the config, change it into the luaunit table before running any tests:
-
-
-.. code-block:: lua
-
-    local lu = require('luaunit')
-
-    -- define all your tests
-    -- ...
-
-    lu.TABLE_EQUALS_KEYBYCONTENT = false
-    -- run your tests:
-    os.exit( lu.LuaUnit.run() )
-
-Developing LuaUnit
+        Developing LuaUnit
 ******************
 
 Development ecosystem
@@ -2090,6 +1984,134 @@ Functional tests may start failing when:
 2. Improving or breaking LuaUnit output
 
 This a good place to start looking if you see failures occuring.
+
+Annexes
+********
+
+.. _table-printing:
+
+Annex A: More on table printing
+================================
+
+When asserting tables equality, by default, the table content is printed in case of failures. LuaUnit tries to print
+tables in a readable format. It is 
+possible to always display the table id along with the content, by setting a module parameter PRINT_TABLE_REF_IN_ERROR_MSG . This
+helps identifying tables:
+
+.. code-block:: lua
+
+    local lu = require('luaunit')
+
+    local t1 = {1,2,3}
+    -- normally, t1 is dispalyed as: "{1,2,3}"
+
+    -- if setting this:
+    lu.PRINT_TABLE_REF_IN_ERROR_MSG = true
+
+    -- display of table t1 becomes: "<table: 0x29ab56> {1,2,3}"
+
+
+.. Note :: table loops
+
+    When displaying table content, it is possible to encounter loops, if for example two table references eachother. In such
+    cases, LuaUnit display the full table content once, along with the table id, and displays only the table id for the looping
+    reference.
+
+**Example:** displaying a table with reference loop
+
+.. code-block:: lua
+
+    local t1 = {}
+    local t2 = {}
+    t1.t2 = t2
+    t1.a = {1,2,3}
+    t2.t1 = t1
+
+    -- when displaying table t1:
+    --   table t1 inside t2 is only displayed by its id because t1 is already being displayed
+    --   table t2 is displayed along with its id because it is part of a loop.
+    -- t1: "<table: 0x29ab56> { a={1,2,3}, t2=<table: 0x27ab23> {t1=<table: 0x29ab56>} }"
+
+
+.. _comparing-table-keys-table:
+
+Annex B: Comparing tables with keys of type table
+==================================================
+
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
+
+
+This is a very uncommon scenario but there are a few programs out there which use tables as keys for other tables. LuaUnit has been adjusted to deal intelligently with this scenario.
+
+A small code block is worth a thousand pictures :
+
+.. code-block:: lua
+
+    local lu = require('luaunit')
+
+    -- let's define two tables
+    t1 = { 1, 2 }
+    t2 = { 1, 2 }
+    lu.assertEquals( t1, t2 ) -- succeeds
+
+    -- let's define three tables, with the two above tables as keys
+    t3 = { t1='a' }
+    t4 = { t2='a' }
+    t5 = { t2='a' }
+
+There are two ways to treat comparison of tables t3 and t4:
+
+**Method 1: table keys are compared by content**
+
+* t3 contain one key: t1
+* t4 contain one key: t2, which has exactly the same content as t1
+* the two keys compare equally with assertEquals, so assertEquals( t3, t4 ) succeeds
+
+**Method 2: table keys are compared by reference**
+
+* t3 contain one key: t1
+* t4 contain one key: t2, which is not the same table as t1, its reference is different
+* the two keys are different because t1 is a different object than t2 so assertEquals( t3, t4 ) fails
+
+Whether method 1 or method 2 is more appropriate is up for debate.
+
+LuaUnit has been adjusted to support both scenarios, with the config variable: *TABLE_EQUALS_KEYBYCONTENT*
+
+* TABLE_EQUALS_KEYBYCONTENT = true (default): method 1 - table keys compared by content
+* TABLE_EQUALS_KEYBYCONTENT = false: method 2 - table keys compared by reference
+
+In any case, assertEquals( t4, t5 ) always succeeds.
+
+To adjust the config, change it into the luaunit table before running any tests:
+
+
+.. code-block:: lua
+
+    local lu = require('luaunit')
+
+    -- define all your tests
+    -- ...
+
+    lu.TABLE_EQUALS_KEYBYCONTENT = false
+    -- run your tests:
+    os.exit( lu.LuaUnit.run() )
+
+Annex C: BSD License
+====================
+
+    This software is distributed under the BSD License.
+
+    Copyright (c) 2005-2018, Philippe Fremy <phil at freehackers dot org>
+
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 
 
 Index and Search page
