@@ -1469,6 +1469,18 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
         lu.assertIsPlusInf(1 / 0) -- inf
         lu.assertIsPlusInf(math.huge) -- inf
+
+        -- behavior with -0 is lua version dependant:
+        -- lua51, lua53: -0 does NOT represent the value minus zero BUT plus zero
+        -- lua52, luajit: -0 represents the value minus zero
+        -- this is verified with the value 1/-0
+        -- lua 5.1, 5.3: 1/-0 = inf
+        -- lua 5.2, luajit: 1/-0 = -inf
+        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.3" then
+            lu.assertIsPlusInf( 1/-0 ) 
+        else
+            assertFailure( lu.assertIsPlusInf, 1/-0 )
+        end
     end
 
 
@@ -1491,7 +1503,165 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertIsMinusInf( math.log(0)) -- -inf
         lu.assertIsMinusInf(-1 / 0)       -- -inf
         lu.assertIsMinusInf(-math.huge)   -- -inf
+
+        -- behavior with -0 is lua version dependant:
+        -- lua51, lua53: -0 does NOT represent the value minus zero BUT plus zero
+        -- lua52, luajit: -0 represents the value minus zero
+        -- this is verified with the value 1/-0
+        -- lua 5.1, 5.3: 1/-0 = inf
+        -- lua 5.2, luajit: 1/-0 = -inf
+        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.3" then
+            assertFailure( lu.assertIsMinusInf, 1/-0 )
+        else
+            lu.assertIsMinusInf( 1/-0 ) 
+        end
+
     end
+
+    function TestLuaUnitAssertions:test_assertNotIsInf()
+        -- not inf
+        lu.assertNotIsInf( "hi there!")
+        lu.assertNotIsInf( nil)
+        lu.assertNotIsInf( {})
+        lu.assertNotIsInf( {1,2,3})
+        lu.assertNotIsInf( {1})
+        lu.assertNotIsInf( coroutine.create( function(v) local y=v+1 end ) )
+
+        -- not inf
+        lu.assertNotIsInf( 0 )
+        lu.assertNotIsInf( 1 )
+        lu.assertNotIsInf( 0 / 0) -- NaN
+        lu.assertNotIsInf( -0 / 0) -- NaN
+        lu.assertNotIsInf( 0 / 1) -- 0.0
+
+        -- inf
+        assertFailure( assertNotIsInf, 1 / 0) -- inf
+        assertFailure( assertNotIsInf, math.log(0)) -- -inf
+        assertFailure( assertNotIsInf, math.huge) -- inf
+        assertFailure( assertNotIsInf, math.huge) -- -inf
+    end
+
+    function TestLuaUnitAssertions:test_assertNotIsPlusInf()
+        -- not inf
+        lu.assertNotIsPlusInf( "hi there!")
+        lu.assertNotIsPlusInf( nil)
+        lu.assertNotIsPlusInf( {})
+        lu.assertNotIsPlusInf( {1,2,3})
+        lu.assertNotIsPlusInf( {1})
+        lu.assertNotIsPlusInf( coroutine.create( function(v) local y=v+1 end ) )
+
+        lu.assertNotIsPlusInf( 0 )
+        lu.assertNotIsPlusInf( 1 )
+        lu.assertNotIsPlusInf( 0 / 0) -- NaN
+        lu.assertNotIsPlusInf( -0 / 0) -- NaN
+        lu.assertNotIsPlusInf( 0 / 1) -- 0.0
+        lu.assertNotIsPlusInf( math.log(0)) -- -inf
+        lu.assertNotIsPlusInf( -math.huge) -- -inf
+
+        -- inf
+        assertFailure( lu.assertNotIsPlusInf, 1 / 0) -- inf
+        assertFailure( lu.assertNotIsPlusInf, math.huge) -- inf
+    end
+
+
+    function TestLuaUnitAssertions:test_assertNotIsMinusInf()
+        -- not inf
+        lu.assertNotIsMinusInf( "hi there!")
+        lu.assertNotIsMinusInf( nil)
+        lu.assertNotIsMinusInf( {})
+        lu.assertNotIsMinusInf( {1,2,3})
+        lu.assertNotIsMinusInf( {1})
+        lu.assertNotIsMinusInf( coroutine.create( function(v) local y=v+1 end ) )
+
+        lu.assertNotIsMinusInf( 0 )
+        lu.assertNotIsMinusInf( 1 )
+        lu.assertNotIsMinusInf( 0 / 0) -- NaN
+        lu.assertNotIsMinusInf( -0 / 0) -- NaN
+        lu.assertNotIsMinusInf( 0 / 1) -- 0.0
+        lu.assertNotIsMinusInf( -math.log(0)) -- inf
+        lu.assertNotIsMinusInf( math.huge)    -- inf
+
+        -- inf
+        assertFailure( lu.assertNotIsMinusInf, math.log(0)) -- -inf
+        assertFailure( lu.assertNotIsMinusInf, -1 / 0)       -- -inf
+        assertFailure( lu.assertNotIsMinusInf, -math.huge)   -- -inf
+    end
+
+    -- enable it only for debugging
+    function Xtest_printHandlingOfZeroAndInf()
+        local inf = 1/0
+        print( ' inf    = ' .. inf )
+        print( '-inf    = ' .. -inf )
+        print( ' 1/inf  = ' .. 1/inf )
+        print( '-1/inf  = ' .. -1/inf )
+        print( ' 1/-inf = ' .. 1/-inf )
+        print( '-1/-inf = ' .. -1/-inf )
+        print()
+        print( ' 1/-0 = '   .. 1/-0 )
+        print()
+        print( ' -0     = ' .. -0 )
+        print( ' 0/-1   = ' .. 0/-1 )
+        print( ' 0*-1   = ' .. 0*-1 )
+        print( '-0/-1   = ' .. -0/-1 )
+        print( '-0*-1   = ' .. -0*-1 )
+        print( '(-0)/-1 = ' .. (-0)/-1 )
+        print( ' 1/(0/-1)   = ' .. 1/(0/-1) )
+        print( ' 1/(-0/-1)  = ' .. 1/(-0/-1) )
+        print( '-1/(0/-1)   = ' .. -1/(0/-1) )
+        print( '-1/(-0/-1)  = ' .. -1/(-0/-1) )
+
+        print()
+        local minusZero = -1 / (1/0)
+        print( 'minusZero  = -1 / (1/0)' )
+        print( 'minusZero  = '..minusZero)
+        print( ' 1/minusZero = '   .. 1/minusZero )
+        print()
+        print( 'minusZero/-1   = ' .. minusZero/-1 )
+        print( 'minusZero*-1   = ' .. minusZero*-1 )
+        print( ' 1/(minusZero/-1)  = ' .. 1/(minusZero/-1) )
+        print( '-1/(minusZero/-1)  = ' .. -1/(minusZero/-1) )
+
+    end
+
+    --[[    #### Important note when dealing with -0 and infinity ####
+
+    1. Dealing with infinity is consistent, the only difference is whether the resulting 0 is integer or float
+
+    Lua 5.3: dividing by infinity yields float 0
+    With inf = 1/0:
+        -inf    = -inf
+         1/inf  =  0.0
+        -1/inf  = -0.0
+         1/-inf = -0.0
+        -1/-inf =  0.0
+
+    Lua 5.2 and 5.1: dividing by infinity yields integer 0
+        -inf    =-1.#INF
+         1/inf  =  0
+        -1/inf  = -0
+         1/-inf = -0
+        -1/-inf =  0
+
+    2. Dealing with minus 0 is totally inconsistent mathematically and accross lua versions if you use the syntax -0. 
+       It works correctly if you create the value by minusZero = -1 / (1/0)
+
+       Enable the function above to see the extent of the damage of -0 :
+
+       Lua 5.1:
+       * -0 is consistently considered as 0
+       *  0 multipllied or diveded by -1 is still 0
+       * -0 multipllied or diveded by -1 is still 0
+
+       Lua 5.2:
+       * -0 is consistently -0
+       *  0 multipllied or diveded by -1 is correctly -0
+       * -0 multipllied or diveded by -1 is correctly 0
+
+       Lua 5.3:
+       * -0 is consistently considered as 0
+       *  0 multipllied by -1 is correctly -0 but divided by -1 yields 0
+       * -0 multipllied by -1 is 0 but diveded by -1 is -0
+    ]]
 
     function TestLuaUnitAssertions:test_assertIsPlusZero()
         assertFailure(lu.assertIsPlusZero, "hi there!")
@@ -1513,6 +1683,44 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertIsPlusZero( 0 / 1)
         lu.assertIsPlusZero( 0 )
         lu.assertIsPlusZero( 1/inf )    
+
+        -- behavior with -0 is lua version dependant, see note above
+        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.3" then
+            lu.assertIsPlusZero( -0 )
+        else
+            assertFailure( lu.assertIsPlusZero, -0 )
+        end
+    end
+
+    function TestLuaUnitAssertions:test_assertNotIsPlusZero()
+        -- not plus zero
+        lu.assertNotIsPlusZero( "hi there!")
+        lu.assertNotIsPlusZero( nil)
+        lu.assertNotIsPlusZero( {})
+        lu.assertNotIsPlusZero( {1,2,3})
+        lu.assertNotIsPlusZero( {1})
+        lu.assertNotIsPlusZero( coroutine.create( function(v) local y=v+1 end ) )
+
+        local inf = 1/0
+        lu.assertNotIsPlusZero( 1 )
+        lu.assertNotIsPlusZero( 0 / 0) -- NaN
+        lu.assertNotIsPlusZero( -0 / 0) -- NaN
+        lu.assertNotIsPlusZero( math.log(0))  -- inf
+        lu.assertNotIsPlusZero( math.huge)    -- inf
+        lu.assertNotIsPlusZero( -math.huge)   -- -inf
+        lu.assertNotIsPlusZero( -1/inf )       -- -0.0
+
+        -- plus zero
+        assertFailure( lu.assertNotIsPlusZero, 0 / 1)
+        assertFailure( lu.assertNotIsPlusZero, 0 )
+        assertFailure( lu.assertNotIsPlusZero, 1/inf )    
+
+        -- behavior with -0 is lua version dependant, see note above
+        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.3" then
+            assertFailure( lu.assertNotIsPlusZero, -0 )
+        else
+            lu.assertNotIsPlusZero( -0 )
+        end
     end
 
 
@@ -1534,14 +1742,46 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure(lu.assertIsMinusZero, 1/inf)        -- -0.0
         assertFailure(lu.assertIsMinusZero, 0 )
 
-        -- behavior with -0 is lua version dependant:
-        -- lua51, lua53: lu.assertIsMinusZero( -0 ) succeeds
-        -- lua52, luajit: lu.assertIsMinusZero( -0 ) fails
 
-        lu.assertIsPlusZero( 0 / 1)
         lu.assertIsMinusZero( -1/inf )    
+        lu.assertIsMinusZero( 1/-inf )    
+        
+        -- behavior with -0 is lua version dependant, see note above
+        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.3" then
+            assertFailure( lu.assertIsMinusZero, -0 )
+        else
+            lu.assertIsMinusZero( -0 )
+        end
     end
 
+    function TestLuaUnitAssertions:test_assertNotIsMinusZero()
+        lu.assertNotIsMinusZero( "hi there!")
+        lu.assertNotIsMinusZero( nil)
+        lu.assertNotIsMinusZero( {})
+        lu.assertNotIsMinusZero( {1,2,3})
+        lu.assertNotIsMinusZero( {1})
+        lu.assertNotIsMinusZero( coroutine.create( function(v) local y=v+1 end ) )
+
+        local inf = 1/0
+        lu.assertNotIsMinusZero( 1 )
+        lu.assertNotIsMinusZero( 0 / 0) -- NaN
+        lu.assertNotIsMinusZero( -0 / 0) -- NaN
+        lu.assertNotIsMinusZero( math.log(0))  -- inf
+        lu.assertNotIsMinusZero( math.huge)    -- inf
+        lu.assertNotIsMinusZero( -math.huge)   -- -inf
+        lu.assertNotIsMinusZero( 0 )
+        lu.assertNotIsMinusZero( 1/inf)        -- -0.0
+
+        assertFailure( lu.assertNotIsMinusZero, -1/inf )    
+        assertFailure( lu.assertNotIsMinusZero, 1/-inf )    
+        
+        -- behavior with -0 is lua version dependant, see note above
+        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.3" then
+            lu.assertNotIsMinusZero( -0 )
+        else
+            assertFailure( lu.assertNotIsMinusZero, -0 )
+        end
+    end
 
     function TestLuaUnitAssertions:test_assertIsString()
         assertFailure(lu.assertIsString, 1)

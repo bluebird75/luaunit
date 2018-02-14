@@ -1630,13 +1630,13 @@ end
 
 function M.assertNotIsPlusInf(value, extra_msg_or_nil)
     if type(value) == "number" and value == math.huge then
-        failure("expected not +inf value, received +inf", extra_msg_or_nil, 2)
+        failure("expected non +inf value, received +inf", extra_msg_or_nil, 2)
     end
 end
 
 function M.assertNotIsMinusInf(value, extra_msg_or_nil)
     if type(value) == "number" and value == -math.huge then
-        failure("expected not -inf value, received -inf", extra_msg_or_nil, 2)
+        failure("expected non -inf value, received -inf", extra_msg_or_nil, 2)
     end
 end
 
@@ -1675,14 +1675,14 @@ function M.assertIsMinusZero(value, extra_msg_or_nil)
 end
 
 function M.assertNotIsPlusZero(value, extra_msg_or_nil)
-    if type(value) == 'number' and value == 0 and (1/value ~= math.huge) then
+    if type(value) == 'number' and (1/value == math.huge) then
         failure("expected: not +0.0, actual: +0.0", extra_msg_or_nil, 2)
     end
 end
 
 function M.assertNotIsMinusZero(value, extra_msg_or_nil)
-    if type(value) == 'number' and value == 0 and (1/value ~= -math.huge) then
-        failure("expected: not +0.0, actual: +0.0", extra_msg_or_nil, 2)
+    if type(value) == 'number' and (1/value == -math.huge) then
+        failure("expected: not -0.0, actual: -0.0", extra_msg_or_nil, 2)
     end
 end
 
