@@ -1364,14 +1364,14 @@ String assertions
 
 Assertions related to string and patterns.
 
-.. function:: assertStrContains( str, sub [, useRe [, extra_msg ]] )
+.. function:: assertStrContains( str, sub [, isPattern [, extra_msg ]] )
 
     **Alias**: *assert_str_contains()*
 
     Assert that the string *str* contains the substring or pattern *sub*. 
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
-    By default, substring is searched in the string. If *useRe*
+    By default, substring is searched in the string. If *isPattern*
     is provided and is true, *sub* is treated as a pattern which
     is searched inside the string *str* .
     
@@ -1387,14 +1387,14 @@ Assertions related to string and patterns.
 
 
 
-.. function:: assertNotStrContains( str, sub, [useRe [, extra_msg]] )
+.. function:: assertNotStrContains( str, sub, [isPattern [, extra_msg]] )
 
     **Alias**: *assert_not_str_contains()*
 
     Assert that the string *str* does not contain the substring or pattern *sub*.
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
-    By default, the substring is searched in the string. If *useRe*
+    By default, the substring is searched in the string. If *isPattern*
     is provided and is true, *sub* is treated as a pattern which
     is searched inside the string *str* .
     

@@ -1330,13 +1330,13 @@ end
 --                  String assertion
 ------------------------------------------------------------------
 
-function M.assertStrContains( str, sub, useRe, extra_msg_or_nil )
+function M.assertStrContains( str, sub, isPattern, extra_msg_or_nil )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    if not string.find(str, sub, 1, not useRe) then
+    if not string.find(str, sub, 1, not isPattern) then
         sub, str = prettystrPairs(sub, str, '\n')
         fail_fmt(2, extra_msg_or_nil, 'Could not find %s %s in string %s',
-                 useRe and 'pattern' or 'substring', sub, str)
+                 isPattern and 'pattern' or 'substring', sub, str)
     end
 end
 
@@ -1350,13 +1350,13 @@ function M.assertStrIContains( str, sub, extra_msg_or_nil )
     end
 end
 
-function M.assertNotStrContains( str, sub, useRe, extra_msg_or_nil )
+function M.assertNotStrContains( str, sub, isPattern, extra_msg_or_nil )
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    if string.find(str, sub, 1, not useRe) then
+    if string.find(str, sub, 1, not isPattern) then
         sub, str = prettystrPairs(sub, str, '\n')
         fail_fmt(2, extra_msg_or_nil, 'Found the not expected %s %s in string %s',
-                 useRe and 'pattern' or 'substring', sub, str)
+                 isPattern and 'pattern' or 'substring', sub, str)
     end
 end
 
@@ -1372,7 +1372,6 @@ end
 
 function M.assertStrMatches( str, pattern, start, final, extra_msg_or_nil )
     -- Verify a full match for the string
-    -- for a partial match, simply use assertStrContains with useRe set to true
     if not strMatch( str, pattern, start, final ) then
         pattern, str = prettystrPairs(pattern, str, '\n')
         fail_fmt(2, extra_msg_or_nil, 'Could not match pattern %s with string %s',
