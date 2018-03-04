@@ -91,6 +91,7 @@ def packageit():
     makedoc()
     os.rename( 'doc', 'olddoc' )
     shutil.copytree( 'olddoc/html', 'doc')
+    shutil.copy( 'olddoc/my_test_suite.lua', 'doc')
     shutil.rmtree('olddoc/')
     run_tests()
     run_example()
