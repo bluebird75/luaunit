@@ -43,12 +43,15 @@ Version 3.4:
 
 TODO for 3.3 release:
 ===============
-- verify that assertError functions all work with tables, review implementation in detail
-- add annex to documentation with full source code of example
-- add annex with BSD license
+- revert changes on prettystr for dealing with oneline 
 
 Done since 3.2:
 ===============
+- make sure that example source code is included in documentation when packaging
+- add annex to documentation with full source code of example
+- add annex with BSD license
+- verify that assertError functions all work with tables, review implementation in detail
+- useRe -> usePattern
 - add success() to terminate test successfully
 - doc: explain that prettystr() is used in assertions
 - check rock installation of luaunit
