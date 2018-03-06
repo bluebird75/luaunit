@@ -1399,31 +1399,31 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertNotIsNaN( coroutine.create( function(v) local y=v+1 end ) )
 
         -- is NaN
-        lu.assertFailure( assertNotIsNaN, 0 / 0)
-        lu.assertFailure( assertNotIsNaN, -0 / 0)
-        lu.assertFailure( assertNotIsNaN, 0 / -0)
-        lu.assertFailure( assertNotIsNaN, -0 / -0)
+        lu.assertFailure( lu.assertNotIsNaN, 0 / 0)
+        lu.assertFailure( lu.assertNotIsNaN, -0 / 0)
+        lu.assertFailure( lu.assertNotIsNaN, 0 / -0)
+        lu.assertFailure( lu.assertNotIsNaN, -0 / -0)
         local inf = math.huge
-        lu.assertFailure( assertNotIsNaN, inf / inf)
-        lu.assertFailure( assertNotIsNaN, -inf / inf)
-        lu.assertFailure( assertNotIsNaN, inf / -inf)
-        lu.assertFailure( assertNotIsNaN, -inf / -inf)
-        lu.assertFailure( assertNotIsNaN, inf - inf)
-        lu.assertFailure( assertNotIsNaN, (-inf) + inf)
-        lu.assertFailure( assertNotIsNaN, inf + (-inf))
-        lu.assertFailure( assertNotIsNaN, (-inf) - (-inf))
-        lu.assertFailure( assertNotIsNaN, 0 * inf)
-        lu.assertFailure( assertNotIsNaN, -0 * inf)
-        lu.assertFailure( assertNotIsNaN, 0 * -inf)
-        lu.assertFailure( assertNotIsNaN, -0 * -inf)
-        lu.assertFailure( assertNotIsNaN, math.sqrt(-1))
+        lu.assertFailure( lu.assertNotIsNaN, inf / inf)
+        lu.assertFailure( lu.assertNotIsNaN, -inf / inf)
+        lu.assertFailure( lu.assertNotIsNaN, inf / -inf)
+        lu.assertFailure( lu.assertNotIsNaN, -inf / -inf)
+        lu.assertFailure( lu.assertNotIsNaN, inf - inf)
+        lu.assertFailure( lu.assertNotIsNaN, (-inf) + inf)
+        lu.assertFailure( lu.assertNotIsNaN, inf + (-inf))
+        lu.assertFailure( lu.assertNotIsNaN, (-inf) - (-inf))
+        lu.assertFailure( lu.assertNotIsNaN, 0 * inf)
+        lu.assertFailure( lu.assertNotIsNaN, -0 * inf)
+        lu.assertFailure( lu.assertNotIsNaN, 0 * -inf)
+        lu.assertFailure( lu.assertNotIsNaN, -0 * -inf)
+        lu.assertFailure( lu.assertNotIsNaN, math.sqrt(-1))
         if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.2" then
             -- Lua 5.3 will complain/error "bad argument #2 to 'fmod' (zero)"
-            lu.assertFailure( assertNotIsNaN, math.fmod(1, 0))
-            lu.assertFailure( assertNotIsNaN, math.fmod(1, -0))
+            lu.assertFailure( lu.assertNotIsNaN, math.fmod(1, 0))
+            lu.assertFailure( lu.assertNotIsNaN, math.fmod(1, -0))
         end
-        lu.assertFailure( assertNotIsNaN, math.fmod(inf, 1))
-        lu.assertFailure( assertNotIsNaN, math.fmod(-inf, 1))
+        lu.assertFailure( lu.assertNotIsNaN, math.fmod(inf, 1))
+        lu.assertFailure( lu.assertNotIsNaN, math.fmod(-inf, 1))
 
         -- not NaN
         assertFailure(lu.assertNotIsNaN, 0 / 1) -- 0.0
@@ -1535,10 +1535,10 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertNotIsInf( 0 / 1) -- 0.0
 
         -- inf
-        assertFailure( assertNotIsInf, 1 / 0) -- inf
-        assertFailure( assertNotIsInf, math.log(0)) -- -inf
-        assertFailure( assertNotIsInf, math.huge) -- inf
-        assertFailure( assertNotIsInf, math.huge) -- -inf
+        assertFailure( lu.assertNotIsInf, 1 / 0) -- inf
+        assertFailure( lu.assertNotIsInf, math.log(0)) -- -inf
+        assertFailure( lu.assertNotIsInf, math.huge) -- inf
+        assertFailure( lu.assertNotIsInf, math.huge) -- -inf
     end
 
     function TestLuaUnitAssertions:test_assertNotIsPlusInf()
@@ -1588,6 +1588,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
     end
 
     -- enable it only for debugging
+    --[[
     function Xtest_printHandlingOfZeroAndInf()
         local inf = 1/0
         print( ' inf    = ' .. inf )
@@ -1622,6 +1623,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         print( '-1/(minusZero/-1)  = ' .. -1/(minusZero/-1) )
 
     end
+    ]]
 
     --[[    #### Important note when dealing with -0 and infinity ####
 
