@@ -11,7 +11,7 @@ by Philippe Fremy
 LuaUnit is a popular unit-testing framework for Lua, with an interface typical
 of xUnit libraries (Python unittest, Junit, NUnit, ...). It supports 
 several output formats (Text, TAP, JUnit, ...) to be used directly or work with Continuous Integration platforms
-(Jenkins, Maven, ...).
+(Jenkins, Hudson, ...).
 
 For simplicity, LuaUnit is contained into a single-file and has no external dependency. To start using it, 
 just add the file *luaunit.lua* to your project. A [LuaRocks package](https://luarocks.org/modules/bluebird75/luaunit) is also available.
@@ -20,7 +20,7 @@ Tutorial and reference documentation is available on
 [read-the-docs](http://luaunit.readthedocs.org/en/latest/)
 
 LuaUnit may also be used as an assertion library, to validate assertions inside a running program. In addition, it provides
-a pretty stringifier, to convert any type into a nicely formatted string (including complex nested or recursive tables).
+a pretty stringifier which converts any type into a nicely formatted string (including complex nested or recursive tables).
 
 ## More details
 
@@ -132,7 +132,7 @@ the Lua version and installation directory. It uses, by default, Linux paths tha
 
 ### History 
 
-#### Version 3.3 - in progress
+#### Version 3.3 - 6. March 2018
 * General
 	** when comparing lists with assertEquals(), failure message provides an advanced comparison of the lists
 	** assertErrorMsgEquals() can check for error raised as tables

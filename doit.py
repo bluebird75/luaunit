@@ -5,7 +5,7 @@ import subprocess, sys, os, shutil, os.path, optparse, glob
 VERSION='3.3'
 RELEASE_NAME='luaunit-%s' % VERSION
 RELEASE_DIR='release/' + RELEASE_NAME + '/'
-RELEASE_TAG='LUAUNIT_V3_3-rc1'
+RELEASE_TAG='LUAUNIT_V3_3'
 TARGET_ZIP=RELEASE_NAME + '.zip'
 TARGET_TGZ=RELEASE_NAME + '.tgz'
 REPO_PATH='d:/work/luaunit/luaunit-git/luaunit3/'

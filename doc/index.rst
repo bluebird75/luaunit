@@ -15,7 +15,7 @@ Introduction
 LuaUnit is a popular unit-testing framework for Lua, with an interface typical
 of xUnit libraries (Python unittest, Junit, NUnit, ...). It supports 
 several output formats (Text, TAP, JUnit, ...) to be used directly or work with Continuous Integration platforms
-(Jenkins, Maven, ...).
+(Jenkins, Hudson, ...).
 
 For simplicity, LuaUnit is contained into a single-file and has no external dependency. To start using it, 
 just add the file *luaunit.lua* to your project. A `LuaRocks package`_  is also available.
@@ -142,7 +142,7 @@ Version and Changelog
 =====================
 This documentation describes the functionality of LuaUnit v3.2 .
 
-New in version 3.3 - In progress
+New in version 3.3 - 6. Mar 2018
 --------------------------------
 * General
     * when comparing lists with :func:`assertEquals`, failure message provides an advanced comparison of the lists

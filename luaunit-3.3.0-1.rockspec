@@ -2,7 +2,6 @@ package = "LuaUnit"
 version = "3.3.0-1"
 source =
 {
-	-- url = 'https://github.com/bluebird75/luaunit/releases/download/LUAUNIT_V3_3/luaunit-3.3.zip'
 	url = 'release/luaunit-3.3.zip'
 }
 
@@ -14,7 +13,7 @@ description =
 		LuaUnit is a popular unit-testing framework for Lua, with an interface typical
 		of xUnit libraries (Python unittest, Junit, NUnit, ...). It supports 
 		several output formats (Text, TAP, JUnit, ...) to be used directly or work with Continuous Integration platforms
-		(Jenkins, Maven, ...).
+		(Jenkins, Hudson, ...).
 
 		For simplicity, LuaUnit is contained into a single-file and has no external dependency. 
 
@@ -22,7 +21,7 @@ description =
 		[read-the-docs](http://luaunit.readthedocs.org/en/latest/)
 
 		LuaUnit may also be used as an assertion library, to validate assertions inside a running program. In addition, it provides
-		a pretty stringifier, to convert any type into a nicely formatted string (including complex nested or recursive tables).
+		a pretty stringifier which converts any type into a nicely formatted string (including complex nested or recursive tables).
 
 	]],
 	homepage = "http://github.com/bluebird75/luaunit",

@@ -1,7 +1,6 @@
 --[[ 
 Author: Philippe Fremy <phil@freehackers.org>
 License: BSD License, see LICENSE.txt
-
 ]]--
 
 -- Return a function that appends its arguments to the `callInfo` table

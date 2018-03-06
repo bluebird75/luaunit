@@ -39,11 +39,8 @@ Version 3.4:
 - better detection of screen size
 - catch the os.exit call with a handler or something, to avoid aborting the tests
 - move all file:line description to stack trace
+- better deal with one line formatting
 
-
-TODO for 3.3 release:
-===============
-- revert changes on prettystr for dealing with oneline 
 
 Done since 3.2:
 ===============
@@ -147,6 +144,26 @@ x table assertions
 x sequence asserts
 x compatibilty tests with several version of lua
 x add assertNotEquals
+
+Release TODO:
+=============
+- all tests green in Travis and AppVeyor
+- doc is green in read-the-docs
+- documentation is updated with release content
+- doit.py runtests success
+- tag set on the code
+- upload release to GitHub
+- prepare luarocks and upload to luarocks
+- verify smooth installation of luarocks
+- annonce release on lua mailing-list
+
+
+
+
+
+
+
+
 
 
 
