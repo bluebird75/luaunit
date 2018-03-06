@@ -1641,7 +1641,6 @@ end
 
 function M.assertNotIsInf(value, extra_msg_or_nil)
     if type(value) == "number" and math.abs(value) == math.huge then
-        local inf_descr = pretty
         failure("expected: not infinity, actual: " .. prettystr(value), extra_msg_or_nil, 2)
     end
 end
