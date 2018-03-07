@@ -1,9 +1,9 @@
 # My universal runner for this project, the equivalent of a Makefile
-
 import subprocess, sys, os, shutil, os.path, optparse, glob
 
 VERSION='3.3'
 RELEASE_NAME='luaunit-%s' % VERSION
+ROCK_RELEASE_NAME='rock-%s' % RELEASE_NAME
 RELEASE_DIR='release/' + RELEASE_NAME + '/'
 RELEASE_TAG='LUAUNIT_V3_3'
 TARGET_ZIP=RELEASE_NAME + '.zip'
@@ -66,17 +66,17 @@ def run_example():
             sys.exit( retcode )
     report( 'All examples ran!' )
 
-
-def packageit():
+def pre_packageit_or_buildrock_step1():
     shutil.rmtree('release', True)
     try:
         os.mkdir('release')
     except OSError:
         pass
     subprocess.check_call(['d:/program/utils/Git/bin/git.exe', 'clone', '--no-hardlinks', '--branch', RELEASE_TAG, REPO_PATH, RELEASE_DIR])
+
     os.chdir( RELEASE_DIR )
 
-    # Release dir cleanup 
+    # Release dir cleanup. 
     shutil.rmtree('.git')
     os.unlink('.gitignore')
     shutil.rmtree('.travis')
@@ -86,23 +86,55 @@ def packageit():
     os.unlink('doit.py')
     os.unlink('TODO.txt')
     shutil.rmtree('junitxml/')
+
     for p in glob.glob('*.rockspec'):
         os.unlink(p) 
+
     makedoc()
+    # doc cleanup  and simplification
     os.rename( 'doc', 'olddoc' )
     shutil.copytree( 'olddoc/html', 'doc')
+    os.unlink('doc/.buildinfo')
     shutil.copy( 'olddoc/my_test_suite.lua', 'doc')
     shutil.rmtree('olddoc/')
-    run_tests()
-    run_example()
+    
+    # run_tests()
+    # run_example()
     os.unlink('.luacheckrc')    # keep it to run the tests successfully
 
-    # Packaging
+def packageit():
+    # Prepare a user release package, strip out all development stuff
+    pre_packageit_or_buildrock_step1()
+
+    # Packaging into zip and tgz
     os.chdir('..')
     report('Start packaging')
     shutil.make_archive(RELEASE_NAME, 'zip', root_dir='.', base_dir=RELEASE_NAME )
     shutil.make_archive(RELEASE_NAME, 'gztar', root_dir='.', base_dir=RELEASE_NAME )
     report('Zip and tgz ready!')
+
+def buildrock():
+    pre_packageit_or_buildrock_step1()
+
+    # Packaging into source rocks
+    report('Start preparing rock')
+    shutil.move('test/test_luaunit.lua', '.')
+    shutil.rmtree('test')
+    os.mkdir('test')
+    shutil.move('test_luaunit.lua', 'test')
+    shutil.move('run_unit_tests.lua', 'test')
+
+    for p in glob.glob('*.lua'):
+        if p == 'luaunit.lua': 
+            continue
+        os.unlink(p) 
+    os.unlink('README.md')
+    os.unlink('LICENSE.txt')
+
+    os.chdir('..')
+    shutil.move( RELEASE_NAME, ROCK_RELEASE_NAME )
+    shutil.make_archive( ROCK_RELEASE_NAME, 'zip', root_dir='.', base_dir=ROCK_RELEASE_NAME )
+
 
 def help():
     print( 'Available actions:')
@@ -168,6 +200,7 @@ OptToFunc = {
     'luacheck'      : run_luacheck,
     'runexample'    : run_example,
     'packageit'     : packageit,
+    'buildrock'     : buildrock,
     'makedoc'       : makedoc,
     'rundoctests'   : rundoctests,
     'install'       : install,
