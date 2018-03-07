@@ -67,7 +67,7 @@ def run_example():
     report( 'All examples ran!' )
 
 def pre_packageit_or_buildrock_step1():
-    shutil.rmtree('release', True)
+    # shutil.rmtree('release', True)
     try:
         os.mkdir('release')
     except OSError:
@@ -98,8 +98,8 @@ def pre_packageit_or_buildrock_step1():
     shutil.copy( 'olddoc/my_test_suite.lua', 'doc')
     shutil.rmtree('olddoc/')
     
-    # run_tests()
-    # run_example()
+    run_tests()
+    run_example()
     os.unlink('.luacheckrc')    # keep it to run the tests successfully
 
 def packageit():
