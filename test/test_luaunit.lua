@@ -1376,7 +1376,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertIsNaN(0 * -inf)
         lu.assertIsNaN(-0 * -inf)
         lu.assertIsNaN(math.sqrt(-1))
-        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.2" then
+        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.2" then
             -- Lua 5.3 will complain/error "bad argument #2 to 'fmod' (zero)"
             lu.assertIsNaN(math.fmod(1, 0))
             lu.assertIsNaN(math.fmod(1, -0))
@@ -1416,7 +1416,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertFailure( lu.assertNotIsNaN, 0 * -inf)
         lu.assertFailure( lu.assertNotIsNaN, -0 * -inf)
         lu.assertFailure( lu.assertNotIsNaN, math.sqrt(-1))
-        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.2" then
+        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.2" then
             -- Lua 5.3 will complain/error "bad argument #2 to 'fmod' (zero)"
             lu.assertFailure( lu.assertNotIsNaN, math.fmod(1, 0))
             lu.assertFailure( lu.assertNotIsNaN, math.fmod(1, -0))
@@ -1475,7 +1475,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         -- this is verified with the value 1/-0
         -- lua 5.1, 5.3: 1/-0 = inf
         -- lua 5.2, luajit: 1/-0 = -inf
-        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.3" then
+        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.3" then
             lu.assertIsPlusInf( 1/-0 ) 
         else
             assertFailure( lu.assertIsPlusInf, 1/-0 )
@@ -1509,7 +1509,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         -- this is verified with the value 1/-0
         -- lua 5.1, 5.3: 1/-0 = inf
         -- lua 5.2, luajit: 1/-0 = -inf
-        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.3" then
+        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.3" then
             assertFailure( lu.assertIsMinusInf, 1/-0 )
         else
             lu.assertIsMinusInf( 1/-0 ) 
@@ -1636,7 +1636,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
          1/-inf = -0.0
         -1/-inf =  0.0
 
-    Lua 5.2 and 5.1: dividing by infinity yields integer 0
+    Lua 5.2 and 5.1 and luajit: dividing by infinity yields integer 0
         -inf    =-1.#INF
          1/inf  =  0
         -1/inf  = -0
@@ -1653,7 +1653,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
        *  0 multipllied or diveded by -1 is still 0
        * -0 multipllied or diveded by -1 is still 0
 
-       Lua 5.2:
+       Lua 5.2 and LuaJIT:
        * -0 is consistently -0
        *  0 multipllied or diveded by -1 is correctly -0
        * -0 multipllied or diveded by -1 is correctly 0
@@ -1686,7 +1686,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertIsPlusZero( 1/inf )    
 
         -- behavior with -0 is lua version dependant, see note above
-        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.3" then
+        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.3" then
             lu.assertIsPlusZero( -0 )
         else
             assertFailure( lu.assertIsPlusZero, -0 )
@@ -1717,7 +1717,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure( lu.assertNotIsPlusZero, 1/inf )    
 
         -- behavior with -0 is lua version dependant, see note above
-        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.3" then
+        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.3" then
             assertFailure( lu.assertNotIsPlusZero, -0 )
         else
             lu.assertNotIsPlusZero( -0 )
@@ -1748,7 +1748,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertIsMinusZero( 1/-inf )    
         
         -- behavior with -0 is lua version dependant, see note above
-        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.3" then
+        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.3" then
             assertFailure( lu.assertIsMinusZero, -0 )
         else
             lu.assertIsMinusZero( -0 )
@@ -1777,7 +1777,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure( lu.assertNotIsMinusZero, 1/-inf )    
         
         -- behavior with -0 is lua version dependant, see note above
-        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.3" then
+        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.3" then
             lu.assertNotIsMinusZero( -0 )
         else
             assertFailure( lu.assertNotIsMinusZero, -0 )
@@ -1911,7 +1911,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure(lu.assertNotIsNaN, 0 * -inf)
         assertFailure(lu.assertNotIsNaN, -0 * -inf)
         assertFailure(lu.assertNotIsNaN, math.sqrt(-1))
-        if _VERSION == "Lua 5.1" or _VERSION == "Lua 5.2" then
+        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.2" then
             -- Lua 5.3 will complain/error "bad argument #2 to 'fmod' (zero)"
             assertFailure(lu.assertNotIsNaN, math.fmod(1, 0))
             assertFailure(lu.assertNotIsNaN, math.fmod(1, -0))
