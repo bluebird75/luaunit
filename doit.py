@@ -14,12 +14,14 @@ REPO_PATH='d:/work/luaunit/luaunit-git/luaunit3/'
 LUA51='d:/program/dev/lua/lua51/lua51.exe'
 LUA52='d:/program/dev/lua/lua52/lua52.exe'
 LUA53='d:/program/dev/lua/lua53/lua53.exe'
+LUAJIT='d:/program/dev/lua/luajit/luajit.exe'
 
 ALL_LUA = ( 
     (LUA53, 'lua 5.3'), 
     (LUA52, 'lua 5.2'), 
     (LUA51, 'lua 5.1'), 
-#    (LUA50, 'lua 5.0'),
+    (LUAJIT, 'lua JIT'), 
+#    (LUA50, 'lua 5.0'),    no longer supported...
 )
 
 os.environ["nodosfilewarning"] = "1"
