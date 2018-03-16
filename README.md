@@ -134,28 +134,28 @@ the Lua version and installation directory. It uses, by default, Linux paths tha
 
 #### Version 3.3 - 6. March 2018
 * General
-	** when comparing lists with assertEquals(), failure message provides an advanced comparison of the lists
-	** assertErrorMsgEquals() can check for error raised as tables
-	** tests may be finished early with fail(), failIf(), success() or successIf()
-	** improve printing of recursive tables
-	** improvements and fixes to JUnit and TAP output
-	** stricter assertTrue() and assertFalse(): they only succeed with boolean values
-	** add assertEvalToTrue() and assertEvalToFalse() with previous assertTrue()/assertFalse() behavior of coercing to boolean before asserting
-    ** all assertion functions accept an optional extra message, to be printed along the failure
+    * when comparing lists with assertEquals(), failure message provides an advanced comparison of the lists
+    * assertErrorMsgEquals() can check for error raised as tables
+    * tests may be finished early with fail(), failIf(), success() or successIf()
+    * improve printing of recursive tables
+    * improvements and fixes to JUnit and TAP output
+    * stricter assertTrue() and assertFalse(): they only succeed with boolean values
+    * add assertEvalToTrue() and assertEvalToFalse() with previous assertTrue()/assertFalse() behavior of coercing to boolean before asserting
+        ** all assertion functions accept an optional extra message, to be printed along the failure
 * New command-line arguments:
-	** can now shuffle tests with --shuffle or -s
-	** possibility to repeat tests (for example to trigger a JIT), with --repeat NUM or -r NUM
-	** more flexible test selection with inclusion (--pattern / -p) or exclusion (--exclude / -x) or combination of both
+	* can now shuffle tests with --shuffle or -s
+	* possibility to repeat tests (for example to trigger a JIT), with --repeat NUM or -r NUM
+	* more flexible test selection with inclusion (--pattern / -p) or exclusion (--exclude / -x) or combination of both
 * Scientific computing dedicated support (see documentation):
-	** provide the machine epsilon in lu.EPS
-	** new functions: assertNan(), assertInf(), assertPlusInf(), assertMinusInf(), assertPlusZero(), assertMinusZero()
-	** in assertAlmostEquals( a, b, margin ), margin no longer provides a default value of 1E-11, the machine epsilon is used instead
+	* provide the machine epsilon in lu.EPS
+	* new functions: assertNan(), assertInf(), assertPlusInf(), assertMinusInf(), assertPlusZero(), assertMinusZero()
+	* in assertAlmostEquals( a, b, margin ), margin no longer provides a default value of 1E-11, the machine epsilon is used instead
 * Platform and continuous integration support:
-	** validate LuaUnit on MacOs platform (thank to Travis CI)
-	** validate LuaUnit with 32 bits numbers (floats) and 64 bits numbers (double)
-	** add test coverage measurements thank to coveralls.io . Status: 99.76% of the code is verified.
-	** use cache for AppVeyor and Travis builds
-	** support for luarocks doc command
+	* validate LuaUnit on MacOs platform (thank to Travis CI)
+	* validate LuaUnit with 32 bits numbers (floats) and 64 bits numbers (double)
+	* add test coverage measurements thank to coveralls.io . Status: 99.76% of the code is verified.
+	* use cache for AppVeyor and Travis builds
+	* support for luarocks doc command
 * General doc improvements (detailed description of all output, more cross-linking between sections)
 
 #### Version 3.2 - 12. Jul 2016
