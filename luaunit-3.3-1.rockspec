@@ -2,7 +2,7 @@ package = "LuaUnit"
 version = "3.3-1"
 source =
 {
-	url = 'https://github.com/bluebird75/luaunit/releases/download/LUAUNIT_V3_3-RC1/rock-luaunit-3.3.zip'
+	url = 'https://github.com/bluebird75/luaunit/releases/download/LUAUNIT_V3_3/rock-luaunit-3.3.zip'
 }
 
 description =
