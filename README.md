@@ -110,7 +110,8 @@ for all MAD calculation and framework validation. Thanks Laurent Deniau for cont
 
 **LuaRocks**
 
-LuaUnit v3.3 is available on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit).
+LuaUnit v3.3 is available on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit). To install it, you need at least 
+LuaRocks version 2.4.4 (due to old versions of wget being incompatible with GitHub https downloading)
 
 **GitHub** 
 
