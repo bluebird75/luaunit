@@ -8,7 +8,7 @@ RELEASE_DIR='release/' + RELEASE_NAME + '/'
 RELEASE_TAG='LUAUNIT_V3_3'
 TARGET_ZIP=RELEASE_NAME + '.zip'
 TARGET_TGZ=RELEASE_NAME + '.tgz'
-REPO_PATH='d:/work/luaunit/luaunit-git/luaunit3/'
+REPO_PATH='d:/work/luaunit/luaunit1'
 
 # LUA50='d:/program/dev/lua/lua50/lua50.exe'
 LUA51='d:/program/dev/lua/lua51/lua51.exe'
