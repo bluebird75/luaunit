@@ -1859,8 +1859,8 @@ Some issues on GitHub are marked with label *enhancement*. Feel also free to pic
 
 Changes should be proposed as *Pull Requests* on GitHub.
 
-Thank to our continous integration setup with Travis-Ci and AppVeyor, all unit-tests and functional tests are run on Linux, Windows and MacOs, with all versions of Lua. So
-any *Pull Request* will show immediatly if anything is going unexpected.
+Thank to our continuous integration setup with Travis-Ci and AppVeyor, all unit-tests and functional tests are run on Linux, Windows and MacOs, with all versions of Lua. So
+any *Pull Request* will show immediately if anything is going unexpected.
 
 
 Unit-tests
@@ -1986,7 +1986,7 @@ Functional tests may start failing when:
 1. Increasing LuaUnit version
 2. Improving or breaking LuaUnit output
 
-This a good place to start looking if you see failures occuring.
+This a good place to start looking if you see failures occurring.
 
 Annexes
 ********
