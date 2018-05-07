@@ -1,19 +1,12 @@
 TODO Future:
 ============
+- pretty function formatting: https://github.com/luarocks/luarocks/blob/master/src/luarocks/core/util.lua
+- platform detection:
 - document prettystr
 - add the ability to count the number of assertions that should have been executed in the test
 - validate output with ignored tests (0 failures or some failures)
-- report test duration everywhere
-- allow to skip tests
 - parametrize tests
 - coloured output
-- global setup / teardown
-- class setup / teardown
-- add date and duration to tap output
-- better error messages for table assertions:
-	+ expected length of X, got Y
-	+ keys differing in table 1 and 2
-- XML: report system information
 - better error messages for string differences (diffing)
 - print local variables upon assertion error:
 	+ debug.get_local( ) will get the local variables in the current context
@@ -26,35 +19,58 @@ TODO Future:
 - look at serpent to see how to improve nested table printing
 - function should be printed as <function>
 - print table of test test_filterWithPattern and see how to improve readability
+- shuffle should shuffle separately classes and then class methods
+- add assertTableContains and assertTableNotContains to check the presence / absence of value in an array
+- look at serpent to see how to improve nested table printing
+- doc about usage of prettystr & assertion library
+- assertListContainsElements
+- assertListContainsElements
+- checkXXX for every assertXXX
+
+Version 3.4:
+============
+- global setup / teardown
+- class setup / teardown
+- report test duration everywhere
+- allow to skip tests
+- add date and duration to tap output
+- XML: report system information
 - align the "OK" vertically for text output
 - better detection of screen size
-- shuffle should shuffle separately classes and then class methods
 - catch the os.exit call with a handler or something, to avoid aborting the tests
-- add assertTableContains and assertTableNotContains to check the presence / absence of value in an array
-
-Nice to have: 
-============
-- stack unwrapping like in py.test
-
-TODO for 3.3 release:
-===============
-- look at serpent to see how to improve nested table printing
-- doc about scientific computing dedicated functions
-- doc about prettystr
-- doc about usage of prettystr & assertion library
-- fix include/exclude bug (see https://github.com/bluebird75/luaunit/pull/82 )
-
+- move all file:line description to stack trace
+- better deal with one line formatting
 
 
 Done since 3.2:
 ===============
-
+- make sure that example source code is included in documentation when packaging
+- add annex to documentation with full source code of example
+- add annex with BSD license
+- verify that assertError functions all work with tables, review implementation in detail
+- useRe -> usePattern
+- add success() to terminate test successfully
+- doc: explain that prettystr() is used in assertions
+- check rock installation of luaunit
+- add custom message support
+- build luarocks
+- update contributors
+- update download badge
+- doc about prettystr
+- add fail() to force test failure
+- use caching on travis-ci
+- assertAlmostEqual no longer includes a default margin, margin must always be explicitly specified.
+- verify that lu.EPS by calculation
+- fix include/exclude bug (see https://github.com/bluebird75/luaunit/pull/82 )
+- doc about scientific computing dedicated functions
+- assertions for nan and inf and +/- zero
+- fixes for junit and tap output
+- doc improvements
 - better error messages for list assertions:
 	+ expected length of X, got Y
 	+ index differing in table 1 and 2
 - more doc about assertTrue/False/... with a table
 - randomized testing
-- assertions for nan and inf
 - can run a tests numerous times (useful for triggering the JIT effect)
 - can include and exclude tests from the test list
 
@@ -128,6 +144,26 @@ x table assertions
 x sequence asserts
 x compatibilty tests with several version of lua
 x add assertNotEquals
+
+Release TODO:
+=============
+- all tests green in Travis and AppVeyor
+- doc is green in read-the-docs
+- documentation is updated with release content
+- doit.py runtests success
+- tag set on the code
+- upload release to GitHub
+- prepare luarocks and upload to luarocks
+- verify smooth installation of luarocks
+- annonce release on lua mailing-list
+
+
+
+
+
+
+
+
 
 
 

@@ -82,7 +82,7 @@ TestToto = {} --class
     end
 
 
--- class TestToto
+-- class TestTiti
 
 TestTiti = {} --class
     function TestTiti:setUp()

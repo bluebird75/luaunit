@@ -6,7 +6,6 @@ Homepage: https://github.com/bluebird75/luaunit
 Development by Philippe Fremy <phil@freehackers.org>
 Based on initial work of Ryu, Gwang (http://www.gpgstudy.com/gpgiki/LuaUnit)
 License: BSD License, see LICENSE.txt
-Version: 3.2
 ]]--
 
 require("math")
@@ -15,8 +14,11 @@ local M={}
 -- private exported functions (for testing)
 M.private = {}
 
-M.VERSION='3.2'
+M.VERSION='3.3'
 M._VERSION=M.VERSION -- For LuaUnit v2 compatibility
+
+-- a version which distinguish between regular Lua and LuaJit
+M._LUAVERSION = (jit and jit.version) or _VERSION
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer
 assertEquals( expected, actual ).
@@ -28,22 +30,22 @@ M.LINE_LENGTH = 80
 M.TABLE_DIFF_ANALYSIS_THRESHOLD = 10    -- display deep analysis for more than 10 items
 M.LIST_DIFF_ANALYSIS_THRESHOLD  = 10    -- display deep analysis for more than 10 items
 
---[[ M.EPSILON is meant to help with Lua's floating point math in simple corner
+--[[ EPS is meant to help with Lua's floating point math in simple corner
 cases like almostEquals(1.1-0.1, 1), which may not work as-is (e.g. on numbers
 with rational binary representation) if the user doesn't provide some explicit
 error margin.
 
-The default margin used by almostEquals() in such cases is M.EPSILON; and since
+The default margin used by almostEquals() in such cases is EPS; and since
 Lua may be compiled with different numeric precisions (single vs. double), we
 try to select a useful default for it dynamically. Note: If the initial value
 is not acceptable, it can be changed by the user to better suit specific needs.
 
 See also: https://en.wikipedia.org/wiki/Machine_epsilon
 ]]
-M.EPSILON = 2^-52 -- = machine epsilon for "double", ~2.22E-16
-if math.abs(1.1 - 1 - 0.1) > M.EPSILON then
-    -- rounding error is above EPSILON, assume single precision
-    M.EPSILON = 2^-23 -- = machine epsilon for "float", ~1.19E-07
+M.EPS = 2^-52 -- = machine epsilon for "double", ~2.22E-16
+if math.abs(1.1 - 1 - 0.1) > M.EPS then
+    -- rounding error is above EPS, assume single precision
+    M.EPS = 2^-23 -- = machine epsilon for "float", ~1.19E-07
 end
 
 -- set this to false to debug luaunit
@@ -64,6 +66,9 @@ M.DISABLE_DEEP_ANALYSIS = false
 local cmdline_argv = rawget(_G, "arg")
 
 M.FAILURE_PREFIX = 'LuaUnit test FAILURE: ' -- prefix string for failed tests
+M.SUCCESS_PREFIX = 'LuaUnit test SUCCESS: ' -- prefix string for successful tests finished early
+
+
 
 M.USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
 Options:
@@ -73,11 +78,11 @@ Options:
   -q, --quiet:            Set verbosity to minimum
   -e, --error:            Stop on first error
   -f, --failure:          Stop on first failure or error
-  -r, --random            Run tests in random order
+  -s, --shuffle:          Shuffle tests before running them
   -o, --output OUTPUT:    Set output type to OUTPUT
                           Possible values: text, tap, junit, nil
   -n, --name NAME:        For junit only, mandatory name of xml file
-  -c, --count NUM:        Execute all tests NUM times, e.g. to trig the JIT
+  -r, --repeat NUM:       Execute all tests NUM times, e.g. to trig the JIT
   -p, --pattern PATTERN:  Execute all test names matching the Lua PATTERN
                           May be repeated to include several patterns
                           Make sure you escape magic chars like +? with %
@@ -418,13 +423,9 @@ end
 M.private.stripLuaunitTrace = stripLuaunitTrace
 
 
-local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recursionTable )
+local function prettystr_sub(v, indentLevel, printTableRefs, recursionTable )
     local type_v = type(v)
     if "string" == type_v  then
-        if keeponeline then
-            v = v:gsub("\n", "\\n") -- escape newline(s)
-        end
-
         -- use clever delimiters according to content:
         -- enclose with single quotes if string contains ", but no '
         if v:find('"', 1, true) and not v:find("'", 1, true) then
@@ -437,8 +438,7 @@ local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recurs
         --if v.__class__ then
         --    return string.gsub( tostring(v), 'table', v.__class__ )
         --end
-        return M.private._table_tostring(v, indentLevel, keeponeline,
-                                            printTableRefs, recursionTable)
+        return M.private._table_tostring(v, indentLevel, printTableRefs, recursionTable)
 
     elseif "number" == type_v then
         -- eliminate differences in formatting between various Lua versions
@@ -462,25 +462,73 @@ local function prettystr_sub(v, indentLevel, keeponeline, printTableRefs, recurs
     return tostring(v)
 end
 
-local function prettystr( v, keeponeline )
-    --[[ Better string conversion, to display nice variable content:
-    For strings, if keeponeline is set to true, string is displayed on one line, with visible \n
+local function prettystr( v )
+    --[[ Pretty string conversion, to display the full content of a variable of any type.
+
     * string are enclosed with " by default, or with ' if string contains a "
-    * if table is a class, display class name
-    * tables are expanded
+    * tables are expanded to show their full content, with indentation in case of nested tables
     ]]--
     local recursionTable = {}
-    local s = prettystr_sub(v, 1, keeponeline, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
+    local s = prettystr_sub(v, 1, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
     if recursionTable.recursionDetected and not M.PRINT_TABLE_REF_IN_ERROR_MSG then
         -- some table contain recursive references,
         -- so we must recompute the value by including all table references
         -- else the result looks like crap
         recursionTable = {}
-        s = prettystr_sub(v, 1, keeponeline, true, recursionTable)
+        s = prettystr_sub(v, 1, true, recursionTable)
     end
     return s
 end
 M.prettystr = prettystr
+
+function M.adjust_err_msg_with_iter( err_msg, iter_msg )
+    --[[ Adjust the error message err_msg: trim the FAILURE_PREFIX or SUCCESS_PREFIX information if needed,
+    add the iteration message if any and return the result.
+
+    err_msg:  string, error message captured with pcall
+    iter_msg: a string describing the current iteration ("iteration N") or nil
+              if there is no iteration in this test.
+
+    Returns: (new_err_msg, test_status)
+        new_err_msg: string, adjusted error message, or nil in case of success
+        test_status: M.NodeStatus.FAIL, SUCCESS or ERROR according to the information
+                     contained in the error message.
+    ]]
+    if iter_msg then
+        iter_msg = iter_msg..', '
+    else
+        iter_msg = ''
+    end
+
+    local RE_FILE_LINE = '.*:%d+: '
+
+    if (err_msg:find( M.SUCCESS_PREFIX ) == 1) or err_msg:match( '('..RE_FILE_LINE..')' .. M.SUCCESS_PREFIX .. ".*" ) then
+        -- test finished early with success()
+        return nil, M.NodeStatus.PASS
+    end
+
+    if (err_msg:find( M.FAILURE_PREFIX ) == 1) or (err_msg:match( '('..RE_FILE_LINE..')' .. M.FAILURE_PREFIX .. ".*" ) ~= nil) then
+        -- substitute prefix by iteration message
+        err_msg = err_msg:gsub(M.FAILURE_PREFIX, iter_msg, 1)
+        -- print("failure detected")
+        return err_msg, M.NodeStatus.FAIL
+    else
+        -- print("error detected")
+        -- regular error, not a failure
+        if iter_msg then
+            local match
+            -- "./test\\test_luaunit.lua:2241: some error msg
+            match = err_msg:match( '(.*:%d+: ).*' )
+            if match then
+                err_msg = err_msg:gsub( match, match .. iter_msg )
+            else
+                -- no file:line: infromation, just add the iteration info at the beginning of the line
+                err_msg = iter_msg .. err_msg
+            end
+        end
+        return err_msg, M.NodeStatus.ERROR
+    end
+end
 
 local function tryMismatchFormatting( table_a, table_b, doDeepAnalysis )
     --[[
@@ -806,11 +854,21 @@ local function prettystrPairs(value1, value2, suffix_a, suffix_b)
 end
 M.private.prettystrPairs = prettystrPairs
 
+local function _table_raw_tostring( t )
+    -- return the default tostring() for tables, with the table ID, even if the table has a metatable
+    -- with the __tostring converter
+    local mt = getmetatable( t )
+    if mt then setmetatable( t, nil ) end
+    local ref = tostring(t)
+    if mt then setmetatable( t, mt ) end
+    return ref
+end
+M.private._table_raw_tostring = _table_raw_tostring
+
 local TABLE_TOSTRING_SEP = ", "
 local TABLE_TOSTRING_SEP_LEN = string.len(TABLE_TOSTRING_SEP)
 
-
-local function _table_tostring( tbl, indentLevel, keeponeline, printTableRefs, recursionTable )
+local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable )
     printTableRefs = printTableRefs or M.PRINT_TABLE_REF_IN_ERROR_MSG
     recursionTable = recursionTable or {}
     recursionTable[tbl] = true
@@ -823,70 +881,109 @@ local function _table_tostring( tbl, indentLevel, keeponeline, printTableRefs, r
         if "string" == type(k) and k:match("^[_%a][_%w]*$") then
             return k
         end
-        return prettystr_sub(k, indentLevel+1, true, printTableRefs, recursionTable)
+        return prettystr_sub(k, indentLevel+1, printTableRefs, recursionTable)
     end
 
-    local entry, count, seq_index = nil, 0, 1
-    for k, v in sortedPairs( tbl ) do
-        if k == seq_index then
-            -- for the sequential part of tables, we'll skip the "<key>=" output
-            entry = ''
-            seq_index = seq_index + 1
-        elseif recursionTable[k] then
-            -- recursion in the key detected
-            recursionTable.recursionDetected = true
-            entry = "<"..tostring(k)..">="
-        else
-            entry = keytostring(k) .. "="
+    local mt = getmetatable( tbl )
+
+    if mt and mt.__tostring then
+        -- if table has a __tostring() function in its metatable, use it to display the table
+        -- else, compute a regular table
+        result = strsplit( '\n', tostring(tbl) )
+        return M.private._table_tostring_format_multiline_string( result, indentLevel )
+
+    else
+        -- no metatable, compute the table representation
+
+        local entry, count, seq_index = nil, 0, 1
+        for k, v in sortedPairs( tbl ) do
+
+            -- key part
+            if k == seq_index then
+                -- for the sequential part of tables, we'll skip the "<key>=" output
+                entry = ''
+                seq_index = seq_index + 1
+            elseif recursionTable[k] then
+                -- recursion in the key detected
+                recursionTable.recursionDetected = true
+                entry = "<".._table_raw_tostring(k)..">="
+            else
+                entry = keytostring(k) .. "="
+            end
+
+            -- value part
+            if recursionTable[v] then
+                -- recursion in the value detected!
+                recursionTable.recursionDetected = true
+                entry = entry .. "<".._table_raw_tostring(v)..">"
+            else
+                entry = entry ..
+                    prettystr_sub( v, indentLevel+1, printTableRefs, recursionTable )
+            end
+            count = count + 1
+            result[count] = entry
         end
-        if recursionTable[v] then
-            -- recursion in the value detected!
-            recursionTable.recursionDetected = true
-            entry = entry .. "<"..tostring(v)..">"
-        else
-            entry = entry ..
-                prettystr_sub( v, indentLevel+1, keeponeline, printTableRefs, recursionTable )
-        end
-        count = count + 1
-        result[count] = entry
+        return M.private._table_tostring_format_result( tbl, result, indentLevel, printTableRefs )
     end
 
-    if not keeponeline then
-        -- set dispOnMultLines if the maximum LINE_LENGTH would be exceeded
-        local totalLength = 0
-        for k, v in ipairs( result ) do
-            totalLength = totalLength + string.len( v )
-            if totalLength >= M.LINE_LENGTH then
-                dispOnMultLines = true
-                break
-            end
-        end
+end
+M.private._table_tostring = _table_tostring -- prettystr_sub() needs it
 
-        if not dispOnMultLines then
-            -- adjust with length of separator(s):
-            -- two items need 1 sep, three items two seps, ... plus len of '{}'
-            if count > 0 then
-                totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * (count - 1)
-            end
-            dispOnMultLines = totalLength + 2 >= M.LINE_LENGTH
+local function _table_tostring_format_multiline_string( tbl_str, indentLevel )
+    local indentString = '\n'..string.rep("    ", indentLevel - 1)
+    return table.concat( tbl_str, indentString )
+
+end
+M.private._table_tostring_format_multiline_string = _table_tostring_format_multiline_string
+
+
+local function _table_tostring_format_result( tbl, result, indentLevel, printTableRefs )
+    -- final function called in _table_to_string() to format the resulting list of
+    -- string describing the table.
+
+    local dispOnMultLines = false
+
+    -- set dispOnMultLines to true if the maximum LINE_LENGTH would be exceeded with the values
+    local totalLength = 0
+    for k, v in ipairs( result ) do
+        totalLength = totalLength + string.len( v )
+        if totalLength >= M.LINE_LENGTH then
+            dispOnMultLines = true
+            break
         end
+    end
+
+    -- set dispOnMultLines to true if the max LINE_LENGTH would be exceeded
+    -- with the values and the separators.
+    if not dispOnMultLines then
+        -- adjust with length of separator(s):
+        -- two items need 1 sep, three items two seps, ... plus len of '{}'
+        if #result > 0 then
+            totalLength = totalLength + TABLE_TOSTRING_SEP_LEN * (#result - 1)
+        end
+        dispOnMultLines = (totalLength + 2 >= M.LINE_LENGTH)
     end
 
     -- now reformat the result table (currently holding element strings)
     if dispOnMultLines then
         local indentString = string.rep("    ", indentLevel - 1)
-        result = {"{\n    ", indentString,
-                  table.concat(result, ",\n    " .. indentString), "\n",
-                  indentString, "}"}
+        result = {
+                    "{\n    ",
+                    indentString,
+                    table.concat(result, ",\n    " .. indentString),
+                    "\n",
+                    indentString,
+                    "}"
+                }
     else
         result = {"{", table.concat(result, TABLE_TOSTRING_SEP), "}"}
     end
     if printTableRefs then
-        table.insert(result, 1, "<"..tostring(tbl).."> ") -- prepend table ref
+        table.insert(result, 1, "<".._table_raw_tostring(tbl).."> ") -- prepend table ref
     end
     return table.concat(result)
 end
-M.private._table_tostring = _table_tostring -- prettystr_sub() needs it
+M.private._table_tostring_format_result = _table_tostring_format_result -- prettystr_sub() needs it
 
 local function _table_contains(t, element)
     if type(t) == "table" then
@@ -1068,16 +1165,22 @@ end
 M.private._is_table_equals = _is_table_equals
 is_equal = _is_table_equals
 
-local function failure(msg, level)
+local function failure(main_msg, extra_msg_or_nil, level)
     -- raise an error indicating a test failure
     -- for error() compatibility we adjust "level" here (by +1), to report the
     -- calling context
+    local msg
+    if type(extra_msg_or_nil) == 'string' and extra_msg_or_nil:len() > 0 then
+        msg = extra_msg_or_nil .. '\n' .. main_msg
+    else
+        msg = main_msg
+    end
     error(M.FAILURE_PREFIX .. msg, (level or 1) + 1)
 end
 
-local function fail_fmt(level, ...)
+local function fail_fmt(level, extra_msg_or_nil, ...)
      -- failure with printf-style formatted message and given error level
-    failure(string.format(...), (level or 1) + 1)
+    failure(string.format(...), extra_msg_or_nil, (level or 1) + 1)
 end
 M.private.fail_fmt = fail_fmt
 
@@ -1117,104 +1220,48 @@ function M.assertError(f, ...)
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     if pcall( f, ... ) then
-        failure( "Expected an error when calling function but no error generated", 2 )
+        failure( "Expected an error when calling function but no error generated", nil, 2 )
     end
 end
 
-function M.assertEvalToTrue(value)
-    assertCount = assertCount + 1
-    if not value then
-        failure("expected: a value evaluating to true, actual: " ..prettystr(value), 2)
+function M.fail( msg )
+    -- stops a test due to a failure
+    failure( msg, nil, 2 )
+end
+
+function M.failIf( cond, msg )
+    -- Fails a test with "msg" if condition is true
+    if cond then
+        failure( msg, nil, 2 )
     end
 end
 
-function M.assertEvalToFalse(value)
-    assertCount = assertCount + 1
-    if value then
-        failure("expected: false or nil, actual: " ..prettystr(value), 2)
+function M.success()
+    -- stops a test with a success
+    error(M.SUCCESS_PREFIX, 2)
+end
+
+function M.successIf( cond )
+    -- stops a test with a success if condition is met
+    if cond then
+        error(M.SUCCESS_PREFIX, 2)
     end
 end
 
-function M.assertIsTrue(value)
-    assertCount = assertCount + 1
-    if value ~= true then
-        failure("expected: true, actual: " ..prettystr(value), 2)
-    end
-end
+------------------------------------------------------------------
+--                  Equality assertions
+------------------------------------------------------------------
 
-function M.assertNotIsTrue(value)
-    assertCount = assertCount + 1
-    if value == true then
-        failure("expected: anything but true, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertIsFalse(value)
-    assertCount = assertCount + 1
-    if value ~= false then
-        failure("expected: false, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertNotIsFalse(value)
-    assertCount = assertCount + 1
-    if value == false then
-        failure("expected: anything but false, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertIsNil(value)
-    assertCount = assertCount + 1
-    if value ~= nil then
-        failure("expected: nil, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertNotIsNil(value)
-    assertCount = assertCount + 1
-    if value == nil then
-        failure("expected non nil value, received nil", 2)
-    end
-end
-
-function M.assertIsNaN(value)
-    assertCount = assertCount + 1
-    if type(value) ~= "number" or value == value then
-        failure("expected: nan, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertNotIsNaN(value)
-    assertCount = assertCount + 1
-    if type(value) == "number" and value ~= value then
-        failure("expected non nan value, received nan", 2)
-    end
-end
-
-function M.assertIsInf(value)
-    assertCount = assertCount + 1
-    if type(value) ~= "number" or math.abs(value) ~= math.huge then
-        failure("expected: inf, actual: " ..prettystr(value), 2)
-    end
-end
-
-function M.assertNotIsInf(value)
-    assertCount = assertCount + 1
-    if type(value) == "number" and math.abs(value) == math.huge then
-        failure("expected non inf value, received ±inf", 2)
-    end
-end
-
-function M.assertEquals(actual, expected, doDeepAnalysis)
+function M.assertEquals(actual, expected, extra_msg_or_nil, doDeepAnalysis)
     assertCount = assertCount + 1
     if type(actual) == 'table' and type(expected) == 'table' then
         if not _is_table_equals(actual, expected) then
-            failure( errorMsgEquality(actual, expected, doDeepAnalysis), 2 )
+            failure( errorMsgEquality(actual, expected, doDeepAnalysis), extra_msg_or_nil, 2 )
         end
     elseif type(actual) ~= type(expected) then
-        failure( errorMsgEquality(actual, expected), 2 )
+        failure( errorMsgEquality(actual, expected), extra_msg_or_nil, 2 )
     elseif actual ~= expected then
-        failure( errorMsgEquality(actual, expected), 2 )
+        failure( errorMsgEquality(actual, expected), extra_msg_or_nil, 2 )
     end
 end
 
@@ -1230,17 +1277,17 @@ function M.almostEquals( actual, expected, margin )
     return math.abs(expected - actual) <= margin
 end
 
-function M.assertAlmostEquals( actual, expected, margin )
+function M.assertAlmostEquals( actual, expected, margin, extra_msg_or_nil )
     -- check that two floats are close by margin
-    margin = margin or M.EPSILON
+    margin = margin or M.EPS
     if not M.almostEquals(actual, expected, margin) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
         end
-        local delta = math.abs(actual - expected) - margin
-        fail_fmt(2, 'Values are not almost equal\n' ..
-                    'Actual: %s, expected: %s with margin of %s; delta: %s',
-                    actual, expected, margin, delta)
+        local delta = math.abs(actual - expected)
+        fail_fmt(2, extra_msg_or_nil, 'Values are not almost equal\n' ..
+                    'Actual: %s, expected: %s, delta %s above margin of %s',
+                    actual, expected, delta, margin)
     end
 end
 
@@ -1278,7 +1325,7 @@ function M.assertAllAlmostEquals( actual, expected, margin )
     end
 end
 
-function M.assertNotEquals(actual, expected)
+function M.assertNotEquals(actual, expected, extra_msg_or_nil)
     assertCount = assertCount + 1
     if type(actual) ~= type(expected) then
         return
@@ -1291,74 +1338,89 @@ function M.assertNotEquals(actual, expected)
     elseif actual ~= expected then
         return
     end
-    fail_fmt(2, 'Received the not expected value: %s', prettystr(actual))
+    fail_fmt(2, extra_msg_or_nil, 'Received the not expected value: %s', prettystr(actual))
 end
 
-function M.assertNotAlmostEquals( actual, expected, margin )
+function M.assertNotAlmostEquals( actual, expected, margin, extra_msg_or_nil )
     -- check that two floats are not close by margin
-    margin = margin or M.EPSILON
+    margin = margin or M.EPS
     if M.almostEquals(actual, expected, margin) then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected, actual = actual, expected
         end
-        local delta = margin - math.abs(actual - expected)
-        fail_fmt(2, 'Values are almost equal\nActual: %s, expected: %s' ..
-                    ' with a difference above margin of %s; delta: %s',
-                    actual, expected, margin, delta)
+        local delta = math.abs(actual - expected)
+        fail_fmt(2, extra_msg_or_nil, 'Values are almost equal\nActual: %s, expected: %s' ..
+                    ', delta %s below margin of %s',
+                    actual, expected, delta, margin)
     end
 end
 
-function M.assertStrContains( str, sub, useRe )
+function M.assertItemsEquals(actual, expected, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    -- checks that the items of table expected
+    -- are contained in table actual. Warning, this function
+    -- is at least O(n^2)
+    if not _is_table_items_equals(actual, expected ) then
+        expected, actual = prettystrPairs(expected, actual)
+        fail_fmt(2, extra_msg_or_nil, 'Content of the tables are not identical:\nExpected: %s\nActual: %s',
+                 expected, actual)
+    end
+end
+
+------------------------------------------------------------------
+--                  String assertion
+------------------------------------------------------------------
+
+function M.assertStrContains( str, sub, isPattern, extra_msg_or_nil )
     assertCount = assertCount + 1
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    if not string.find(str, sub, 1, not useRe) then
+    if not string.find(str, sub, 1, not isPattern) then
         sub, str = prettystrPairs(sub, str, '\n')
-        fail_fmt(2, 'Error, %s %s was not found in string %s',
-                 useRe and 'regexp' or 'substring', sub, str)
+        fail_fmt(2, extra_msg_or_nil, 'Could not find %s %s in string %s',
+                 isPattern and 'pattern' or 'substring', sub, str)
     end
 end
 
-function M.assertStrIContains( str, sub )
+function M.assertStrIContains( str, sub, extra_msg_or_nil )
     assertCount = assertCount + 1
     -- this relies on lua string.find function
     -- a string always contains the empty string
     if not string.find(str:lower(), sub:lower(), 1, true) then
         sub, str = prettystrPairs(sub, str, '\n')
-        fail_fmt(2, 'Error, substring %s was not found (case insensitively) in string %s',
+        fail_fmt(2, extra_msg_or_nil, 'Could not find (case insensitively) substring %s in string %s',
                  sub, str)
     end
 end
 
-function M.assertNotStrContains( str, sub, useRe )
+function M.assertNotStrContains( str, sub, isPattern, extra_msg_or_nil )
     assertCount = assertCount + 1
     -- this relies on lua string.find function
     -- a string always contains the empty string
-    if string.find(str, sub, 1, not useRe) then
+    if string.find(str, sub, 1, not isPattern) then
         sub, str = prettystrPairs(sub, str, '\n')
-        fail_fmt(2, 'Error, %s %s was found in string %s',
-                 useRe and 'regexp' or 'substring', sub, str)
+        fail_fmt(2, extra_msg_or_nil, 'Found the not expected %s %s in string %s',
+                 isPattern and 'pattern' or 'substring', sub, str)
     end
 end
 
-function M.assertNotStrIContains( str, sub )
+function M.assertNotStrIContains( str, sub, extra_msg_or_nil )
     assertCount = assertCount + 1
     -- this relies on lua string.find function
     -- a string always contains the empty string
     if string.find(str:lower(), sub:lower(), 1, true) then
         sub, str = prettystrPairs(sub, str, '\n')
-        fail_fmt(2, 'Error, substring %s was found (case insensitively) in string %s',
+        fail_fmt(2, extra_msg_or_nil, 'Found (case insensitively) the not expected substring %s in string %s',
                  sub, str)
     end
 end
 
-function M.assertStrMatches( str, pattern, start, final )
+function M.assertStrMatches( str, pattern, start, final, extra_msg_or_nil )
     assertCount = assertCount + 1
     -- Verify a full match for the string
-    -- for a partial match, simply use assertStrContains with useRe set to true
     if not strMatch( str, pattern, start, final ) then
         pattern, str = prettystrPairs(pattern, str, '\n')
-        fail_fmt(2, 'Error, pattern %s was not matched by string %s',
+        fail_fmt(2, extra_msg_or_nil, 'Could not match pattern %s with string %s',
                  pattern, str)
     end
 end
@@ -1369,11 +1431,33 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        failure( 'No error generated when calling function but expected error: "'..expectedMsg..'"', 2 )
+        failure( 'No error generated when calling function but expected error: '..M.prettystr(expectedMsg), nil, 2 )
     end
+    if type(expectedMsg) == "string" and type(error_msg) ~= "string" then
+        -- table are converted to string automatically
+        error_msg = tostring(error_msg)
+    end
+    local differ = false
     if error_msg ~= expectedMsg then
+        local tr = type(error_msg)
+        local te = type(expectedMsg)
+        if te == 'table' then
+            if tr ~= 'table' then
+                differ = true
+            else
+                 local ok = pcall(M.assertItemsEquals, error_msg, expectedMsg)
+                 if not ok then
+                     differ = true
+                 end
+            end
+        else
+           differ = true
+        end
+    end
+
+    if differ then
         error_msg, expectedMsg = prettystrPairs(error_msg, expectedMsg)
-        fail_fmt(2, 'Exact error message expected: %s\nError message received: %s\n',
+        fail_fmt(2, nil, 'Error message expected: %s\nError message received: %s\n',
                  expectedMsg, error_msg)
     end
 end
@@ -1384,11 +1468,14 @@ function M.assertErrorMsgContains( partialMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        failure( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), 2 )
+        failure( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), nil, 2 )
+    end
+    if type(error_msg) ~= "string" then
+        error_msg = tostring(error_msg)
     end
     if not string.find( error_msg, partialMsg, nil, true ) then
         error_msg, partialMsg = prettystrPairs(error_msg, partialMsg)
-        fail_fmt(2, 'Error message does not contain: %s\nError message received: %s\n',
+        fail_fmt(2, nil, 'Error message does not contain: %s\nError message received: %s\n',
                  partialMsg, error_msg)
     end
 end
@@ -1399,12 +1486,75 @@ function M.assertErrorMsgMatches( expectedMsg, func, ... )
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        failure( 'No error generated when calling function but expected error matching: "'..expectedMsg..'"', 2 )
+        failure( 'No error generated when calling function but expected error matching: "'..expectedMsg..'"', nil, 2 )
+    end
+    if type(error_msg) ~= "string" then
+        error_msg = tostring(error_msg)
     end
     if not strMatch( error_msg, expectedMsg ) then
         expectedMsg, error_msg = prettystrPairs(expectedMsg, error_msg)
-        fail_fmt(2, 'Error message does not match: %s\nError message received: %s\n',
+        fail_fmt(2, nil, 'Error message does not match pattern: %s\nError message received: %s\n',
                  expectedMsg, error_msg)
+    end
+end
+
+------------------------------------------------------------------
+--              Type assertions
+------------------------------------------------------------------
+
+function M.assertEvalToTrue(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if not value then
+        failure("expected: a value evaluating to true, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertEvalToFalse(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if value then
+        failure("expected: false or nil, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertIsTrue(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if value ~= true then
+        failure("expected: true, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertNotIsTrue(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if value == true then
+        failure("expected: not true, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertIsFalse(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if value ~= false then
+        failure("expected: false, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertNotIsFalse(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if value == false then
+        failure("expected: not false, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertIsNil(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if value ~= nil then
+        failure("expected: nil, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertNotIsNil(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if value == nil then
+        failure("expected: not nil, actual: nil", extra_msg_or_nil, 2)
     end
 end
 
@@ -1424,11 +1574,16 @@ for _, funcName in ipairs(
     typeExpected = typeExpected and typeExpected:lower()
                    or error("bad function name '"..funcName.."' for type assertion")
 
-    M[funcName] = function(value)
+    M[funcName] = function(value, extra_msg_or_nil)
         assertCount = assertCount + 1
         if type(value) ~= typeExpected then
-            fail_fmt(2, 'Expected: a %s value, actual: type %s, value %s',
-                     typeExpected, type(value), prettystrPairs(value))
+            if type(value) == 'nil' then
+                fail_fmt(2, extra_msg_or_nil, 'expected: a %s value, actual: nil',
+                         typeExpected, type(value), prettystrPairs(value))
+            else
+                fail_fmt(2, extra_msg_or_nil, 'expected: a %s value, actual: type %s, value %s',
+                         typeExpected, type(value), prettystrPairs(value))
+            end
         end
     end
 end
@@ -1465,47 +1620,139 @@ for _, funcName in ipairs(
     typeUnexpected = typeUnexpected and typeUnexpected:lower()
                    or error("bad function name '"..funcName.."' for type assertion")
 
-    M[funcName] = function(value)
+    M[funcName] = function(value, extra_msg_or_nil)
         assertCount = assertCount + 1
         if type(value) == typeUnexpected then
-            fail_fmt(2, 'Not expected: a %s type, actual: value %s',
+            fail_fmt(2, extra_msg_or_nil, 'expected: not a %s type, actual: value %s',
                      typeUnexpected, prettystrPairs(value))
         end
     end
 end
 
-function M.assertIs(actual, expected)
+function M.assertIs(actual, expected, extra_msg_or_nil)
     assertCount = assertCount + 1
     if actual ~= expected then
         if not M.ORDER_ACTUAL_EXPECTED then
             actual, expected = expected, actual
         end
-        expected, actual = prettystrPairs(expected, actual, '\n', ', ')
-        fail_fmt(2, 'Expected object and actual object are not the same\nExpected: %sactual: %s',
+        expected, actual = prettystrPairs(expected, actual, '\n', '')
+        fail_fmt(2, extra_msg_or_nil, 'expected and actual object should not be different\nExpected: %s\nReceived: %s',
                  expected, actual)
     end
 end
 
-function M.assertNotIs(actual, expected)
+function M.assertNotIs(actual, expected, extra_msg_or_nil)
     assertCount = assertCount + 1
     if actual == expected then
         if not M.ORDER_ACTUAL_EXPECTED then
             expected = actual
         end
-        fail_fmt(2, 'Expected object and actual object are the same object: %s',
+        fail_fmt(2, extra_msg_or_nil, 'expected and actual object should be different: %s',
                  prettystrPairs(expected))
     end
 end
 
-function M.assertItemsEquals(actual, expected)
+------------------------------------------------------------------
+--              Scientific assertions
+------------------------------------------------------------------
+
+function M.assertIsNaN(value, extra_msg_or_nil)
     assertCount = assertCount + 1
-    -- checks that the items of table expected
-    -- are contained in table actual. Warning, this function
-    -- is at least O(n^2)
-    if not _is_table_items_equals(actual, expected ) then
-        expected, actual = prettystrPairs(expected, actual)
-        fail_fmt(2, 'Contents of the tables are not identical:\nExpected: %s\nActual: %s',
-                 expected, actual)
+    if type(value) ~= "number" or value == value then
+        failure("expected: NaN, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertNotIsNaN(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if type(value) == "number" and value ~= value then
+        failure("expected: not NaN, actual: NaN", extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertIsInf(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if type(value) ~= "number" or math.abs(value) ~= math.huge then
+        failure("expected: #Inf, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertIsPlusInf(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if type(value) ~= "number" or value ~= math.huge then
+        failure("expected: #Inf, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertIsMinusInf(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if type(value) ~= "number" or value ~= -math.huge then
+        failure("expected: -#Inf, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertNotIsPlusInf(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if type(value) == "number" and value == math.huge then
+        failure("expected: not #Inf, actual: #Inf", extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertNotIsMinusInf(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if type(value) == "number" and value == -math.huge then
+        failure("expected: not -#Inf, actual: -#Inf", extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertNotIsInf(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if type(value) == "number" and math.abs(value) == math.huge then
+        failure("expected: not infinity, actual: " .. prettystr(value), extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertIsPlusZero(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if type(value) ~= 'number' or value ~= 0 then
+        failure("expected: +0.0, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+    else if (1/value == -math.huge) then
+            -- more precise error diagnosis
+            failure("expected: +0.0, actual: -0.0", extra_msg_or_nil, 2)
+        else if (1/value ~= math.huge) then
+                -- strange, case should have already been covered
+                failure("expected: +0.0, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+            end
+        end
+    end
+end
+
+function M.assertIsMinusZero(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if type(value) ~= 'number' or value ~= 0 then
+        failure("expected: -0.0, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+    else if (1/value == math.huge) then
+            -- more precise error diagnosis
+            failure("expected: -0.0, actual: +0.0", extra_msg_or_nil, 2)
+        else if (1/value ~= -math.huge) then
+                -- strange, case should have already been covered
+                failure("expected: -0.0, actual: " ..prettystr(value), extra_msg_or_nil, 2)
+            end
+        end
+    end
+end
+
+function M.assertNotIsPlusZero(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if type(value) == 'number' and (1/value == math.huge) then
+        failure("expected: not +0.0, actual: +0.0", extra_msg_or_nil, 2)
+    end
+end
+
+function M.assertNotIsMinusZero(value, extra_msg_or_nil)
+    assertCount = assertCount + 1
+    if type(value) == 'number' and (1/value == -math.huge) then
+        failure("expected: not -0.0, actual: -0.0", extra_msg_or_nil, 2)
     end
 end
 
@@ -1561,6 +1808,10 @@ local list_of_funcs = {
     { 'assertIsFalse'           , 'assert_is_false' },
     { 'assertIsNaN'             , 'assert_is_nan' },
     { 'assertIsInf'             , 'assert_is_inf' },
+    { 'assertIsPlusInf'         , 'assert_is_plus_inf' },
+    { 'assertIsMinusInf'        , 'assert_is_minus_inf' },
+    { 'assertIsPlusZero'        , 'assert_is_plus_zero' },
+    { 'assertIsMinusZero'       , 'assert_is_minus_zero' },
     { 'assertIsFunction'        , 'assert_is_function' },
     { 'assertIsThread'          , 'assert_is_thread' },
     { 'assertIsUserdata'        , 'assert_is_userdata' },
@@ -1575,6 +1826,10 @@ local list_of_funcs = {
     { 'assertIsFalse'           , 'assertFalse' },
     { 'assertIsNaN'             , 'assertNaN' },
     { 'assertIsInf'             , 'assertInf' },
+    { 'assertIsPlusInf'         , 'assertPlusInf' },
+    { 'assertIsMinusInf'        , 'assertMinusInf' },
+    { 'assertIsPlusZero'        , 'assertPlusZero' },
+    { 'assertIsMinusZero'       , 'assertMinusZero'},
     { 'assertIsFunction'        , 'assertFunction' },
     { 'assertIsThread'          , 'assertThread' },
     { 'assertIsUserdata'        , 'assertUserdata' },
@@ -1589,6 +1844,10 @@ local list_of_funcs = {
     { 'assertIsFalse'           , 'assert_false' },
     { 'assertIsNaN'             , 'assert_nan' },
     { 'assertIsInf'             , 'assert_inf' },
+    { 'assertIsPlusInf'         , 'assert_plus_inf' },
+    { 'assertIsMinusInf'        , 'assert_minus_inf' },
+    { 'assertIsPlusZero'        , 'assert_plus_zero' },
+    { 'assertIsMinusZero'       , 'assert_minus_zero' },
     { 'assertIsFunction'        , 'assert_function' },
     { 'assertIsThread'          , 'assert_thread' },
     { 'assertIsUserdata'        , 'assert_userdata' },
@@ -1603,6 +1862,10 @@ local list_of_funcs = {
     { 'assertNotIsFalse'        , 'assert_not_is_false' },
     { 'assertNotIsNaN'          , 'assert_not_is_nan' },
     { 'assertNotIsInf'          , 'assert_not_is_inf' },
+    { 'assertNotIsPlusInf'      , 'assert_not_plus_inf' },
+    { 'assertNotIsMinusInf'     , 'assert_not_minus_inf' },
+    { 'assertNotIsPlusZero'     , 'assert_not_plus_zero' },
+    { 'assertNotIsMinusZero'    , 'assert_not_minus_zero' },
     { 'assertNotIsFunction'     , 'assert_not_is_function' },
     { 'assertNotIsThread'       , 'assert_not_is_thread' },
     { 'assertNotIsUserdata'     , 'assert_not_is_userdata' },
@@ -1617,6 +1880,10 @@ local list_of_funcs = {
     { 'assertNotIsFalse'        , 'assertNotFalse' },
     { 'assertNotIsNaN'          , 'assertNotNaN' },
     { 'assertNotIsInf'          , 'assertNotInf' },
+    { 'assertNotIsPlusInf'      , 'assertNotPlusInf' },
+    { 'assertNotIsMinusInf'     , 'assertNotMinusInf' },
+    { 'assertNotIsPlusZero'     , 'assertNotPlusZero' },
+    { 'assertNotIsMinusZero'    , 'assertNotMinusZero' },
     { 'assertNotIsFunction'     , 'assertNotFunction' },
     { 'assertNotIsThread'       , 'assertNotThread' },
     { 'assertNotIsUserdata'     , 'assertNotUserdata' },
@@ -1631,6 +1898,10 @@ local list_of_funcs = {
     { 'assertNotIsFalse'        , 'assert_not_false' },
     { 'assertNotIsNaN'          , 'assert_not_nan' },
     { 'assertNotIsInf'          , 'assert_not_inf' },
+    { 'assertNotIsPlusInf'      , 'assert_not_plus_inf' },
+    { 'assertNotIsMinusInf'     , 'assert_not_minus_inf' },
+    { 'assertNotIsPlusZero'     , 'assert_not_plus_zero' },
+    { 'assertNotIsMinusZero'    , 'assert_not_minus_zero' },
     { 'assertNotIsFunction'     , 'assert_not_function' },
     { 'assertNotIsThread'       , 'assert_not_thread' },
     { 'assertNotIsUserdata'     , 'assert_not_userdata' },
@@ -1720,10 +1991,10 @@ TapOutput.__class__ = 'TapOutput'
     function TapOutput:addStatus( node )
         io.stdout:write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
         if self.verbosity > M.VERBOSITY_LOW then
-           print( prefixString( '    ', node.msg ) )
+           print( prefixString( '#   ', node.msg ) )
         end
         if self.verbosity > M.VERBOSITY_DEFAULT then
-           print( prefixString( '    ', node.stackTrace ) )
+           print( prefixString( '#   ', node.stackTrace ) )
         end
     end
 
@@ -1783,10 +2054,10 @@ JUnitOutput.__class__ = 'JUnitOutput'
 
     function JUnitOutput:addStatus( node )
         if node:isFailure() then
-            print('# Failure: ' .. node.msg)
+            print( '#   Failure: ' .. prefixString( '#   ', node.msg ):sub(4, nil) )
             -- print('# ' .. node.stackTrace)
         elseif node:isError() then
-            print('# Error: ' .. node.msg)
+            print( '#   Error: ' .. prefixString( '#   '  , node.msg ):sub(4, nil) )
             -- print('# ' .. node.stackTrace)
         end
     end
@@ -2108,16 +2379,16 @@ end
         -- --output, -o, + name: select output type
         -- --pattern, -p, + pattern: run test matching pattern, may be repeated
         -- --exclude, -x, + pattern: run test not matching pattern, may be repeated
-        -- --random, -r, : run tests in random order
+        -- --shuffle, -s, : shuffle tests before reunning them
         -- --name, -n, + fname: name of output file for junit, default to stdout
-        -- --count, -c, + num: number of times to execute each test
+        -- --repeat, -r, + num: number of times to execute each test
         -- [testnames, ...]: run selected test names
         --
         -- Returns a table with the following fields:
         -- verbosity: nil, M.VERBOSITY_DEFAULT, M.VERBOSITY_QUIET, M.VERBOSITY_VERBOSE
         -- output: nil, 'tap', 'junit', 'text', 'nil'
         -- testNames: nil or a list of test names to run
-        -- exeCount: num or 1
+        -- exeRepeat: num or 1
         -- pattern: nil or a list of patterns
         -- exclude: nil or a list of patterns
 
@@ -2126,7 +2397,7 @@ end
         local SET_PATTERN = 2
         local SET_EXCLUDE = 3
         local SET_FNAME = 4
-        local SET_XCOUNT = 5
+        local SET_REPEAT = 5
 
         if cmdLine == nil then
             return result
@@ -2151,8 +2422,8 @@ end
             elseif option == '--failure' or option == '-f' then
                 result['quitOnFailure'] = true
                 return
-            elseif option == '--random' or option == '-r' then
-                result['randomize'] = true
+            elseif option == '--shuffle' or option == '-s' then
+                result['shuffle'] = true
                 return
             elseif option == '--output' or option == '-o' then
                 state = SET_OUTPUT
@@ -2160,8 +2431,8 @@ end
             elseif option == '--name' or option == '-n' then
                 state = SET_FNAME
                 return state
-            elseif option == '--count' or option == '-c' then
-                state = SET_XCOUNT
+            elseif option == '--repeat' or option == '-r' then
+                state = SET_REPEAT
                 return state
             elseif option == '--pattern' or option == '-p' then
                 state = SET_PATTERN
@@ -2180,9 +2451,9 @@ end
             elseif state == SET_FNAME then
                 result['fname'] = cmdArg
                 return
-            elseif state == SET_XCOUNT then
-                result['exeCount'] = tonumber(cmdArg)
-                                     or error('Malformed -c argument: '..cmdArg)
+            elseif state == SET_REPEAT then
+                result['exeRepeat'] = tonumber(cmdArg)
+                                     or error('Malformed -r argument: '..cmdArg)
                 return
             elseif state == SET_PATTERN then
                 if result['pattern'] then
@@ -2536,14 +2807,14 @@ end
             return {status = NodeStatus.PASS}
         end
 
-        -- determine if the error was a failed test:
-        -- We do this by stripping the failure prefix from the error message,
-        -- while keeping track of the gsub() count. A non-zero value -> failure
-        local failed, iter_msg
-        iter_msg = self.exeCount and 'iteration: '..self.currentCount..', '
-        err.msg, failed = err.msg:gsub(M.FAILURE_PREFIX, iter_msg or '', 1)
-        if failed > 0 then
-            err.status = NodeStatus.FAIL
+        local iter_msg
+        iter_msg = self.exeRepeat and 'iteration '..self.currentCount
+
+        err.msg, err.status = M.adjust_err_msg_with_iter( err.msg, iter_msg )
+
+        if err.status == NodeStatus.PASS then
+            err.trace = nil
+            return err
         end
 
         -- reformat / improve the stack trace
@@ -2587,7 +2858,7 @@ end
         local node = self.result.currentNode
         local class_mt = classInstance and {__index=classInstance}
 
-        for iter_n = 1, self.exeCount or 1 do
+        for iter_n = 1, self.exeRepeat or 1 do
             if node:isNotPassed() then
                 break
             end
@@ -2663,7 +2934,7 @@ end
                 table.insert( result, { name, instance } )
             else
                 if type(instance) ~= 'table' then
-                    error( 'Instance must be a table or a function, not a '..type(instance)..', value '..prettystr(instance))
+                    error( 'Instance must be a table or a function, not a '..type(instance)..' with value '..prettystr(instance))
                 end
                 local className, methodName = M.LuaUnit.splitClassMethod( name )
                 if className then
@@ -2695,15 +2966,14 @@ end
     end
 
     function M.LuaUnit:runSuiteByInstances( listOfNameAndInst )
-        --[[ Run an explicit list of tests. All test instances and names must be supplied.
-        each test must be one of:
+        --[[ Run an explicit list of tests. Each item of the list must be one of:
         * { function name, function instance }
         * { class name, class instance }
         * { class.method name, class instance }
         ]]
 
         local expandedList = self.expandClasses( listOfNameAndInst )
-        if self.randomize then
+        if self.shuffle then
             randomizeTable( expandedList )
         end
         local filteredList, filteredOutList = self.applyPatternFilter(
@@ -2825,9 +3095,9 @@ end
         self.quitOnFailure = options.quitOnFailure
         self.fname         = options.fname
 
-        self.exeCount             = options.exeCount
+        self.exeRepeat            = options.exeRepeat
         self.patternIncludeFilter = options.pattern
-        self.randomize     = options.randomize
+        self.shuffle              = options.shuffle
 
         if options.output then
             if options.output:lower() == 'junit' and options.fname == nil then

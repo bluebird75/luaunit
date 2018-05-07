@@ -1,5 +1,9 @@
 
-luaunit = require('luaunit')
+--
+-- The examples described in the documentation are below.
+--
+
+lu = require('luaunit')
 
 function add(v1,v2)
     -- add positive numbers
@@ -37,40 +41,62 @@ end
 
 TestAdd = {}
     function TestAdd:testAddPositive()
-        luaunit.assertEquals(add(1,1),2)
+        lu.assertEquals(add(1,1),2)
     end
 
     function TestAdd:testAddZero()
-        luaunit.assertEquals(add(1,0),0)
-        luaunit.assertEquals(add(0,5),0)
-        luaunit.assertEquals(add(0,0),0)
+        lu.assertEquals(add(1,0),0)
+        lu.assertEquals(add(0,5),0)
+        lu.assertEquals(add(0,0),0)
     end
 
     function TestAdd:testAddError()
-        luaunit.assertErrorMsgContains('Can only add positive or null numbers, received 2 and -3', add, 2, -3)
+        lu.assertErrorMsgContains('Can only add positive or null numbers, received 2 and -3', add, 2, -3)
     end
 
     function TestAdd:testAdder()
         f = adder(3)
-        luaunit.assertIsFunction( f )
-        luaunit.assertEquals( f(2), 5 )
+        lu.assertIsFunction( f )
+        lu.assertEquals( f(2), 5 )
     end
 -- end of table TestAdd
 
 TestDiv = {}
     function TestDiv:testDivPositive()
-        luaunit.assertEquals(div(4,2),2)
+        lu.assertEquals(div(4,2),2)
     end
 
     function TestDiv:testDivZero()
-        luaunit.assertEquals(div(4,0),0)
-        luaunit.assertEquals(div(0,5),0)
-        luaunit.assertEquals(div(0,0),0)
+        lu.assertEquals(div(4,0),0)
+        lu.assertEquals(div(0,5),0)
+        lu.assertEquals(div(0,0),0)
     end
 
     function TestDiv:testDivError()
-        luaunit.assertErrorMsgContains('Can only divide positive or null numbers, received 2 and -3', div, 2, -3)
+        lu.assertErrorMsgContains('Can only divide positive or null numbers, received 2 and -3', div, 2, -3)
     end
+-- end of table TestDiv
+
+--[[
+--
+--      Uncomment this section to see how failures are displayed
+--
+TestWithFailures = {}
+    -- two failing tests
+
+    function TestWithFailures:testFail1()
+        lu.assertEquals( "toto", "titi")
+    end
+
+    function TestWithFailures:testFail2()
+        local a=1
+        local b='toto'
+        local c = a + b -- oops, can not add string and numbers
+        return c
+    end
+-- end of table TestWithFailures
+]]
+
 
 --[[
 TestLogger = {}
@@ -85,7 +111,7 @@ TestLogger = {}
         initLog(self.fname)
         log('toto')
         f = io.open(self.fname, 'r')
-        luaunit.assertNotNil( f )
+        lu.assertNotNil( f )
         f:close()
     end
 
@@ -94,8 +120,8 @@ TestLogger = {}
         -- cleanup our log file after all tests
         os.remove(self.fname)
     end
+-- end of table TestLogger
 
--- end of table TestDiv
 ]]
 
-os.exit(luaunit.LuaUnit.run())
+os.exit(lu.LuaUnit.run())
