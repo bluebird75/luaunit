@@ -1248,7 +1248,7 @@ end
 function M.assertAllAlmostEquals( actual, expected, margin )
     if (type(actual)   ~= 'table'                               ) or
        (type(expected) ~= 'table' and type(expected) ~= 'number') or
-       (type(margin)   ~= 'table' and type(margin)   ~= 'number' and magin ~= nil) then
+       (type(margin)   ~= 'table' and type(margin)   ~= 'number' and margin ~= nil) then
       error_fmt(3, 'assertAllAlmostEquals: must supply only number or table arguments.\nArguments supplied: %s, %s, %s',
       prettystr(actual), prettystr(expected), prettystr(margin))
     end
@@ -2854,3 +2854,4 @@ M.set_verbosity = M.setVerbosity
 M.SetVerbosity = M.setVerbosity
 
 return M
+-- return { utest = M } -- MAD
