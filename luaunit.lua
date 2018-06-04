@@ -1451,6 +1451,21 @@ function M.assertErrorMsgMatches( expectedMsg, func, ... )
     end
 end
 
+function M.assertErrorMsgContentEquals(expected_message, func, ...)
+    local success, error_message = pcall(func, ...)
+    if success then
+        failure( 'No error generated when calling function but expected error containing: '..prettystr(partialMsg), nil, 2 )
+    end
+    if type(error_message) ~= "string" then
+        error_message = tostring(error_message)
+    end
+    if error_message:gsub("^.+:%d+: ", "") ~= expected_message then
+        expected_message, error_message = prettystrPairs(expected_message, error_message)
+        fail_fmt(2, nil, 'Error message expected: %s\nError message received: %s\n',
+                 expected_message, error_message)
+    end
+end
+
 ------------------------------------------------------------------
 --              Type assertions
 ------------------------------------------------------------------
@@ -1723,6 +1738,7 @@ local list_of_funcs = {
     { 'assertErrorMsgEquals'    , 'assert_error_msg_equals' },
     { 'assertErrorMsgContains'  , 'assert_error_msg_contains' },
     { 'assertErrorMsgMatches'   , 'assert_error_msg_matches' },
+    { 'assertErrorMsgContentEquals' , 'assert_error_msg_content_equals' },
     { 'assertIs'                , 'assert_is' },
     { 'assertNotIs'             , 'assert_not_is' },
     { 'wrapFunctions'           , 'WrapFunctions' },
