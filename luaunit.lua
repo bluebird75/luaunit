@@ -226,9 +226,13 @@ local function strsplit(delimiter, text)
 -- Split text into a list consisting of the strings in text, separated
 -- by strings matching delimiter (which may _NOT_ be a pattern).
 -- Example: strsplit(", ", "Anna, Bob, Charlie, Dolores")
-    if delimiter == "" then -- this would result in endless loops
-        error("delimiter matches empty string!")
+    if delimiter == "" or delimiter == nil then -- this would result in endless loops
+        error("delimiter is nil or empty string!")
     end
+    if text == nil then
+        return nil
+    end
+
     local list, pos, first, last = {}, 1
     while true do
         first, last = text:find(delimiter, pos, true)
@@ -887,7 +891,11 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
     if mt and mt.__tostring then
         -- if table has a __tostring() function in its metatable, use it to display the table
         -- else, compute a regular table
-        result = strsplit( '\n', tostring(tbl) )
+        result = tostring(tbl)
+        if type(result) ~= 'string' then
+            return string.format( '<invalid tostring() result: "%s" >', prettystr(result) )
+        end
+        result = strsplit( '\n', result )
         return M.private._table_tostring_format_multiline_string( result, indentLevel )
 
     else

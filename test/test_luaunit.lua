@@ -177,8 +177,10 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( t[4], '')
         lu.assertEquals( #t, 4 )
         -- test invalid (empty) delimiter
-        lu.assertErrorMsgContains('delimiter matches empty string!',
+        lu.assertErrorMsgContains('delimiter is nil or empty string!',
                                   lu.private.strsplit, '', '1\n22\n333\n')
+        lu.assertErrorMsgContains('delimiter is nil or empty string!',
+                                  lu.private.strsplit, nil, '1\n22\n333\n')
     end
 
     function TestLuaUnitUtilities:test_strSplit3CharDelim()
@@ -187,6 +189,10 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( t[2], '3')
         lu.assertEquals( t[3], '')
         lu.assertEquals( #t, 3 )
+    end
+
+    function TestLuaUnitUtilities:test_strSplitWithNil()
+        lu.assertEquals( nil, lu.private.strsplit('-', nil) )
     end
 
     function TestLuaUnitUtilities:test_protectedCall()
@@ -357,6 +363,11 @@ bar"=1}]] )
         y=2,
     33
 }]] )
+
+        local t6 = {}
+        local function t6_tostring() end
+        setmetatable( t6, { __tostring = t6_tostring } )
+        lu.assertEquals( lu.prettystr( t6 ), '<invalid tostring() result: "nil" >')
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
