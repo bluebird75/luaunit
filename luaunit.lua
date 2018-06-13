@@ -1392,7 +1392,7 @@ end
 local function _assertErrorMsgEquals( stripFileAndLine, expectedMsg, func, ... )
     local no_error, error_msg = pcall( func, ... )
     if no_error then
-        failure( 'No error generated when calling function but expected error: '..M.prettystr(expectedMsg), nil, 2 )
+        failure( 'No error generated when calling function but expected error: '..M.prettystr(expectedMsg), nil, 3 )
     end
     if type(expectedMsg) == "string" and type(error_msg) ~= "string" then
         -- table are converted to string automatically
@@ -1418,7 +1418,7 @@ local function _assertErrorMsgEquals( stripFileAndLine, expectedMsg, func, ... )
 
     if differ then
         error_msg, expectedMsg = prettystrPairs(error_msg, expectedMsg)
-        fail_fmt(2, nil, 'Error message expected: %s\nError message received: %s\n',
+        fail_fmt(3, nil, 'Error message expected: %s\nError message received: %s\n',
                  expectedMsg, error_msg)
     end
 end
