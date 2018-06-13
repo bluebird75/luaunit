@@ -2785,6 +2785,13 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
             lu.assertErrorMsgMatches, 'bla bla bla', function( v ) error('toto xxx',2) end, 3 )
     end 
 
+    function TestLuaUnitErrorMsg:test_assertErrorMsgContentEquals()
+        local f = function() error("This is error message") end
+        lu.assertErrorMsgContentEquals("This is error message", f)
+        local f1 = function(v1, v2) error("This is error message") end
+        lu.assertErrorMsgContentEquals("This is error message", f, 1, 2)
+    end
+
     function TestLuaUnitErrorMsg:test_printTableWithRef()
         lu.PRINT_TABLE_REF_IN_ERROR_MSG = true
         assertFailureMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2}', lu.assertNotEquals, {1,2}, {1,2} )
