@@ -1389,9 +1389,7 @@ function M.assertStrMatches( str, pattern, start, final, extra_msg_or_nil )
     end
 end
 
-function M.assertErrorMsgEquals( expectedMsg, func, ... )
-    -- assert that calling f with the arguments will raise an error
-    -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
+local function _assertErrorMsgEquals( stripFileAndLine, expectedMsg, func, ... )
     local no_error, error_msg = pcall( func, ... )
     if no_error then
         failure( 'No error generated when calling function but expected error: '..M.prettystr(expectedMsg), nil, 2 )
@@ -1423,6 +1421,12 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
         fail_fmt(2, nil, 'Error message expected: %s\nError message received: %s\n',
                  expectedMsg, error_msg)
     end
+end
+
+function M.assertErrorMsgEquals( expectedMsg, func, ... )
+    -- assert that calling f with the arguments will raise an error
+    -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
+    _assertErrorMsgEquals(false, expectedMsg, func, ...)
 end
 
 function M.assertErrorMsgContains( partialMsg, func, ... )
