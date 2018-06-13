@@ -1399,6 +1399,11 @@ local function _assertErrorMsgEquals( stripFileAndLine, expectedMsg, func, ... )
         error_msg = tostring(error_msg)
     end
     local differ = false
+    if stripFileAndLine then
+        if error_msg:gsub("^.+:%d+: ", "") ~= expectedMsg then
+            differ = true
+        end
+    else
     if error_msg ~= expectedMsg then
         local tr = type(error_msg)
         local te = type(expectedMsg)
@@ -1415,6 +1420,7 @@ local function _assertErrorMsgEquals( stripFileAndLine, expectedMsg, func, ... )
            differ = true
         end
     end
+    end
 
     if differ then
         error_msg, expectedMsg = prettystrPairs(error_msg, expectedMsg)
@@ -1427,6 +1433,10 @@ function M.assertErrorMsgEquals( expectedMsg, func, ... )
     -- assert that calling f with the arguments will raise an error
     -- example: assertError( f, 1, 2 ) => f(1,2) should generate an error
     _assertErrorMsgEquals(false, expectedMsg, func, ...)
+end
+
+function M.assertErrorMsgContentEquals(expectedMsg, func, ...)
+     _assertErrorMsgEquals(true, expectedMsg, func, ...)
 end
 
 function M.assertErrorMsgContains( partialMsg, func, ... )
@@ -1735,6 +1745,7 @@ local list_of_funcs = {
     { 'assertErrorMsgEquals'    , 'assert_error_msg_equals' },
     { 'assertErrorMsgContains'  , 'assert_error_msg_contains' },
     { 'assertErrorMsgMatches'   , 'assert_error_msg_matches' },
+    { 'assertErrorMsgContentEquals', 'assert_error_msg_content_equals' },
     { 'assertIs'                , 'assert_is' },
     { 'assertNotIs'             , 'assert_not_is' },
     { 'wrapFunctions'           , 'WrapFunctions' },
