@@ -1404,22 +1404,22 @@ local function _assertErrorMsgEquals( stripFileAndLine, expectedMsg, func, ... )
             differ = true
         end
     else
-    if error_msg ~= expectedMsg then
-        local tr = type(error_msg)
-        local te = type(expectedMsg)
-        if te == 'table' then
-            if tr ~= 'table' then
-                differ = true
+        if error_msg ~= expectedMsg then
+            local tr = type(error_msg)
+            local te = type(expectedMsg)
+            if te == 'table' then
+                if tr ~= 'table' then
+                    differ = true
+                else
+                     local ok = pcall(M.assertItemsEquals, error_msg, expectedMsg)
+                     if not ok then
+                         differ = true
+                     end
+                end
             else
-                 local ok = pcall(M.assertItemsEquals, error_msg, expectedMsg)
-                 if not ok then
-                     differ = true
-                 end
+               differ = true
             end
-        else
-           differ = true
         end
-    end
     end
 
     if differ then
