@@ -504,6 +504,12 @@ function M.adjust_err_msg_with_iter( err_msg, iter_msg )
 
     local RE_FILE_LINE = '.*:%d+: '
 
+    -- error message is not necessarily a string, 
+    -- so convert the value to string with prettystr()
+    if type( err_msg ) ~= 'string' then
+        err_msg = prettystr( err_msg )
+    end
+
     if (err_msg:find( M.SUCCESS_PREFIX ) == 1) or err_msg:match( '('..RE_FILE_LINE..')' .. M.SUCCESS_PREFIX .. ".*" ) then
         -- test finished early with success()
         return nil, M.NodeStatus.PASS
