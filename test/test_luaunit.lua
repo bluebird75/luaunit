@@ -493,19 +493,7 @@ bar"=1}]] )
         local t9 = {"t9", {}}
         t9[{t9}] = 1
 
-        if os.getenv('TRAVIS_OS_NAME') == 'osx' then
-            -- on os X, because table references are longer, the table is expanded on multiple lines.
-            --[[ Output example:
-            '<table: 0x7f984a50d200> {
-                "t9",
-                <table: 0x7f984a50d390> {},
-                <table: 0x7f984a50d410> {<table: 0x7f984a50d200>}=1
-            }'
-            ]]
-            lu.assertStrMatches(lu.prettystr(t9, true), '(<table: 0?x?[%x]+>) {\n%s+"t9",\n%s+(<table: 0?x?[%x]+>) {},\n%s+(<table: 0?x?[%x]+>) {%1}=1\n}')
-        else
-            lu.assertStrMatches(lu.prettystr(t9, true), '(<table: 0?x?[%x]+>) {"t9", (<table: 0?x?[%x]+>) {}, (<table: 0?x?[%x]+>) {%1}=1}')
-        end
+        lu.assertStrMatches(lu.prettystr(t9, true), '(<table: 0?x?[%x]+>) {\n?%s*"t9",\n?%s*(<table: 0?x?[%x]+>) {},\n?%s*(<table: 0?x?[%x]+>) {%1}=1\n?}')
     end
 
     function TestLuaUnitUtilities:test_prettystrPairs()
