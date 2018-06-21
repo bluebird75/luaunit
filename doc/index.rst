@@ -1256,20 +1256,31 @@ that a value is anything but the boolean *true* or *false*.
 
 The below table sums it up:
 
-============  ============  ===================  ================  =============  ===================  ===============
-**True assertion family**                                            **False assertion family**
------------------------------------------------------------------  ---------------------------------------------------
-Input Value   assertTrue()   assertEvalToTrue()  assertNotFalse()  assertFalse()  assertEvalToFalse()  assertNotTrue()
-============  ============  ===================  ================  =============  ===================  ===============
-*true*        OK            OK                   OK                Fail           Fail                 Fail
-*false*       Fail          Fail                 Fail              OK             OK                   OK 
-*nil*         Fail          Fail                 OK                Fail           OK                   OK 
-*0*           Fail          OK                   OK                Fail           Fail                 Fail 
-*1*           Fail          OK                   OK                Fail           Fail                 Fail
-*"hello"*     Fail          OK                   OK                Fail           Fail                 Fail
-============  ============  ===================  ================  =============  ===================  ===============
+    **True assertion family**
 
+============  ============  ===================  ================
+Input Value   assertTrue()  assertEvalToTrue()   assertNotTrue()
+============  ============  ===================  ================
+*true*        OK            OK                   OK
+*false*       Fail          Fail                 Fail
+*nil*         Fail          Fail                 OK
+*0*           Fail          OK                   OK
+*1*           Fail          OK                   OK
+*"hello"*     Fail          OK                   OK
+============  ============  ===================  ================
 
+    **False assertion family**
+
+============  ================  =============  ===================
+Input Value   assertNotFalse()  assertFalse()  assertEvalToFalse()
+============  ================  =============  ===================
+*true*        Fail              Fail           Fail
+*false*       OK                OK             OK
+*nil*         Fail              OK             OK
+*0*           Fail              Fail           Fail
+*1*           Fail              Fail           Fail
+*"hello"*     Fail              Fail           Fail
+============  ================  =============  ===================
 
 .. function:: assertEvalToTrue(value [, extra_msg])
 
