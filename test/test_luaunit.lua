@@ -2825,7 +2825,6 @@ MyTestWithErrorsAndFailures = {} --class
     function MyTestWithErrorsAndFailures:testWithFailure1() lu.assertEquals(1, 2) end
     function MyTestWithErrorsAndFailures:testWithFailure2() lu.assertError( function() end ) end
     function MyTestWithErrorsAndFailures:testWithError1() error('some error') end
-    function MyTestWithErrorsAndFailures:testWithTableError() error({code = 123}) end
     function MyTestWithErrorsAndFailures:testOk() end
 
 MyTestOk = {} --class
@@ -3596,6 +3595,16 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         runner:runSuite( 'MyTestWithErrorsAndFailures', 'MyTestOk' )
         lu.assertErrorMsgContains('suite was already ended',
             runner.endSuite, runner)
+    end
+
+    function TestLuaUnitExecution:test_withTableErrorInside(args)
+        local function my_test_with_table_error()
+            error {code = 123}
+        end
+
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType( "NIL" )
+        runner:runSuiteByInstances( { { 'my_test_with_table_error', my_test_with_table_error } } ) -- TODO
     end
 
 
