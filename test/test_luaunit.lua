@@ -3604,7 +3604,8 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstances( { { 'my_test_with_table_error', my_test_with_table_error } } ) -- TODO
+        runner:runSuiteByInstances { { 'my_test_with_table_error', my_test_with_table_error } }
+        lu.assertStrContains(runner.result.tests[1].msg, '{code=123}')
     end
 
 
