@@ -2190,6 +2190,7 @@ TextOutput.__class__ = 'TextOutput'
                 io.stdout:write("Ok\n")
             else
                 io.stdout:write(".")
+                io.stdout:flush()
             end
         else
             if self.verbosity > M.VERBOSITY_DEFAULT then
@@ -2204,6 +2205,7 @@ TextOutput.__class__ = 'TextOutput'
             else
                 -- write only the first character of status
                 io.stdout:write(string.sub(node.status, 1, 1))
+                io.stdout:flush()
             end
         end
     end
