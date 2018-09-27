@@ -1,0 +1,45 @@
+Started on 11/27/16 18:05:05
+    TestAnotherThing.test1_Success1 ... [32mOk
+[0m    TestAnotherThing.test1_Success2 ... [32mOk
+[0m    TestAnotherThing.test3_Fail1 ... [31mFAIL[0m
+[1mtest/test_with_err_fail_pass.lua:49: expected: 0, actual: 2
+[0m    TestAnotherThing.test3_Fail2 ... [31mFAIL[0m
+[1mtest/test_with_err_fail_pass.lua:53: expected: 0, actual: 3
+[0m    TestSomething.test1_Success1 ... [32mOk
+[0m    TestSomething.test1_Success2 ... [32mOk
+[0m    TestSomething.test2_Fail1 ... [31mFAIL[0m
+[1mtest/test_with_err_fail_pass.lua:15: expected: 0, actual: 2
+[0m    TestSomething.test2_Fail2 ... [31mFAIL[0m
+[1mtest/test_with_err_fail_pass.lua:19: expected: 0, actual: 3
+[0m    testFuncFail1 ... [31mFAIL[0m
+[1mtest/test_with_err_fail_pass.lua:62: expected: 0, actual: 3
+[0m    testFuncSuccess1 ... [32mOk
+[0m=========================================================
+Failed tests:
+-------------
+[1m1) TestAnotherThing.test3_Fail1
+[31mtest/test_with_err_fail_pass.lua:49: expected: 0, actual: 2[0m
+stack traceback:
+	test/test_with_err_fail_pass.lua:49: in function 'TestAnotherThing.test3_Fail1'
+
+[1m2) TestAnotherThing.test3_Fail2
+[31mtest/test_with_err_fail_pass.lua:53: expected: 0, actual: 3[0m
+stack traceback:
+	test/test_with_err_fail_pass.lua:53: in function 'TestAnotherThing.test3_Fail2'
+
+[1m3) TestSomething.test2_Fail1
+[31mtest/test_with_err_fail_pass.lua:15: expected: 0, actual: 2[0m
+stack traceback:
+	test/test_with_err_fail_pass.lua:15: in function 'TestSomething.test2_Fail1'
+
+[1m4) TestSomething.test2_Fail2
+[31mtest/test_with_err_fail_pass.lua:19: expected: 0, actual: 3[0m
+stack traceback:
+	test/test_with_err_fail_pass.lua:19: in function 'TestSomething.test2_Fail2'
+
+[1m5) testFuncFail1
+[31mtest/test_with_err_fail_pass.lua:62: expected: 0, actual: 3[0m
+stack traceback:
+	test/test_with_err_fail_pass.lua:62: in function 'testFuncFail1'
+
+[1mRan 10 tests in 0.001 seconds, 5 successes, 5 failures, 5 non-selected[0m

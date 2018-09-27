@@ -220,6 +220,25 @@ local function check_text_output( fileToRun, options, output, refOutput, refExit
     return 0
 end
 
+local function check_color_output( fileToRun, options, output, refOutput, refExitCode )
+    -- remove output
+    osExpectedCodeExec(refExitCode, '%s %s --output text --color %s > %s',
+                       LUA, fileToRun, options, output)
+
+    if options:find( '--verbose' ) then
+        adjustFile( output, refOutput, 'Started on (.*)')
+    end
+    adjustFile( output, refOutput, 'Ran .* tests in (%d.%d*) seconds' )
+    -- For Lua 5.3: stack trace uses "method" instead of "function"
+    adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true, false )
+
+    if not osExec([[diff -NPw -u -I " *\.[/\\]luaunit.lua:[0123456789]\+:.*" %s %s]], refOutput, output) then
+        error('Text Output mismatch for file : '..output)
+    end
+    -- report('Text Output ok: '..output)
+    return 0
+end
+
 local function check_nil_output( fileToRun, options, output, refOutput, refExitCode )
     -- remove output
     osExpectedCodeExec(refExitCode, '%s %s --output nil %s > %s',
@@ -413,6 +432,65 @@ function testTextQuiet()
             'test/ref/errFailPassTextQuiet-failures.txt', 5 ) )
 end
 
+-- check "color" output
+
+function testColorDefault()
+    lu.assertEquals( 0,
+        check_color_output('example_with_luaunit.lua', '',
+            'test/exampleColorDefault.txt',
+            'test/ref/exampleColorDefault.txt', 12 ) )
+    lu.assertEquals( 0,
+        check_color_output('test/test_with_err_fail_pass.lua', '',
+            'test/errFailPassColorDefault.txt',
+            'test/ref/errFailPassColorDefault.txt', 10 ) )
+    lu.assertEquals( 0,
+        check_color_output('test/test_with_err_fail_pass.lua', '-p Succ',
+            'test/errFailPassColorDefault-success.txt',
+            'test/ref/errFailPassColorDefault-success.txt', 0 ) )
+    lu.assertEquals( 0,
+        check_color_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
+            'test/errFailPassColorDefault-failures.txt',
+            'test/ref/errFailPassColorDefault-failures.txt', 5 ) )
+end
+
+function testColorVerbose()
+    lu.assertEquals( 0,
+        check_color_output('example_with_luaunit.lua', '--verbose',
+            'test/exampleColorVerbose.txt',
+            'test/ref/exampleColorVerbose.txt', 12 ) )
+    lu.assertEquals( 0,
+        check_color_output('test/test_with_err_fail_pass.lua', '--verbose',
+            'test/errFailPassColorVerbose.txt',
+            'test/ref/errFailPassColorVerbose.txt', 10 ) )
+    lu.assertEquals( 0,
+        check_color_output('test/test_with_err_fail_pass.lua', '--verbose -p Succ',
+            'test/errFailPassColorVerbose-success.txt',
+            'test/ref/errFailPassColorVerbose-success.txt', 0 ) )
+    lu.assertEquals( 0,
+        check_color_output('test/test_with_err_fail_pass.lua', '--verbose -p Succ -p Fail',
+            'test/errFailPassColorVerbose-failures.txt',
+            'test/ref/errFailPassColorVerbose-failures.txt', 5 ) )
+end
+
+function testColorQuiet()
+    lu.assertEquals( 0,
+        check_color_output('example_with_luaunit.lua', '--quiet',
+            'test/exampleColorQuiet.txt',
+            'test/ref/exampleColorQuiet.txt', 12 ) )
+    lu.assertEquals( 0,
+        check_color_output('test/test_with_err_fail_pass.lua', '--quiet',
+            'test/errFailPassColorQuiet.txt',
+            'test/ref/errFailPassColorQuiet.txt', 10 ) )
+    lu.assertEquals( 0,
+        check_color_output('test/test_with_err_fail_pass.lua', '--quiet -p Succ',
+            'test/errFailPassColorQuiet-success.txt',
+            'test/ref/errFailPassColorQuiet-success.txt', 0 ) )
+    lu.assertEquals( 0,
+        check_color_output('test/test_with_err_fail_pass.lua', '--quiet -p Succ -p Fail',
+            'test/errFailPassColorQuiet-failures.txt',
+            'test/ref/errFailPassColorQuiet-failures.txt', 5 ) )
+end
+
 -- check nil output
 
 function testNilDefault()
@@ -574,6 +652,12 @@ local filesToGenerateExampleText = {
     { 'example_with_luaunit.lua', '--verbose', '--output text', 'test/ref/exampleTextVerbose.txt' },
 }
 
+local filesToGenerateExampleColor = {
+    { 'example_with_luaunit.lua', '--color', '--output text', 'test/ref/exampleColorDefault.txt' },
+    { 'example_with_luaunit.lua', '--quiet --color', '--output text', 'test/ref/exampleColorQuiet.txt' },
+    { 'example_with_luaunit.lua', '--verbose --color', '--output text', 'test/ref/exampleColorVerbose.txt' },
+}
+
 local filesToGenerateExampleNil = {
     { 'example_with_luaunit.lua', '', '--output nil', 'test/ref/exampleNilDefault.txt' },
 }
@@ -639,6 +723,27 @@ local filesToGenerateErrFailPassText = {
         '--output text', 'test/ref/errFailPassTextVerbose-failures.txt' },
 }
 
+local filesToGenerateErrFailPassColor = {
+    { 'test/test_with_err_fail_pass.lua', '--color',
+        '--output text', 'test/ref/errFailPassColorDefault.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ --color',
+        '--output text', 'test/ref/errFailPassColorDefault-success.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail --color',
+        '--output text', 'test/ref/errFailPassColorDefault-failures.txt' },
+    { 'test/test_with_err_fail_pass.lua', '--quiet --color',
+        '--output text', 'test/ref/errFailPassColorQuiet.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ --quiet --color',
+        '--output text', 'test/ref/errFailPassColorQuiet-success.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail --quiet --color',
+        '--output text', 'test/ref/errFailPassColorQuiet-failures.txt' },
+    { 'test/test_with_err_fail_pass.lua', '--verbose --color',
+        '--output text', 'test/ref/errFailPassColorVerbose.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ --verbose --color',
+        '--output text', 'test/ref/errFailPassColorVerbose-success.txt' },
+    { 'test/test_with_err_fail_pass.lua', '-p Succ -p Fail --verbose --color',
+        '--output text', 'test/ref/errFailPassColorVerbose-failures.txt' },
+}
+
 local filesToGenerateTestXml = {
     { 'test/test_with_xml.lua', '', '--output junit --name test/ref/testWithXmlDefault.xml', 'test/ref/testWithXmlDefault.txt' },
     { 'test/test_with_xml.lua', '--verbose', '--output junit --name test/ref/testWithXmlVerbose.xml', 'test/ref/testWithXmlVerbose.txt' },
@@ -662,9 +767,11 @@ local filesToGenerateListsComp = {
 }
 
 local filesSetIndex = {
+    ErrFailPassColor=filesToGenerateErrFailPassColor,
     ErrFailPassText=filesToGenerateErrFailPassText,
     ErrFailPassTap=filesToGenerateErrFailPassTap,
     ErrFailPassXml=filesToGenerateErrFailPassXml,
+    ExampleColor=filesToGenerateExampleColor,
     ExampleNil=filesToGenerateExampleNil,
     ExampleText=filesToGenerateExampleText,
     ExampleTap=filesToGenerateExampleTap,

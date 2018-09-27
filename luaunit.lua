@@ -79,8 +79,9 @@ Options:
   -e, --error:            Stop on first error
   -f, --failure:          Stop on first failure or error
   -s, --shuffle:          Shuffle tests before running them
-  -o, --output OUTPUT:    Set output type to OUTPUT
+  -o, --output OUTPUT:    Set output type to OUTPUT (default: text)
                           Possible values: text, tap, junit, nil
+  --color:                Enable ANSI color support for text output
   -n, --name NAME:        For junit only, mandatory name of xml file
   -r, --repeat NUM:       Execute all tests NUM times, e.g. to trig the JIT
   -p, --pattern PATTERN:  Execute all test names matching the Lua PATTERN
@@ -2063,6 +2064,18 @@ JUnitOutput.__class__ = 'JUnitOutput'
 ----------------------------------------------------------------
 
 --[[
+    This table holds control sequences to "color" the text output. Initially
+    those are all empty strings, so that concatenating them won't change the
+    plain text output. The "--color" option reassigns the fields as needed.
+]]
+local COLOR = {
+    reset  = "",
+    bright = "",
+    green  = "",
+    red    = "",
+}
+
+--[[
 
 -- Python Non verbose:
 
@@ -2186,6 +2199,7 @@ TextOutput.__class__ = 'TextOutput'
 
     function TextOutput:endTest( node )
         if node:isPassed() then
+            io.stdout:write(COLOR.green)
             if self.verbosity > M.VERBOSITY_DEFAULT then
                 io.stdout:write("Ok\n")
             else
@@ -2193,8 +2207,8 @@ TextOutput.__class__ = 'TextOutput'
             end
         else
             if self.verbosity > M.VERBOSITY_DEFAULT then
-                print( node.status )
-                print( node.msg )
+                print( COLOR.red .. node.status .. COLOR.reset )
+                print( COLOR.bright .. node.msg )
                 --[[
                 -- find out when to do this:
                 if self.verbosity > M.VERBOSITY_DEFAULT then
@@ -2203,24 +2217,21 @@ TextOutput.__class__ = 'TextOutput'
                 ]]
             else
                 -- write only the first character of status
-                io.stdout:write(string.sub(node.status, 1, 1))
+                io.stdout:write(COLOR.red, string.sub(node.status, 1, 1))
             end
         end
-    end
-
-    function TextOutput:displayOneFailedTest( index, fail )
-        print(index..") "..fail.testName )
-        print( fail.msg )
-        print( fail.stackTrace )
-        print()
+        io.stdout:write(COLOR.reset)
     end
 
     function TextOutput:displayFailedTests()
         if self.result.notPassedCount ~= 0 then
             print("Failed tests:")
             print("-------------")
-            for i, v in ipairs(self.result.notPassed) do
-                self:displayOneFailedTest(i, v)
+            for index, failed in ipairs(self.result.notPassed) do
+                print( COLOR.bright .. index..") "..failed.testName )
+                print( COLOR.red .. failed.msg .. COLOR.reset )
+                print( failed.stackTrace )
+                print()
             end
         end
     end
@@ -2232,9 +2243,9 @@ TextOutput.__class__ = 'TextOutput'
             print()
         end
         self:displayFailedTests()
-        print( M.LuaUnit.statusLine( self.result ) )
+        print( COLOR.bright .. M.LuaUnit.statusLine( self.result ) .. COLOR.reset)
         if self.result.notPassedCount == 0 then
-            print('OK')
+            print(COLOR.green .. 'OK' .. COLOR.reset)
         end
     end
 
@@ -2383,6 +2394,13 @@ end
                 return
             elseif option == '--shuffle' or option == '-s' then
                 result['shuffle'] = true
+                return
+            elseif option == '--color' then
+                -- activate ANSI control sequences for colored (text) output
+                COLOR.reset  = "\27[0m"
+                COLOR.bright = "\27[1m"
+                COLOR.green  = "\27[32m"
+                COLOR.red    = "\27[31m"
                 return
             elseif option == '--output' or option == '-o' then
                 state = SET_OUTPUT

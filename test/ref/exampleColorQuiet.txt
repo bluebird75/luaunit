@@ -1,0 +1,70 @@
+[31mF[0m[31mF[0m[32m.[0m[31mF[0m[31mF[0m[32m.[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mE[0m[31mE[0m[31mE[0m[31mE[0m[32m.[0m
+Failed tests:
+-------------
+[1m1) TestTiti.test1_withFailure
+[31mexample_with_luaunit.lua:104: expected: 2, actual: 1[0m
+stack traceback:
+	example_with_luaunit.lua:104: in function 'TestTiti.test1_withFailure'
+
+[1m2) TestTiti.test2_withFailure
+[31mexample_with_luaunit.lua:113: expected: "bof"
+actual: "hop"[0m
+stack traceback:
+	example_with_luaunit.lua:113: in function 'TestTiti.test2_withFailure'
+
+[1m3) TestToto.test1_withFailure
+[31mexample_with_luaunit.lua:21: expected: 2, actual: 1[0m
+stack traceback:
+	example_with_luaunit.lua:21: in function 'TestToto.test1_withFailure'
+
+[1m4) TestToto.test2_withFailure
+[31mexample_with_luaunit.lua:30: expected: "bof"
+actual: "hop"[0m
+stack traceback:
+	example_with_luaunit.lua:30: in function 'TestToto.test2_withFailure'
+
+[1m5) TestToto.test4
+[31mexample_with_luaunit.lua:43: Received the not expected value: 1[0m
+stack traceback:
+	example_with_luaunit.lua:43: in function 'TestToto.test4'
+
+[1m6) TestToto.test5
+[31mexample_with_luaunit.lua:49: expected: false or nil, actual: 1[0m
+stack traceback:
+	example_with_luaunit.lua:49: in function 'TestToto.test5'
+
+[1m7) TestToto.test6
+[31mexample_with_luaunit.lua:57: expected: false, actual: nil[0m
+stack traceback:
+	example_with_luaunit.lua:57: in function 'TestToto.test6'
+
+[1m8) TestToto.test7
+[31mexample_with_luaunit.lua:63: expected: {1, 2, three=3}
+actual: {1, 2}[0m
+stack traceback:
+	example_with_luaunit.lua:63: in function 'TestToto.test7'
+
+[1m9) TestToto.test8a
+[31mexample_with_luaunit.lua:81: Bouhouhoum error![0m
+stack traceback:
+	example_with_luaunit.lua:81: in function 'funcWithError'
+	example_with_luaunit.lua:68: in function 'TestToto.test8a'
+
+[1m10) TestToto.test8b
+[31mexample_with_luaunit.lua:81: Bouhouhoum error![0m
+stack traceback:
+	example_with_luaunit.lua:81: in function 'funcWithError'
+	example_with_luaunit.lua:77: in function 'funcWithFuncWithError'
+	example_with_luaunit.lua:73: in function 'TestToto.test8b'
+
+[1m11) test1_withFailure
+[31mexample_with_luaunit.lua:129: assertion failed![0m
+stack traceback:
+	example_with_luaunit.lua:129: in function 'test1_withFailure'
+
+[1m12) test2_withFailure
+[31mexample_with_luaunit.lua:135: assertion failed![0m
+stack traceback:
+	example_with_luaunit.lua:135: in function 'test2_withFailure'
+
+[1mRan 15 tests in 0.001 seconds, 3 successes, 8 failures, 4 errors[0m

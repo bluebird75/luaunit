@@ -1,0 +1,9 @@
+Started on 11/27/16 18:05:05
+    TestAnotherThing.test1_Success1 ... [32mOk
+[0m    TestAnotherThing.test1_Success2 ... [32mOk
+[0m    TestSomething.test1_Success1 ... [32mOk
+[0m    TestSomething.test1_Success2 ... [32mOk
+[0m    testFuncSuccess1 ... [32mOk
+[0m=========================================================
+[1mRan 5 tests in 0.000 seconds, 5 successes, 0 failures, 10 non-selected[0m
+[32mOK[0m

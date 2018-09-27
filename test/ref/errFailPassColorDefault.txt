@@ -1,0 +1,54 @@
+[32m.[0m[32m.[0m[31mE[0m[31mE[0m[31mF[0m[31mF[0m[32m.[0m[32m.[0m[31mF[0m[31mF[0m[31mE[0m[31mE[0m[31mE[0m[31mF[0m[32m.[0m
+Failed tests:
+-------------
+[1m1) TestAnotherThing.test2_Err1
+[31mtest/test_with_err_fail_pass.lua:41: attempt to perform arithmetic on a table value[0m
+stack traceback:
+	[C]: in function 'xpcall'
+
+[1m2) TestAnotherThing.test2_Err2
+[31mtest/test_with_err_fail_pass.lua:45: attempt to perform arithmetic on a table value[0m
+stack traceback:
+	[C]: in function 'xpcall'
+
+[1m3) TestAnotherThing.test3_Fail1
+[31mtest/test_with_err_fail_pass.lua:49: expected: 0, actual: 2[0m
+stack traceback:
+	test/test_with_err_fail_pass.lua:49: in function 'TestAnotherThing.test3_Fail1'
+
+[1m4) TestAnotherThing.test3_Fail2
+[31mtest/test_with_err_fail_pass.lua:53: expected: 0, actual: 3[0m
+stack traceback:
+	test/test_with_err_fail_pass.lua:53: in function 'TestAnotherThing.test3_Fail2'
+
+[1m5) TestSomething.test2_Fail1
+[31mtest/test_with_err_fail_pass.lua:15: expected: 0, actual: 2[0m
+stack traceback:
+	test/test_with_err_fail_pass.lua:15: in function 'TestSomething.test2_Fail1'
+
+[1m6) TestSomething.test2_Fail2
+[31mtest/test_with_err_fail_pass.lua:19: expected: 0, actual: 3[0m
+stack traceback:
+	test/test_with_err_fail_pass.lua:19: in function 'TestSomething.test2_Fail2'
+
+[1m7) TestSomething.test3_Err1
+[31mtest/test_with_err_fail_pass.lua:23: attempt to perform arithmetic on a table value[0m
+stack traceback:
+	[C]: in function 'xpcall'
+
+[1m8) TestSomething.test3_Err2
+[31mtest/test_with_err_fail_pass.lua:27: attempt to perform arithmetic on a table value[0m
+stack traceback:
+	[C]: in function 'xpcall'
+
+[1m9) testFuncErr1
+[31mtest/test_with_err_fail_pass.lua:66: attempt to perform arithmetic on a table value[0m
+stack traceback:
+	[C]: in function 'xpcall'
+
+[1m10) testFuncFail1
+[31mtest/test_with_err_fail_pass.lua:62: expected: 0, actual: 3[0m
+stack traceback:
+	test/test_with_err_fail_pass.lua:62: in function 'testFuncFail1'
+
+[1mRan 15 tests in 0.001 seconds, 5 successes, 5 failures, 5 errors[0m
