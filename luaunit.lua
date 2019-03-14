@@ -876,6 +876,18 @@ local function _table_raw_tostring( t )
 end
 M.private._table_raw_tostring = _table_raw_tostring
 
+local function briefstr(value)
+    local type_v = type(value)
+    if "string" == type_v then
+        return prettystr(value)
+    elseif "table" == type_v then
+        return _table_raw_tostring(value)
+    else
+        return tostring(value)
+    end
+end
+M.private.briefstr = briefstr
+
 local TABLE_TOSTRING_SEP = ", "
 local TABLE_TOSTRING_SEP_LEN = string.len(TABLE_TOSTRING_SEP)
 
@@ -1608,7 +1620,7 @@ function M.assertIs(actual, expected, extra_msg_or_nil)
         if not M.ORDER_ACTUAL_EXPECTED then
             actual, expected = expected, actual
         end
-        expected, actual = prettystrPairs(expected, actual, '\n', '')
+        expected, actual = briefstr(expected), briefstr(actual)
         fail_fmt(2, extra_msg_or_nil, 'expected and actual object should not be different\nExpected: %s\nReceived: %s',
                  expected, actual)
     end
@@ -1620,7 +1632,7 @@ function M.assertNotIs(actual, expected, extra_msg_or_nil)
             expected = actual
         end
         fail_fmt(2, extra_msg_or_nil, 'expected and actual object should be different: %s',
-                 prettystrPairs(expected))
+                 briefstr(expected))
     end
 end
 

@@ -2716,9 +2716,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:test_assertIs()
         assertFailureEquals( 'expected and actual object should not be different\nExpected: 1\nReceived: 2', lu.assertIs, 2, 1 )
-        assertFailureEquals( 'expected and actual object should not be different\n'..
-                                'Expected: {1, 2, 3, 4, 5, 6, 7, 8}\n'..
-                                'Received: {1, 2, 3, 4, 5, 6, 7, 8}', 
+        assertFailureMatches( 'expected and actual object should not be different\nExpected: table: 0?x?[%x]+\nReceived: table: 0?x?[%x]+',
             lu.assertIs, {1,2,3,4,5,6,7,8}, {1,2,3,4,5,6,7,8} )
         lu.ORDER_ACTUAL_EXPECTED = false
         assertFailureEquals( 'expected and actual object should not be different\nExpected: 2\nReceived: 1', lu.assertIs, 2, 1 )
@@ -2727,10 +2725,10 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:test_assertNotIs()
         local v = {1,2}
-        assertFailureMatches( 'expected and actual object should be different: {1, 2}', lu.assertNotIs, v, v )
+        assertFailureMatches( 'expected and actual object should be different: table: 0?x?[%x]+', lu.assertNotIs, v, v )
         lu.ORDER_ACTUAL_EXPECTED = false -- order shouldn't matter here, but let's cover it
-        assertFailureMatches( 'expected and actual object should be different: {1, 2}', lu.assertNotIs, v, v )
-        assertFailureMatches( 'toto\nexpected and actual object should be different: {1, 2}', lu.assertNotIs, v, v, 'toto' )
+        assertFailureMatches( 'expected and actual object should be different: table: 0?x?[%x]+', lu.assertNotIs, v, v )
+        assertFailureMatches( 'toto\nexpected and actual object should be different: table: 0?x?[%x]+', lu.assertNotIs, v, v, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertItemsEquals()
@@ -2787,7 +2785,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2, 3, 4}', lu.assertNotEquals, {1,2,3,4}, {1,2,3,4} )
         assertFailureMatches( 'expected: false, actual: <table: 0?x?[%x]+> {}', lu.assertFalse, {})
         local v = {1,2}
-        assertFailureMatches( 'expected and actual object should be different: <table: 0?x?[%x]+> {1, 2}', lu.assertNotIs, v, v )
+        assertFailureMatches( 'expected and actual object should be different: table: 0?x?[%x]+', lu.assertNotIs, v, v )
         assertFailureMatches('Content of the tables are not identical:\nExpected: <table: 0?x?[%x]+> {one=2, two=3}\nActual: <table: 0?x?[%x]+> {1, 2}' , lu.assertItemsEquals, {1,2}, {one=2, two=3} )
         assertFailureMatches( 'expected: <table: 0?x?[%x]+> {1, 2}\nactual: <table: 0?x?[%x]+> {2, 1}', lu.assertEquals, {2,1}, {1,2} )
         -- trigger multiline prettystr
