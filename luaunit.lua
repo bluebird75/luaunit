@@ -866,9 +866,12 @@ local function _table_raw_tostring( t )
     -- return the default tostring() for tables, with the table ID, even if the table has a metatable
     -- with the __tostring converter
     local mt = getmetatable( t )
-    if mt then setmetatable( t, nil ) end
+    if not mt or type(mt) ~= "table" or mt.__metatable ~= nil then
+        return tostring(t)
+    end
+    setmetatable( t, nil )
     local ref = tostring(t)
-    if mt then setmetatable( t, mt ) end
+    setmetatable( t, mt )
     return ref
 end
 M.private._table_raw_tostring = _table_raw_tostring
