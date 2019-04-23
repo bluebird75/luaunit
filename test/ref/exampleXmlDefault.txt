@@ -1,5 +1,5 @@
 # XML output to test/ref/exampleXmlDefault.xml
-# Started on 01/30/16 22:19:37
+# Started on 04/23/19 17:41:53
 # Starting class: TestTiti
 # Starting test: TestTiti.test1_withFailure
 #   Failure:  example_with_luaunit.lua:104: expected: 2, actual: 1
@@ -27,9 +27,9 @@
 #   Error:  example_with_luaunit.lua:81: Bouhouhoum error!
 # Starting test: TestToto.test8b
 #   Error:  example_with_luaunit.lua:81: Bouhouhoum error!
-# Starting test: test1_withFailure
+# Starting test: test1_withAssertionError
 #   Error:  example_with_luaunit.lua:129: assertion failed!
-# Starting test: test2_withFailure
+# Starting test: test2_withAssertionError
 #   Error:  example_with_luaunit.lua:135: assertion failed!
 # Starting test: test3
 # Ran 15 tests in 0.000 seconds, 3 successes, 8 failures, 4 errors

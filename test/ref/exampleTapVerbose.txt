@@ -1,5 +1,5 @@
 1..15
-# Started on 02/27/17 18:21:41
+# Started on 04/23/19 17:41:53
 # Starting class: TestTiti
 not ok 1	TestTiti.test1_withFailure
 #   example_with_luaunit.lua:104: expected: 2, actual: 1
@@ -50,13 +50,13 @@ not ok 12	TestToto.test8b
 #   	example_with_luaunit.lua:81: in function 'funcWithError'
 #   	example_with_luaunit.lua:77: in function 'funcWithFuncWithError'
 #   	example_with_luaunit.lua:73: in function 'TestToto.test8b'
-not ok 13	test1_withFailure
+not ok 13	test1_withAssertionError
 #   example_with_luaunit.lua:129: assertion failed!
 #   stack traceback:
-#   	example_with_luaunit.lua:129: in function 'test1_withFailure'
-not ok 14	test2_withFailure
+#   	example_with_luaunit.lua:129: in function 'test1_withAssertionError'
+not ok 14	test2_withAssertionError
 #   example_with_luaunit.lua:135: assertion failed!
 #   stack traceback:
-#   	example_with_luaunit.lua:135: in function 'test2_withFailure'
+#   	example_with_luaunit.lua:135: in function 'test2_withAssertionError'
 ok     15	test3
-# Ran 15 tests in 0.002 seconds, 3 successes, 8 failures, 4 errors
+# Ran 15 tests in 0.003 seconds, 3 successes, 8 failures, 4 errors

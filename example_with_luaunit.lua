@@ -123,13 +123,13 @@ TestTiti = {} --class
 
 -- simple test functions that were written previously can be integrated
 -- in luaunit too
-function test1_withFailure()
+function test1_withAssertionError()
     assert( 1 == 1)
     -- will fail
     assert( 1 == 2)
 end
 
-function test2_withFailure()
+function test2_withAssertionError()
     assert( 'a' == 'a')
     -- will fail
     assert( 'a' == 'b')

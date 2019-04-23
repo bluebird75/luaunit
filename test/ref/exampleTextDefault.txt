@@ -14,15 +14,15 @@ stack traceback:
 	example_with_luaunit.lua:77: in function 'funcWithFuncWithError'
 	example_with_luaunit.lua:73: in function 'TestToto.test8b'
 
-3) test1_withFailure
+3) test1_withAssertionError
 example_with_luaunit.lua:129: assertion failed!
 stack traceback:
-	example_with_luaunit.lua:129: in function 'test1_withFailure'
+	example_with_luaunit.lua:129: in function 'test1_withAssertionError'
 
-4) test2_withFailure
+4) test2_withAssertionError
 example_with_luaunit.lua:135: assertion failed!
 stack traceback:
-	example_with_luaunit.lua:135: in function 'test2_withFailure'
+	example_with_luaunit.lua:135: in function 'test2_withAssertionError'
 
 Failed tests:
 -------------
