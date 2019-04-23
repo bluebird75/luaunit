@@ -512,7 +512,7 @@ function M.adjust_err_msg_with_iter( err_msg, iter_msg )
 
     if (err_msg:find( M.SUCCESS_PREFIX ) == 1) or err_msg:match( '('..RE_FILE_LINE..')' .. M.SUCCESS_PREFIX .. ".*" ) then
         -- test finished early with success()
-        return nil, M.NodeStatus.PASS
+        return nil, M.NodeStatus.SUCCESS
     end
 
     if (err_msg:find( M.FAILURE_PREFIX ) == 1) or (err_msg:match( '('..RE_FILE_LINE..')' .. M.FAILURE_PREFIX .. ".*" ) ~= nil) then
@@ -1938,7 +1938,7 @@ TapOutput.__class__ = 'TapOutput'
         return setmetatable( t, TapOutput_MT)
     end
     function TapOutput:startSuite()
-        print("1.."..self.result.testCount)
+        print("1.."..self.result.selectedCount)
         print('# Started on '..self.result.startDate)
     end
     function TapOutput:startClass(className)
@@ -1958,7 +1958,7 @@ TapOutput.__class__ = 'TapOutput'
     end
 
     function TapOutput:endTest( node )
-        if node:isPassed() then
+        if node:isSuccess() then
             io.stdout:write("ok     ", self.result.currentTestNumber, "\t", node.testName, "\n")
         end
     end
@@ -2039,7 +2039,7 @@ JUnitOutput.__class__ = 'JUnitOutput'
         for i,node in ipairs(self.result.tests) do
             self.fd:write(string.format('        <testcase classname="%s" name="%s" time="%0.3f">\n',
                 node.className, node.testName, node.duration ) )
-            if node:isNotPassed() then
+            if node:isNotSuccess() then
                 self.fd:write(node:statusXML())
             end
             self.fd:write('        </testcase>\n')
@@ -2185,7 +2185,7 @@ TextOutput.__class__ = 'TextOutput'
     end
 
     function TextOutput:endTest( node )
-        if node:isPassed() then
+        if node:isSuccess() then
             if self.verbosity > M.VERBOSITY_DEFAULT then
                 io.stdout:write("Ok\n")
             else
@@ -2487,20 +2487,21 @@ end
     M.NodeStatus = NodeStatus
 
     -- values of status
-    NodeStatus.PASS  = 'PASS'
-    NodeStatus.FAIL  = 'FAIL'
-    NodeStatus.ERROR = 'ERROR'
+    NodeStatus.SUCCESS  = 'SUCCESS'
+    NodeStatus.FAIL     = 'FAIL'
+    NodeStatus.ERROR    = 'ERROR'
 
     function NodeStatus.new( number, testName, className )
+        -- default constructor, test are PASS by default
         local t = { number = number, testName = testName, className = className }
         setmetatable( t, NodeStatus_MT )
-        t:pass()
+        t:success()
         return t
     end
 
-    function NodeStatus:pass()
-        self.status = self.PASS
-        -- useless but we know it's the field we want to use
+    function NodeStatus:success()
+        self.status = self.SUCCESS
+        -- useless because lua does this for us, but it helps me remembering the relevant field names
         self.msg = nil
         self.stackTrace = nil
     end
@@ -2517,13 +2518,13 @@ end
         self.stackTrace = stackTrace
     end
 
-    function NodeStatus:isPassed()
-        return self.status == NodeStatus.PASS
+    function NodeStatus:isSuccess()
+        return self.status == NodeStatus.SUCCESS
     end
 
-    function NodeStatus:isNotPassed()
-        -- print('hasFailure: '..prettystr(self))
-        return self.status ~= NodeStatus.PASS
+    function NodeStatus:isNotSuccess()
+        -- Return true if node is either failure or error
+        return self.status ~= NodeStatus.SUCCESS
     end
 
     function NodeStatus:isFailure()
@@ -2565,7 +2566,7 @@ end
         local s = {
             string.format('Ran %d tests in %0.3f seconds',
                           result.runCount, result.duration),
-            conditional_plural(result.passedCount, 'success'),
+            conditional_plural(result.successCount, 'success'),
         }
         if result.notPassedCount > 0 then
             if result.failureCount > 0 then
@@ -2583,11 +2584,11 @@ end
         return table.concat(s, ', ')
     end
 
-    function M.LuaUnit:startSuite(testCount, nonSelectedCount)
+    function M.LuaUnit:startSuite(selectedCount, nonSelectedCount)
         self.result = {
-            testCount = testCount,
+            selectedCount = selectedCount,
             nonSelectedCount = nonSelectedCount,
-            passedCount = 0,
+            successCount = 0,
             runCount = 0,
             currentTestNumber = 0,
             currentClassName = "",
@@ -2628,7 +2629,7 @@ end
 
     function M.LuaUnit:addStatus( err )
         -- "err" is expected to be a table / result from protectedCall()
-        if err.status == NodeStatus.PASS then
+        if err.status == NodeStatus.SUCCESS then
             return
         end
 
@@ -2645,7 +2646,7 @@ end
         ]]
 
         -- if the node is already in failure/error, just don't report the new error (see above)
-        if node.status ~= NodeStatus.PASS then
+        if node.status ~= NodeStatus.SUCCESS then
             return
         end
 
@@ -2667,13 +2668,13 @@ end
     function M.LuaUnit:endTest()
         local node = self.result.currentNode
         -- print( 'endTest() '..prettystr(node))
-        -- print( 'endTest() '..prettystr(node:isNotPassed()))
+        -- print( 'endTest() '..prettystr(node:isNotSuccess()))
         node.duration = os.clock() - node.startTime
         node.startTime = nil
         self.output:endTest( node )
 
-        if node:isPassed() then
-            self.result.passedCount = self.result.passedCount + 1
+        if node:isSuccess() then
+            self.result.successCount = self.result.successCount + 1
         elseif node:isError() then
             if self.quitOnError or self.quitOnFailure then
                 -- Runtime error - abort test execution as requested by
@@ -2760,7 +2761,7 @@ end
             ok, err = xpcall( function () methodInstance() end, err_handler )
         end
         if ok then
-            return {status = NodeStatus.PASS}
+            return {status = NodeStatus.SUCCESS}
         end
 
         local iter_msg
@@ -2768,7 +2769,7 @@ end
 
         err.msg, err.status = M.adjust_err_msg_with_iter( err.msg, iter_msg )
 
-        if err.status == NodeStatus.PASS then
+        if err.status == NodeStatus.SUCCESS then
             err.trace = nil
             return err
         end
@@ -2813,7 +2814,7 @@ end
 
         local node = self.result.currentNode
         for iter_n = 1, self.exeRepeat or 1 do
-            if node:isNotPassed() then
+            if node:isNotSuccess() then
                 break
             end
             self.currentCount = iter_n
@@ -2830,7 +2831,7 @@ end
             end
 
             -- run testMethod()
-            if node:isPassed() then
+            if node:isSuccess() then
                 self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
             end
 
