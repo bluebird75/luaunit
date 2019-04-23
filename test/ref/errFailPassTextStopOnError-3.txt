@@ -2,8 +2,8 @@
 ERROR during LuaUnit test execution:
 test/test_with_err_fail_pass.lua:41: attempt to perform arithmetic on a table value
 
-Failed tests:
--------------
+Tests with errors:
+------------------
 1) TestAnotherThing.test2_Err1
 test/test_with_err_fail_pass.lua:41: attempt to perform arithmetic on a table value
 stack traceback:

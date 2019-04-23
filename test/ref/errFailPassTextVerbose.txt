@@ -25,8 +25,8 @@ test/test_with_err_fail_pass.lua:66: attempt to perform arithmetic on a table va
 test/test_with_err_fail_pass.lua:62: expected: 0, actual: 3
     testFuncSuccess1 ... Ok
 =========================================================
-Failed tests:
--------------
+Tests with errors:
+------------------
 1) TestAnotherThing.test2_Err1
 test/test_with_err_fail_pass.lua:41: attempt to perform arithmetic on a table value
 stack traceback:
@@ -37,42 +37,44 @@ test/test_with_err_fail_pass.lua:45: attempt to perform arithmetic on a table va
 stack traceback:
 	[C]: in function 'xpcall'
 
-3) TestAnotherThing.test3_Fail1
-test/test_with_err_fail_pass.lua:49: expected: 0, actual: 2
-stack traceback:
-	test/test_with_err_fail_pass.lua:49: in function 'TestAnotherThing.test3_Fail1'
-
-4) TestAnotherThing.test3_Fail2
-test/test_with_err_fail_pass.lua:53: expected: 0, actual: 3
-stack traceback:
-	test/test_with_err_fail_pass.lua:53: in function 'TestAnotherThing.test3_Fail2'
-
-5) TestSomething.test2_Fail1
-test/test_with_err_fail_pass.lua:15: expected: 0, actual: 2
-stack traceback:
-	test/test_with_err_fail_pass.lua:15: in function 'TestSomething.test2_Fail1'
-
-6) TestSomething.test2_Fail2
-test/test_with_err_fail_pass.lua:19: expected: 0, actual: 3
-stack traceback:
-	test/test_with_err_fail_pass.lua:19: in function 'TestSomething.test2_Fail2'
-
-7) TestSomething.test3_Err1
+3) TestSomething.test3_Err1
 test/test_with_err_fail_pass.lua:23: attempt to perform arithmetic on a table value
 stack traceback:
 	[C]: in function 'xpcall'
 
-8) TestSomething.test3_Err2
+4) TestSomething.test3_Err2
 test/test_with_err_fail_pass.lua:27: attempt to perform arithmetic on a table value
 stack traceback:
 	[C]: in function 'xpcall'
 
-9) testFuncErr1
+5) testFuncErr1
 test/test_with_err_fail_pass.lua:66: attempt to perform arithmetic on a table value
 stack traceback:
 	[C]: in function 'xpcall'
 
-10) testFuncFail1
+Failed tests:
+-------------
+1) TestAnotherThing.test3_Fail1
+test/test_with_err_fail_pass.lua:49: expected: 0, actual: 2
+stack traceback:
+	test/test_with_err_fail_pass.lua:49: in function 'TestAnotherThing.test3_Fail1'
+
+2) TestAnotherThing.test3_Fail2
+test/test_with_err_fail_pass.lua:53: expected: 0, actual: 3
+stack traceback:
+	test/test_with_err_fail_pass.lua:53: in function 'TestAnotherThing.test3_Fail2'
+
+3) TestSomething.test2_Fail1
+test/test_with_err_fail_pass.lua:15: expected: 0, actual: 2
+stack traceback:
+	test/test_with_err_fail_pass.lua:15: in function 'TestSomething.test2_Fail1'
+
+4) TestSomething.test2_Fail2
+test/test_with_err_fail_pass.lua:19: expected: 0, actual: 3
+stack traceback:
+	test/test_with_err_fail_pass.lua:19: in function 'TestSomething.test2_Fail2'
+
+5) testFuncFail1
 test/test_with_err_fail_pass.lua:62: expected: 0, actual: 3
 stack traceback:
 	test/test_with_err_fail_pass.lua:62: in function 'testFuncFail1'
