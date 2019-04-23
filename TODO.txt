@@ -1,3 +1,22 @@
+Async testing:
+-------------
+- mark a given test as asynchronous
+	+ the test must call done() for being completed successfully
+	+ include a timeout
+	+ done() will call endTest() and tearDown(), ...
+	+ new test status: in progress
+	+ calling done twice is a mistake
+	+ assertions in a callback are not wrapped. Passing the test status must be done differently
+		+ how to know which test is failing when an assertion fails
+- test suite has a global timeout which can be adjusted per test
+	+ test suite shall wait until all tests in-progress have completed
+
+not needed:
+	+ display output must be updated to support asynchronous execution
+
+
+
+
 TODO Future:
 ============
 - pretty function formatting: https://github.com/luarocks/luarocks/blob/master/src/luarocks/core/util.lua
@@ -26,6 +45,9 @@ TODO Future:
 - assertListContainsElements
 - assertListContainsElements
 - checkXXX for every assertXXX
+
+- review and enhance: TestLuaUnitExecution:test_withTableErrorInside
+
 
 Version 3.4:
 ============
