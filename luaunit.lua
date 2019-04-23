@@ -1965,7 +1965,7 @@ TapOutput.__class__ = 'TapOutput'
 
     function TapOutput:endSuite()
         print( '# '..M.LuaUnit.statusLine( self.result ) )
-        return self.result.notPassedCount
+        return self.result.notSuccessCount
     end
 
 
@@ -2036,7 +2036,7 @@ JUnitOutput.__class__ = 'JUnitOutput'
         -- XXX please include system name and version if possible
         self.fd:write("        </properties>\n")
 
-        for i,node in ipairs(self.result.tests) do
+        for i,node in ipairs(self.result.allTests) do
             self.fd:write(string.format('        <testcase classname="%s" name="%s" time="%0.3f">\n',
                 node.className, node.testName, node.duration ) )
             if node:isNotSuccess() then
@@ -2052,7 +2052,7 @@ JUnitOutput.__class__ = 'JUnitOutput'
         self.fd:write('    </testsuite>\n')
         self.fd:write('</testsuites>\n')
         self.fd:close()
-        return self.result.notPassedCount
+        return self.result.notSuccessCount
     end
 
 
@@ -2217,11 +2217,21 @@ TextOutput.__class__ = 'TextOutput'
         print()
     end
 
+    function TextOutput:displayErroredTests()
+        if #self.result.errorTests ~= 0 then
+            print("Tests with errors:")
+            print("------------------")
+            for i, v in ipairs(self.result.errorTests) do
+                self:displayOneFailedTest(i, v)
+            end
+        end
+    end
+
     function TextOutput:displayFailedTests()
-        if self.result.notPassedCount ~= 0 then
+        if #self.result.failedTests ~= 0 then
             print("Failed tests:")
             print("-------------")
-            for i, v in ipairs(self.result.notPassed) do
+            for i, v in ipairs(self.result.failedTests) do
                 self:displayOneFailedTest(i, v)
             end
         end
@@ -2233,9 +2243,10 @@ TextOutput.__class__ = 'TextOutput'
         else
             print()
         end
+        self:displayErroredTests()
         self:displayFailedTests()
         print( M.LuaUnit.statusLine( self.result ) )
-        if self.result.notPassedCount == 0 then
+        if self.result.notSuccessCount == 0 then
             print('OK')
         end
     end
@@ -2488,6 +2499,7 @@ end
 
     -- values of status
     NodeStatus.SUCCESS  = 'SUCCESS'
+    NodeStatus.SKIP     = 'SKIP'
     NodeStatus.FAIL     = 'FAIL'
     NodeStatus.ERROR    = 'ERROR'
 
@@ -2502,6 +2514,12 @@ end
     function NodeStatus:success()
         self.status = self.SUCCESS
         -- useless because lua does this for us, but it helps me remembering the relevant field names
+        self.msg = nil
+        self.stackTrace = nil
+    end
+
+    function NodeStatus:skip()
+        self.status = self.SKIP
         self.msg = nil
         self.stackTrace = nil
     end
@@ -2524,7 +2542,7 @@ end
 
     function NodeStatus:isNotSuccess()
         -- Return true if node is either failure or error
-        return self.status ~= NodeStatus.SUCCESS
+        return (self.status == NodeStatus.FAIL or self.status == NodeStatus.ERROR)
     end
 
     function NodeStatus:isFailure()
@@ -2568,7 +2586,7 @@ end
                           result.runCount, result.duration),
             conditional_plural(result.successCount, 'success'),
         }
-        if result.notPassedCount > 0 then
+        if result.notSuccessCount > 0 then
             if result.failureCount > 0 then
                 table.insert(s, conditional_plural(result.failureCount, 'failure'))
             end
@@ -2589,6 +2607,7 @@ end
             selectedCount = selectedCount,
             nonSelectedCount = nonSelectedCount,
             successCount = 0,
+            skipCount = 0,
             runCount = 0,
             currentTestNumber = 0,
             currentClassName = "",
@@ -2598,10 +2617,12 @@ end
             startDate = os.date(os.getenv('LUAUNIT_DATEFMT')),
             startIsodate = os.date('%Y-%m-%dT%H:%M:%S'),
             patternIncludeFilter = self.patternIncludeFilter,
-            tests = {},
-            failures = {},
-            errors = {},
-            notPassed = {},
+
+            -- list of test node status
+            allTests = {},
+            failedTests = {},
+            errorTests = {},
+            notSuccess = {},
         }
 
         self.outputType = self.outputType or TextOutput
@@ -2623,7 +2644,7 @@ end
             self.result.currentClassName
         )
         self.result.currentNode.startTime = os.clock()
-        table.insert( self.result.tests, self.result.currentNode )
+        table.insert( self.result.allTests, self.result.currentNode )
         self.output:startTest( testName )
     end
 
@@ -2652,15 +2673,15 @@ end
 
         if err.status == NodeStatus.FAIL then
             node:fail( err.msg, err.trace )
-            table.insert( self.result.failures, node )
+            table.insert( self.result.failedTests, node )
         elseif err.status == NodeStatus.ERROR then
             node:error( err.msg, err.trace )
-            table.insert( self.result.errors, node )
+            table.insert( self.result.errorTests, node )
         end
 
         if node:isFailure() or node:isError() then
             -- add to the list of failed tests (gets printed separately)
-            table.insert( self.result.notPassed, node )
+            table.insert( self.result.notSuccess, node )
         end
         self.output:addStatus( node )
     end
@@ -2707,11 +2728,11 @@ end
         self.result.suiteStarted = false
 
         -- Expose test counts for outputter's endSuite(). This could be managed
-        -- internally instead, but unit tests (and existing use cases) might
-        -- rely on these fields being present.
-        self.result.notPassedCount = #self.result.notPassed
-        self.result.failureCount = #self.result.failures
-        self.result.errorCount = #self.result.errors
+        -- internally instead by using the length of the lists of failed tests
+        -- but unit tests rely on these fields being present.
+        self.result.notSuccessCount = #self.result.notSuccess
+        self.result.failureCount = #self.result.failedTests
+        self.result.errorCount = #self.result.errorTests
 
         self.output:endSuite()
     end
@@ -3058,7 +3079,7 @@ end
 
         self:runSuiteByNames( options.testNames or M.LuaUnit.collectTests() )
 
-        return self.result.notPassedCount
+        return self.result.notSuccessCount
     end
 -- class LuaUnit
 
