@@ -67,6 +67,7 @@ local cmdline_argv = rawget(_G, "arg")
 
 M.FAILURE_PREFIX = 'LuaUnit test FAILURE: ' -- prefix string for failed tests
 M.SUCCESS_PREFIX = 'LuaUnit test SUCCESS: ' -- prefix string for successful tests finished early
+M.SKIP_PREFIX    = 'LuaUnit test SKIP:    ' -- prefix string for skipped tests
 
 
 
@@ -515,27 +516,36 @@ function M.adjust_err_msg_with_iter( err_msg, iter_msg )
         return nil, M.NodeStatus.SUCCESS
     end
 
+    if (err_msg:find( M.SKIP_PREFIX ) == 1) or (err_msg:match( '('..RE_FILE_LINE..')' .. M.SKIP_PREFIX .. ".*" ) ~= nil) then
+        -- substitute prefix by iteration message
+        err_msg = err_msg:gsub(M.SKIP_PREFIX, iter_msg, 1)
+        -- print("failure detected")
+        return err_msg, M.NodeStatus.SKIP
+    end
+
     if (err_msg:find( M.FAILURE_PREFIX ) == 1) or (err_msg:match( '('..RE_FILE_LINE..')' .. M.FAILURE_PREFIX .. ".*" ) ~= nil) then
         -- substitute prefix by iteration message
         err_msg = err_msg:gsub(M.FAILURE_PREFIX, iter_msg, 1)
         -- print("failure detected")
         return err_msg, M.NodeStatus.FAIL
-    else
-        -- print("error detected")
-        -- regular error, not a failure
-        if iter_msg then
-            local match
-            -- "./test\\test_luaunit.lua:2241: some error msg
-            match = err_msg:match( '(.*:%d+: ).*' ) 
-            if match then
-                err_msg = err_msg:gsub( match, match .. iter_msg )
-            else
-                -- no file:line: infromation, just add the iteration info at the beginning of the line
-                err_msg = iter_msg .. err_msg
-            end
-        end
-        return err_msg, M.NodeStatus.ERROR
     end
+
+
+
+    -- print("error detected")
+    -- regular error, not a failure
+    if iter_msg then
+        local match
+        -- "./test\\test_luaunit.lua:2241: some error msg
+        match = err_msg:match( '(.*:%d+: ).*' ) 
+        if match then
+            err_msg = err_msg:gsub( match, match .. iter_msg )
+        else
+            -- no file:line: infromation, just add the iteration info at the beginning of the line
+            err_msg = iter_msg .. err_msg
+        end
+    end
+    return err_msg, M.NodeStatus.ERROR
 end
 
 local function tryMismatchFormatting( table_a, table_b, doDeepAnalysis )
@@ -1245,6 +1255,18 @@ function M.failIf( cond, msg )
     -- Fails a test with "msg" if condition is true
     if cond then
         failure( msg, nil, 2 )
+    end
+end
+
+function M.skip(msg)
+    -- skip a running test
+    error(M.SKIP_PREFIX .. prettystr(msg), 2)
+end
+
+function M.skipIf( cond, msg )
+    -- skip a running test if condition is met
+    if cond then
+        error(M.SKIP_PREFIX .. prettystr(msg), 2)
     end
 end
 
@@ -2564,8 +2586,12 @@ end
     end
 
     function NodeStatus:isNotSuccess()
-        -- Return true if node is either failure or error
-        return (self.status == NodeStatus.FAIL or self.status == NodeStatus.ERROR)
+        -- Return true if node is either failure or error or skip
+        return (self.status == NodeStatus.FAIL or self.status == NodeStatus.ERROR or self.status == NodeStatus.SKIP)
+    end
+
+    function NodeStatus:isSkipped()
+        return self.status == NodeStatus.SKIP
     end
 
     function NodeStatus:isFailure()
@@ -2630,7 +2656,6 @@ end
             selectedCount = selectedCount,
             nonSelectedCount = nonSelectedCount,
             successCount = 0,
-            skipCount = 0,
             runCount = 0,
             currentTestNumber = 0,
             currentClassName = "",
@@ -2645,6 +2670,12 @@ end
             allTests = {},
             failedTests = {},
             errorTests = {},
+            skippedTests = {},
+
+            failureCount = 0,
+            errorCount = 0,
+            notSuccessCount = 0,
+            skipCount = 0,
         }
 
         self.outputType = self.outputType or TextOutput
@@ -2699,6 +2730,11 @@ end
         elseif err.status == NodeStatus.ERROR then
             node:error( err.msg, err.trace )
             table.insert( self.result.errorTests, node )
+        elseif err.status == NodeStatus.SKIP then
+            node:skip( err.msg, err.trace )
+            table.insert( self.result.skippedTests, node )
+        else
+            error('No such status: ' .. prettystr(err.status))
         end
 
         self.output:updateStatus( node )
@@ -2730,6 +2766,10 @@ end
                 print("\nFailure during LuaUnit test execution:\n" .. node.msg)
                 self.result.aborted = true
             end
+        elseif node:isSkipped() then
+            -- nothing special to do
+        else
+            error('No such node status: ' .. prettystr(node.status))
         end
         self.result.currentNode = nil
     end
@@ -2751,6 +2791,7 @@ end
         self.result.failureCount = #self.result.failedTests
         self.result.errorCount = #self.result.errorTests
         self.result.notSuccessCount = self.result.failureCount + self.result.errorCount
+        self.result.skipCount = #self.result.skippedTests
 
         self.output:endSuite()
     end
@@ -2808,7 +2849,7 @@ end
 
         err.msg, err.status = M.adjust_err_msg_with_iter( err.msg, iter_msg )
 
-        if err.status == NodeStatus.SUCCESS then
+        if err.status == NodeStatus.SUCCESS or err.status == NodeStatus.SKIP then
             err.trace = nil
             return err
         end

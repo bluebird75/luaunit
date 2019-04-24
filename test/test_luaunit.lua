@@ -3325,6 +3325,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         runner:runSuiteByInstances( { { 'my_test_fails', my_test_fails } } )
         lu.assertEquals( runner.result.selectedCount, 1 )
         lu.assertEquals( runner.result.failureCount, 1 )
+        lu.assertEquals( runner.result.errorCount, 0 )
         lu.assertStrContains( runner.result.failedTests[1].msg, 'Stop early.' )
     end
 
@@ -3341,6 +3342,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'my_test_fails', my_test_fails } } )
         lu.assertEquals( runner.result.selectedCount, 1 )
+        lu.assertEquals( runner.result.errorCount, 0 )
         lu.assertEquals( runner.result.failureCount, 1 )
         lu.assertStrContains( runner.result.failedTests[1].msg, 'YESS' )
     end
@@ -3357,6 +3359,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'my_test_success', my_test_success } } )
         lu.assertEquals( runner.result.selectedCount, 1 )
+        lu.assertEquals( runner.result.errorCount, 0 )
         lu.assertEquals( runner.result.failureCount, 0 )
         lu.assertEquals( runner.result.successCount, 1 )
     end
@@ -3384,6 +3387,23 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( runner.result.successCount, 1 )
         lu.assertEquals( runner.result.errorCount, 1 )
         lu.assertStrContains( runner.result.errorTests[1].msg, 'titi' )
+    end
+
+    function TestLuaUnitExecution:test_skipFromTest()
+
+        local function my_test_skip()
+            lu.skip()
+            error('skip does not work!')
+        end
+
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType( "NIL" )
+        runner:runSuiteByInstances( { { 'my_test_skip', my_test_skip } } )
+        lu.assertEquals( runner.result.selectedCount, 1 )
+        lu.assertEquals( runner.result.failureCount, 0 )
+        lu.assertEquals( runner.result.errorCount, 0 )
+        lu.assertEquals( runner.result.successCount, 0 )
+        lu.assertEquals( runner.result.skipCount, 1 )
     end
 
     function TestLuaUnitExecution:testWithRepeat()
