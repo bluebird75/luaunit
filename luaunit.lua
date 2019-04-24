@@ -1914,13 +1914,36 @@ function genericOutput.new(runner, default_verbosity)
 end
 
 -- abstract ("empty") methods
-function genericOutput:startSuite() end
-function genericOutput:startClass(className) end
-function genericOutput:startTest(testName) end
-function genericOutput:addStatus(node) end
-function genericOutput:endTest(node) end
-function genericOutput:endClass() end
-function genericOutput:endSuite() end
+function genericOutput:startSuite() 
+    -- Called once, when the suite is started
+end
+
+function genericOutput:startClass(className) 
+    -- Called each time a new test class is started
+end
+
+function genericOutput:startTest(testName) 
+    -- called each time a new test is started, right before the setUp()
+    -- the current test status node is already created and available in: self.result.currentNode
+end
+
+function genericOutput:addStatus(node) 
+    -- called with status failed or error as soon as the error/failure is encountered
+    -- this method is NOT called for a successful test because a test is marked as successful by default
+    -- and does not need to be updated
+end
+
+function genericOutput:endTest(node) 
+    -- called when the test is finished, after the tearDown() method
+end
+
+function genericOutput:endClass() 
+    -- called when executing the class is finished, before moving on to the next class of at the end of the test execution
+end
+
+function genericOutput:endSuite() 
+    -- called at the end of the test suite execution
+end
 
 
 ----------------------------------------------------------------
@@ -2062,7 +2085,7 @@ JUnitOutput.__class__ = 'JUnitOutput'
 --                     class TextOutput
 ----------------------------------------------------------------
 
---[[
+--[[    Example of other unit-tests suite text output
 
 -- Python Non verbose:
 
@@ -2622,7 +2645,7 @@ end
             allTests = {},
             failedTests = {},
             errorTests = {},
-            notSuccess = {},
+            notSuccess = {}, -- TODO: this is used only in test_luaunit.lua, should be removed one day
         }
 
         self.outputType = self.outputType or TextOutput
