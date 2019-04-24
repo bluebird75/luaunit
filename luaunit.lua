@@ -1927,7 +1927,7 @@ function genericOutput:startTest(testName)
     -- the current test status node is already created and available in: self.result.currentNode
 end
 
-function genericOutput:addStatus(node) 
+function genericOutput:updateStatus(node) 
     -- called with status failed or error as soon as the error/failure is encountered
     -- this method is NOT called for a successful test because a test is marked as successful by default
     -- and does not need to be updated
@@ -1970,7 +1970,7 @@ TapOutput.__class__ = 'TapOutput'
         end
     end
 
-    function TapOutput:addStatus( node )
+    function TapOutput:updateStatus( node )
         io.stdout:write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
         if self.verbosity > M.VERBOSITY_LOW then
            print( prefixString( '#   ', node.msg ) )
@@ -2034,7 +2034,7 @@ JUnitOutput.__class__ = 'JUnitOutput'
         print('# Starting test: '..testName)
     end
 
-    function JUnitOutput:addStatus( node )
+    function JUnitOutput:updateStatus( node )
         if node:isFailure() then
             print( '#   Failure: ' .. prefixString( '#   ', node.msg ):sub(4, nil) )
             -- print('# ' .. node.stackTrace)
@@ -2671,7 +2671,7 @@ end
         self.output:startTest( testName )
     end
 
-    function M.LuaUnit:addStatus( err )
+    function M.LuaUnit:updateStatus( err )
         -- "err" is expected to be a table / result from protectedCall()
         if err.status == NodeStatus.SUCCESS then
             return
@@ -2706,7 +2706,7 @@ end
             -- add to the list of failed tests (gets printed separately)
             table.insert( self.result.notSuccess, node )
         end
-        self.output:addStatus( node )
+        self.output:updateStatus( node )
     end
 
     function M.LuaUnit:endTest()
@@ -2870,13 +2870,13 @@ end
                              self.asFunction( classInstance.setup ) or
                              self.asFunction( classInstance.SetUp )
                 if func then
-                    self:addStatus(self:protectedCall(classInstance, func, className..'.setUp'))
+                    self:updateStatus(self:protectedCall(classInstance, func, className..'.setUp'))
                 end
             end
 
             -- run testMethod()
             if node:isSuccess() then
-                self:addStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
+                self:updateStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
             end
 
             -- lastly, run tearDown (if any)
@@ -2886,7 +2886,7 @@ end
                              self.asFunction( classInstance.teardown ) or
                              self.asFunction( classInstance.Teardown )
                 if func then
-                    self:addStatus(self:protectedCall(classInstance, func, className..'.tearDown'))
+                    self:updateStatus(self:protectedCall(classInstance, func, className..'.tearDown'))
                 end
             end
         end
