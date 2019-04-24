@@ -2645,7 +2645,6 @@ end
             allTests = {},
             failedTests = {},
             errorTests = {},
-            notSuccess = {}, -- TODO: this is used only in test_luaunit.lua, should be removed one day
         }
 
         self.outputType = self.outputType or TextOutput
@@ -2702,10 +2701,6 @@ end
             table.insert( self.result.errorTests, node )
         end
 
-        if node:isFailure() or node:isError() then
-            -- add to the list of failed tests (gets printed separately)
-            table.insert( self.result.notSuccess, node )
-        end
         self.output:updateStatus( node )
     end
 
@@ -2753,9 +2748,9 @@ end
         -- Expose test counts for outputter's endSuite(). This could be managed
         -- internally instead by using the length of the lists of failed tests
         -- but unit tests rely on these fields being present.
-        self.result.notSuccessCount = #self.result.notSuccess
         self.result.failureCount = #self.result.failedTests
         self.result.errorCount = #self.result.errorTests
+        self.result.notSuccessCount = self.result.failureCount + self.result.errorCount
 
         self.output:endSuite()
     end
