@@ -3347,7 +3347,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertStrContains( runner.result.failedTests[1].msg, 'YESS' )
     end
 
-    function TestLuaUnitExecution:test_successFromTest()
+    function TestLuaUnitExecution:test_callSuccessFromTest()
 
         local function my_test_success()
             lu.assertEquals( 1, 1 )
@@ -3364,7 +3364,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( runner.result.successCount, 1 )
     end
 
-    function TestLuaUnitExecution:test_successIfFromTest()
+    function TestLuaUnitExecution:test_callSuccessIfFromTest()
 
         local function my_test_fails()
             lu.assertEquals( 1, 1 )
@@ -3389,10 +3389,10 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertStrContains( runner.result.errorTests[1].msg, 'titi' )
     end
 
-    function TestLuaUnitExecution:test_skipFromTest()
+    function TestLuaUnitExecution:test_callSkipFromTest()
 
         local function my_test_skip()
-            lu.skip()
+            lu.skip('my_skip_msg_is_there')
             error('skip does not work!')
         end
 
@@ -3400,11 +3400,65 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstances( { { 'my_test_skip', my_test_skip } } )
         lu.assertEquals( runner.result.selectedCount, 1 )
+        lu.assertEquals( runner.result.runCount, 0 )
         lu.assertEquals( runner.result.failureCount, 0 )
         lu.assertEquals( runner.result.errorCount, 0 )
         lu.assertEquals( runner.result.successCount, 0 )
         lu.assertEquals( runner.result.skipCount, 1 )
+        lu.assertStrContains( runner.result.skippedTests[1].msg, 'my_skip_msg_is_there' )
     end
+
+    function TestLuaUnitExecution:test_callSkipIfFromTest()
+
+        local function my_test_skip()
+            lu.skipIf( false, 'test is not skipped' )
+            error('titi')
+        end
+
+        local function my_test_no_skip()
+            lu.skipIf( true, 'test should be skipped' )
+            error('toto')
+        end
+
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType( "NIL" )
+        runner:runSuiteByInstances( { { 'my_test_skip', my_test_skip }, {'my_test_no_skip', my_test_no_skip} } )
+        lu.assertEquals( runner.result.selectedCount, 2 )
+        lu.assertEquals( runner.result.failureCount, 0 )
+        lu.assertEquals( runner.result.successCount, 0 )
+        lu.assertEquals( runner.result.errorCount, 1 )
+        lu.assertEquals( runner.result.skipCount, 1 )
+        lu.assertEquals( runner.result.runCount, 1 )
+        lu.assertStrContains( runner.result.errorTests[1].msg, 'titi' )
+        lu.assertStrContains( runner.result.skippedTests[1].msg, 'test should be skipped' )
+    end
+
+
+    function TestLuaUnitExecution:test_callRunOnlyIfFromTest()
+
+        local function my_test_run_only_if()
+            lu.runOnlyIf( true, 'test is executed' )
+            error('titi')
+        end
+
+        local function my_test_not_run_only_if()
+            lu.runOnlyIf( false, 'test should be skipped' )
+            error('toto')
+        end
+
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType( "NIL" )
+        runner:runSuiteByInstances( { { 'my_test_run_only_if', my_test_run_only_if }, {'my_test_not_run_only_if', my_test_not_run_only_if} } )
+        lu.assertEquals( runner.result.selectedCount, 2 )
+        lu.assertEquals( runner.result.failureCount, 0 )
+        lu.assertEquals( runner.result.successCount, 0 )
+        lu.assertEquals( runner.result.skipCount, 1 )
+        lu.assertEquals( runner.result.errorCount, 1 )
+        lu.assertEquals( runner.result.runCount, 1 )
+        lu.assertStrContains( runner.result.errorTests[1].msg, 'titi' )
+        lu.assertStrContains( runner.result.skippedTests[1].msg, 'test should be skipped' )
+    end
+
 
     function TestLuaUnitExecution:testWithRepeat()
         local runner = lu.LuaUnit.new()

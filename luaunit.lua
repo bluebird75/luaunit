@@ -1270,6 +1270,13 @@ function M.skipIf( cond, msg )
     end
 end
 
+function M.runOnlyIf( cond, msg )
+    -- continue a running test if condition is met, else skip it
+    if not cond then
+        error(M.SKIP_PREFIX .. prettystr(msg), 2)
+    end
+end
+
 function M.success()
     -- stops a test with a success
     error(M.SUCCESS_PREFIX, 2)
@@ -1371,6 +1378,8 @@ end
 function M.assertStrContains( str, sub, isPattern, extra_msg_or_nil )
     -- this relies on lua string.find function
     -- a string always contains the empty string
+    -- assert( type(str) == 'string', 'Argument 1 of assertStrContains() should be a string.' ) )
+    -- assert( type(sub) == 'string', 'Argument 2 of assertStrContains() should be a string.' ) )
     if not string.find(str, sub, 1, not isPattern) then
         sub, str = prettystrPairs(sub, str, '\n')
         fail_fmt(2, extra_msg_or_nil, 'Could not find %s %s in string %s',
@@ -2563,9 +2572,9 @@ end
         self.stackTrace = nil
     end
 
-    function NodeStatus:skip()
+    function NodeStatus:skip(msg)
         self.status = self.SKIP
-        self.msg = nil
+        self.msg = msg
         self.stackTrace = nil
     end
 
@@ -2731,7 +2740,7 @@ end
             node:error( err.msg, err.trace )
             table.insert( self.result.errorTests, node )
         elseif err.status == NodeStatus.SKIP then
-            node:skip( err.msg, err.trace )
+            node:skip( err.msg )
             table.insert( self.result.skippedTests, node )
         else
             error('No such status: ' .. prettystr(err.status))
@@ -2767,7 +2776,7 @@ end
                 self.result.aborted = true
             end
         elseif node:isSkipped() then
-            -- nothing special to do
+            self.result.runCount = self.result.runCount - 1
         else
             error('No such node status: ' .. prettystr(node.status))
         end
