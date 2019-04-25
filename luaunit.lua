@@ -2654,6 +2654,9 @@ end
         else
             table.insert(s, '0 failures')
         end
+        if result.skippedCount > 0 then
+            table.insert(s, string.format("%d skipped", result.skippedCount))
+        end
         if result.nonSelectedCount > 0 then
             table.insert(s, string.format("%d non-selected", result.nonSelectedCount))
         end
@@ -2684,7 +2687,7 @@ end
             failureCount = 0,
             errorCount = 0,
             notSuccessCount = 0,
-            skipCount = 0,
+            skippedCount = 0,
         }
 
         self.outputType = self.outputType or TextOutput
@@ -2800,7 +2803,7 @@ end
         self.result.failureCount = #self.result.failedTests
         self.result.errorCount = #self.result.errorTests
         self.result.notSuccessCount = self.result.failureCount + self.result.errorCount
-        self.result.skipCount = #self.result.skippedTests
+        self.result.skippedCount = #self.result.skippedTests
 
         self.output:endSuite()
     end
