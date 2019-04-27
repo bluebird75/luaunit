@@ -1,5 +1,6 @@
 #!/usr/bin/env lua
 
+local no_error, err_msg
 no_error, err_msg = pcall( require, 'test.test_luaunit')
 if not no_error then
 	if nil == err_msg:find( "module 'test.test_luaunit' not found" ) then
