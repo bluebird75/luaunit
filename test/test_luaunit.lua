@@ -995,6 +995,10 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         -- try the other order as well, in case pairs() returns items reversed in the test above
         lu.assertEquals( {[{1}]=2, [{1}]=3}, {[{1}]=2, [{1}]=3} )
 
+        -- check assertions for which # operator returns two different length depending
+        -- on how the table is built, eventhough the final table is the same
+        lu.assertEquals( {1, nil, 3}, {1, [3]=3} )
+
         assertFailure( lu.assertEquals, 1, 2)
         assertFailure( lu.assertEquals, 1, "abc" )
         assertFailure( lu.assertEquals, 0, nil )
@@ -3734,9 +3738,6 @@ TestLuaUnitResults = { __class__ = 'TestLuaUnitResults' }
         -- full success, 1 skipped, 1 non-selected
         r = {runCount=5, duration=0.17, successCount=5, notSuccessCount=0, failureCount=0, errorCount=0, nonSelectedCount=1, skippedCount=1}
         lu.assertEquals( lu.LuaUnit.statusLine(r), 'Ran 5 tests in 0.170 seconds, 5 successes, 0 failures, 1 skipped, 1 non-selected')
-
-
-
 
     end
 

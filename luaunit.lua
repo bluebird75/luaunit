@@ -1101,7 +1101,7 @@ local function _is_table_equals(actual, expected, recursions)
         return false -- different types won't match
     end
 
-    if (type_a == 'table') --[[ and (type_e == 'table') ]] then
+    if (type_a == 'table') then
         if actual == expected then
             -- Both reference the same table, so they are actually identical
             return recursions:store(actual, expected, true)
@@ -1117,10 +1117,9 @@ local function _is_table_equals(actual, expected, recursions)
         -- now, assume a "false" result, which we might adjust later if needed.
         recursions:store(actual, expected, false)
 
-        -- Tables must have identical element count, or they can't match.
-        if (#actual ~= #expected) then
-            return false
-        end
+        -- We used to verify that table count is identical here by comparing their length
+        -- but this is unreliable when table is not a sequence. There is a test in test_luaunit.lua
+        -- to catch this case.
 
         local actualKeysMatched, actualTableKeys = {}, {}
 
