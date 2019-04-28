@@ -1,5 +1,5 @@
 # XML output to test/ref/exampleXmlVerbose.xml
-# Started on 04/28/19 20:55:50
+# Started on 04/28/19 21:02:44
 # Starting class: TestTiti
 # Starting test: TestTiti.test1_withFailure
 #   Failure:  example_with_luaunit.lua:109: expected: 2, actual: 1
@@ -33,4 +33,4 @@
 # Starting test: test2_withAssertionError
 #   Error:  example_with_luaunit.lua:140: assertion failed!
 # Starting test: test3
-# Ran 15 tests in 0.009 seconds, 3 successes, 8 failures, 4 errors, 1 skipped
+# Ran 15 tests in 0.010 seconds, 3 successes, 8 failures, 4 errors, 1 skipped
