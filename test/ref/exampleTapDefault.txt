@@ -1,5 +1,5 @@
 1..16
-# Started on 04/28/19 20:37:29
+# Started on 04/28/19 21:02:44
 # Starting class: TestTiti
 not ok 1	TestTiti.test1_withFailure
 #   example_with_luaunit.lua:109: expected: 2, actual: 1
@@ -27,7 +27,7 @@ not ok 11	TestToto.test8a
 #   example_with_luaunit.lua:81: Bouhouhoum error!
 not ok 12	TestToto.test8b
 #   example_with_luaunit.lua:81: Bouhouhoum error!
-ok 13	# SKIP "Test is skipped because ..."
+ok 13	# SKIP Test is skipped because ...
 not ok 14	test1_withAssertionError
 #   example_with_luaunit.lua:134: assertion failed!
 not ok 15	test2_withAssertionError

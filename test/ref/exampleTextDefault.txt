@@ -69,4 +69,4 @@ actual: {1, 2}
 stack traceback:
 	example_with_luaunit.lua:63: in function 'TestToto.test7'
 
-Ran 15 tests in 0.000 seconds, 3 successes, 8 failures, 4 errors, 1 skipped
+Ran 15 tests in 0.009 seconds, 3 successes, 8 failures, 4 errors, 1 skipped

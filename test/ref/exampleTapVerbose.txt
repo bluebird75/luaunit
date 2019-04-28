@@ -1,5 +1,5 @@
 1..16
-# Started on 04/28/19 20:37:29
+# Started on 04/28/19 21:02:44
 # Starting class: TestTiti
 not ok 1	TestTiti.test1_withFailure
 #   example_with_luaunit.lua:109: expected: 2, actual: 1
@@ -50,7 +50,7 @@ not ok 12	TestToto.test8b
 #   	example_with_luaunit.lua:81: in function 'funcWithError'
 #   	example_with_luaunit.lua:77: in function 'funcWithFuncWithError'
 #   	example_with_luaunit.lua:73: in function 'TestToto.test8b'
-ok 13	# SKIP "Test is skipped because ..."
+ok 13	# SKIP Test is skipped because ...
 not ok 14	test1_withAssertionError
 #   example_with_luaunit.lua:134: assertion failed!
 #   stack traceback:
@@ -60,4 +60,4 @@ not ok 15	test2_withAssertionError
 #   stack traceback:
 #   	example_with_luaunit.lua:140: in function 'test2_withAssertionError'
 ok     16	test3
-# Ran 15 tests in 0.002 seconds, 3 successes, 8 failures, 4 errors, 1 skipped
+# Ran 15 tests in 0.000 seconds, 3 successes, 8 failures, 4 errors, 1 skipped
