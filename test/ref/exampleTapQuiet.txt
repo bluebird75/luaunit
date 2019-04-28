@@ -1,5 +1,5 @@
-1..15
-# Started on 04/23/19 17:41:53
+1..16
+# Started on 04/28/19 20:37:29
 # Starting class: TestTiti
 not ok 1	TestTiti.test1_withFailure
 not ok 2	TestTiti.test2_withFailure
@@ -14,7 +14,8 @@ not ok 9	TestToto.test6
 not ok 10	TestToto.test7
 not ok 11	TestToto.test8a
 not ok 12	TestToto.test8b
-not ok 13	test1_withAssertionError
-not ok 14	test2_withAssertionError
-ok     15	test3
-# Ran 15 tests in 0.000 seconds, 3 successes, 8 failures, 4 errors
+ok 13	# SKIP "Test is skipped because ..."
+not ok 14	test1_withAssertionError
+not ok 15	test2_withAssertionError
+ok     16	test3
+# Ran 15 tests in 0.000 seconds, 3 successes, 8 failures, 4 errors, 1 skipped

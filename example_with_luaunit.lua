@@ -81,6 +81,11 @@ TestToto = {} --class
         error('Bouhouhoum error!')
     end
 
+    function TestToto:test_skipped()
+        local test_conditions_are_met = false
+        lu.skipIf( not test_conditions_are_met, "Test is skipped because ..." )
+    end
+
 
 -- class TestTiti
 

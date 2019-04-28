@@ -518,7 +518,7 @@ function M.adjust_err_msg_with_iter( err_msg, iter_msg )
 
     if (err_msg:find( M.SKIP_PREFIX ) == 1) or (err_msg:match( '('..RE_FILE_LINE..')' .. M.SKIP_PREFIX .. ".*" ) ~= nil) then
         -- substitute prefix by iteration message
-        err_msg = err_msg:gsub(M.SKIP_PREFIX, iter_msg, 1)
+        err_msg = err_msg:gsub('.*'..M.SKIP_PREFIX, iter_msg, 1)
         -- print("failure detected")
         return err_msg, M.NodeStatus.SKIP
     end
@@ -2001,11 +2001,16 @@ TapOutput.__class__ = 'TapOutput'
     end
 
     function TapOutput:updateStatus( node )
+        if node:isSkipped() then
+            io.stdout:write("ok ", self.result.currentTestNumber, "\t# SKIP ", node.msg, "\n" )
+            return
+        end
+
         io.stdout:write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
         if self.verbosity > M.VERBOSITY_LOW then
            print( prefixString( '#   ', node.msg ) )
         end
-        if self.verbosity > M.VERBOSITY_DEFAULT then
+        if (node:isFailure() or node:isError()) and self.verbosity > M.VERBOSITY_DEFAULT then
            print( prefixString( '#   ', node.stackTrace ) )
         end
     end
@@ -2256,7 +2261,7 @@ TextOutput.__class__ = 'TextOutput'
                 end
                 ]]
             else
-                -- write only the first character of status
+                -- write only the first character of status E, F or S
                 io.stdout:write(string.sub(node.status, 1, 1))
                 io.stdout:flush()
             end

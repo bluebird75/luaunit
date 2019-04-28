@@ -1,10 +1,10 @@
-1..15
-# Started on 04/23/19 17:41:53
+1..16
+# Started on 04/28/19 20:37:29
 # Starting class: TestTiti
 not ok 1	TestTiti.test1_withFailure
-#   example_with_luaunit.lua:104: expected: 2, actual: 1
+#   example_with_luaunit.lua:109: expected: 2, actual: 1
 not ok 2	TestTiti.test2_withFailure
-#   example_with_luaunit.lua:113: expected: "bof"
+#   example_with_luaunit.lua:118: expected: "bof"
 #   actual: "hop"
 ok     3	TestTiti.test3
 # Starting class: TestToto
@@ -27,9 +27,10 @@ not ok 11	TestToto.test8a
 #   example_with_luaunit.lua:81: Bouhouhoum error!
 not ok 12	TestToto.test8b
 #   example_with_luaunit.lua:81: Bouhouhoum error!
-not ok 13	test1_withAssertionError
-#   example_with_luaunit.lua:129: assertion failed!
-not ok 14	test2_withAssertionError
-#   example_with_luaunit.lua:135: assertion failed!
-ok     15	test3
-# Ran 15 tests in 0.000 seconds, 3 successes, 8 failures, 4 errors
+ok 13	# SKIP "Test is skipped because ..."
+not ok 14	test1_withAssertionError
+#   example_with_luaunit.lua:134: assertion failed!
+not ok 15	test2_withAssertionError
+#   example_with_luaunit.lua:140: assertion failed!
+ok     16	test3
+# Ran 15 tests in 0.000 seconds, 3 successes, 8 failures, 4 errors, 1 skipped
