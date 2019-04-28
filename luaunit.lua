@@ -1259,13 +1259,13 @@ end
 
 function M.skip(msg)
     -- skip a running test
-    error(M.SKIP_PREFIX .. prettystr(msg), 2)
+    error(M.SKIP_PREFIX .. msg, 2)
 end
 
 function M.skipIf( cond, msg )
     -- skip a running test if condition is met
     if cond then
-        error(M.SKIP_PREFIX .. prettystr(msg), 2)
+        error(M.SKIP_PREFIX .. msg, 2)
     end
 end
 
@@ -2086,8 +2086,8 @@ JUnitOutput.__class__ = 'JUnitOutput'
         self.fd:write('<?xml version="1.0" encoding="UTF-8" ?>\n')
         self.fd:write('<testsuites>\n')
         self.fd:write(string.format(
-            '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s" time="%0.3f" errors="%d" failures="%d">\n',
-            self.result.runCount, self.result.startIsodate, self.result.duration, self.result.errorCount, self.result.failureCount ))
+            '    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="%d" timestamp="%s" time="%0.3f" errors="%d" failures="%d" skipped="%d">\n',
+            self.result.runCount, self.result.startIsodate, self.result.duration, self.result.errorCount, self.result.failureCount, self.result.skippedCount ))
         self.fd:write("        <properties>\n")
         self.fd:write(string.format('            <property name="Lua Version" value="%s"/>\n', _VERSION ) )
         self.fd:write(string.format('            <property name="LuaUnit Version" value="%s"/>\n', M.VERSION) )
@@ -2626,6 +2626,8 @@ end
                 {'            <failure type="', xmlEscape(self.msg), '">\n',
                  '                <![CDATA[', xmlCDataEscape(self.stackTrace),
                  ']]></failure>\n'})
+        elseif self:isSkipped() then
+            return table.concat({'            <skipped>', xmlEscape(self.msg),'</skipped>\n' } )
         end
         return '            <passed/>\n' -- (not XSD-compliant! normally shouldn't get here)
     end
