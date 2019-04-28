@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="3" timestamp="2016-01-01T22:13:04" time="1.102" errors="0" failures="2">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="3" timestamp="2019-04-28T21:05:13" time="1.105" errors="0" failures="2" skipped="0">
         <properties>
             <property name="Lua Version" value="Lua 5.2"/>
             <property name="LuaUnit Version" value="3.3"/>

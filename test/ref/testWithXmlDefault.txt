@@ -1,5 +1,5 @@
 # XML output to test/ref/testWithXmlDefault.xml
-# Started on 01/01/16 22:13:02
+# Started on 04/28/19 21:05:11
 # Starting class: TestFailuresWithXml
 # Starting test: TestFailuresWithXml.test_failure_with_cdata_xml
 #   Failure:  test/test_with_xml.lua:13: expected: "got it"

@@ -1,5 +1,5 @@
 # XML output to test/ref/testWithXmlVerbose.xml
-# Started on 01/01/16 22:13:03
+# Started on 04/28/19 21:05:12
 # Starting class: TestFailuresWithXml
 # Starting test: TestFailuresWithXml.test_failure_with_cdata_xml
 #   Failure:  test/test_with_xml.lua:13: expected: "got it"
@@ -8,4 +8,4 @@
 #   Failure:  test/test_with_xml.lua:9: expected: "got it"
 #   actual: '<toto>ti"ti</toto>'
 # Starting test: TestThatLastsALongTime
-# Ran 3 tests in 1.102 seconds, 1 success, 2 failures
+# Ran 3 tests in 1.101 seconds, 1 success, 2 failures
