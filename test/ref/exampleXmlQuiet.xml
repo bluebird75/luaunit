@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="15" timestamp="2019-04-23T17:41:53" time="0.000" errors="4" failures="8">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="15" timestamp="2019-04-28T20:55:50" time="0.000" errors="4" failures="8" skipped="1">
         <properties>
             <property name="Lua Version" value="Lua 5.2"/>
             <property name="LuaUnit Version" value="3.3"/>
         </properties>
         <testcase classname="TestTiti" name="TestTiti.test1_withFailure" time="0.000">
-            <failure type="example_with_luaunit.lua:104: expected: 2, actual: 1">
+            <failure type="example_with_luaunit.lua:109: expected: 2, actual: 1">
                 <![CDATA[stack traceback:
-	example_with_luaunit.lua:104: in function 'TestTiti.test1_withFailure']]></failure>
+	example_with_luaunit.lua:109: in function 'TestTiti.test1_withFailure']]></failure>
         </testcase>
         <testcase classname="TestTiti" name="TestTiti.test2_withFailure" time="0.000">
-            <failure type="example_with_luaunit.lua:113: expected: &quot;bof&quot;
+            <failure type="example_with_luaunit.lua:118: expected: &quot;bof&quot;
 actual: &quot;hop&quot;">
                 <![CDATA[stack traceback:
-	example_with_luaunit.lua:113: in function 'TestTiti.test2_withFailure']]></failure>
+	example_with_luaunit.lua:118: in function 'TestTiti.test2_withFailure']]></failure>
         </testcase>
         <testcase classname="TestTiti" name="TestTiti.test3" time="0.000">
         </testcase>
@@ -65,15 +65,18 @@ actual: {1, 2}">
 	example_with_luaunit.lua:77: in function 'funcWithFuncWithError'
 	example_with_luaunit.lua:73: in function 'TestToto.test8b']]></error>
         </testcase>
+        <testcase classname="TestToto" name="TestToto.test_skipped" time="0.000">
+            <skipped>&quot;Test is skipped because ...&quot;</skipped>
+        </testcase>
         <testcase classname="[TestFunctions]" name="test1_withAssertionError" time="0.000">
-            <error type="example_with_luaunit.lua:129: assertion failed!">
+            <error type="example_with_luaunit.lua:134: assertion failed!">
                 <![CDATA[stack traceback:
-	example_with_luaunit.lua:129: in function 'test1_withAssertionError']]></error>
+	example_with_luaunit.lua:134: in function 'test1_withAssertionError']]></error>
         </testcase>
         <testcase classname="[TestFunctions]" name="test2_withAssertionError" time="0.000">
-            <error type="example_with_luaunit.lua:135: assertion failed!">
+            <error type="example_with_luaunit.lua:140: assertion failed!">
                 <![CDATA[stack traceback:
-	example_with_luaunit.lua:135: in function 'test2_withAssertionError']]></error>
+	example_with_luaunit.lua:140: in function 'test2_withAssertionError']]></error>
         </testcase>
         <testcase classname="[TestFunctions]" name="test3" time="0.000">
         </testcase>

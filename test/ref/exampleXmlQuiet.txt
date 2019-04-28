@@ -1,10 +1,10 @@
 # XML output to test/ref/exampleXmlQuiet.xml
-# Started on 04/23/19 17:41:53
+# Started on 04/28/19 20:55:50
 # Starting class: TestTiti
 # Starting test: TestTiti.test1_withFailure
-#   Failure:  example_with_luaunit.lua:104: expected: 2, actual: 1
+#   Failure:  example_with_luaunit.lua:109: expected: 2, actual: 1
 # Starting test: TestTiti.test2_withFailure
-#   Failure:  example_with_luaunit.lua:113: expected: "bof"
+#   Failure:  example_with_luaunit.lua:118: expected: "bof"
 #   actual: "hop"
 # Starting test: TestTiti.test3
 # Starting class: TestToto
@@ -27,9 +27,10 @@
 #   Error:  example_with_luaunit.lua:81: Bouhouhoum error!
 # Starting test: TestToto.test8b
 #   Error:  example_with_luaunit.lua:81: Bouhouhoum error!
+# Starting test: TestToto.test_skipped
 # Starting test: test1_withAssertionError
-#   Error:  example_with_luaunit.lua:129: assertion failed!
+#   Error:  example_with_luaunit.lua:134: assertion failed!
 # Starting test: test2_withAssertionError
-#   Error:  example_with_luaunit.lua:135: assertion failed!
+#   Error:  example_with_luaunit.lua:140: assertion failed!
 # Starting test: test3
-# Ran 15 tests in 0.000 seconds, 3 successes, 8 failures, 4 errors
+# Ran 15 tests in 0.000 seconds, 3 successes, 8 failures, 4 errors, 1 skipped
