@@ -19,6 +19,9 @@ not needed:
 
 TODO Future:
 ============
+- add email to report vulnerabilities in private
+- build lua with ASAN, memory sanitizer and so on on travis before running it
+- ensure that assert string functions like assertStr, strcontains, etc reject incorrect type with a correct error message
 - pretty function formatting: https://github.com/luarocks/luarocks/blob/master/src/luarocks/core/util.lua
 - platform detection:
 - document prettystr
