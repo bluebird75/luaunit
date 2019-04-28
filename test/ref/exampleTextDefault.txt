@@ -1,4 +1,4 @@
-FF.FF.FFFFEEEE.
+FF.FF.FFFFEESEE.
 Tests with errors:
 ------------------
 1) TestToto.test8a
@@ -15,27 +15,27 @@ stack traceback:
 	example_with_luaunit.lua:73: in function 'TestToto.test8b'
 
 3) test1_withAssertionError
-example_with_luaunit.lua:129: assertion failed!
+example_with_luaunit.lua:134: assertion failed!
 stack traceback:
-	example_with_luaunit.lua:129: in function 'test1_withAssertionError'
+	example_with_luaunit.lua:134: in function 'test1_withAssertionError'
 
 4) test2_withAssertionError
-example_with_luaunit.lua:135: assertion failed!
+example_with_luaunit.lua:140: assertion failed!
 stack traceback:
-	example_with_luaunit.lua:135: in function 'test2_withAssertionError'
+	example_with_luaunit.lua:140: in function 'test2_withAssertionError'
 
 Failed tests:
 -------------
 1) TestTiti.test1_withFailure
-example_with_luaunit.lua:104: expected: 2, actual: 1
+example_with_luaunit.lua:109: expected: 2, actual: 1
 stack traceback:
-	example_with_luaunit.lua:104: in function 'TestTiti.test1_withFailure'
+	example_with_luaunit.lua:109: in function 'TestTiti.test1_withFailure'
 
 2) TestTiti.test2_withFailure
-example_with_luaunit.lua:113: expected: "bof"
+example_with_luaunit.lua:118: expected: "bof"
 actual: "hop"
 stack traceback:
-	example_with_luaunit.lua:113: in function 'TestTiti.test2_withFailure'
+	example_with_luaunit.lua:118: in function 'TestTiti.test2_withFailure'
 
 3) TestToto.test1_withFailure
 example_with_luaunit.lua:21: expected: 2, actual: 1
@@ -69,4 +69,4 @@ actual: {1, 2}
 stack traceback:
 	example_with_luaunit.lua:63: in function 'TestToto.test7'
 
-Ran 15 tests in 0.000 seconds, 3 successes, 8 failures, 4 errors
+Ran 15 tests in 0.000 seconds, 3 successes, 8 failures, 4 errors, 1 skipped
