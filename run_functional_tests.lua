@@ -661,14 +661,32 @@ local filesToGenerateListsComp = {
         'test/ref/some_lists_comparisons.txt'},
 }
 
+function table_join(...)
+    local args = {...}
+    local ret = {}
+    for i,t in ipairs(args) do
+        for _,v in ipairs(t) do 
+            table.insert( ret, v)
+        end
+    end
+    return ret
+end
+
 local filesSetIndex = {
     ErrFailPassText=filesToGenerateErrFailPassText,
     ErrFailPassTap=filesToGenerateErrFailPassTap,
     ErrFailPassXml=filesToGenerateErrFailPassXml,
+    ErrFail = table_join( filesToGenerateErrFailPassText, 
+                          filesToGenerateErrFailPassTap, 
+                          filesToGenerateErrFailPassXml ),
     ExampleNil=filesToGenerateExampleNil,
     ExampleText=filesToGenerateExampleText,
     ExampleTap=filesToGenerateExampleTap,
     ExampleXml=filesToGenerateExampleXml,
+    Example = table_join(   filesToGenerateExampleNil,
+                            filesToGenerateExampleText,
+                            filesToGenerateExampleTap,
+                            filesToGenerateExampleXml ),
     TestXml=filesToGenerateTestXml,
     StopOnError=filesToGenerateStopOnError,
     ListsComp=filesToGenerateListsComp,

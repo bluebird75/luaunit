@@ -1,4 +1,4 @@
-Started on 04/28/19 11:10:05
+Started on 04/28/19 20:37:29
     TestTiti.test1_withFailure ... FAIL
 example_with_luaunit.lua:109: expected: 2, actual: 1
     TestTiti.test2_withFailure ... FAIL
@@ -25,7 +25,7 @@ example_with_luaunit.lua:81: Bouhouhoum error!
     TestToto.test8b ... ERROR
 example_with_luaunit.lua:81: Bouhouhoum error!
     TestToto.test_skipped ... SKIP
-example_with_luaunit.lua:86: "Test is skipped because ..."
+"Test is skipped because ..."
     test1_withAssertionError ... ERROR
 example_with_luaunit.lua:134: assertion failed!
     test2_withAssertionError ... ERROR
