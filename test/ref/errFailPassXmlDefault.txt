@@ -1,30 +1,30 @@
 # XML output to test/ref/errFailPassXmlDefault.xml
-# Started on 03/22/16 21:29:18
+# Started on 04/30/19 20:22:52
 # Starting class: TestAnotherThing
 # Starting test: TestAnotherThing.test1_Success1
 # Starting test: TestAnotherThing.test1_Success2
 # Starting test: TestAnotherThing.test2_Err1
-# Error: test/test_with_err_fail_pass.lua:41: attempt to perform arithmetic on a table value
+#   Error:  test/test_with_err_fail_pass.lua:41: attempt to perform arithmetic on a table value
 # Starting test: TestAnotherThing.test2_Err2
-# Error: test/test_with_err_fail_pass.lua:45: attempt to perform arithmetic on a table value
+#   Error:  test/test_with_err_fail_pass.lua:45: attempt to perform arithmetic on a table value
 # Starting test: TestAnotherThing.test3_Fail1
-# Failure: test/test_with_err_fail_pass.lua:49: expected: 0, actual: 2
+#   Failure:  test/test_with_err_fail_pass.lua:49: expected: 0, actual: 2
 # Starting test: TestAnotherThing.test3_Fail2
-# Failure: test/test_with_err_fail_pass.lua:53: expected: 0, actual: 3
+#   Failure:  test/test_with_err_fail_pass.lua:53: expected: 0, actual: 3
 # Starting class: TestSomething
 # Starting test: TestSomething.test1_Success1
 # Starting test: TestSomething.test1_Success2
 # Starting test: TestSomething.test2_Fail1
-# Failure: test/test_with_err_fail_pass.lua:15: expected: 0, actual: 2
+#   Failure:  test/test_with_err_fail_pass.lua:15: expected: 0, actual: 2
 # Starting test: TestSomething.test2_Fail2
-# Failure: test/test_with_err_fail_pass.lua:19: expected: 0, actual: 3
+#   Failure:  test/test_with_err_fail_pass.lua:19: expected: 0, actual: 3
 # Starting test: TestSomething.test3_Err1
-# Error: test/test_with_err_fail_pass.lua:23: attempt to perform arithmetic on a table value
+#   Error:  test/test_with_err_fail_pass.lua:23: attempt to perform arithmetic on a table value
 # Starting test: TestSomething.test3_Err2
-# Error: test/test_with_err_fail_pass.lua:27: attempt to perform arithmetic on a table value
+#   Error:  test/test_with_err_fail_pass.lua:27: attempt to perform arithmetic on a table value
 # Starting test: testFuncErr1
-# Error: test/test_with_err_fail_pass.lua:66: attempt to perform arithmetic on a table value
+#   Error:  test/test_with_err_fail_pass.lua:66: attempt to perform arithmetic on a table value
 # Starting test: testFuncFail1
-# Failure: test/test_with_err_fail_pass.lua:62: expected: 0, actual: 3
+#   Failure:  test/test_with_err_fail_pass.lua:62: expected: 0, actual: 3
 # Starting test: testFuncSuccess1
 # Ran 15 tests in 0.004 seconds, 5 successes, 5 failures, 5 errors

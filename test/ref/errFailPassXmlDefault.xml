@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="15" timestamp="2016-03-22T21:29:18" time="0.004" errors="5" failures="5">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="15" timestamp="2019-04-30T20:22:52" time="0.004" errors="5" failures="5" skipped="0">
         <properties>
-            <property name="Lua Version" value="Lua 5.1"/>
+            <property name="Lua Version" value="Lua 5.2"/>
             <property name="LuaUnit Version" value="3.3"/>
         </properties>
         <testcase classname="TestAnotherThing" name="TestAnotherThing.test1_Success1" time="0.000">

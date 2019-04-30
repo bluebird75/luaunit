@@ -262,13 +262,8 @@ local function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintO
             retcode = retcode + 1
         end
 
-        -- Validation against apache junit schema
-        if osExec('xmllint --noout --schema junitxml/junit-apache-ant.xsd %s 2> %s', xmlOutput, xmlLintOutput) then
-            -- report('XMLLint validation ok: file %s', xmlLintOutput)
-        else
-            error_fmt('XMLLint reported errors against apache schema: file %s', xmlLintOutput)
-            retcode = retcode + 1
-        end
+        -- we used to validate against apache and/maven xsd but the way it handles skipped test
+        -- is just too specific. I prefer the jenkins way.
 
         -- Validation against jenkins/hudson schema
         if osExec('xmllint --noout --schema junitxml/junit-jenkins.xsd %s 2> %s', xmlOutput, xmlLintOutput) then

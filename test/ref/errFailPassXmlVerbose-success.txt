@@ -1,5 +1,5 @@
 # XML output to test/ref/errFailPassXmlVerbose-success.xml
-# Started on 03/22/16 21:29:18
+# Started on 04/30/19 20:22:53
 # Starting class: TestAnotherThing
 # Starting test: TestAnotherThing.test1_Success1
 # Starting test: TestAnotherThing.test1_Success2
@@ -7,4 +7,4 @@
 # Starting test: TestSomething.test1_Success1
 # Starting test: TestSomething.test1_Success2
 # Starting test: testFuncSuccess1
-# Ran 5 tests in 0.001 seconds, 5 successes, 0 failures, 10 non-selected
+# Ran 5 tests in 0.000 seconds, 5 successes, 0 failures, 10 non-selected
