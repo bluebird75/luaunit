@@ -656,7 +656,7 @@ local filesToGenerateListsComp = {
         'test/ref/some_lists_comparisons.txt'},
 }
 
-function table_join(...)
+local function table_join(...)
     local args = {...}
     local ret = {}
     for i,t in ipairs(args) do
