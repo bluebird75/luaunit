@@ -65,7 +65,7 @@ Version 3.4:
 - catch the os.exit call with a handler or something, to avoid aborting the tests
 - move all file:line description to stack trace
 - better deal with one line formatting
-
+- GLOBAL_TESTS option to define tests outside of global scope
 
 Done since 3.2:
 ===============

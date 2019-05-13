@@ -30,6 +30,17 @@ M.LINE_LENGTH = 80
 M.TABLE_DIFF_ANALYSIS_THRESHOLD = 10    -- display deep analysis for more than 10 items
 M.LIST_DIFF_ANALYSIS_THRESHOLD  = 10    -- display deep analysis for more than 10 items
 
+M.GLOBAL_TESTS = true -- Use either _G or M.tests as tests container
+M.tests = {}
+
+M.group = function( name )
+    -- Define named test group.
+    if not M.tests[name] then
+        M.tests[name] = {}
+    end
+    return M.tests[name]
+end
+
 --[[ EPS is meant to help with Lua's floating point math in simple corner
 cases like almostEquals(1.1-0.1, 1), which may not work as-is (e.g. on numbers
 with rational binary representation) if the user doesn't provide some explicit
@@ -2386,13 +2397,23 @@ end
         return string.sub(s, 1, 4):lower() == 'test'
     end
 
+    function M.LuaUnit.testsContainer()
+        if M.GLOBAL_TESTS then
+            return _G
+        else
+            return M.tests
+        end
+    end
+
     function M.LuaUnit.collectTests()
-        -- return a list of all test names in the global namespace
-        -- that match LuaUnit.isTestName
+        -- return a list of all test names.
+        -- When M.GLOBAL_TESTS is enabled it returns names 
+        -- from the global namespace matching LuaUnit.isTestName.
+        -- Otherwise returns all keys from M.tests table.
 
         local testNames = {}
-        for k, _ in pairs(_G) do
-            if type(k) == "string" and M.LuaUnit.isTestName( k ) then
+        for k, _ in pairs(M.LuaUnit.testsContainer()) do
+            if type(k) == "string" and ( M.LuaUnit.isTestName( k ) or not M.GLOBAL_TESTS ) then
                 table.insert( testNames , k )
             end
         end
@@ -3066,15 +3087,16 @@ end
 
         local instanceName, instance
         local listOfNameAndInst = {}
+        local tests = M.LuaUnit.testsContainer()
 
         for i,name in ipairs( listOfName ) do
             local className, methodName = M.LuaUnit.splitClassMethod( name )
             if className then
                 instanceName = className
-                instance = _G[instanceName]
+                instance = tests[instanceName]
 
                 if instance == nil then
-                    error( "No such name in global space: "..instanceName )
+                    error( "No such name in tests container: "..instanceName )
                 end
 
                 if type(instance) ~= 'table' then
@@ -3089,11 +3111,11 @@ end
             else
                 -- for functions and classes
                 instanceName = name
-                instance = _G[instanceName]
+                instance = tests[instanceName]
             end
 
             if instance == nil then
-                error( "No such name in global space: "..instanceName )
+                error( "No such name in tests container: "..instanceName )
             end
 
             if (type(instance) ~= 'table' and type(instance) ~= 'function') then

@@ -3628,11 +3628,11 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         runner.run('--output', 'nil', 'MyTestOk.testOk2')
 
         -- check error handling
-        lu.assertErrorMsgContains('No such name in global space',
+        lu.assertErrorMsgContains('No such name in tests container',
                                   runner.runSuite, runner, 'foobar')
         lu.assertErrorMsgContains('Name must match a function or a table',
                                   runner.runSuite, runner, '_VERSION')
-        lu.assertErrorMsgContains('No such name in global space',
+        lu.assertErrorMsgContains('No such name in tests container',
                                   runner.runSuite, runner, 'foo.bar')
         lu.assertErrorMsgContains('must be a function, not',
                                   runner.runSuite, runner, '_G._VERSION')
