@@ -73,6 +73,8 @@ For more information on LuaUnit development, please check: [Developing LuaUnit](
 
 LuaUnit is released under the BSD license.
 
+The main developer can be reached at *phil.fremy at free.fr* . If you have security issue to report requiring confidentiality, this is the address to use.
+
 ## LuaUnit successes
 
 Version 3.2 of LuaUnit has been downloaded more than 235 000 times on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit)
