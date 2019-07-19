@@ -1663,6 +1663,7 @@ function M.assertNotIs(actual, expected, extra_msg_or_nil)
     if actual == expected then
         local old_print_table_ref_in_error_msg = M.PRINT_TABLE_REF_IN_ERROR_MSG
         M.PRINT_TABLE_REF_IN_ERROR_MSG = true
+        local s_expected
         if not M.ORDER_ACTUAL_EXPECTED then
             s_expected = prettystrPairs(actual)
         else
