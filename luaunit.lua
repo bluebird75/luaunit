@@ -1650,7 +1650,10 @@ function M.assertIs(actual, expected, extra_msg_or_nil)
         if not M.ORDER_ACTUAL_EXPECTED then
             actual, expected = expected, actual
         end
+        local old_print_table_ref_in_error_msg = M.PRINT_TABLE_REF_IN_ERROR_MSG
+        M.PRINT_TABLE_REF_IN_ERROR_MSG = true
         expected, actual = prettystrPairs(expected, actual, '\n', '')
+        M.PRINT_TABLE_REF_IN_ERROR_MSG = old_print_table_ref_in_error_msg
         fail_fmt(2, extra_msg_or_nil, 'expected and actual object should not be different\nExpected: %s\nReceived: %s',
                  expected, actual)
     end
@@ -1658,11 +1661,15 @@ end
 
 function M.assertNotIs(actual, expected, extra_msg_or_nil)
     if actual == expected then
+        local old_print_table_ref_in_error_msg = M.PRINT_TABLE_REF_IN_ERROR_MSG
+        M.PRINT_TABLE_REF_IN_ERROR_MSG = true
         if not M.ORDER_ACTUAL_EXPECTED then
-            expected = actual
+            s_expected = prettystrPairs(actual)
+        else
+            s_expected = prettystrPairs(expected)
         end
-        fail_fmt(2, extra_msg_or_nil, 'expected and actual object should be different: %s',
-                 prettystrPairs(expected))
+        M.PRINT_TABLE_REF_IN_ERROR_MSG = old_print_table_ref_in_error_msg
+        fail_fmt(2, extra_msg_or_nil, 'expected and actual object should be different: %s', s_expected )
     end
 end
 

@@ -2194,6 +2194,15 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertNotEquals( {1,x=2,3,y=4}, {1,x=2,3} )
     end
 
+    function TestLuaUnitAssertions:test_assertTableProtectedMt()
+        -- tricky, table with protected metatable
+        local t1 = setmetatable( {1,2}, {__metatable='private'})
+        local t2 = {1,2}
+        local t3 = setmetatable( {1,2}, {__metatable='private'})
+
+        lu.assertEquals(t1, t2)
+        lu.assertEquals(t2, t3)
+    end
 
 local function assertFailureEquals(msg, ...)
     lu.assertErrorMsgEquals(lu.FAILURE_PREFIX .. msg, ...)
@@ -2743,9 +2752,9 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:test_assertIs()
         assertFailureEquals( 'expected and actual object should not be different\nExpected: 1\nReceived: 2', lu.assertIs, 2, 1 )
-        assertFailureEquals( 'expected and actual object should not be different\n'..
-                                'Expected: {1, 2, 3, 4, 5, 6, 7, 8}\n'..
-                                'Received: {1, 2, 3, 4, 5, 6, 7, 8}', 
+        assertFailureMatches( 'expected and actual object should not be different\n'..
+                                'Expected: <table: 0?x?[%x]+> {1, 2, 3, 4, 5, 6, 7, 8}\n'..
+                                'Received: <table: 0?x?[%x]+> {1, 2, 3, 4, 5, 6, 7, 8}', 
             lu.assertIs, {1,2,3,4,5,6,7,8}, {1,2,3,4,5,6,7,8} )
         lu.ORDER_ACTUAL_EXPECTED = false
         assertFailureEquals( 'expected and actual object should not be different\nExpected: 2\nReceived: 1', lu.assertIs, 2, 1 )
@@ -2754,10 +2763,10 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:test_assertNotIs()
         local v = {1,2}
-        assertFailureMatches( 'expected and actual object should be different: {1, 2}', lu.assertNotIs, v, v )
+        assertFailureMatches( 'expected and actual object should be different: <table: 0?x?[%x]+> {1, 2}', lu.assertNotIs, v, v )
         lu.ORDER_ACTUAL_EXPECTED = false -- order shouldn't matter here, but let's cover it
-        assertFailureMatches( 'expected and actual object should be different: {1, 2}', lu.assertNotIs, v, v )
-        assertFailureMatches( 'toto\nexpected and actual object should be different: {1, 2}', lu.assertNotIs, v, v, 'toto' )
+        assertFailureMatches( 'expected and actual object should be different: <table: 0?x?[%x]+> {1, 2}', lu.assertNotIs, v, v )
+        assertFailureMatches( 'toto\nexpected and actual object should be different: <table: 0?x?[%x]+> {1, 2}', lu.assertNotIs, v, v, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertItemsEquals()
