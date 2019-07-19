@@ -279,6 +279,15 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         setmetatable( t1, mt )
         lu.assertStrMatches( tostring(t1), '12' )
         lu.assertStrMatches( lu.private._table_raw_tostring(t1), 'table: 0?x?[%x]+' )
+
+        -- how does it deal with protected metatable ?
+        local t1 = setmetatable( { 1, 2 }, { __metatable="private" } )
+        lu.assertStrMatches( lu.private._table_raw_tostring(t1), 'table: 0?x?[%x]+' )
+
+        -- how does it deal with protected metatable and __tostring ?
+        local t1 = setmetatable( { 1, 2 }, { __metatable="private", __tostring=ts } )
+        -- no solution here, we can not get the reference:
+        lu.assertStrMatches( lu.private._table_raw_tostring(t1), 'can not get table reference' )
     end
 
     function TestLuaUnitUtilities:test_prettystr_numbers()
@@ -2062,6 +2071,12 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure(lu.assertIs, f, g)
         assertFailure(lu.assertIs, t2,t3 )
         assertFailure(lu.assertIs, b2, nil)
+
+        -- tricky, table with protected metatable
+        local t5 = setmetatable( {1,2}, {__metatable='private'})
+        local t6 = {1,2}
+        lu.assertIs(t5, t5)
+        assertFailure( lu.assertIs, t5, t6)
     end
 
     function TestLuaUnitAssertions:test_assertNotIs()
@@ -2199,6 +2214,7 @@ TestLuaUnitAssertionsError = {}
         self.f_with_table_error = function (v)
             local y = v + 2
             local ts = { __tostring = function() return 'This table has error!' end }
+            -- the error message is a table which converts to string
             error( setmetatable( { this_table="has error" }, ts ) )
         end
 

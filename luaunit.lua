@@ -875,10 +875,19 @@ M.private.prettystrPairs = prettystrPairs
 local function _table_raw_tostring( t )
     -- return the default tostring() for tables, with the table ID, even if the table has a metatable
     -- with the __tostring converter
+    local ref = ''
     local mt = getmetatable( t )
-    if mt then setmetatable( t, nil ) end
-    local ref = tostring(t)
-    if mt then setmetatable( t, mt ) end
+    if mt and mt.__tostring then
+        if mt.__metatable then 
+            ref = 'can not get table reference'
+        else
+            setmetatable( t, nil ) 
+            ref = tostring(t)
+            setmetatable( t, mt )
+        end
+    else
+        ref = tostring(t)
+    end
     return ref
 end
 M.private._table_raw_tostring = _table_raw_tostring
