@@ -14,7 +14,7 @@ local M={}
 -- private exported functions (for testing)
 M.private = {}
 
-M.VERSION='3.3'
+M.VERSION='3.4-dev'
 M._VERSION=M.VERSION -- For LuaUnit v2 compatibility
 
 -- a version which distinguish between regular Lua and LuaJit

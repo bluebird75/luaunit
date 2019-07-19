@@ -19,7 +19,6 @@ not needed:
 
 TODO Future:
 ============
-- add email to report vulnerabilities in private
 - build lua with ASAN, memory sanitizer and so on on travis before running it
 - ensure that assert string functions like assertStr, strcontains, etc reject incorrect type with a correct error message
 - pretty function formatting: https://github.com/luarocks/luarocks/blob/master/src/luarocks/core/util.lua
@@ -52,12 +51,11 @@ TODO Future:
 - review and enhance: TestLuaUnitExecution:test_withTableErrorInside
 
 
-Version 3.4:
+Version 3.4 (future):
 ============
 - global setup / teardown
 - class setup / teardown
 - report test duration everywhere
-- allow to skip tests
 - add date and duration to tap output
 - XML: report system information
 - align the "OK" vertically for text output
@@ -65,6 +63,11 @@ Version 3.4:
 - catch the os.exit call with a handler or something, to avoid aborting the tests
 - move all file:line description to stack trace
 - better deal with one line formatting
+
+Done since 3.3:
+===============
+- allow to skip tests
+- fix a bug where assertIs/assertNotIs would not deal with protected metatables
 
 
 Done since 3.2:
@@ -139,6 +142,7 @@ x Junit XML Ouptut:
 
 Done:
 ============
+x add email to report vulnerabilities in private
 x add other types of output
 x assert with matching of the error message
 x finish user documentation
