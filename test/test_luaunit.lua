@@ -269,33 +269,32 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertTrue( lu.private.tryMismatchFormatting( range(1,threshold),   range(1,threshold),   lu.FORCE_DEEP_ANALYSIS ) )
     end
 
-    function TestLuaUnitUtilities:test_table_raw_tostring()
+    function TestLuaUnitUtilities:test_table_ref()
         local ts = function(t) return t[1]..t[2] end
         local t1 = {'1','2'}
         lu.assertStrMatches( tostring(t1), 'table: 0?x?[%x]+' )
-        lu.assertStrMatches( lu.private._table_raw_tostring(t1), 'table: 0?x?[%x]+' )
+        lu.assertStrMatches( lu.private.table_ref(t1), 'table: 0?x?[%x]+' )
 
         local mt = { __tostring = ts }
         setmetatable( t1, mt )
         lu.assertStrMatches( tostring(t1), '12' )
-        lu.assertStrMatches( lu.private._table_raw_tostring(t1), 'table: 0?x?[%x]+' )
+        lu.assertStrMatches( lu.private.table_ref(t1), 'table: 0?x?[%x]+' )
 
         -- how does it deal with protected metatable ?
+        -- metatable, obviously protected
         local t1 = setmetatable( { 1, 2 }, { __metatable="private" } )
-        lu.assertStrMatches( lu.private._table_raw_tostring(t1), 'table: 0?x?[%x]+' )
+        lu.assertStrMatches( lu.private.table_ref(t1), 'table: 0?x?[%x]+' )
 
-        -- how does it deal with protected metatable ?
+        -- metatable, protected but still returns a table so more difficult to catch
         local t1 = setmetatable( { 1, 2 }, { __metatable={ "private" } } )
-        lu.assertStrMatches( lu.private._table_raw_tostring(t1), 'table: 0?x?[%x]+' )
+        lu.assertStrMatches( lu.private.table_ref(t1), 'table: 0?x?[%x]+' )
 
-        -- how does it deal with protected metatable and __tostring ?
+        -- protected metatable + __tostring, no way to get references
         local t1 = setmetatable( { 1, 2 }, { __metatable="private", __tostring=ts } )
-        -- no solution here, we can not get the reference:
-        lu.assertStrMatches( lu.private._table_raw_tostring(t1), 'can not get table reference' )
+        lu.assertStrMatches( lu.private.table_ref(t1), 'can not get table reference' )
 
         local t1 = setmetatable( { 1, 2 }, { __metatable={ "private" }, __tostring=ts } )
-        -- no solution here, we can not get the reference:
-        lu.assertStrMatches( lu.private._table_raw_tostring(t1), 'can not get table reference' )
+        lu.assertStrMatches( lu.private.table_ref(t1), 'can not get table reference' )
     end
 
     function TestLuaUnitUtilities:test_prettystr_numbers()

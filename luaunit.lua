@@ -872,7 +872,7 @@ local function prettystrPairs(value1, value2, suffix_a, suffix_b)
 end
 M.private.prettystrPairs = prettystrPairs
 
-local function _table_raw_tostring( t )
+local function table_ref( t )
     -- return the default tostring() for tables, with the table ID, even if the table has a metatable
     -- with the __tostring converter
     local ref = ''
@@ -896,7 +896,7 @@ local function _table_raw_tostring( t )
     end
     return ref
 end
-M.private._table_raw_tostring = _table_raw_tostring
+M.private.table_ref = table_ref
 
 local TABLE_TOSTRING_SEP = ", "
 local TABLE_TOSTRING_SEP_LEN = string.len(TABLE_TOSTRING_SEP)
@@ -943,7 +943,7 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
             elseif recursionTable[k] then
                 -- recursion in the key detected
                 recursionTable.recursionDetected = true
-                entry = "<".._table_raw_tostring(k)..">="
+                entry = "<"..table_ref(k)..">="
             else
                 entry = keytostring(k) .. "="
             end
@@ -952,7 +952,7 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
             if recursionTable[v] then
                 -- recursion in the value detected!
                 recursionTable.recursionDetected = true
-                entry = entry .. "<".._table_raw_tostring(v)..">"
+                entry = entry .. "<"..table_ref(v)..">"
             else
                 entry = entry ..
                     prettystr_sub( v, indentLevel+1, printTableRefs, recursionTable )
@@ -1016,7 +1016,7 @@ local function _table_tostring_format_result( tbl, result, indentLevel, printTab
         result = {"{", table.concat(result, TABLE_TOSTRING_SEP), "}"}
     end
     if printTableRefs then
-        table.insert(result, 1, "<".._table_raw_tostring(tbl).."> ") -- prepend table ref
+        table.insert(result, 1, "<"..table_ref(tbl).."> ") -- prepend table ref
     end
     return table.concat(result)
 end
