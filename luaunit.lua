@@ -877,16 +877,22 @@ local function _table_raw_tostring( t )
     -- with the __tostring converter
     local ref = ''
     local mt = getmetatable( t )
-    if mt and mt.__tostring then
-        if mt.__metatable then 
-            ref = 'can not get table reference'
+    if mt == nil then
+        ref = tostring(t)
+    else
+        local success, result
+        success, result = pcall(setmetatable, t, nil)
+        if not success then
+            -- protected table, if __tostring is defined, we can
+            -- not get the reference. And we can not know in advance.
+            ref = tostring(t) 
+            if not ref:match( 'table: 0?x?[%x]+' ) then
+                ref = 'can not get table reference'
+            end
         else
-            setmetatable( t, nil ) 
             ref = tostring(t)
             setmetatable( t, mt )
         end
-    else
-        ref = tostring(t)
     end
     return ref
 end
