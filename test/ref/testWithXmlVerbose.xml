@@ -3,7 +3,7 @@
     <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="3" timestamp="2019-04-28T21:05:12" time="1.101" errors="0" failures="2" skipped="0">
         <properties>
             <property name="Lua Version" value="Lua 5.2"/>
-            <property name="LuaUnit Version" value="3.3"/>
+            <property name="LuaUnit Version" value="3.4-dev"/>
         </properties>
         <testcase classname="TestFailuresWithXml" name="TestFailuresWithXml.test_failure_with_cdata_xml" time="0.000">
             <failure type="test/test_with_xml.lua:13: expected: &quot;got it&quot;
