@@ -53,6 +53,9 @@ TODO Future:
 
 Version 3.4 (future):
 ============
+
+Planned:
+--------
 - global setup / teardown
 - class setup / teardown
 - report test duration everywhere
@@ -63,9 +66,12 @@ Version 3.4 (future):
 - catch the os.exit call with a handler or something, to avoid aborting the tests
 - move all file:line description to stack trace
 - better deal with one line formatting
+- table_contains():
+	+ check with finding table or nested tables
+	+ add check for error messages
 
-Done since 3.3:
-===============
+Already done:
+-------------
 - allow to skip tests
 - fix a bug where assertIs/assertNotIs would not deal with protected metatables
 
