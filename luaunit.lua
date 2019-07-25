@@ -426,7 +426,7 @@ end
 M.private.stripLuaunitTrace = stripLuaunitTrace
 
 
-local function prettystr_sub(v, indentLevel, printTableRefs, recursionTable )
+local function prettystr_sub(v, indentLevel, printTableRefs, cycleDetectTable )
     local type_v = type(v)
     if "string" == type_v  then
         -- use clever delimiters according to content:
@@ -441,7 +441,7 @@ local function prettystr_sub(v, indentLevel, printTableRefs, recursionTable )
         --if v.__class__ then
         --    return string.gsub( tostring(v), 'table', v.__class__ )
         --end
-        return M.private._table_tostring(v, indentLevel, printTableRefs, recursionTable)
+        return M.private._table_tostring(v, indentLevel, printTableRefs, cycleDetectTable)
 
     elseif "number" == type_v then
         -- eliminate differences in formatting between various Lua versions
@@ -471,14 +471,14 @@ local function prettystr( v )
     * string are enclosed with " by default, or with ' if string contains a "
     * tables are expanded to show their full content, with indentation in case of nested tables
     ]]--
-    local recursionTable = {}
-    local s = prettystr_sub(v, 1, M.PRINT_TABLE_REF_IN_ERROR_MSG, recursionTable)
-    if recursionTable.recursionDetected and not M.PRINT_TABLE_REF_IN_ERROR_MSG then
+    local cycleDetectTable = {}
+    local s = prettystr_sub(v, 1, M.PRINT_TABLE_REF_IN_ERROR_MSG, cycleDetectTable)
+    if cycleDetectTable.detected and not M.PRINT_TABLE_REF_IN_ERROR_MSG then
         -- some table contain recursive references,
         -- so we must recompute the value by including all table references
         -- else the result looks like crap
-        recursionTable = {}
-        s = prettystr_sub(v, 1, true, recursionTable)
+        cycleDetectTable = {}
+        s = prettystr_sub(v, 1, true, cycleDetectTable)
     end
     return s
 end
@@ -901,10 +901,10 @@ M.private.table_ref = table_ref
 local TABLE_TOSTRING_SEP = ", "
 local TABLE_TOSTRING_SEP_LEN = string.len(TABLE_TOSTRING_SEP)
 
-local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable )
+local function _table_tostring( tbl, indentLevel, printTableRefs, cycleDetectTable )
     printTableRefs = printTableRefs or M.PRINT_TABLE_REF_IN_ERROR_MSG
-    recursionTable = recursionTable or {}
-    recursionTable[tbl] = true
+    cycleDetectTable = cycleDetectTable or {}
+    cycleDetectTable[tbl] = true
 
     local result, dispOnMultLines = {}, false
 
@@ -914,7 +914,7 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
         if "string" == type(k) and k:match("^[_%a][_%w]*$") then
             return k
         end
-        return prettystr_sub(k, indentLevel+1, printTableRefs, recursionTable)
+        return prettystr_sub(k, indentLevel+1, printTableRefs, cycleDetectTable)
     end
 
     local mt = getmetatable( tbl )
@@ -940,22 +940,22 @@ local function _table_tostring( tbl, indentLevel, printTableRefs, recursionTable
                 -- for the sequential part of tables, we'll skip the "<key>=" output
                 entry = ''
                 seq_index = seq_index + 1
-            elseif recursionTable[k] then
+            elseif cycleDetectTable[k] then
                 -- recursion in the key detected
-                recursionTable.recursionDetected = true
+                cycleDetectTable.detected = true
                 entry = "<"..table_ref(k)..">="
             else
                 entry = keytostring(k) .. "="
             end
 
             -- value part 
-            if recursionTable[v] then
+            if cycleDetectTable[v] then
                 -- recursion in the value detected!
-                recursionTable.recursionDetected = true
+                cycleDetectTable.detected = true
                 entry = entry .. "<"..table_ref(v)..">"
             else
                 entry = entry ..
-                    prettystr_sub( v, indentLevel+1, printTableRefs, recursionTable )
+                    prettystr_sub( v, indentLevel+1, printTableRefs, cycleDetectTable )
             end
             count = count + 1
             result[count] = entry
