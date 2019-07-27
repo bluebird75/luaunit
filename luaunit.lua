@@ -872,6 +872,9 @@ local function prettystrPairs(value1, value2, suffix_a, suffix_b)
 end
 M.private.prettystrPairs = prettystrPairs
 
+local UNKNOWN_REF = 'table 00-unknown ref'
+local ref_generator = { value=1, [UNKNOWN_REF]=0 }
+
 local function table_ref( t )
     -- return the default tostring() for tables, with the table ID, even if the table has a metatable
     -- with the __tostring converter
@@ -887,14 +890,25 @@ local function table_ref( t )
             -- not get the reference. And we can not know in advance.
             ref = tostring(t) 
             if not ref:match( 'table: 0?x?[%x]+' ) then
-                ref = 'can not get table reference'
+                return UNKNOWN_REF
             end
         else
             ref = tostring(t)
             setmetatable( t, mt )
         end
     end
-    return ref
+    -- strip the "table: " part
+    ref = ref:sub(8)
+    if ref ~= UNKNOWN_REF and ref_generator[ref] == nil then
+        -- Create a new reference number
+        ref_generator[ref] = ref_generator.value
+        ref_generator.value = ref_generator.value+1
+    end
+    if M.PRINT_TABLE_REF_IN_ERROR_MSG then
+        return string.format('table %02d-%s', ref_generator[ref], ref)
+    else
+        return string.format('table %02d', ref_generator[ref])
+    end
 end
 M.private.table_ref = table_ref
 
@@ -1105,6 +1119,8 @@ local function _is_table_equals(actual, expected, recursions)
     local type_a, type_e = type(actual), type(expected)
     recursions = recursions or setmetatable({}, _recursion_cache_MT)
 
+    -- print('_is_table_equals( \n     '..prettystr(actual)..'\n      , '..prettystr(expected)..'\n     , '..prettystr(recursions)..' \n )')
+
     if type_a ~= type_e then
         return false -- different types won't match
     end
@@ -1124,6 +1140,7 @@ local function _is_table_equals(actual, expected, recursions)
         -- Mark this (actual,expected) pair, so we won't recurse it again. For
         -- now, assume a "false" result, which we might adjust later if needed.
         recursions:store(actual, expected, false)
+        -- recursions:store(actual, expected, true)
 
         -- We used to verify that table count is identical here by comparing their length
         -- but this is unreliable when table is not a sequence. There is a test in test_luaunit.lua

@@ -3,6 +3,10 @@ Author: Philippe Fremy <phil@freehackers.org>
 License: BSD License, see LICENSE.txt
 ]]--
 
+local TABLE_REF_PAT='table: 0?x?[%x]+'
+local TABLE_IDX_PAT='table %d%d'
+local TABLE_IDX_REF_PAT='table %d%d%-?x?[%x]+'
+
 -- Return a function that appends its arguments to the `callInfo` table
 local function callRecorder( callInfo )
     return function( ... )
@@ -70,6 +74,14 @@ TestMock = {}
 ------------------------------------------------------------------
 
 TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
+
+    function TestLuaUnitUtilities:setUp()
+        self.old_PRINT_TABLE_REF_IN_ERROR_MSG = lu.PRINT_TABLE_REF_IN_ERROR_MSG
+    end
+
+    function TestLuaUnitUtilities:tearDown()
+        lu.PRINT_TABLE_REF_IN_ERROR_MSG = self.old_PRINT_TABLE_REF_IN_ERROR_MSG
+    end
 
     function TestLuaUnitUtilities:test_genSortedIndex()
         lu.assertEquals( lu.private.__genSortedIndex( { 2, 5, 7} ), {1,2,3} )
@@ -269,32 +281,65 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertTrue( lu.private.tryMismatchFormatting( range(1,threshold),   range(1,threshold),   lu.FORCE_DEEP_ANALYSIS ) )
     end
 
-    function TestLuaUnitUtilities:test_table_ref()
+    function TestLuaUnitUtilities:test_table_ref_default()
+        local unknown_table_idx = 'table 00%-unknown ref'
+
         local ts = function(t) return t[1]..t[2] end
         local t1 = {'1','2'}
-        lu.assertStrMatches( tostring(t1), 'table: 0?x?[%x]+' )
-        lu.assertStrMatches( lu.private.table_ref(t1), 'table: 0?x?[%x]+' )
+        lu.assertStrMatches( tostring(t1), TABLE_REF_PAT )
+        lu.assertStrMatches( lu.private.table_ref(t1), TABLE_IDX_PAT )
 
         local mt = { __tostring = ts }
         setmetatable( t1, mt )
         lu.assertStrMatches( tostring(t1), '12' )
-        lu.assertStrMatches( lu.private.table_ref(t1), 'table: 0?x?[%x]+' )
+        lu.assertStrMatches( lu.private.table_ref(t1), TABLE_IDX_PAT )
 
         -- how does it deal with protected metatable ?
         -- metatable, obviously protected
         local t1 = setmetatable( { 1, 2 }, { __metatable="private" } )
-        lu.assertStrMatches( lu.private.table_ref(t1), 'table: 0?x?[%x]+' )
+        lu.assertStrMatches( lu.private.table_ref(t1), TABLE_IDX_PAT )
 
         -- metatable, protected but still returns a table so more difficult to catch
         local t1 = setmetatable( { 1, 2 }, { __metatable={ "private" } } )
-        lu.assertStrMatches( lu.private.table_ref(t1), 'table: 0?x?[%x]+' )
+        lu.assertStrMatches( lu.private.table_ref(t1), TABLE_IDX_PAT )
 
         -- protected metatable + __tostring, no way to get references
         local t1 = setmetatable( { 1, 2 }, { __metatable="private", __tostring=ts } )
-        lu.assertStrMatches( lu.private.table_ref(t1), 'can not get table reference' )
+        lu.assertStrMatches( lu.private.table_ref(t1), unknown_table_idx )
 
         local t1 = setmetatable( { 1, 2 }, { __metatable={ "private" }, __tostring=ts } )
-        lu.assertStrMatches( lu.private.table_ref(t1), 'can not get table reference' )
+        lu.assertStrMatches( lu.private.table_ref(t1), unknown_table_idx )
+    end
+
+    function TestLuaUnitUtilities:test_table_ref_print_ref()
+        local unknown_table_ref = 'table 00%-unknown ref'
+
+        lu.PRINT_TABLE_REF_IN_ERROR_MSG = true
+        local ts = function(t) return t[1]..t[2] end
+        local t1 = {'1','2'}
+        lu.assertStrMatches( tostring(t1), TABLE_REF_PAT )
+        lu.assertStrMatches( lu.private.table_ref(t1), 'table %d%d%-0?x?[%x]+' )
+
+        local mt = { __tostring = ts }
+        setmetatable( t1, mt )
+        lu.assertStrMatches( tostring(t1), '12' )
+        lu.assertStrMatches( lu.private.table_ref(t1), 'table %d%d%-0?x?[%x]+' )
+
+        -- how does it deal with protected metatable ?
+        -- metatable, obviously protected
+        local t1 = setmetatable( { 1, 2 }, { __metatable="private" } )
+        lu.assertStrMatches( lu.private.table_ref(t1), 'table %d%d%-0?x?[%x]+' )
+
+        -- metatable, protected but still returns a table so more difficult to catch
+        local t1 = setmetatable( { 1, 2 }, { __metatable={ "private" } } )
+        lu.assertStrMatches( lu.private.table_ref(t1), 'table %d%d%-0?x?[%x]+' )
+
+        -- protected metatable + __tostring, no way to get references
+        local t1 = setmetatable( { 1, 2 }, { __metatable="private", __tostring=ts } )
+        lu.assertStrMatches( lu.private.table_ref(t1), unknown_table_ref )
+
+        local t1 = setmetatable( { 1, 2 }, { __metatable={ "private" }, __tostring=ts } )
+        lu.assertStrMatches( lu.private.table_ref(t1), unknown_table_ref )
     end
 
     function TestLuaUnitUtilities:test_prettystr_numbers()
@@ -476,40 +521,37 @@ bar"=1}]] )
 }]])
     end
 
-    function TestLuaUnitUtilities:test_prettystrTableRecursion()
+    function TestLuaUnitUtilities:test_prettystrTableCycles()
         local t = {}
         t.__index = t
-        lu.assertStrMatches(lu.prettystr(t), "(<table: 0?x?[%x]+>) {__index=%1}")
+        lu.assertStrMatches(lu.prettystr(t), "(<"..TABLE_IDX_PAT..">) {__index=%1}")
 
         local t1 = {}
         local t2 = {}
         t1.t2 = t2
         t2.t1 = t1
         local t3 = { t1 = t1, t2 = t2 }
-        lu.assertStrMatches(lu.prettystr(t1), "(<table: 0?x?[%x]+>) {t2=(<table: 0?x?[%x]+>) {t1=%1}}")
-        lu.assertStrMatches(lu.prettystr(t3), [[(<table: 0?x?[%x]+>) {
-    t1=(<table: 0?x?[%x]+>) {t2=(<table: 0?x?[%x]+>) {t1=%2}},
-    t2=%3
-}]])
+        lu.assertStrMatches(lu.prettystr(t1), "(<"..TABLE_IDX_PAT..">) {t2=(<"..TABLE_IDX_PAT..">) {t1=%1}}")
+        lu.assertStrMatches(lu.prettystr(t3), "(<"..TABLE_IDX_PAT..">) {t1=(<"..TABLE_IDX_PAT..">) {t2=(<"..TABLE_IDX_PAT..">) {t1=%2}}, t2=%3}")
 
         local t4 = {1,2}
         local t5 = {3,4,t4}
         t4[3] = t5
-        lu.assertStrMatches(lu.prettystr(t5), "(<table: 0?x?[%x]+>) {3, 4, (<table: 0?x?[%x]+>) {1, 2, %1}}")
+        lu.assertStrMatches(lu.prettystr(t5), "(<"..TABLE_IDX_PAT..">) {3, 4, (<"..TABLE_IDX_PAT..">) {1, 2, %1}}")
 
         local t6 = {}
         t6[t6] = 1
-        lu.assertStrMatches(lu.prettystr(t6), "(<table: 0?x?[%x]+>) {%1=1}" )
+        lu.assertStrMatches(lu.prettystr(t6), "(<"..TABLE_IDX_PAT..">) {%1=1}" )
 
         local t7, t8 = {"t7"}, {"t8"}
         t7[t8] = 1
         t8[t7] = 2
-        lu.assertStrMatches(lu.prettystr(t7), '(<table: 0?x?[%x]+>) {"t7", (<table: 0?x?[%x]+>) {"t8", %1=2}=1}')
+        lu.assertStrMatches(lu.prettystr(t7), '(<'..TABLE_IDX_PAT..'>) {"t7", (<'..TABLE_IDX_PAT..'>) {"t8", %1=2}=1}')
 
         local t9 = {"t9", {}}
         t9[{t9}] = 1
 
-        lu.assertStrMatches(lu.prettystr(t9, true), '(<table: 0?x?[%x]+>) {\n?%s*"t9",\n?%s*(<table: 0?x?[%x]+>) {},\n?%s*(<table: 0?x?[%x]+>) {%1}=1\n?}')
+        lu.assertStrMatches(lu.prettystr(t9, true), '(<'..TABLE_IDX_PAT..'>) {\n?%s*"t9",\n?%s*(<'..TABLE_IDX_PAT..'>) {},\n?%s*(<'..TABLE_IDX_PAT..'>) {%1}=1\n?}')
     end
 
     function TestLuaUnitUtilities:test_prettystrPairs()
@@ -2791,8 +2833,8 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
     function TestLuaUnitErrorMsg:test_assertIs()
         assertFailureEquals( 'expected and actual object should not be different\nExpected: 1\nReceived: 2', lu.assertIs, 2, 1 )
         assertFailureMatches( 'expected and actual object should not be different\n'..
-                                'Expected: <table: 0?x?[%x]+> {1, 2, 3, 4, 5, 6, 7, 8}\n'..
-                                'Received: <table: 0?x?[%x]+> {1, 2, 3, 4, 5, 6, 7, 8}', 
+                                'Expected: <'..TABLE_IDX_REF_PAT..'> {1, 2, 3, 4, 5, 6, 7, 8}\n'..
+                                'Received: <'..TABLE_IDX_REF_PAT..'> {1, 2, 3, 4, 5, 6, 7, 8}', 
             lu.assertIs, {1,2,3,4,5,6,7,8}, {1,2,3,4,5,6,7,8} )
         lu.ORDER_ACTUAL_EXPECTED = false
         assertFailureEquals( 'expected and actual object should not be different\nExpected: 2\nReceived: 1', lu.assertIs, 2, 1 )
@@ -2801,10 +2843,10 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:test_assertNotIs()
         local v = {1,2}
-        assertFailureMatches( 'expected and actual object should be different: <table: 0?x?[%x]+> {1, 2}', lu.assertNotIs, v, v )
+        assertFailureMatches( 'expected and actual object should be different: <'..TABLE_IDX_REF_PAT..'> {1, 2}', lu.assertNotIs, v, v )
         lu.ORDER_ACTUAL_EXPECTED = false -- order shouldn't matter here, but let's cover it
-        assertFailureMatches( 'expected and actual object should be different: <table: 0?x?[%x]+> {1, 2}', lu.assertNotIs, v, v )
-        assertFailureMatches( 'toto\nexpected and actual object should be different: <table: 0?x?[%x]+> {1, 2}', lu.assertNotIs, v, v, 'toto' )
+        assertFailureMatches( 'expected and actual object should be different: <'..TABLE_IDX_REF_PAT..'> {1, 2}', lu.assertNotIs, v, v )
+        assertFailureMatches( 'toto\nexpected and actual object should be different: <'..TABLE_IDX_REF_PAT..'> {1, 2}', lu.assertNotIs, v, v, 'toto' )
     end 
 
     function TestLuaUnitErrorMsg:test_assertItemsEquals()
@@ -2856,16 +2898,16 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:test_printTableWithRef()
         lu.PRINT_TABLE_REF_IN_ERROR_MSG = true
-        assertFailureMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2}', lu.assertNotEquals, {1,2}, {1,2} )
+        assertFailureMatches( 'Received the not expected value: <'..TABLE_IDX_REF_PAT..'> {1, 2}', lu.assertNotEquals, {1,2}, {1,2} )
         -- trigger multiline prettystr
-        assertFailureMatches( 'Received the not expected value: <table: 0?x?[%x]+> {1, 2, 3, 4}', lu.assertNotEquals, {1,2,3,4}, {1,2,3,4} )
-        assertFailureMatches( 'expected: false, actual: <table: 0?x?[%x]+> {}', lu.assertFalse, {})
+        assertFailureMatches( 'Received the not expected value: <'..TABLE_IDX_REF_PAT..'> {1, 2, 3, 4}', lu.assertNotEquals, {1,2,3,4}, {1,2,3,4} )
+        assertFailureMatches( 'expected: false, actual: <'..TABLE_IDX_REF_PAT..'> {}', lu.assertFalse, {})
         local v = {1,2}
-        assertFailureMatches( 'expected and actual object should be different: <table: 0?x?[%x]+> {1, 2}', lu.assertNotIs, v, v )
-        assertFailureMatches('Content of the tables are not identical:\nExpected: <table: 0?x?[%x]+> {one=2, two=3}\nActual: <table: 0?x?[%x]+> {1, 2}' , lu.assertItemsEquals, {1,2}, {one=2, two=3} )
-        assertFailureMatches( 'expected: <table: 0?x?[%x]+> {1, 2}\nactual: <table: 0?x?[%x]+> {2, 1}', lu.assertEquals, {2,1}, {1,2} )
+        assertFailureMatches( 'expected and actual object should be different: <'..TABLE_IDX_REF_PAT..'> {1, 2}', lu.assertNotIs, v, v )
+        assertFailureMatches('Content of the tables are not identical:\nExpected: <'..TABLE_IDX_REF_PAT..'> {one=2, two=3}\nActual: <'..TABLE_IDX_REF_PAT..'> {1, 2}' , lu.assertItemsEquals, {1,2}, {one=2, two=3} )
+        assertFailureMatches( 'expected: <'..TABLE_IDX_REF_PAT..'> {1, 2}\nactual: <'..TABLE_IDX_REF_PAT..'> {2, 1}', lu.assertEquals, {2,1}, {1,2} )
         -- trigger multiline prettystr
-        assertFailureMatches( 'expected: <table: 0?x?[%x]+> {one=1, two=2}\nactual: <table: 0?x?[%x]+> {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
+        assertFailureMatches( 'expected: <'..TABLE_IDX_REF_PAT..'> {one=1, two=2}\nactual: <'..TABLE_IDX_REF_PAT..'> {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
         -- trigger mismatch formatting
         lu.assertErrorMsgContains( [[lists <table: ]] , lu.assertEquals, {3,2,1,4,1,1,1,1,1,1,1}, {1,2,3,4,1,1,1,1,1,1,1} )
         lu.assertErrorMsgContains( [[and <table: ]] , lu.assertEquals, {3,2,1,4,1,1,1,1,1,1,1}, {1,2,3,4,1,1,1,1,1,1,1} )
