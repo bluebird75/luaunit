@@ -1026,6 +1026,14 @@ end
 
 TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
+    function TestLuaUnitAssertions:setUp()
+        self.old_TABLE_EQUALS_KEYBYCONTENT = lu.TABLE_EQUALS_KEYBYCONTENT
+    end
+
+    function TestLuaUnitAssertions:tearDown()
+        lu.TABLE_EQUALS_KEYBYCONTENT = self.old_TABLE_EQUALS_KEYBYCONTENT
+    end
+
     function TestLuaUnitAssertions:test_assertEquals()
         local f = function() return true end
         local g = function() return true end
@@ -1041,21 +1049,6 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertEquals( {one=1,two={1,2},three=3}, {two={1,2},three=3,one=1})
         lu.assertEquals( {one=1,two={1,{2,nil}},three=3}, {two={1,{2,nil}},three=3,one=1})
         lu.assertEquals( {nil}, {nil} )
-        local config_saved = lu.TABLE_EQUALS_KEYBYCONTENT
-        lu.TABLE_EQUALS_KEYBYCONTENT = false
-        assertFailure( lu.assertEquals, {[{}] = 1}, { [{}] = 1})
-        assertFailure( lu.assertEquals, {[{one=1, two=2}] = 1}, { [{two=2, one=1}] = 1})
-        assertFailure( lu.assertEquals, {[{1}]=2, [{1}]=3}, {[{1}]=3, [{1}]=2} )
-        lu.TABLE_EQUALS_KEYBYCONTENT = true
-        lu.assertEquals( {[{}] = 1}, { [{}] = 1})
-        lu.assertEquals( {[{one=1, two=2}] = 1}, { [{two=2, one=1}] = 1})
-        lu.assertEquals( {[{1}]=2, [{1}]=3}, {[{1}]=3, [{1}]=2} )
-        -- try the other order as well, in case pairs() returns items reversed in the test above
-        lu.assertEquals( {[{1}]=2, [{1}]=3}, {[{1}]=2, [{1}]=3} )
-
-        -- check assertions for which # operator returns two different length depending
-        -- on how the table is built, eventhough the final table is the same
-        lu.assertEquals( {1, nil, 3}, {1, [3]=3} )
 
         assertFailure( lu.assertEquals, 1, 2)
         assertFailure( lu.assertEquals, 1, "abc" )
@@ -1076,14 +1069,31 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure( lu.assertEquals, {one=1,two=2,three=3}, true )
         assertFailure( lu.assertEquals, {one=1,two=2,three=3}, {1,2,3} )
         assertFailure( lu.assertEquals, {one=1,two={1,2},three=3}, {two={2,1},three=3,one=1})
-        lu.TABLE_EQUALS_KEYBYCONTENT = true -- without it, these tests won't pass anyway
+
+        -- check assertions for which # operator returns two different length depending
+        -- on how the table is built, eventhough the final table is the same
+        lu.assertEquals( {1, nil, 3}, {1, [3]=3} )
+    end
+
+    function TestLuaUnitAssertions:test_assertEqualsTableAsKeys()
+        lu.TABLE_EQUALS_KEYBYCONTENT = false
+        assertFailure( lu.assertEquals, {[{}] = 1}, { [{}] = 1})
+        assertFailure( lu.assertEquals, {[{one=1, two=2}] = 1}, { [{two=2, one=1}] = 1})
+        assertFailure( lu.assertEquals, {[{1}]=2, [{1}]=3}, {[{1}]=3, [{1}]=2} )
+
+        lu.TABLE_EQUALS_KEYBYCONTENT = true
+        lu.assertEquals( {[{}] = 1}, { [{}] = 1})
+        lu.assertEquals( {[{one=1, two=2}] = 1}, { [{two=2, one=1}] = 1})
+        lu.assertEquals( {[{1}]=2, [{1}]=3}, {[{1}]=3, [{1}]=2} )
+        -- try the other order as well, in case pairs() returns items reversed in the test above
+        lu.assertEquals( {[{1}]=2, [{1}]=3}, {[{1}]=2, [{1}]=3} )
+
         assertFailure( lu.assertEquals, {[{}] = 1}, {[{}] = 2})
         assertFailure( lu.assertEquals, {[{}] = 1}, {[{one=1}] = 2})
         assertFailure( lu.assertEquals, {[{}] = 1}, {[{}] = 1, 2})
         assertFailure( lu.assertEquals, {[{}] = 1}, {[{}] = 1, [{}] = 1})
         assertFailure( lu.assertEquals, {[{"one"}]=1}, {[{"one", 1}]=2} )
         assertFailure( lu.assertEquals, {[{"one"}]=1,[{"one"}]=1}, {[{"one"}]=1} )
-        lu.TABLE_EQUALS_KEYBYCONTENT = config_saved
     end
 
     function TestLuaUnitAssertions:test_assertAlmostEquals()
