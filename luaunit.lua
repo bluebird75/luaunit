@@ -25,7 +25,6 @@ assertEquals( expected, actual ).
 ]]--
 M.ORDER_ACTUAL_EXPECTED = true
 M.PRINT_TABLE_REF_IN_ERROR_MSG = false
-M.TABLE_EQUALS_KEYBYCONTENT = true
 M.LINE_LENGTH = 80
 M.TABLE_DIFF_ANALYSIS_THRESHOLD = 10    -- display deep analysis for more than 10 items
 M.LIST_DIFF_ANALYSIS_THRESHOLD  = 10    -- display deep analysis for more than 10 items
@@ -1115,97 +1114,73 @@ local _recursion_cache_MT = {
     }
 }
 
-local function _is_table_equals(actual, expected, recursions)
+local function _is_table_equals(actual, expected, cycleDetectTable)
     local type_a, type_e = type(actual), type(expected)
-    recursions = recursions or setmetatable({}, _recursion_cache_MT)
-
-    -- print('_is_table_equals( \n     '..prettystr(actual)..'\n      , '..prettystr(expected)..'\n     , '..prettystr(recursions)..' \n )')
 
     if type_a ~= type_e then
         return false -- different types won't match
     end
 
-    if (type_a == 'table') then
-        if actual == expected then
-            -- Both reference the same table, so they are actually identical
-            return recursions:store(actual, expected, true)
+    if type_a ~= 'table' then
+        -- other typtes compare directly
+        return actual == expected
+    end
+
+    -- print('_is_table_equals( \n     '..prettystr(actual)..'\n      , '..prettystr(expected)..'\n     , '..prettystr(recursions)..' \n )')
+
+    cycleDetectTable = cycleDetectTable or { actual={}, expected={} }
+    if cycleDetectTable.actual[ actual ] then
+        -- oh, we hit a cycle in actual
+        if cycleDetectTable.expected[ expected ] then
+            -- uh, we hit a cycle at the same time in expected
+            -- so the two tables have similar structure
+            return true
         end
 
-        -- If we've tested this (actual,expected) pair before: return cached value
-        local previous = recursions:cached(actual, expected)
-        if previous ~= nil then
-            return previous
-        end
-
-        -- Mark this (actual,expected) pair, so we won't recurse it again. For
-        -- now, assume a "false" result, which we might adjust later if needed.
-        recursions:store(actual, expected, true)
-
-        -- We used to verify that table count is identical here by comparing their length
-        -- but this is unreliable when table is not a sequence. There is a test in test_luaunit.lua
-        -- to catch this case.
-
-        local actualKeysMatched, actualTableKeys = {}, {}
-
-        for k, v in pairs(actual) do
-            if M.TABLE_EQUALS_KEYBYCONTENT and type(k) == "table" then
-                -- If the keys are tables, things get a bit tricky here as we
-                -- can have _is_table_equals(t[k1], t[k2]) despite k1 ~= k2. So
-                -- we first collect table keys from "actual", and then later try
-                -- to match each table key from "expected" to actualTableKeys.
-                table.insert(actualTableKeys, k)
-            else
-                if not _is_table_equals(v, expected[k], recursions) then
-                    -- Mismatch on value, tables can't be equal
-                    return recursions:store(actual, expected, false)
-                end
-                actualKeysMatched[k] = true -- Keep track of matched keys
-            end
-        end
-
-        for k, v in pairs(expected) do
-            if M.TABLE_EQUALS_KEYBYCONTENT and type(k) == "table" then
-                local found = false
-                -- Note: DON'T use ipairs() here, table may be non-sequential!
-                for i, candidate in pairs(actualTableKeys) do
-                    if _is_table_equals(candidate, k, recursions) then
-                        if _is_table_equals(actual[candidate], v, recursions) then
-                            found = true
-                            -- Remove the candidate we matched against from the list
-                            -- of table keys, so each key in actual can only match
-                            -- one key in expected.
-                            actualTableKeys[i] = nil
-                            break
-                        end
-                        -- keys match but values don't, keep searching
-                    end
-                end
-                if not found then
-                    return false -- no matching (key,value) pair
-                end
-            else
-                if not actualKeysMatched[k] then
-                    -- Found a key that we did not see in "actual" -> mismatch
-                    return recursions:store(actual, expected, false)
-                end
-                -- Otherwise actual[k] was already matched against v = expected[k].
-            end
-        end
-
-        if next(actualTableKeys) then
-            -- If there is any key left in actualTableKeys, then that is
-            -- a table-type key in actual with no matching counterpart
-            -- (in expected), and so the tables aren't equal.
-            return recursions:store(actual, expected, false)
-        end
-
-        -- The tables are actually considered equal, update cache and return result
-        return recursions:store(actual, expected, true)
-
-    elseif actual ~= expected then
+        -- cycle was hit only in actual, the structure differs from expected
         return false
     end
 
+    if cycleDetectTable.expected[ expected ] then
+        -- no cycle in actual, but cycle in expected
+        -- the structure differ
+        return false
+    end
+
+    -- at this point, no table cycle detected, we are
+    -- seeing this table for the first time
+
+    -- mark the cycle detection
+    cycleDetectTable.actual[ actual ] = true
+    cycleDetectTable.expected[ expected ] = true
+
+
+    local actualKeysMatched = {}
+    for k, v in pairs(actual) do
+        actualKeysMatched[k] = true -- Keep track of matched keys
+        if not _is_table_equals(v, expected[k], cycleDetectTable) then
+            -- table differs on this key
+            -- clear the cycle detection before returning
+            cycleDetectTable.actual[ actual ] = nil
+            cycleDetectTable.expected[ expected ] = nil
+            return false
+        end
+    end
+
+    for k, v in pairs(expected) do
+        if not actualKeysMatched[k] then
+            -- Found a key that we did not see in "actual" -> mismatch
+            -- clear the cycle detection before returning
+            cycleDetectTable.actual[ actual ] = nil
+            cycleDetectTable.expected[ expected ] = nil
+            return false
+        end
+        -- Otherwise actual[k] was already matched against v = expected[k].
+    end
+
+    -- all key match, we have a match !
+    cycleDetectTable.actual[ actual ] = nil
+    cycleDetectTable.expected[ expected ] = nil
     return true
 end
 M.private._is_table_equals = _is_table_equals

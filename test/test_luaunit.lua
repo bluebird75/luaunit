@@ -1026,14 +1026,6 @@ end
 
 TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
-    function TestLuaUnitAssertions:setUp()
-        self.old_TABLE_EQUALS_KEYBYCONTENT = lu.TABLE_EQUALS_KEYBYCONTENT
-    end
-
-    function TestLuaUnitAssertions:tearDown()
-        lu.TABLE_EQUALS_KEYBYCONTENT = self.old_TABLE_EQUALS_KEYBYCONTENT
-    end
-
     function TestLuaUnitAssertions:test_assertEquals()
         local f = function() return true end
         local g = function() return true end
@@ -1121,29 +1113,30 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         local t8b, t9b = {}, {}
         t8b.other = t9b
         t9b.other = t8b
-        print( 't8a='..lu.prettystr(t8a))
-        print( 't8b='..lu.prettystr(t8b))
+        -- print( 't8a='..lu.prettystr(t8a))
+        -- print( 't8b='..lu.prettystr(t8b))
         lu.assertNotEquals( t8a, t8b )
 
         local t11, t12 = {}, {}
         t11.cycle = t8a
         t12.cycle = t8b
         lu.assertNotEquals( t11, t12 )
+
+        -- issue #116
+        local a={}
+        local b={}
+        a.x = b; b.x = a
+        local a1={}
+        local b1={}
+        a1.x = b1; b1.x = a1
+        lu.assertEquals(a, a1)
     end
 
-
     function TestLuaUnitAssertions:test_assertEqualsTableAsKeys()
-        lu.TABLE_EQUALS_KEYBYCONTENT = false
         assertFailure( lu.assertEquals, {[{}] = 1}, { [{}] = 1})
         assertFailure( lu.assertEquals, {[{one=1, two=2}] = 1}, { [{two=2, one=1}] = 1})
         assertFailure( lu.assertEquals, {[{1}]=2, [{1}]=3}, {[{1}]=3, [{1}]=2} )
-
-        lu.TABLE_EQUALS_KEYBYCONTENT = true
-        lu.assertEquals( {[{}] = 1}, { [{}] = 1})
-        lu.assertEquals( {[{one=1, two=2}] = 1}, { [{two=2, one=1}] = 1})
-        lu.assertEquals( {[{1}]=2, [{1}]=3}, {[{1}]=3, [{1}]=2} )
-        -- try the other order as well, in case pairs() returns items reversed in the test above
-        lu.assertEquals( {[{1}]=2, [{1}]=3}, {[{1}]=2, [{1}]=3} )
+        assertFailure( lu.assertEquals, {[{1}]=2, [{1}]=3}, {[{1}]=2, [{1}]=3} )
 
         assertFailure( lu.assertEquals, {[{}] = 1}, {[{}] = 2})
         assertFailure( lu.assertEquals, {[{}] = 1}, {[{one=1}] = 2})
