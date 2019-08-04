@@ -1139,8 +1139,7 @@ local function _is_table_equals(actual, expected, recursions)
 
         -- Mark this (actual,expected) pair, so we won't recurse it again. For
         -- now, assume a "false" result, which we might adjust later if needed.
-        recursions:store(actual, expected, false)
-        -- recursions:store(actual, expected, true)
+        recursions:store(actual, expected, true)
 
         -- We used to verify that table count is identical here by comparing their length
         -- but this is unreliable when table is not a sequence. There is a test in test_luaunit.lua
@@ -1157,7 +1156,8 @@ local function _is_table_equals(actual, expected, recursions)
                 table.insert(actualTableKeys, k)
             else
                 if not _is_table_equals(v, expected[k], recursions) then
-                    return false -- Mismatch on value, tables can't be equal
+                    -- Mismatch on value, tables can't be equal
+                    return recursions:store(actual, expected, false)
                 end
                 actualKeysMatched[k] = true -- Keep track of matched keys
             end
@@ -1186,7 +1186,7 @@ local function _is_table_equals(actual, expected, recursions)
             else
                 if not actualKeysMatched[k] then
                     -- Found a key that we did not see in "actual" -> mismatch
-                    return false
+                    return recursions:store(actual, expected, false)
                 end
                 -- Otherwise actual[k] was already matched against v = expected[k].
             end
@@ -1196,7 +1196,7 @@ local function _is_table_equals(actual, expected, recursions)
             -- If there is any key left in actualTableKeys, then that is
             -- a table-type key in actual with no matching counterpart
             -- (in expected), and so the tables aren't equal.
-            return false
+            return recursions:store(actual, expected, false)
         end
 
         -- The tables are actually considered equal, update cache and return result

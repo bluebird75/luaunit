@@ -228,15 +228,15 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
         A.self = A
         B.self = B
-        lu.assertNotEquals(A, B)
-        lu.assertEquals(A, A)
+        lu.assertEquals(A, B)
 
         A, B = {}, {}
         A.circular = C
         B.circular = A
         C.circular = B
-        lu.assertNotEquals(A, B)
-        lu.assertEquals(C, C)
+        lu.assertEquals(A, B)
+        lu.assertEquals(B, C)
+        lu.assertEquals(C, A)
 
         A = {}
         A[{}] = A
@@ -1072,8 +1072,65 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
         -- check assertions for which # operator returns two different length depending
         -- on how the table is built, eventhough the final table is the same
-        lu.assertEquals( {1, nil, 3}, {1, [3]=3} )
+        local t1 = {1, nil, 3}      -- length is 3
+        local t2 = {1, [3]=3}       -- length is 1
+        lu.assertEquals( t1, t2 )
     end
+
+    function TestLuaUnitAssertions:test_assertEqualsTableWithCycles()
+
+        -- Table with same cyclic structrure should compare equal
+        local t1, t2 = {1}, {1}
+        t1.self = t1
+        t2.self = t2
+        lu.assertEquals( t1, t2 )
+
+        -- add one differing element
+        t1[2] = 2
+        t2[2] = 3
+        lu.assertNotEquals( t1, t2 )
+
+        -- cross cycle
+        local t3, t4 = {}, {}
+        t3.other = t4
+        t4.other = t3
+        lu.assertEquals( t3, t4 )
+
+        -- 3 level cycle
+        local t5a, t6a, t7a = {}, {}, {}
+        t6a.t5 = t5a
+        t7a.t6 = t6a
+        t5a.t7 = t7a
+
+        local t5b, t6b, t7b = {}, {}, {}
+        t6b.t5 = t5b
+        t7b.t6 = t6b
+        t5b.t7 = t7b
+
+        lu.assertEquals( t5a, t5b )
+        lu.assertEquals( t6a, t6b )
+        lu.assertEquals( t7a, t7b )
+        lu.assertNotEquals( t5a, t6a )
+
+        -- 3 level cycles vs 2 level cycles
+        local t8a, t9a, t10a = {}, {}, {}
+        t8a.other = t9a
+        t9a.other = t10a
+        t10a.other = t8a
+
+        local t8b, t9b = {}, {}
+        t8b.other = t9b
+        t9b.other = t8b
+        print( 't8a='..lu.prettystr(t8a))
+        print( 't8b='..lu.prettystr(t8b))
+        lu.assertNotEquals( t8a, t8b )
+
+        local t11, t12 = {}, {}
+        t11.cycle = t8a
+        t12.cycle = t8b
+        lu.assertNotEquals( t11, t12 )
+    end
+
 
     function TestLuaUnitAssertions:test_assertEqualsTableAsKeys()
         lu.TABLE_EQUALS_KEYBYCONTENT = false
