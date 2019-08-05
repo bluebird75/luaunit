@@ -299,10 +299,10 @@ List difference analysis:
   = A[16], B[19]: 19
   = A[17], B[20]: 20
     TestListCompare.test5c ... FAIL
-test/some_lists_comparisons.lua:109: expected: <table: 00D04838> {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
-actual: <table: 00D04838> {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+test/some_lists_comparisons.lua:109: expected: <table 01-00CF52E8> {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: <table 02-00CF5158> {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
-* list sizes differ: list <table: 00D04838> A (actual) has 17 items, list <table: 00D04838> B (expected) has 20 items
+* list sizes differ: list <table 02-00CF5158> A (actual) has 17 items, list <table 01-00CF52E8> B (expected) has 20 items
 * lists A and B start differing at index 5
 * lists A and B are equal again from index 7 for A, 10 for B
 * Common parts:
@@ -729,10 +729,10 @@ stack traceback:
 	test/some_lists_comparisons.lua:103: in function 'TestListCompare.test5b'
 
 9) TestListCompare.test5c
-test/some_lists_comparisons.lua:109: expected: <table: 00D04838> {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
-actual: <table: 00D04838> {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+test/some_lists_comparisons.lua:109: expected: <table 01-00CF52E8> {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
+actual: <table 02-00CF5158> {1, 2, 3, 4, 6, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
 List difference analysis:
-* list sizes differ: list <table: 00D04838> A (actual) has 17 items, list <table: 00D04838> B (expected) has 20 items
+* list sizes differ: list <table 02-00CF5158> A (actual) has 17 items, list <table 01-00CF52E8> B (expected) has 20 items
 * lists A and B start differing at index 5
 * lists A and B are equal again from index 7 for A, 10 for B
 * Common parts:

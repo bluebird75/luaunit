@@ -753,7 +753,7 @@ local function mismatchFormattingPureList( table_a, table_b )
 
     local len_a, len_b, refa, refb = #table_a, #table_b, '', ''
     if M.PRINT_TABLE_REF_IN_ERROR_MSG then
-        refa, refb = string.format( '<%s> ', tostring(table_a)), string.format('<%s> ', tostring(table_b) )
+        refa, refb = string.format( '<%s> ', M.private.table_ref(table_a)), string.format('<%s> ', M.private.table_ref(table_b) )
     end
     local longest, shortest = math.max(len_a, len_b), math.min(len_a, len_b)
     local deltalv  = longest - shortest
