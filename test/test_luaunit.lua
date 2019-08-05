@@ -5,7 +5,7 @@ License: BSD License, see LICENSE.txt
 
 local TABLE_REF_PAT='table: 0?x?[%x]+'
 local TABLE_IDX_PAT='table %d%d'
-local TABLE_IDX_REF_PAT='table %d%d%-?x?[%x]+'
+local TABLE_IDX_REF_PAT='table %d%d%-0?x?[%x]+'
 
 -- Return a function that appends its arguments to the `callInfo` table
 local function callRecorder( callInfo )
