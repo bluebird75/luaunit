@@ -2969,8 +2969,8 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         -- trigger multiline prettystr
         assertFailureMatches( 'expected: <'..TABLE_IDX_REF_PAT..'> {one=1, two=2}\nactual: <'..TABLE_IDX_REF_PAT..'> {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
         -- trigger mismatch formatting
-        lu.assertErrorMsgContains( [[lists <table: ]] , lu.assertEquals, {3,2,1,4,1,1,1,1,1,1,1}, {1,2,3,4,1,1,1,1,1,1,1} )
-        lu.assertErrorMsgContains( [[and <table: ]] , lu.assertEquals, {3,2,1,4,1,1,1,1,1,1,1}, {1,2,3,4,1,1,1,1,1,1,1} )
+        lu.assertErrorMsgContains( [[lists <table ]] , lu.assertEquals, {3,2,1,4,1,1,1,1,1,1,1}, {1,2,3,4,1,1,1,1,1,1,1} )
+        lu.assertErrorMsgContains( [[and <table ]] , lu.assertEquals, {3,2,1,4,1,1,1,1,1,1,1}, {1,2,3,4,1,1,1,1,1,1,1} )
 
     end
 
