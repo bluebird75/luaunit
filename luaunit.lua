@@ -2843,9 +2843,11 @@ end
         self.output:endSuite()
     end
 
-    function M.LuaUnit:setOutputType(outputType)
-        -- default to text
-        -- tap produces results according to TAP format
+    function M.LuaUnit:setOutputType(outputType, fname)
+        -- Configures LuaUnit runner output
+        -- outputType is one of: NIL, TAP, JUNIT, TEXT
+        -- when outputType is junit, the additional argument fname is used to set the name of junit output file
+        -- for other formats, fname is ignored
         if outputType:upper() == "NIL" then
             self.outputType = NilOutput
             return
@@ -2856,6 +2858,9 @@ end
         end
         if outputType:upper() == "JUNIT" then
             self.outputType = JUnitOutput
+            if fname then
+                self.fname = fname
+            end
             return
         end
         if outputType:upper() == "TEXT" then
@@ -3169,7 +3174,6 @@ end
         self.verbosity     = options.verbosity
         self.quitOnError   = options.quitOnError
         self.quitOnFailure = options.quitOnFailure
-        self.fname         = options.fname
 
         self.exeRepeat            = options.exeRepeat
         self.patternIncludeFilter = options.pattern
@@ -3180,7 +3184,7 @@ end
                 print('With junit output, a filename must be supplied with -n or --name')
                 os.exit(-1)
             end
-            pcall_or_abort(self.setOutputType, self, options.output)
+            pcall_or_abort(self.setOutputType, self, options.output, options.fname)
         end
 
         self:runSuiteByNames( options.testNames or M.LuaUnit.collectTests() )

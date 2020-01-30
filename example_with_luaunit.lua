@@ -146,5 +146,5 @@ function test3()
 end
 
 local runner = lu.LuaUnit.new()
-runner:setOutputType("tap")
+runner:setOutputType("junit", "junit_xml_file")
 os.exit( runner:runSuite() )
