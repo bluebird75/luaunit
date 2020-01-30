@@ -56,6 +56,7 @@ Version 3.4 (future):
 
 Planned:
 --------
+- update documentation about setOutputType() and how to run list of test classes
 - global setup / teardown
 - class setup / teardown
 - report test duration everywhere
@@ -69,15 +70,20 @@ Planned:
 - table_contains():
 	+ check with finding table or nested tables
 	+ add check for error messages
+- correctly compare tables with same content but different metatable
 
 Already done:
 -------------
+- setOutputType() also accepts the xml filename when using the format junit
+- simplify printing of table-info in cycles
 - allow to skip tests
 - fix a bug where assertIs/assertNotIs would not deal with protected metatables
+- fix a bug in dealing with table including cycles of different structure
+- remove option TABLE_EQUALS_KEYBYCONTENT, it did not make sense
 
 
-Done since 3.2:
-===============
+Version 3.3:
+============
 - make sure that example source code is included in documentation when packaging
 - add annex to documentation with full source code of example
 - add annex with BSD license
