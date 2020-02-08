@@ -4,6 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/bluebird75/luaunit/badge.svg?branch=master)](https://coveralls.io/github/bluebird75/luaunit?branch=master)
 [![Downloads](https://img.shields.io/badge/downloads-235k-brightgreen.svg)](https://luarocks.org/modules/bluebird75/luaunit)
 [![License](http://img.shields.io/badge/License-BSD-green.svg)](LICENSE.txt)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2756/badge)](https://bestpractices.coreinfrastructure.org/projects/2756)
 
 ## LuaUnit
 by Philippe Fremy
