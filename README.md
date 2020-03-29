@@ -202,7 +202,7 @@ jumping the version number.
 - command-line options to select test, control output type and verbosity
 
 #### Version 2.0
-Unofficial fork from version 1.3
+Unofficial fork from version 1.3 by rjbcomupting
 - lua 5.2 module style, without global namespace pollution
 - setUp() may be named Setup() or setup()
 - tearDown() may be named Teardown() or teardown()
