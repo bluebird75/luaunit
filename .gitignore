@@ -32,6 +32,10 @@ obj/
 [Rr]elease*/
 _ReSharper*/
 
+# VSCode files
+.vscode
+vscode-debuggee.lua
+
 # LuaCov output (stats and report)
 luacov.*.out
 

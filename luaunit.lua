@@ -1210,6 +1210,40 @@ local function error_fmt(level, ...)
     error(string.format(...), (level or 1) + 1)
 end
 
+--[[
+    Input:
+    * map : A {key, value} table structure
+    * predicate : A `(key, value) => boolean` function
+    Output: a new map having only entries where `predicate(key, value)` returns true    
+]]
+local function mapFilter( map , predicate )
+    local result = {}
+    for key, value in pairs( map ) do
+        if predicate( key, value ) then
+            result[key] = value
+        end
+    end
+    return result
+end
+
+--[[
+        Input:
+    * map : A {key, value} table structure
+    * predicate : A `(key, value) => boolean` function
+    Output: A pair of, first, all elements that satisfy `predicate` and, second, all elements that do not.
+]]
+local function mapPartition( map, predicate )
+    local included, excluded = {}, {}
+    for key, value in pairs( map ) do
+        if predicate( key, value) then
+            included[key] = value
+        else
+            excluded[ley] = value
+        end
+    end
+    return included, excluded
+end
+
 ----------------------------------------------------------------
 --
 --                     assertions
@@ -2698,6 +2732,44 @@ end
         return table.concat(s, ', ')
     end
 
+    local function patternFilterPredicate(key, value)
+        return patternFilter( M.LuaUnit.patternIncludeFilter, key ) 
+    end
+
+    --[[
+        Input: A map where:
+               * keys can be either a test name either a class name
+               * values should be either a test case function either a list a test cases (when key is a class name)
+        Output: a tuple (testCasesCount, nonTestCasesCount) where
+               * testCasesCount is the number of valid entries where:
+               ** test names verify the #isMethodTestName condition  
+               ** and test names verify the #patternIncludeFilter condition  
+               ** and test cases are function 
+               * nonTestCasesCount is the number of elements excluded
+    ]]--
+    function countPartitionByIsTestCase(instancesByName)
+        local selectedTestsCount, nonSelectedTestsCount = 0, 0
+
+        for name, instance in pairs(instancesByName) do
+            if M.LuaUnit.asFunction(instance) then
+                if M.LuaUnit.isMethodTestName( name ) and patternFilter( M.LuaUnit.patternIncludeFilter, name ) then
+                    selectedTestsCount = selectedTestsCount + 1
+                else 
+                    -- TODO: Does setupClass and teardownClass function should be taked in account in filteredOut ?
+                    nonSelectedTestsCount = nonSelectedTestsCount + 1
+                end
+            else
+                assert( type(instance) == 'table')
+                local testFunctionsByName = mapFilter(instance, M.LuaUnit.isTestCase)
+                local includedList, excludedList = mapPartition( testFunctionsByName, patternFilterPredicate )
+                selectedTestsCount = selectedTestsCount + #includedList
+                nonSelectedTestsCount = nonSelectedTestsCount + #excludedList
+            end
+        end
+
+        return selectedTestsCount, nonSelectedTestsCount
+    end
+
     function M.LuaUnit:startSuite(selectedCount, nonSelectedCount)
         self.result = {
             selectedCount = selectedCount,
@@ -2871,7 +2943,6 @@ end
     end
 
     --------------[[ Runner ]]-----------------
-
     function M.LuaUnit:protectedCall(classInstance, methodInstance, prettyFuncName)
         -- if classInstance is nil, this is just a function call
         -- else, it's method of a class being called.
@@ -2982,103 +3053,81 @@ end
         self:endTest()
     end
 
-    function M.LuaUnit.expandOneClass( result, className, classInstance )
-        --[[
-        Input: a list of { name, instance }, a class name, a class instance
-        Ouptut: modify result to add all test method instance in the form:
-        { className.methodName, classInstance }
-        ]]
-        for methodName, methodInstance in sortedPairs(classInstance) do
-            if M.LuaUnit.asFunction(methodInstance) and M.LuaUnit.isMethodTestName( methodName ) then
-                table.insert( result, { className..'.'..methodName, classInstance } )
-            end
+    local function setupSuite()
+        if  M.LuaUnit.asFunction( _G.setupSuite ) then
+            M.LuaUnit:updateStatus(  M.LuaUnit:protectedCall( nil, _G.setupSuite, 'setupSuite' ) )
         end
     end
 
-    function M.LuaUnit.expandClasses( listOfNameAndInst )
-        --[[
-        -- expand all classes (provided as {className, classInstance}) to a list of {className.methodName, classInstance}
-        -- functions and methods remain untouched
+    local function teardownSuite()
+        if M.LuaUnit.asFunction( _G.teardownSuite ) then
+            M.LuaUnit:updateStatus( M.LuaUnit:protectedCall( nil, _G.teardownSuite, 'teardownSuite') )
+        end
+    end
 
-        Input: a list of { name, instance }
-
-        Output:
-        * { function name, function instance } : do nothing
-        * { class.method name, class instance }: do nothing
-        * { class name, class instance } : add all method names in the form of (className.methodName, classInstance)
-        ]]
-        local result = {}
-
-        for i,v in ipairs( listOfNameAndInst ) do
-            local name, instance = v[1], v[2]
-            if M.LuaUnit.asFunction(instance) then
-                table.insert( result, { name, instance } )
-            else
-                if type(instance) ~= 'table' then
-                    error( 'Instance must be a table or a function, not a '..type(instance)..' with value '..prettystr(instance))
-                end
-                local className, methodName = M.LuaUnit.splitClassMethod( name )
-                if className then
-                    local methodInstance = instance[methodName]
-                    if methodInstance == nil then
-                        error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
-                    end
-                    table.insert( result, { name, instance } )
-                else
-                    M.LuaUnit.expandOneClass( result, name, instance )
+    function randomizeSuite( instancesByName )
+        if M.LuaUnit.shuffle then
+            randomizeTable( instancesByName )
+            for name, instances in pairs( instancesByName ) do
+                if type(instances) == 'table' then
+                     randomizeTable( instancesByName[name] )
                 end
             end
         end
-
-        return result
     end
 
-    function M.LuaUnit.applyPatternFilter( patternIncFilter, listOfNameAndInst )
-        local included, excluded = {}, {}
-        for i, v in ipairs( listOfNameAndInst ) do
-            -- local name, instance = v[1], v[2]
-            if  patternFilter( patternIncFilter, v[1] ) then
-                table.insert( included, v )
-            else
-                table.insert( excluded, v )
-            end
+    local function setupClass( name, instance )
+        if M.LuaUnit.asFunction( instance.setupClass ) then
+            M.LuaUnit:updateStatus( M.LuaUnit:protectedCall( instance, instance.setupClass, name..'.setupClass' ) )
         end
-        return included, excluded
     end
 
-    function M.LuaUnit:runSuiteByInstances( listOfNameAndInst )
-        --[[ Run an explicit list of tests. Each item of the list must be one of:
-        * { function name, function instance }
-        * { class name, class instance }
-        * { class.method name, class instance }
-        ]]
-
-        local expandedList = self.expandClasses( listOfNameAndInst )
-        if self.shuffle then
-            randomizeTable( expandedList )
+    local function teardownClass( name, instance )
+        if M.LuaUnit.asFunction( instance.teardownClass ) then
+            M.LuaUnit:updateStatus( M.LuaUnit:protectedCall( instance, instance.teardownClass, name..'.teardownClass' ) )
         end
-        local filteredList, filteredOutList = self.applyPatternFilter(
-            self.patternIncludeFilter, expandedList )
+    end
 
-        self:startSuite( #filteredList, #filteredOutList )
+    function M.LuaUnit.isTestCase(name, instance)
+        return M.LuaUnit.isMethodTestName( name ) and M.LuaUnit.asFunction( instance )
+    end
 
-        for i,v in ipairs( filteredList ) do
-            local name, instance = v[1], v[2]
-            if M.LuaUnit.asFunction(instance) then
-                self:execOneFunction( nil, name, nil, instance )
-            else
-                -- expandClasses() should have already taken care of sanitizing the input
-                assert( type(instance) == 'table' )
-                local className, methodName = M.LuaUnit.splitClassMethod( name )
-                assert( className ~= nil )
-                local methodInstance = instance[methodName]
-                assert(methodInstance ~= nil)
-                self:execOneFunction( className, methodName, instance, methodInstance )
-            end
+    function M.LuaUnit:execOneClass(name, instance)
+        setupClass( name, instance )
+                
+        local testFunctionsByName = mapFilter( instance, self.isTestCase )
+        local includedList = mapPartition( testFunctionsByName, patternFilterPredicate )
+        for testName, testFunction in pairs( includedList ) do
+            assert(testFunction ~= nil)
+            self:execOneFunction( name, name .. "." ..testName, instance, testFunction )
             if self.result.aborted then
                 break -- "--error" or "--failure" option triggered
             end
         end
+
+        teardownClass( name, instance )
+    end
+
+    --[[ 
+        Run an explicit list of tests
+        Input: A map where each entry can be one of {key, value}:
+        * { test-case name, test-case function  }
+        * { class name, class instance } `class instance` is a map where each entry key is the test name and each entry value the test-case function
+        ]]--
+    function M.LuaUnit:runSuiteInstancesByName( instancesByName )
+        randomizeSuite( instancesByName )
+
+        self:startSuite( countPartitionByIsTestCase( instancesByName ) )
+        
+        setupSuite()
+        for name, instance in pairs( instancesByName ) do
+            if self.isTestCase( name, instance ) then
+                self:execOneFunction( nil, name, nil, instance )
+            elseif(type(instance) == 'table') then
+                self:execOneClass( name, instance )
+            end
+        end
+        teardownSuite()
 
         if self.lastClassName ~= nil then
             self:endClass()
@@ -3099,7 +3148,7 @@ end
         ]]
 
         local instanceName, instance
-        local listOfNameAndInst = {}
+        local instancesByName = {}
 
         for i,name in ipairs( listOfName ) do
             local className, methodName = M.LuaUnit.splitClassMethod( name )
@@ -3134,10 +3183,10 @@ end
                 error( 'Name must match a function or a table: '..instanceName )
             end
 
-            table.insert( listOfNameAndInst, { name, instance } )
+            instancesByName[name] = instance
         end
 
-        self:runSuiteByInstances( listOfNameAndInst )
+        self:runSuiteInstancesByName( instancesByName )
     end
 
     function M.LuaUnit.run(...)
