@@ -1,4 +1,12 @@
 #!/usr/bin/env lua
+if (os.getenv("_DEBUG")) then
+    local json = require 'json'
+    local debuggee = require 'vscode-debuggee'
+
+    local startResult, breakerType = debuggee.start(json)
+    print('debuggee start ->', startResult, breakerType)
+end
+
 
 local no_error, err_msg
 no_error, err_msg = pcall( require, 'test.test_luaunit')

@@ -2730,9 +2730,10 @@ end
         self.output:startSuite()
     end
 
-    function M.LuaUnit:startClass( className )
+    function M.LuaUnit:startClass( className, classInstance )
         self.result.currentClassName = className
         self.output:startClass( className )
+        self:setupClass( className, classInstance )
     end
 
     function M.LuaUnit:startTest( testName  )
@@ -2822,6 +2823,7 @@ end
     end
 
     function M.LuaUnit:endClass()
+        self:teardownClass( self.lastClassName, self.lastClassInstance )
         self.output:endClass()
     end
 
@@ -2938,8 +2940,9 @@ end
             if self.lastClassName ~= nil then
                 self:endClass()
             end
-            self:startClass( className )
+            self:startClass( className, classInstance )
             self.lastClassName = className
+            self.lastClassInstance = classInstance
         end
 
         self:startTest(prettyFuncName)
@@ -3046,6 +3049,46 @@ end
         return included, excluded
     end
 
+    local function getKeyInListWithGlobalFallback( key,  listOfNameAndInst )
+        local result = nil
+        for i,v in ipairs( listOfNameAndInst ) do
+            if(listOfNameAndInst[i][1] == key) then
+                result = listOfNameAndInst[i][2]
+                break
+            end
+        end
+        if(not  M.LuaUnit.asFunction( result ) ) then
+            result = _G[key]
+        end
+        return result
+    end
+
+    function M.LuaUnit:setupSuite( listOfNameAndInst )
+        local setupSuite = getKeyInListWithGlobalFallback("setupSuite", listOfNameAndInst)
+        if  self.asFunction( setupSuite ) then
+            self:updateStatus( self:protectedCall( nil, setupSuite, 'setupSuite' ) )
+        end
+    end
+
+    function M.LuaUnit:teardownSuite(listOfNameAndInst)
+        local teardownSuite = getKeyInListWithGlobalFallback("teardownSuite", listOfNameAndInst)
+        if self.asFunction( teardownSuite ) then
+            self:updateStatus( self:protectedCall( nil, teardownSuite, 'teardownSuite') )
+        end
+    end
+
+    function  M.LuaUnit:setupClass( className, instance )
+        if type( instance ) == 'table' and self.asFunction( instance.setupClass ) then
+            self:updateStatus( self:protectedCall( instance, instance.setupClass, className..'.setupClass' ) )
+        end
+    end
+
+    function M.LuaUnit:teardownClass( className, instance )
+        if type( instance ) == 'table' and self.asFunction( instance.teardownClass ) then
+            self:updateStatus( self:protectedCall( instance, instance.teardownClass, className..'.teardownClass' ) )
+        end
+    end
+
     function M.LuaUnit:runSuiteByInstances( listOfNameAndInst )
         --[[ Run an explicit list of tests. Each item of the list must be one of:
         * { function name, function instance }
@@ -3061,6 +3104,7 @@ end
             self.patternIncludeFilter, expandedList )
 
         self:startSuite( #filteredList, #filteredOutList )
+        self:setupSuite( listOfNameAndInst )
 
         for i,v in ipairs( filteredList ) do
             local name, instance = v[1], v[2]
@@ -3084,6 +3128,7 @@ end
             self:endClass()
         end
 
+        self:teardownSuite( listOfNameAndInst )
         self:endSuite()
 
         if self.result.aborted then
