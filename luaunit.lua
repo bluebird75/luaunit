@@ -1259,32 +1259,32 @@ end
 
 function M.skip(msg)
     -- skip a running test
-    error(M.SKIP_PREFIX .. msg, 2)
+    error_fmt(2, M.SKIP_PREFIX .. msg)
 end
 
 function M.skipIf( cond, msg )
     -- skip a running test if condition is met
     if cond then
-        error(M.SKIP_PREFIX .. msg, 2)
+        error_fmt(2, M.SKIP_PREFIX .. msg)
     end
 end
 
 function M.runOnlyIf( cond, msg )
     -- continue a running test if condition is met, else skip it
     if not cond then
-        error(M.SKIP_PREFIX .. prettystr(msg), 2)
+        error_fmt(2, M.SKIP_PREFIX .. prettystr(msg))
     end
 end
 
 function M.success()
     -- stops a test with a success
-    error(M.SUCCESS_PREFIX, 2)
+    error_fmt(2, M.SUCCESS_PREFIX)
 end
 
 function M.successIf( cond )
     -- stops a test with a success if condition is met
     if cond then
-        error(M.SUCCESS_PREFIX, 2)
+        error_fmt(2, M.SUCCESS_PREFIX)
     end
 end
 
@@ -1311,7 +1311,7 @@ function M.almostEquals( actual, expected, margin )
             prettystr(actual), prettystr(expected), prettystr(margin))
     end
     if margin < 0 then
-        error('almostEquals: margin must not be negative, current value is ' .. margin, 3)
+        error_fmt(3, 'almostEquals: margin must not be negative, current value is ' .. margin)
     end
     return math.abs(expected - actual) <= margin
 end
