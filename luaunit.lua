@@ -338,10 +338,10 @@ M.private.xmlCDataEscape = xmlCDataEscape
 
 local function lstrip( s )
     --[[Return s with all leading white spaces and tabs removed]]
-    idx = 0
+    local idx = 0
     while idx < s:len() do
         idx = idx + 1
-        c = s:sub(idx,idx)
+        local c = s:sub(idx,idx)
         if c ~= ' ' and c ~= '\t' then
             break
         end
@@ -355,13 +355,13 @@ local function extractFileLineInfo( s )
 
     Return the "file.lua:linenb" information
     ]]
-    s2 = lstrip(s)
-    firstColon = s2:find(':', 1, true)
+    local s2 = lstrip(s)
+    local firstColon = s2:find(':', 1, true)
     if firstColon == nil then
         -- string is not in the format file:line:
         return s
     end
-    secondColon = s2:find(':', firstColon+1, true)
+    local secondColon = s2:find(':', firstColon+1, true)
     if secondColon == nil then
         -- string is not in the format file:line:
         return s
