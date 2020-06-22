@@ -12,12 +12,12 @@
         <testcase classname="TestAnotherThing" name="TestAnotherThing.test2_Err1" time="0.000">
             <error type="test/test_with_err_fail_pass.lua:41: attempt to perform arithmetic on a table value">
                 <![CDATA[stack traceback:
-	[C]: in function 'xpcall']]></error>
+	test/test_with_err_fail_pass.lua:41: in function 'TestAnotherThing.test2_Err1']]></error>
         </testcase>
         <testcase classname="TestAnotherThing" name="TestAnotherThing.test2_Err2" time="0.000">
             <error type="test/test_with_err_fail_pass.lua:45: attempt to perform arithmetic on a table value">
                 <![CDATA[stack traceback:
-	[C]: in function 'xpcall']]></error>
+	test/test_with_err_fail_pass.lua:45: in function 'TestAnotherThing.test2_Err2']]></error>
         </testcase>
         <testcase classname="TestAnotherThing" name="TestAnotherThing.test3_Fail1" time="0.000">
             <failure type="test/test_with_err_fail_pass.lua:49: expected: 0, actual: 2">
@@ -46,17 +46,17 @@
         <testcase classname="TestSomething" name="TestSomething.test3_Err1" time="0.000">
             <error type="test/test_with_err_fail_pass.lua:23: attempt to perform arithmetic on a table value">
                 <![CDATA[stack traceback:
-	[C]: in function 'xpcall']]></error>
+	test/test_with_err_fail_pass.lua:23: in function 'TestSomething.test3_Err1']]></error>
         </testcase>
         <testcase classname="TestSomething" name="TestSomething.test3_Err2" time="0.000">
             <error type="test/test_with_err_fail_pass.lua:27: attempt to perform arithmetic on a table value">
                 <![CDATA[stack traceback:
-	[C]: in function 'xpcall']]></error>
+	test/test_with_err_fail_pass.lua:27: in function 'TestSomething.test3_Err2']]></error>
         </testcase>
         <testcase classname="[TestFunctions]" name="testFuncErr1" time="0.000">
             <error type="test/test_with_err_fail_pass.lua:66: attempt to perform arithmetic on a table value">
                 <![CDATA[stack traceback:
-	[C]: in function 'xpcall']]></error>
+	test/test_with_err_fail_pass.lua:66: in function 'testFuncErr1']]></error>
         </testcase>
         <testcase classname="[TestFunctions]" name="testFuncFail1" time="0.000">
             <failure type="test/test_with_err_fail_pass.lua:62: expected: 0, actual: 3">

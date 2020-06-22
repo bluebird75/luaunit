@@ -7,7 +7,7 @@ Tests with errors:
 1) TestSomething.test3_Err1
 test/test_with_err_fail_pass.lua:23: attempt to perform arithmetic on a table value
 stack traceback:
-	[C]: in function 'xpcall'
+	test/test_with_err_fail_pass.lua:23: in function 'TestSomething.test3_Err1'
 
 Failed tests:
 -------------

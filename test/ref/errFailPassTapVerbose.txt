@@ -6,11 +6,11 @@ ok     2	TestAnotherThing.test1_Success2
 not ok 3	TestAnotherThing.test2_Err1
 #   test/test_with_err_fail_pass.lua:41: attempt to perform arithmetic on a table value
 #   stack traceback:
-#   	[C]: in function 'xpcall'
+#   	test/test_with_err_fail_pass.lua:41: in function 'TestAnotherThing.test2_Err1'
 not ok 4	TestAnotherThing.test2_Err2
 #   test/test_with_err_fail_pass.lua:45: attempt to perform arithmetic on a table value
 #   stack traceback:
-#   	[C]: in function 'xpcall'
+#   	test/test_with_err_fail_pass.lua:45: in function 'TestAnotherThing.test2_Err2'
 not ok 5	TestAnotherThing.test3_Fail1
 #   test/test_with_err_fail_pass.lua:49: expected: 0, actual: 2
 #   stack traceback:
@@ -33,15 +33,15 @@ not ok 10	TestSomething.test2_Fail2
 not ok 11	TestSomething.test3_Err1
 #   test/test_with_err_fail_pass.lua:23: attempt to perform arithmetic on a table value
 #   stack traceback:
-#   	[C]: in function 'xpcall'
+#   	test/test_with_err_fail_pass.lua:23: in function 'TestSomething.test3_Err1'
 not ok 12	TestSomething.test3_Err2
 #   test/test_with_err_fail_pass.lua:27: attempt to perform arithmetic on a table value
 #   stack traceback:
-#   	[C]: in function 'xpcall'
+#   	test/test_with_err_fail_pass.lua:27: in function 'TestSomething.test3_Err2'
 not ok 13	testFuncErr1
 #   test/test_with_err_fail_pass.lua:66: attempt to perform arithmetic on a table value
 #   stack traceback:
-#   	[C]: in function 'xpcall'
+#   	test/test_with_err_fail_pass.lua:66: in function 'testFuncErr1'
 not ok 14	testFuncFail1
 #   test/test_with_err_fail_pass.lua:62: expected: 0, actual: 3
 #   stack traceback:

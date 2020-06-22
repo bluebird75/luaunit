@@ -2881,7 +2881,7 @@ end
             return {
                 status = NodeStatus.ERROR,
                 msg = e,
-                trace = string.sub(debug.traceback("", 3), 2)
+                trace = string.sub(debug.traceback("", 1), 2)
             }
         end
 
