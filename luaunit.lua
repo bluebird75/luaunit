@@ -335,7 +335,44 @@ local function xmlCDataEscape( s )
 end
 M.private.xmlCDataEscape = xmlCDataEscape
 
-local function stripLuaunitTrace( stackTrace )
+
+local function lstrip( s )
+    --[[Return s with all leading white spaces and tabs removed]]
+    idx = 0
+    while idx < s:len() do
+        idx = idx + 1
+        c = s:sub(idx,idx)
+        if c ~= ' ' and c ~= '\t' then
+            break
+        end
+    end
+    return s:sub(idx)
+end
+M.private.lstrip = lstrip
+
+local function extractFileLineInfo( s )
+    --[[ From a string in the form "(leading spaces) dir1/dir2\dir3\file.lua:linenb: msg"
+
+    Return the "file.lua:linenb" information
+    ]]
+    s2 = lstrip(s)
+    firstColon = s2:find(':', 1, true)
+    if firstColon == nil then
+        -- string is not in the format file:line:
+        return s
+    end
+    secondColon = s2:find(':', firstColon+1, true)
+    if secondColon == nil then
+        -- string is not in the format file:line:
+        return s
+    end
+
+    return s2:sub(1, secondColon-1) 
+end
+M.private.extractFileLineInfo = extractFileLineInfo
+
+
+local function stripLuaunitTrace2( stackTrace, errMsg )
     --[[
     -- Example of  a traceback:
     <<stack traceback:
@@ -349,6 +386,7 @@ local function stripLuaunitTrace( stackTrace )
         ./luaunit.lua:1736: in function 'runSuite'
         example_with_luaunit.lua:140: in main chunk
         [C]: in ?>>
+    error message: <<example_with_luaunit.lua:130: expected 2, got 1>>
 
         Other example:
     <<stack traceback:
@@ -363,6 +401,7 @@ local function stripLuaunitTrace( stackTrace )
         ./luaunit.lua:1806: in function 'runSuite'
         example_with_luaunit.lua:140: in main chunk
         [C]: in ?>>
+    error message: <<example_with_luaunit.lua:58:  expected 2, got 1>>
 
     <<stack traceback:
         luaunit2/example_with_luaunit.lua:124: in function 'test1_withFailure'
@@ -375,6 +414,7 @@ local function stripLuaunitTrace( stackTrace )
         luaunit2/luaunit.lua:1819: in function 'runSuite'
         luaunit2/example_with_luaunit.lua:140: in main chunk
         [C]: in ?>>
+    error message: <<luaunit2/example_with_luaunit.lua:124:  expected 2, got 1>>
 
 
     -- first line is "stack traceback": KEEP
@@ -386,6 +426,18 @@ local function stripLuaunitTrace( stackTrace )
     -- keep first line
     -- remove lines that are part of luaunit
     -- kepp lines until we hit a luaunit line
+
+    The strategy for stripping is:
+    * keep first line "stack traceback:"
+    * part1:
+        * analyse all lines of the stack from bottom to top of the stack (first line to last line)
+        * extract the "file:line:" part of the line
+        * compare it with the "file:line" part of the error message
+        * if it does not match strip the line
+        * if it matches, keep the line and move to part 2
+    * part2:
+        * anything NOT starting with luaunit.lua is the interesting part of the stack trace
+        * anything starting again with luaunit.lua is part of the test launcher and should be stripped out
     ]]
 
     local function isLuaunitInternalLine( s )
@@ -400,8 +452,11 @@ local function stripLuaunitTrace( stackTrace )
 
     local idx = 2
 
+    local errMsgFileLine = extractFileLineInfo(errMsg)
+    -- print('emfi="'..errMsgFileLine..'"')
+
     -- remove lines that are still part of luaunit
-    while t[idx] and isLuaunitInternalLine( t[idx] ) do
+    while t[idx] and extractFileLineInfo(t[idx]) ~= errMsgFileLine do
         -- print('Removing : '..t[idx] )
         table.remove(t, idx)
     end
@@ -414,7 +469,7 @@ local function stripLuaunitTrace( stackTrace )
 
     -- remove remaining luaunit lines
     while t[idx] do
-        -- print('Removing : '..t[idx] )
+        -- print('Removing2 : '..t[idx] )
         table.remove(t, idx)
     end
 
@@ -422,7 +477,7 @@ local function stripLuaunitTrace( stackTrace )
     return table.concat( t, '\n')
 
 end
-M.private.stripLuaunitTrace = stripLuaunitTrace
+M.private.stripLuaunitTrace2 = stripLuaunitTrace2
 
 
 local function prettystr_sub(v, indentLevel, printTableRefs, cycleDetectTable )
@@ -2895,6 +2950,7 @@ end
         if ok then
             return {status = NodeStatus.SUCCESS}
         end
+        -- print('ok="'..prettystr(ok)..'" err="'..prettystr(err)..'"')
 
         local iter_msg
         iter_msg = self.exeRepeat and 'iteration '..self.currentCount
@@ -2911,7 +2967,7 @@ end
             err.trace = err.trace:gsub("in (%a+) 'methodInstance'", "in %1 '"..prettyFuncName.."'")
         end
         if STRIP_LUAUNIT_FROM_STACKTRACE then
-            err.trace = stripLuaunitTrace(err.trace)
+            err.trace = stripLuaunitTrace2(err.trace, err.msg)
         end
 
         return err -- return the error "object" (table)

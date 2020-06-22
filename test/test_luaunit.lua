@@ -901,8 +901,9 @@ bar"=1}]] )
         lu.assertEquals( lu.private.hasNewLine('ab\nc'), true )
     end
 
-    function TestLuaUnitUtilities:test_stripStackTrace()
-        local realStackTrace=[[stack traceback:
+    function TestLuaUnitUtilities:test_stripStackTrace2()
+        local errMsg1 = "example_with_luaunit.lua:130: in function 'test2_withFailure'"
+        local realStackTrace1=[[stack traceback:
         example_with_luaunit.lua:130: in function 'test2_withFailure'
         ./luaunit.lua:1449: in function <./luaunit.lua:1449>
         [C]: in function 'xpcall'
@@ -914,9 +915,8 @@ bar"=1}]] )
         example_with_luaunit.lua:140: in main chunk
         [C]: in ?]]
 
-
+        local errMsg2 = 'example_with_luaunit.lua:58: expected 2, got 3'
         local realStackTrace2=[[stack traceback:
-        ./luaunit.lua:545: in function 'lu.assertEquals'
         example_with_luaunit.lua:58: in function 'TestToto.test7'
         ./luaunit.lua:1517: in function <./luaunit.lua:1517>
         [C]: in function 'xpcall'
@@ -928,37 +928,106 @@ bar"=1}]] )
         example_with_luaunit.lua:140: in main chunk
         [C]: in ?]]
 
+        local errMsg3 = './test\\test_luaunit.lua:3013: expected: 2, actual: 1'
         local realStackTrace3 = [[stack traceback:
-        luaunit2/example_with_luaunit.lua:124: in function 'test1_withFailure'
-        luaunit2/luaunit.lua:1532: in function <luaunit2/luaunit.lua:1532>
+        ./luaunit.lua:1331: in function 'failure'
+        ./luaunit.lua:1436: in function 'assertEquals'
+        ./test\test_luaunit.lua:3013: in function 'methodInstance'
+        ./luaunit.lua:3023: in function <./luaunit.lua:3023>
         [C]: in function 'xpcall'
-        luaunit2/luaunit.lua:1532: in function 'protectedCall'
-        luaunit2/luaunit.lua:1591: in function 'execOneFunction'
-        luaunit2/luaunit.lua:1679: in function 'runSuiteByInstances'
-        luaunit2/luaunit.lua:1743: in function 'runSuiteByNames'
-        luaunit2/luaunit.lua:1819: in function 'runSuite'
-        luaunit2/example_with_luaunit.lua:140: in main chunk
-        [C]: in ?]]
+        ./luaunit.lua:3023: in function 'protectedCall'
+        ./luaunit.lua:3104: in function 'execOneFunction'
+        ./luaunit.lua:3213: in function 'runSuiteByInstances'
+        ./luaunit.lua:3277: in function 'runSuiteByNames'
+        ...
+        ./luaunit.lua:3023: in function <./luaunit.lua:3023>
+        [C]: in function 'xpcall'
+        ./luaunit.lua:3023: in function 'protectedCall'
+        ./luaunit.lua:3104: in function 'execOneFunction'
+        ./luaunit.lua:3213: in function 'runSuiteByInstances'
+        ./luaunit.lua:3277: in function 'runSuiteByNames'
+        ./luaunit.lua:3327: in function <./luaunit.lua:3293>
+        (tail call): ?
+        run_unit_tests.lua:22: in main chunk
+        [C]: ?
+        ]]
 
+        local errMsg4_1 = 'reduce_reporting.lua:7: expected: 2, actual: 1'
+        local errMsg4_2 = 'reduce_reporting.lua:12: expected: 2, actual: 1'
+        local errMsg4_3 = 'reduce_reporting.lua:20: expected: 2, actual: 1'
+        local realStackTrace4 = [[stack traceback:
+        ./luaunit.lua:1199: in function 'failure'
+        ./luaunit.lua:1304: in function 'assertEquals'
+        reduce_reporting.lua:7: in function 'my_assertEquals'
+        reduce_reporting.lua:12: in function 'my_sub_test_under_exec'
+        reduce_reporting.lua:20: in function 'my_test_under_exec'
+        ./luaunit.lua:2891: in function <./luaunit.lua:2891>
+        [C]: in function 'xpcall'
+        ./luaunit.lua:2891: in function 'protectedCall'
+        ./luaunit.lua:2972: in function 'execOneFunction'
+        ./luaunit.lua:3081: in function 'runSuiteByInstances'
+        ./luaunit.lua:3145: in function 'runSuiteByNames'
+        ./luaunit.lua:3195: in function 'runSuite'
+        reduce_reporting.lua:18: in main chunk
+        [C]: in ?
+        ]]
 
-        local strippedStackTrace=lu.private.stripLuaunitTrace( realStackTrace )
-        -- print( strippedStackTrace )
+        local strippedStackTrace
+        local expectedStackTrace
 
-        local expectedStackTrace=[[stack traceback:
+        strippedStackTrace=lu.private.stripLuaunitTrace2( realStackTrace1, errMsg1 )
+        expectedStackTrace=[[stack traceback:
         example_with_luaunit.lua:130: in function 'test2_withFailure']]
         lu.assertEquals( strippedStackTrace, expectedStackTrace )
 
-        strippedStackTrace=lu.private.stripLuaunitTrace( realStackTrace2 )
+        strippedStackTrace=lu.private.stripLuaunitTrace2( realStackTrace2, errMsg2 )
         expectedStackTrace=[[stack traceback:
         example_with_luaunit.lua:58: in function 'TestToto.test7']]
         lu.assertEquals( strippedStackTrace, expectedStackTrace )
 
-        strippedStackTrace=lu.private.stripLuaunitTrace( realStackTrace3 )
+        strippedStackTrace=lu.private.stripLuaunitTrace2( realStackTrace3, errMsg3 )
         expectedStackTrace=[[stack traceback:
-        luaunit2/example_with_luaunit.lua:124: in function 'test1_withFailure']]
+        ./test\test_luaunit.lua:3013: in function 'methodInstance']]
+        lu.assertEquals( strippedStackTrace, expectedStackTrace )
+
+        strippedStackTrace=lu.private.stripLuaunitTrace2( realStackTrace4, errMsg4_1 )
+        expectedStackTrace=[[stack traceback:
+        reduce_reporting.lua:7: in function 'my_assertEquals'
+        reduce_reporting.lua:12: in function 'my_sub_test_under_exec'
+        reduce_reporting.lua:20: in function 'my_test_under_exec']]
+        lu.assertEquals( strippedStackTrace, expectedStackTrace )
+
+        strippedStackTrace=lu.private.stripLuaunitTrace2( realStackTrace4, errMsg4_2 )
+        expectedStackTrace=[[stack traceback:
+        reduce_reporting.lua:12: in function 'my_sub_test_under_exec'
+        reduce_reporting.lua:20: in function 'my_test_under_exec']]
+        lu.assertEquals( strippedStackTrace, expectedStackTrace )
+
+        strippedStackTrace=lu.private.stripLuaunitTrace2( realStackTrace4, errMsg4_3 )
+        expectedStackTrace=[[stack traceback:
+        reduce_reporting.lua:20: in function 'my_test_under_exec']]
         lu.assertEquals( strippedStackTrace, expectedStackTrace )
 
 
+    end
+
+    function TestLuaUnitUtilities:test_lstrip()
+        lu.assertEquals(lu.private.lstrip("toto"), "toto")
+        lu.assertEquals(lu.private.lstrip("toto   "), "toto   ")
+        lu.assertEquals(lu.private.lstrip("  toto   "), "toto   ")
+        lu.assertEquals(lu.private.lstrip("\t\ttoto   "), "toto   ")
+        lu.assertEquals(lu.private.lstrip("\t  \ttoto   "), "toto   ")
+        lu.assertEquals(lu.private.lstrip("\t  \ttoto \n titi"), "toto \n titi")
+        lu.assertEquals(lu.private.lstrip(""), "")
+    end
+
+    function TestLuaUnitUtilities:test_extractFileLineNbInfo()
+        local s
+        s = "luaunit2/example_with_luaunit.lua:124: in function 'test1_withFailure'"
+        lu.assertEquals(lu.private.extractFileLineInfo(s), "luaunit2/example_with_luaunit.lua:124")
+
+        s = "    ./test\\test_luaunit.lua:2996: expected: 2, actual: 1"
+        lu.assertEquals(lu.private.extractFileLineInfo(s), "./test\\test_luaunit.lua:2996" )
     end
 
     function TestLuaUnitUtilities:test_eps_value()
