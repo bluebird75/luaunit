@@ -29,6 +29,10 @@ M.LINE_LENGTH = 80
 M.TABLE_DIFF_ANALYSIS_THRESHOLD = 10    -- display deep analysis for more than 10 items
 M.LIST_DIFF_ANALYSIS_THRESHOLD  = 10    -- display deep analysis for more than 10 items
 
+-- this setting allow to remove entries from the stack-trace, for 
+-- example to hide a call to a framework which would be calling luaunit
+M.STRIP_EXTRA_ENTRIES_IN_STACK_TRACE = 1
+
 --[[ EPS is meant to help with Lua's floating point math in simple corner
 cases like almostEquals(1.1-0.1, 1), which may not work as-is (e.g. on numbers
 with rational binary representation) if the user doesn't provide some explicit
@@ -1251,7 +1255,7 @@ local function failure(main_msg, extra_msg_or_nil, level)
     else
         msg = main_msg
     end
-    error(M.FAILURE_PREFIX .. msg, (level or 1) + 1)
+    error(M.FAILURE_PREFIX .. msg, (level or 1) + 1 + M.STRIP_EXTRA_ENTRIES_IN_STACK_TRACE)
 end
 
 local function fail_fmt(level, extra_msg_or_nil, ...)
@@ -1262,7 +1266,7 @@ M.private.fail_fmt = fail_fmt
 
 local function error_fmt(level, ...)
      -- printf-style error()
-    error(string.format(...), (level or 1) + 1)
+    error(string.format(...), (level or 1) + 1 + M.STRIP_EXTRA_ENTRIES_IN_STACK_TRACE)
 end
 
 ----------------------------------------------------------------
