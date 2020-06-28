@@ -31,7 +31,7 @@ M.LIST_DIFF_ANALYSIS_THRESHOLD  = 10    -- display deep analysis for more than 1
 
 -- this setting allow to remove entries from the stack-trace, for 
 -- example to hide a call to a framework which would be calling luaunit
-M.STRIP_EXTRA_ENTRIES_IN_STACK_TRACE = 1
+M.STRIP_EXTRA_ENTRIES_IN_STACK_TRACE = 0
 
 --[[ EPS is meant to help with Lua's floating point math in simple corner
 cases like almostEquals(1.1-0.1, 1), which may not work as-is (e.g. on numbers
