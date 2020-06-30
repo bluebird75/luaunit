@@ -249,3 +249,4 @@ Unofficial fork from version 1.3 by rjbcomupting
 - two verbosity level, like in python unittest
 
 ![stats](https://stats.sylphide-consulting.com/piwik/piwik.php?idsite=37&rec=1)
+
