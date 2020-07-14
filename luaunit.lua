@@ -213,11 +213,7 @@ end
 M.private.sortedPairs = sortedPairs
 
 -- seed the random with a strongly varying seed
-if _VERSION <= "Lua 5.3" then
-    math.randomseed(os.clock()*1E11)
-else
-    math.randomseed()
-end
+math.randomseed(math.floor(os.clock()*1E11))
 
 local function randomizeTable( t )
     -- randomize the item orders of the table t
