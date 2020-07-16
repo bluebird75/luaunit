@@ -100,11 +100,14 @@ else # -e $LUA_HOME_DIR
         elif [ "$LUA" == "lua5.3" ]; then
             curl http://www.lua.org/ftp/lua-5.3.3.tar.gz | tar xz
             cd lua-5.3.3;
+        elif [ "$LUA" == "lua5.4" ]; then
+            curl https://www.lua.org/ftp/lua-5.4.0.tar.gz | tar xz
+            cd lua-5.4.0;
         fi
 
         # adjust numerical precision if requested with LUANUMBER=float
         if [ "$LUANUMBER" == "float" ]; then
-            if [ "$LUA" == "lua5.3" ]; then
+            if [ "$LUA" == "lua5.3" || "$LUA" == "lua5.4" ]; then
                 # for Lua 5.3 we can simply adjust the default float type
                 perl -i -pe "s/#define LUA_FLOAT_TYPE\tLUA_FLOAT_DOUBLE/#define LUA_FLOAT_TYPE\tLUA_FLOAT_FLOAT/" src/luaconf.h
             else
@@ -141,6 +144,8 @@ else # -e $LUA_HOME_DIR
         rm -rf lua-5.2.4;
     elif [ "$LUA" == "lua5.3" ]; then
         rm -rf lua-5.3.2;
+    elif [ "$LUA" == "lua5.4" ]; then
+        rm -rf lua-5.4.0;
     fi
 
     if [ "$LUAJIT" == "yes" ]; then
