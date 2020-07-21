@@ -27,7 +27,7 @@ matrix:
   allow_failures:
     - env: LUA=luajit2.0
     - env: LUA=luajit2.1
-    - env: LUA=lua5.4
+    - env: LUA=lua5.4 LUANUMBER=double
 
 before_install:
   - source .travis/setenv_lua.sh
