@@ -58,9 +58,9 @@ then
     ln -s $LR_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
 
     # installation is ok ?
-    lua -v
-    luarocks --version
-    luarocks list
+    lua -v || exit 1
+    luarocks --version || exit 1
+    luarocks list || exit 1
     
 else # -e $LUA_HOME_DIR
 
@@ -86,7 +86,7 @@ else # -e $LUA_HOME_DIR
         fi
 
         echo ">> Compiling LuaJIT"
-        make && make install PREFIX="$LUA_HOME_DIR"
+        make && make install PREFIX="$LUA_HOME_DIR" || exit 1
 
     else # $LUAJIT == "yes"
 
@@ -130,8 +130,8 @@ else # -e $LUA_HOME_DIR
         perl -i -pe 's/-DLUA_COMPAT_(ALL|5_2)//' src/Makefile
 
         echo ">> Compiling $LUA"
-        make $PLATFORM
-        make INSTALL_TOP="$LUA_HOME_DIR" install;
+        make $PLATFORM || exit 1
+        make INSTALL_TOP="$LUA_HOME_DIR" install; || exit 1
         
     fi # $LUAJIT == "yes"
 
@@ -157,11 +157,11 @@ else # -e $LUA_HOME_DIR
     fi
 
     # lua is OK ?
-    lua -v
+    lua -v || exit 1
 
     echo ">> Downloading luarocks"
     LUAROCKS_BASE=luarocks-$LUAROCKS
-    curl --location http://luarocks.org/releases/$LUAROCKS_BASE.tar.gz | tar xz
+    curl --location http://luarocks.org/releases/$LUAROCKS_BASE.tar.gz | tar xz || exit 1
 
     cd $LUAROCKS_BASE
 
@@ -176,15 +176,15 @@ else # -e $LUA_HOME_DIR
         ./configure --with-lua="$LUA_HOME_DIR" --prefix="$LR_HOME_DIR"
     fi
 
-    make build && make install
+    make build && make install || exit 1
 
     # cleanup luarocks
     rm -rf $LUAROCKS_BASE
 
     ln -s $LR_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
-    luarocks --version
-    luarocks install luacheck
-    luarocks install luacov-coveralls
+    luarocks --version || exit 1
+    luarocks install luacheck || exit 1
+    luarocks install luacov-coveralls || exit 1
 
 fi # -e $LUA_HOME_DIR
 
