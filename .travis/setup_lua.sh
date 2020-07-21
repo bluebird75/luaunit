@@ -131,7 +131,7 @@ else # -e $LUA_HOME_DIR
 
         echo ">> Compiling $LUA"
         make $PLATFORM || exit 1
-        make INSTALL_TOP="$LUA_HOME_DIR" install; || exit 1
+        make INSTALL_TOP="$LUA_HOME_DIR" install || exit 1
         
     fi # $LUAJIT == "yes"
 
