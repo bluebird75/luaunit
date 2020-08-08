@@ -157,6 +157,7 @@ else # -e $LUA_HOME_DIR
     fi
 
     # lua is OK ?
+    echo ">> lua -v"
     lua -v || exit 1
 
     echo ">> Downloading luarocks"
@@ -182,8 +183,11 @@ else # -e $LUA_HOME_DIR
     rm -rf $LUAROCKS_BASE
 
     ln -s $LR_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
+    echo ">> luarocks --version"
     luarocks --version || exit 1
+    echo ">> luarocks install luacheck"
     luarocks install luacheck || exit 1
+    echo ">> luarocks install luacov-coversall"
     luarocks install luacov-coveralls || exit 1
 
 fi # -e $LUA_HOME_DIR
