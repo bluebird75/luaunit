@@ -182,7 +182,11 @@ local function check_tap_output( fileToRun, options, output, refOutput, refExitC
     if not envOptions:match("LUAUNIT_DEFAULT_OUTPUT[^%w]") then
         outputArg = '--output TAP'
     end
-    osExpectedCodeExec(refExitCode, '/usr/bin/env -S %s %s %s %s %s > %s',
+    if envOptions ~= '' then
+        envOptions = '/usr/bin/env -S ' .. envOptions
+    end
+
+    osExpectedCodeExec(refExitCode, '%s %s %s %s %s > %s',
                        envOptions, LUA, fileToRun, outputArg, options, output)
 
     adjustFile( output, refOutput, '# Started on (.*)')
@@ -319,11 +323,16 @@ function testTapDefault()
         check_tap_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
             'test/errFailPassTapDefault-failures.txt', 
             'test/ref/errFailPassTapDefault-failures.txt', 5 ) )
-    lu.assertEquals( 0,
-        check_tap_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
-            'test/errFailPassTapDefault-failures.txt', 
-            'test/ref/errFailPassTapDefault-failures.txt', 5,
-            'LUAUNIT_DEFAULT_OUTPUT=TAP' ) )
+    if IS_UNIX then
+        -- It is non-trivial to set the environment for new command execution
+        -- on Windows, so we'll only attempt it on UNIX.  These systems should
+        -- all have /usr/bin/env, and -S is pretty standard these days.
+        lu.assertEquals( 0,
+            check_tap_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
+                'test/errFailPassTapDefault-failures.txt', 
+                'test/ref/errFailPassTapDefault-failures.txt', 5,
+                'LUAUNIT_DEFAULT_OUTPUT=TAP' ) )
+    end
 end
 
 function testTapVerbose()
