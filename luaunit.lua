@@ -3284,6 +3284,8 @@ end
         self.patternIncludeFilter = options.pattern
         self.shuffle              = options.shuffle
 
+        options.output     = options.output or os.getenv('LUAUNIT_DEFAULT_OUTPUT')
+
         if options.output then
             if options.output:lower() == 'junit' and options.fname == nil then
                 print('With junit output, a filename must be supplied with -n or --name')
