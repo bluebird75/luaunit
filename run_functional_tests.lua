@@ -175,10 +175,15 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
     f:close()
 end
 
-local function check_tap_output( fileToRun, options, output, refOutput, refExitCode )
+local function check_tap_output( fileToRun, options, output, refOutput, refExitCode, envOptions )
     -- remove output
-    osExpectedCodeExec(refExitCode, '%s %s --output TAP %s > %s',
-                       LUA, fileToRun, options, output)
+    local outputArg = ''
+    envOptions = envOptions or ''
+    if not envOptions:match("LUAUNIT_DEFAULT_OUTPUT[^%w]") then
+        outputArg = '--output TAP'
+    end
+    osExpectedCodeExec(refExitCode, '/usr/bin/env -S %s %s %s %s %s > %s',
+                       envOptions, LUA, fileToRun, outputArg, options, output)
 
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
@@ -314,6 +319,11 @@ function testTapDefault()
         check_tap_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
             'test/errFailPassTapDefault-failures.txt', 
             'test/ref/errFailPassTapDefault-failures.txt', 5 ) )
+    lu.assertEquals( 0,
+        check_tap_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
+            'test/errFailPassTapDefault-failures.txt', 
+            'test/ref/errFailPassTapDefault-failures.txt', 5,
+            'LUAUNIT_DEFAULT_OUTPUT=TAP' ) )
 end
 
 function testTapVerbose()
