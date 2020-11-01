@@ -1,24 +1,15 @@
-Async testing:
--------------
-- mark a given test as asynchronous
-	+ the test must call done() for being completed successfully
-	+ include a timeout
-	+ done() will call endTest() and tearDown(), ...
-	+ new test status: in progress
-	+ calling done twice is a mistake
-	+ assertions in a callback are not wrapped. Passing the test status must be done differently
-		+ how to know which test is failing when an assertion fails
-- test suite has a global timeout which can be adjusted per test
-	+ test suite shall wait until all tests in-progress have completed
+# make all instead of make platform, this would allow to remove platform.sh
+# also avoid setnv_lua.sh if possible
 
-not needed:
-	+ display output must be updated to support asynchronous execution
-
-
+# ensure luarocks package are installed inside insall location
+/home/travis/build/bluebird75/luaunit/install/luarocks/share/lua/5.1/luarocks"
+/home/travis/build/bluebird75/luaunit/install/luarocks/share/lua/5.1/luarocks"
 
 
 TODO Future:
 ============
+- run a full modules with a function
+- assertAlmostEquals can check lists and more complex structures
 - build lua with ASAN, memory sanitizer and so on on travis before running it
 - ensure that assert string functions like assertStr, strcontains, etc reject incorrect type with a correct error message
 - pretty function formatting: https://github.com/luarocks/luarocks/blob/master/src/luarocks/core/util.lua
@@ -53,6 +44,7 @@ TODO Future:
 
 Version 3.4 (future):
 ============
+- review the os environement stuff, probably two tests are needed => verify priority when both are specified
 
 Planned:
 --------
