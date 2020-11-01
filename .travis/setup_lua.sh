@@ -21,14 +21,15 @@
 
 set -eufox pipefail
 
-LUAROCKS_VERSION=3.3.1
+LUAROCKS_VERSION=3.4.0
+LUAROCKS_URL=http://luarocks.org/releases/luarocks-3.4.0.tar.gz
 
 # Note: TRAVIS_BUILD_DIR=/home/travis/build/bluebird75/luaunit/
 LUA_HOME_DIR=$TRAVIS_BUILD_DIR/install/$LUA
 LUAROCK_HOME_DIR=$TRAVIS_BUILD_DIR/install/luarocks
 
 # setup a wide path
-export PATH=${PATH}:$HOME/.lua:${LUAROCK_HOME_DIR}/bin
+export PATH=$HOME/.lua:${LUAROCK_HOME_DIR}/bin:${PATH}
 
 case $LUA in
 "lua5.1")
@@ -195,10 +196,10 @@ else # -e $LUA_HOME_DIR
     lua -v 
 
     echo ">> Downloading luarocks"
-    LUAROCKS_BASE=luarocks-$LUAROCKS_VERSION
-    curl --location http://luarocks.org/releases/$LUAROCKS_BASE.tar.gz | tar xz 
+    # curl --location $LUAROCKS_URL | tar xz 
+    cat ~/luarocks-3.4.0.tar.gz | tar xz
 
-    cd $LUAROCKS_BASE
+    cd luarocks-$LUAROCKS_VERSION
 
     echo ">> Compiling luarocks"
     ./configure $LUAROCKS_CONFIGURE_ARGS $LUAROCKS_CONFIGURE_ARGS2 --prefix="$LUAROCK_HOME_DIR";
@@ -206,7 +207,7 @@ else # -e $LUA_HOME_DIR
     make build && make install 
 
     # cleanup luarocks
-    rm -rf $LUAROCKS_BASE
+    rm -rf luarocks-$LUAROCKS_VERSION
 
     ln -s $LUAROCK_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
     echo ">> luarocks --version"
@@ -217,6 +218,11 @@ else # -e $LUA_HOME_DIR
     luarocks install luacov 
     echo ">> luarocks install luacov-coversall"
     luarocks install luacov-coveralls 
+
+    echo "Setting lua path to luarock user tree "
+    eval $(luarocks path --bin)
+
+    lua -l luacov -v
 
 fi # -e $LUA_HOME_DIR
 
