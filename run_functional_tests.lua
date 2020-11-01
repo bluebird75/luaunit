@@ -90,6 +90,7 @@ end
 
 local function osExpectedCodeExec( refExitCode, ... )
     local cmd = string.format(...)
+    print('Executing: "'..cmd..'"')
     local ret, exitCode = osExec( cmd )
     if refExitCode and (exitCode ~= refExitCode) then
         error_fmt('Expected exit code %d, but got %d for: %s', refExitCode, exitCode, cmd)
