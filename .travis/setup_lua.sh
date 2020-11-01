@@ -72,7 +72,7 @@ case $LUA in
     LUA_BUILD_DIR=LuaJIT-2.1.0-beta3
     LUAJIT="yes"
     LUAROCKS_CONFIGURE_ARGS=--lua-suffix=jit
-    LUAROCKS_CONFIGURE_ARGS2=--with-lua-include="$LUA_HOME_DIR/include/luajit-2.0"
+    LUAROCKS_CONFIGURE_ARGS2=--with-lua-include="$LUA_HOME_DIR/include/luajit-2.1"
     ;;
 esac
 
