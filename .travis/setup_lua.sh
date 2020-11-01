@@ -6,7 +6,8 @@
 # luajit2.0 - master v2.0
 # luajit2.1 - master v2.1
 
-set -eufox pipefail
+# set -eufox pipefail
+set -efox pipefail
 
 LUAJIT_VERSION="2.0.4"
 LUAJIT_BASE="LuaJIT-$LUAJIT_VERSION"
