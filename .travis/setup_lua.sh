@@ -11,11 +11,35 @@ set -eufox pipefail
 LUAJIT_VERSION="2.0.4"
 LUAJIT_BASE="LuaJIT-$LUAJIT_VERSION"
 
-source .travis/platform.sh
+# setup a wide path
+export PATH=${PATH}:$HOME/.lua:$HOME/.local/bin:${TRAVIS_BUILD_DIR}/install/luarocks/bin
 
 # Note: TRAVIS_BUILD_DIR=/home/travis/build/bluebird75/luaunit/
 LUA_HOME_DIR=$TRAVIS_BUILD_DIR/install/$LUA
 LR_HOME_DIR=$TRAVIS_BUILD_DIR/install/luarocks
+
+
+# Set the variable PLATFORM to one of the following:
+# - linux
+# - macosx
+
+if [ -z "${PLATFORM:-}" ]; then
+  PLATFORM=$TRAVIS_OS_NAME;
+fi
+
+if [ "$PLATFORM" == "osx" ]; then
+  PLATFORM="macosx";
+fi
+
+# Allow running not on travis
+if [ -z "$PLATFORM" ]; then
+  if [ "$(uname)" == "Linux" ]; then
+    PLATFORM="linux";
+  else
+    PLATFORM="macosx";
+  fi;
+fi
+
 
 mkdir $HOME/.lua
 
@@ -188,6 +212,8 @@ else # -e $LUA_HOME_DIR
     luarocks --version || exit 1
     echo ">> luarocks install luacheck"
     luarocks install luacheck || exit 1
+    echo ">> luarocks install luacov"
+    luarocks install luacov || exit 1
     echo ">> luarocks install luacov-coversall"
     luarocks install luacov-coveralls || exit 1
 
