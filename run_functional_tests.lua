@@ -184,7 +184,7 @@ local function check_tap_output( fileToRun, options, output, refOutput, refExitC
         outputArg = '--output TAP'
     end
     if envOptions ~= '' then
-        envOptions = '/usr/bin/env -S ' .. envOptions
+        envOptions = '/usr/bin/env ' .. envOptions
     end
 
     osExpectedCodeExec(refExitCode, '%s %s %s %s %s > %s',
