@@ -124,9 +124,9 @@ then
     ln -s $LUAROCK_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
 
     # installation is ok ?
-    lua -v || exit 1
-    luarocks --version || exit 1
-    luarocks list || exit 1
+    lua -v
+    luarocks --version
+    luarocks list
     
 else # -e $LUA_HOME_DIR
 
@@ -147,7 +147,7 @@ else # -e $LUA_HOME_DIR
         fi
 
         echo ">> Compiling LuaJIT"
-        make && make install PREFIX="$LUA_HOME_DIR" || exit 1
+        make && make install PREFIX="$LUA_HOME_DIR"
 
         ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/luajit
         ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/lua
@@ -179,8 +179,8 @@ else # -e $LUA_HOME_DIR
         perl -i -pe 's/-DLUA_COMPAT_(ALL|5_2)//' src/Makefile
 
         echo ">> Compiling $LUA"
-        make $PLATFORM || exit 1
-        make INSTALL_TOP="$LUA_HOME_DIR" install || exit 1
+        make $PLATFORM
+        make INSTALL_TOP="$LUA_HOME_DIR" install 
 
         ln -s $LUA_HOME_DIR/bin/lua $HOME/.lua/lua
         ln -s $LUA_HOME_DIR/bin/luac $HOME/.lua/luac
@@ -192,31 +192,31 @@ else # -e $LUA_HOME_DIR
 
     # lua is OK ?
     echo ">> lua -v"
-    lua -v || exit 1
+    lua -v 
 
     echo ">> Downloading luarocks"
     LUAROCKS_BASE=luarocks-$LUAROCKS_VERSION
-    curl --location http://luarocks.org/releases/$LUAROCKS_BASE.tar.gz | tar xz || exit 1
+    curl --location http://luarocks.org/releases/$LUAROCKS_BASE.tar.gz | tar xz 
 
     cd $LUAROCKS_BASE
 
     echo ">> Compiling luarocks"
     ./configure $LUAROCKS_CONFIGURE_ARGS $LUAROCKS_CONFIGURE_ARGS2 --prefix="$LUAROCK_HOME_DIR";
 
-    make build && make install || exit 1
+    make build && make install 
 
     # cleanup luarocks
     rm -rf $LUAROCKS_BASE
 
     ln -s $LUAROCK_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
     echo ">> luarocks --version"
-    luarocks --version || exit 1
+    luarocks --version 
     echo ">> luarocks install luacheck"
-    luarocks install luacheck || exit 1
+    luarocks install luacheck 
     echo ">> luarocks install luacov"
-    luarocks install luacov || exit 1
+    luarocks install luacov 
     echo ">> luarocks install luacov-coversall"
-    luarocks install luacov-coveralls || exit 1
+    luarocks install luacov-coveralls 
 
 fi # -e $LUA_HOME_DIR
 
