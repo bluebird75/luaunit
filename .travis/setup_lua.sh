@@ -21,8 +21,6 @@
 
 set -eufox pipefail
 
-/usr/bin/env --help
-
 LUAROCKS_VERSION=3.4.0
 LUAROCKS_URL=http://luarocks.org/releases/luarocks-3.4.0.tar.gz
 
