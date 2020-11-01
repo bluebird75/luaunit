@@ -6,18 +6,74 @@
 # luajit2.0 - master v2.0
 # luajit2.1 - master v2.1
 
-# set -eufox pipefail
-set -efox pipefail
+### 
+# This script will create the following symbolic links, to refer to the installed lua:
+# $HOME/.lua/lua
+# $HOME/.lua/luajit
+# $HOME/.lua/luac
+# $HOME/.lua/luarocks
+#
+# Building of the targeted lua version is done in:
+# $HOME/install/<lua-version>
+#
+# Lua rocks in installed in 
+# $HOME/install/luacoks
 
-LUAJIT_VERSION="2.0.4"
-LUAJIT_BASE="LuaJIT-$LUAJIT_VERSION"
+set -eufox pipefail
 
-# setup a wide path
-export PATH=${PATH}:$HOME/.lua:$HOME/.local/bin:${TRAVIS_BUILD_DIR}/install/luarocks/bin
+LUAROCKS_VERSION=3.3.1
 
 # Note: TRAVIS_BUILD_DIR=/home/travis/build/bluebird75/luaunit/
 LUA_HOME_DIR=$TRAVIS_BUILD_DIR/install/$LUA
-LR_HOME_DIR=$TRAVIS_BUILD_DIR/install/luarocks
+LUAROCK_HOME_DIR=$TRAVIS_BUILD_DIR/install/luarocks
+
+# setup a wide path
+export PATH=${PATH}:$HOME/.lua:${LUAROCK_HOME_DIR}/bin
+
+case $LUA in
+"lua5.1")
+    LUA_SOURCE_URL=http://www.lua.org/ftp/lua-5.1.5.tar.gz
+    LUA_BUILD_DIR=lua-5.1.5
+    LUAJIT="no"
+    LUAROCKS_CONFIGURE_ARGS=--with-lua="$LUA_HOME_DIR"
+    LUAROCKS_CONFIGURE_ARGS2=
+    ;;
+"lua5.2")
+    LUA_SOURCE_URL=http://www.lua.org/ftp/lua-5.2.4.tar.gz
+    LUA_BUILD_DIR=lua-5.2.4
+    LUAJIT="no"
+    LUAROCKS_CONFIGURE_ARGS=--with-lua="$LUA_HOME_DIR"
+    LUAROCKS_CONFIGURE_ARGS2=
+    ;;
+"lua5.3")
+    LUA_SOURCE_URL=http://www.lua.org/ftp/lua-5.3.3.tar.gz
+    LUA_BUILD_DIR=lua-5.3.3
+    LUAJIT="no"
+    LUAROCKS_CONFIGURE_ARGS=--with-lua="$LUA_HOME_DIR"
+    LUAROCKS_CONFIGURE_ARGS2=
+    ;;
+"lua5.4")
+    LUA_SOURCE_URL=http://www.lua.org/ftp/lua-5.4.0.tar.gz
+    LUA_BUILD_DIR=lua-5.4.0
+    LUAJIT="no"
+    LUAROCKS_CONFIGURE_ARGS=--with-lua="$LUA_HOME_DIR"
+    LUAROCKS_CONFIGURE_ARGS2=
+    ;;
+"luajit2.0")
+    LUA_SOURCE_URL=https://luajit.org/download/LuaJIT-2.0.5.tar.gz
+    LUA_BUILD_DIR=LuaJIT-2.0.5
+    LUAJIT="yes"
+    LUAROCKS_CONFIGURE_ARGS=--lua-suffix=jit
+    LUAROCKS_CONFIGURE_ARGS2=--with-lua-include="$LUA_HOME_DIR/include/luajit-2.0"
+    ;;
+"luajit2.1")
+    LUA_SOURCE_URL=https://luajit.org/download/LuaJIT-2.1.0-beta3.tar.gz
+    LUA_BUILD_DIR=LuaJIT-2.1.0-beta3
+    LUAJIT="yes"
+    LUAROCKS_CONFIGURE_ARGS=--lua-suffix=jit
+    LUAROCKS_CONFIGURE_ARGS2=--with-lua-include="$LUA_HOME_DIR/include/luajit-2.0"
+    ;;
+esac
 
 
 # Set the variable PLATFORM to one of the following:
@@ -44,28 +100,12 @@ fi
 
 mkdir $HOME/.lua
 
-LUAJIT="no"
-
-if [ "$PLATFORM" == "macosx" ]; then
-    if [ "$LUA" == "luajit" ]; then
-        LUAJIT="yes";
-    fi
-    if [ "$LUA" == "luajit2.0" ]; then
-        LUAJIT="yes";
-    fi
-    if [ "$LUA" == "luajit2.1" ]; then
-        LUAJIT="yes";
-    fi;
-elif [ "$(expr substr $LUA 1 6)" == "luajit" ]; then
-    LUAJIT="yes";
-fi
-
 if [ -e $LUA_HOME_DIR ]
 then
     echo ">> Using cached version of $LUA_HOME_DIR and luarocks"
     echo "Content:"
     find $LUA_HOME_DIR -print
-    find $LR_HOME_DIR -print
+    find $LUAROCK_HOME_DIR -print
 
     # remove links to other version of lua and luarocks
     rm -f $HOME/.lua/lua
@@ -81,7 +121,7 @@ then
         ln -s $LUA_HOME_DIR/bin/lua $HOME/.lua/lua
         ln -s $LUA_HOME_DIR/bin/luac $HOME/.lua/luac
     fi
-    ln -s $LR_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
+    ln -s $LUAROCK_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
 
     # installation is ok ?
     lua -v || exit 1
@@ -94,19 +134,14 @@ else # -e $LUA_HOME_DIR
 
     mkdir -p "$LUA_HOME_DIR"
 
+    echo ">> Downloading $LUA from $LUA_SOURCE_URL"
+    curl $LUA_SOURCE_URL | tar xz
+    cd $LUA_BUILD_DIR
+
+
     if [ "$LUAJIT" == "yes" ]; then
 
-        echo ">> Downloading LuaJIT"
-        if [ "$LUA" == "luajit" ]; then
-            curl --location https://github.com/LuaJIT/LuaJIT/archive/v$LUAJIT_VERSION.tar.gz | tar xz;
-        else
-            git clone https://github.com/LuaJIT/LuaJIT.git $LUAJIT_BASE;
-        fi
-
-        cd $LUAJIT_BASE
-
         if [ "$LUA" == "luajit2.1" ]; then
-            git checkout v2.1;
             # force the INSTALL_TNAME to be luajit
             perl -i -pe 's/INSTALL_TNAME=.+/INSTALL_TNAME= luajit/' Makefile
         fi
@@ -114,22 +149,10 @@ else # -e $LUA_HOME_DIR
         echo ">> Compiling LuaJIT"
         make && make install PREFIX="$LUA_HOME_DIR" || exit 1
 
-    else # $LUAJIT == "yes"
+        ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/luajit
+        ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/lua
 
-        echo "Downloading $LUA"
-        if [ "$LUA" == "lua5.1" ]; then
-            curl http://www.lua.org/ftp/lua-5.1.5.tar.gz | tar xz
-            cd lua-5.1.5;
-        elif [ "$LUA" == "lua5.2" ]; then
-            curl http://www.lua.org/ftp/lua-5.2.4.tar.gz | tar xz
-            cd lua-5.2.4;
-        elif [ "$LUA" == "lua5.3" ]; then
-            curl http://www.lua.org/ftp/lua-5.3.3.tar.gz | tar xz
-            cd lua-5.3.3;
-        elif [ "$LUA" == "lua5.4" ]; then
-            curl https://www.lua.org/ftp/lua-5.4.0.tar.gz | tar xz
-            cd lua-5.4.0;
-        fi
+    else # $LUAJIT == "yes"
 
         # adjust numerical precision if requested with LUANUMBER=float
         if [ "$LUANUMBER" == "float" ]; then
@@ -158,57 +181,34 @@ else # -e $LUA_HOME_DIR
         echo ">> Compiling $LUA"
         make $PLATFORM || exit 1
         make INSTALL_TOP="$LUA_HOME_DIR" install || exit 1
+
+        ln -s $LUA_HOME_DIR/bin/lua $HOME/.lua/lua
+        ln -s $LUA_HOME_DIR/bin/luac $HOME/.lua/luac
         
     fi # $LUAJIT == "yes"
 
     # cleanup LUA build dir
-    if [ "$LUAJIT" == "yes" ]; then
-        rm -rf $LUAJIT_BASE;
-    elif [ "$LUA" == "lua5.1" ]; then
-        rm -rf lua-5.1.5;
-    elif [ "$LUA" == "lua5.2" ]; then
-        rm -rf lua-5.2.4;
-    elif [ "$LUA" == "lua5.3" ]; then
-        rm -rf lua-5.3.2;
-    elif [ "$LUA" == "lua5.4" ]; then
-        rm -rf lua-5.4.0;
-    fi
-
-    if [ "$LUAJIT" == "yes" ]; then
-        ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/luajit
-        ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/lua
-    else
-        ln -s $LUA_HOME_DIR/bin/lua $HOME/.lua/lua
-        ln -s $LUA_HOME_DIR/bin/luac $HOME/.lua/luac
-    fi
+    rm -rf $LUA_BUILD_DIR
 
     # lua is OK ?
     echo ">> lua -v"
     lua -v || exit 1
 
     echo ">> Downloading luarocks"
-    LUAROCKS_BASE=luarocks-$LUAROCKS
+    LUAROCKS_BASE=luarocks-$LUAROCKS_VERSION
     curl --location http://luarocks.org/releases/$LUAROCKS_BASE.tar.gz | tar xz || exit 1
 
     cd $LUAROCKS_BASE
 
     echo ">> Compiling luarocks"
-    if [ "$LUA" == "luajit" ]; then
-        ./configure --lua-suffix=jit --with-lua-include="$LUA_HOME_DIR/include/luajit-2.0" --prefix="$LR_HOME_DIR";
-    elif [ "$LUA" == "luajit2.0" ]; then
-        ./configure --lua-suffix=jit --with-lua-include="$LUA_HOME_DIR/include/luajit-2.0" --prefix="$LR_HOME_DIR";
-    elif [ "$LUA" == "luajit2.1" ]; then
-        ./configure --lua-suffix=jit --with-lua-include="$LUA_HOME_DIR/include/luajit-2.1" --prefix="$LR_HOME_DIR";
-    else
-        ./configure --with-lua="$LUA_HOME_DIR" --prefix="$LR_HOME_DIR"
-    fi
+    ./configure $LUAROCKS_CONFIGURE_ARGS $LUAROCKS_CONFIGURE_ARGS2 --prefix="$LUAROCK_HOME_DIR";
 
     make build && make install || exit 1
 
     # cleanup luarocks
     rm -rf $LUAROCKS_BASE
 
-    ln -s $LR_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
+    ln -s $LUAROCK_HOME_DIR/bin/luarocks $HOME/.lua/luarocks
     echo ">> luarocks --version"
     luarocks --version || exit 1
     echo ">> luarocks install luacheck"
@@ -221,4 +221,7 @@ else # -e $LUA_HOME_DIR
 fi # -e $LUA_HOME_DIR
 
 cd $TRAVIS_BUILD_DIR
+
+# To make travis happy, we must no fail on unassigned variables so reset this option to its default value
+set +u 
 
