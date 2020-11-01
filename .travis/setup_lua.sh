@@ -13,6 +13,7 @@ LUAJIT_BASE="LuaJIT-$LUAJIT_VERSION"
 
 source .travis/platform.sh
 
+# Note: TRAVIS_BUILD_DIR=/home/travis/build/bluebird75/luaunit/
 LUA_HOME_DIR=$TRAVIS_BUILD_DIR/install/$LUA
 LR_HOME_DIR=$TRAVIS_BUILD_DIR/install/luarocks
 

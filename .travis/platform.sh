@@ -1,3 +1,7 @@
+# Set the variable PLATFORM to one of the following:
+# - linux
+# - macosx
+
 if [ -z "${PLATFORM:-}" ]; then
   PLATFORM=$TRAVIS_OS_NAME;
 fi
