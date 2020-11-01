@@ -196,8 +196,7 @@ else # -e $LUA_HOME_DIR
     lua -v 
 
     echo ">> Downloading luarocks"
-    # curl --location $LUAROCKS_URL | tar xz 
-    cat ~/luarocks-3.4.0.tar.gz | tar xz
+    curl --location $LUAROCKS_URL | tar xz 
 
     cd luarocks-$LUAROCKS_VERSION
 
