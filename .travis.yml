@@ -22,8 +22,7 @@ matrix:
       env: LUA=lua5.1 LUANUMBER=double
   # 'bleeding edge' LuaJIT may fail without breaking the build
   allow_failures:
-    - env: LUA=luajit2.0
-    - env: LUA=luajit2.1
+      env: LUA=lua5.1 LUANUMBER=double
     - env: LUA=lua5.4 LUANUMBER=double
 
 before_install:
