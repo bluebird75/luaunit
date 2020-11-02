@@ -97,6 +97,34 @@ local function osExpectedCodeExec( refExitCode, ... )
     return ret
 end
 
+local function osExpectedCodeExecWithEnv( refExitCode, envOptions, ... )
+    --[[ Wraps osExpectedCodeExec() on Windows with a /usr/bin/env emulator to be able
+    to run the same test on Windows.
+    ]]
+    if IS_UNIX or envOptions == '' then
+        local cmd = string.format(...)
+        return osExpectedCodeExec(refExitCode, envOptions .. ' ' .. cmd)
+    end
+
+    if not envOptions:match('/usr/bin/env .*') then
+        error('Invalid envOptions value: '..envOptions)
+    end
+
+    options = lu.private.strsplit(' ', envOptions)
+    print(lu.prettystr(envOptions))
+    print(lu.prettystr(options))
+    for i, opt in ipairs(options) do
+        if i ~= 1 then
+            if opt:find('=') == nil then
+                error('Invalid environment option format: '..opt)
+            end
+            env, value = unpack(lu.private.strsplit('=', opt))
+            print(env)
+            print(value)
+        end
+    end
+end
+
 local HAS_XMLLINT 
 do
     local xmllint_output_fname = 'test/has_xmllint.txt'
@@ -175,19 +203,23 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
     f:close()
 end
 
-local function check_tap_output( fileToRun, options, output, refOutput, refExitCode, envOptions )
+local function check_tap_output( fileToRun, options, output, refOutput, refExitCode, envOptions, outputArg )
     -- remove output
-    local outputArg = ''
     envOptions = envOptions or ''
-    if not envOptions:match("LUAUNIT_DEFAULT_OUTPUT[^%w]") then
+    outputArg = outputArg or ''
+
+    -- by default, if nothing is provided, we set output explicitely
+    -- but we leave the option for the caller to provide either environment and/or output arguments
+    if envOptions == '' and outputArg == '' then
         outputArg = '--output TAP'
     end
+
     if envOptions ~= '' then
         envOptions = '/usr/bin/env ' .. envOptions
     end
 
-    osExpectedCodeExec(refExitCode, '%s %s %s %s %s > %s',
-                       envOptions, LUA, fileToRun, outputArg, options, output)
+    osExpectedCodeExecWithEnv(refExitCode, envOptions, '%s %s %s %s > %s',
+                       LUA, fileToRun, outputArg, options, output)
 
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
@@ -323,16 +355,15 @@ function testTapDefault()
         check_tap_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
             'test/errFailPassTapDefault-failures.txt', 
             'test/ref/errFailPassTapDefault-failures.txt', 5 ) )
-    if IS_UNIX then
+
         -- It is non-trivial to set the environment for new command execution
         -- on Windows, so we'll only attempt it on UNIX.  These systems should
-        -- all have /usr/bin/env, and -S is pretty standard these days.
+        -- all have /usr/bin/env
         lu.assertEquals( 0,
             check_tap_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
                 'test/errFailPassTapDefault-failures.txt', 
                 'test/ref/errFailPassTapDefault-failures.txt', 5,
-                'LUAUNIT_DEFAULT_OUTPUT=TAP' ) )
-    end
+                'LUAUNIT_OUTPUT=TAP' ) )
 end
 
 function testTapVerbose()

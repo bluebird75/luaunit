@@ -3284,7 +3284,8 @@ end
         self.patternIncludeFilter = options.pattern
         self.shuffle              = options.shuffle
 
-        options.output     = options.output or os.getenv('LUAUNIT_DEFAULT_OUTPUT')
+        options.output     = options.output or os.getenv('LUAUNIT_OUTPUT')
+        options.fname      = options.fname  or os.getenv('LUAUNIT_JUNIT_FNAME')
 
         if options.output then
             if options.output:lower() == 'junit' and options.fname == nil then
