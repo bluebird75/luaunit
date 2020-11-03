@@ -1241,7 +1241,55 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
         assertFailure( lu.assertAlmostEquals, 1, 1.11, 0.1 )
         assertFailure( lu.assertAlmostEquals, -1, -1.11, 0.1 )
-        lu.assertErrorMsgContains( "must supply only number or table arguments", lu.assertAlmostEquals, -1, 1, "foobar" )
+    end
+
+    function TestLuaUnitAssertions:test_assertAlmostEqualsTables()
+        lu.assertAlmostEquals( {1}, {1}, 0.1 )
+        lu.assertAlmostEquals( {1}, {1} ) -- default margin (= M.EPS)
+        lu.assertAlmostEquals( {1}, {1}, 0 ) -- zero margin
+        assertFailure( lu.assertAlmostEquals, {0}, {lu.EPS}, 0 ) -- zero margin
+
+        lu.assertAlmostEquals( {1}, {1.1}, 0.2 )
+        lu.assertAlmostEquals( {-1}, {-1.1}, 0.2 )
+        lu.assertAlmostEquals( {0.1}, {-0.1}, 0.3 )
+        lu.assertAlmostEquals( {0.1}, {-0.1}, 0.2 )
+        lu.assertAlmostEquals( {1,   -1,   0.1,  0.1}, 
+                               {1.1, -1.1, 0.1, -0.1}, 0.3 )
+
+        -- Due to rounding errors, these user-supplied margins are too small.
+        -- The tests should respect them, and so are required to fail.
+        assertFailure( lu.assertAlmostEquals, {1}, {1.1}, 0.1 )
+        assertFailure( lu.assertAlmostEquals, {-1}, {-1.1}, 0.1 )
+        -- Check that an explicit zero margin gets respected too
+        assertFailure( lu.assertAlmostEquals, {1.1 - 1}, {0.1}, 0 )
+        assertFailure( lu.assertAlmostEquals, {-1 - (-1.1)}, {0.1}, 0 )
+        -- Tests pass when adding M.EPS, either explicitly or implicitly
+        lu.assertAlmostEquals( 1, 1.1, 0.1 + lu.EPS)
+        lu.assertAlmostEquals( 1.1 - 1, 0.1 )
+        lu.assertAlmostEquals( -1, -1.1, 0.1 + lu.EPS )
+        lu.assertAlmostEquals( -1 - (-1.1), 0.1 )
+        lu.assertAlmostEquals( {  1, 1.1-1, -1}, 
+                               {1.1,   0.1, -1.1}, 
+                            0.1 + lu.EPS )
+
+        -- tables with more diversity
+        lu.assertAlmostEquals( {1  , 'abc', nil, false, true, {1,2} }, 
+                               {1.1, 'abc', nil, false, true, {1,2} },
+                               0.3)
+
+        lu.assertAlmostEquals( {1  , 'abc', {  2,   3}, false, true, {1,2} }, 
+                               {1.1, 'abc', {2.1, 3.2}, false, true, {1,2} },
+                               0.3)
+
+
+        -- difference on something else than numeric comparison
+        assertFailure( lu.assertAlmostEquals, {1, 'abc'}, {1, 'def'}, 0.1 )
+        assertFailure( lu.assertAlmostEquals, {1, false}, {1, true}, 0.1 )
+        assertFailure( lu.assertAlmostEquals, {1, 'abc'}, {1, nil}, 0.1 )
+    end
+
+    function TestLuaUnitAssertions:test_assertAlmostEqualsErrors()
+        lu.assertErrorMsgContains( "margin must be a number", lu.assertAlmostEquals, -1, 1, "foobar" )
         lu.assertErrorMsgContains( "must supply only number or table arguments", lu.assertAlmostEquals, -1, nil, 0 )
         lu.assertErrorMsgContains( "must supply only number or table arguments", lu.assertAlmostEquals, nil, nil, 0 )
         lu.assertErrorMsgContains( "must supply only number or table arguments", lu.assertAlmostEquals, '123', '345', 0 )

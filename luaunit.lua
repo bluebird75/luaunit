@@ -606,7 +606,7 @@ function M.adjust_err_msg_with_iter( err_msg, iter_msg )
     return err_msg, M.NodeStatus.ERROR
 end
 
-local function tryMismatchFormatting( table_a, table_b, doDeepAnalysis )
+local function tryMismatchFormatting( table_a, table_b, doDeepAnalysis, margin )
     --[[
     Prepares a nice error message when comparing tables, performing a deeper 
     analysis.
@@ -617,6 +617,7 @@ local function tryMismatchFormatting( table_a, table_b, doDeepAnalysis )
         M.DEFAULT_DEEP_ANALYSIS: (the default if not specified) perform deep analysis only for big lists and big dictionnaries
         M.FORCE_DEEP_ANALYSIS  : always perform deep analysis
         M.DISABLE_DEEP_ANALYSIS: never perform deep analysis
+    * margin: supplied only for almost equality
 
     Returns: {success, result}
     * success: false if deep analysis could not be performed 
@@ -660,7 +661,7 @@ local function tryMismatchFormatting( table_a, table_b, doDeepAnalysis )
     end
 
     if isPureList then
-        return M.private.mismatchFormattingPureList( table_a, table_b )
+        return M.private.mismatchFormattingPureList( table_a, table_b, margin )
     else
         -- only work on mapping for the moment
         -- return M.private.mismatchFormattingMapping( table_a, table_b, doDeepAnalysis )
@@ -798,10 +799,12 @@ local function mismatchFormattingMapping( table_a, table_b, doDeepAnalysis )
 end
 M.private.mismatchFormattingMapping = mismatchFormattingMapping
 
-local function mismatchFormattingPureList( table_a, table_b )
+local function mismatchFormattingPureList( table_a, table_b, margin )
     --[[
     Prepares a nice error message when comparing tables which are lists, performing a deeper 
     analysis.
+
+    margin is supplied only for almost equality
 
     Returns: {success, result}
     * success: false if deep analysis could not be performed 
@@ -819,7 +822,7 @@ local function mismatchFormattingPureList( table_a, table_b )
 
     local commonUntil = shortest
     for i = 1, shortest do
-        if not is_equal(table_a[i], table_b[i]) then
+        if not is_equal(table_a[i], table_b[i], nil, margin) then
             commonUntil = i - 1
             break
         end
@@ -827,7 +830,7 @@ local function mismatchFormattingPureList( table_a, table_b )
 
     local commonBackTo = shortest - 1
     for i = 0, shortest - 1 do
-        if not is_equal(table_a[len_a-i], table_b[len_b-i]) then
+        if not is_equal(table_a[len_a-i], table_b[len_b-i], nil, margin) then
             commonBackTo = i - 1
             break
         end
@@ -853,7 +856,7 @@ local function mismatchFormattingPureList( table_a, table_b )
 
     local function insertABValue(ai, bi)
         bi = bi or ai
-        if is_equal( table_a[ai], table_b[bi]) then
+        if is_equal( table_a[ai], table_b[bi], nil, margin) then
             return extendWithStrFmt( result, '  = A[%d], B[%d]: %s', ai, bi, prettystr(table_a[ai]) )
         else
             extendWithStrFmt( result, '  - A[%d]: %s', ai, prettystr(table_a[ai]))
@@ -1173,19 +1176,33 @@ local _recursion_cache_MT = {
     }
 }
 
-local function _is_table_equals(actual, expected, cycleDetectTable)
+local function _is_table_equals(actual, expected, cycleDetectTable, marginForAlmostEqual)
+    --[[Returns true if both table are equal.
+
+    If argument marginForAlmostEqual is suppied, number comparison is done using alomstEqual instead 
+    of strict equality.
+
+    cycleDetectTable is an internal argument used during recursion on tables.
+    ]]
+    --print('_is_table_equals( \n     '..prettystr(actual)..'\n      , '..prettystr(expected)..
+    --                        '\n     , '..prettystr(cycleDetectTable)..'\n    , '..prettystr(marginForAlmostEqual)..' )')
+
     local type_a, type_e = type(actual), type(expected)
 
     if type_a ~= type_e then
         return false -- different types won't match
     end
 
-    if type_a ~= 'table' then
-        -- other typtes compare directly
+    if type_a == 'number' then
+        if marginForAlmostEqual ~= nil then
+            return M.almostEquals(actual, expected, marginForAlmostEqual)
+        else
+            return actual == expected
+        end
+    elseif type_a ~= 'table' then
+        -- other types compare directly
         return actual == expected
     end
-
-    -- print('_is_table_equals( \n     '..prettystr(actual)..'\n      , '..prettystr(expected)..'\n     , '..prettystr(recursions)..' \n )')
 
     cycleDetectTable = cycleDetectTable or { actual={}, expected={} }
     if cycleDetectTable.actual[ actual ] then
@@ -1217,7 +1234,7 @@ local function _is_table_equals(actual, expected, cycleDetectTable)
     local actualKeysMatched = {}
     for k, v in pairs(actual) do
         actualKeysMatched[k] = true -- Keep track of matched keys
-        if not _is_table_equals(v, expected[k], cycleDetectTable) then
+        if not _is_table_equals(v, expected[k], cycleDetectTable, marginForAlmostEqual) then
             -- table differs on this key
             -- clear the cycle detection before returning
             cycleDetectTable.actual[ actual ] = nil
@@ -1275,7 +1292,8 @@ end
 --
 ----------------------------------------------------------------
 
-local function errorMsgEquality(actual, expected, doDeepAnalysis)
+local function errorMsgEquality(actual, expected, doDeepAnalysis, margin)
+    -- margin is supplied only for almost equal verification
 
     if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
@@ -1283,10 +1301,13 @@ local function errorMsgEquality(actual, expected, doDeepAnalysis)
     if type(expected) == 'string' or type(expected) == 'table' then
         local strExpected, strActual = prettystrPairs(expected, actual)
         local result = string.format("expected: %s\nactual: %s", strExpected, strActual)
+        if margin then
+            result = result .. '\nwere not equal by the margin of: '..prettystr(margin)
+        end
 
         -- extend with mismatch analysis if possible:
         local success, mismatchResult
-        success, mismatchResult = tryMismatchFormatting( actual, expected, doDeepAnalysis )
+        success, mismatchResult = tryMismatchFormatting( actual, expected, doDeepAnalysis, margin )
         if success then 
             result = table.concat( { result, mismatchResult }, '\n' )
         end
@@ -1378,30 +1399,28 @@ end
 function M.assertAlmostEquals( actual, expected, margin, extra_msg_or_nil )
     -- check that two floats are close by margin
     margin = margin or M.EPS
+    if type(margin) ~= 'number' then
+        error_fmt(2, 'almostEquals: margin must be a number, not %s', prettystr(margin))
+    end
 
     if type(actual) == 'table' and type(expected) == 'table' then
         -- handle almost equals for table
-    else 
-        if type(actual) == 'number' and type(expected) == 'number' and type(margin) == 'number' then
-            if not M.almostEquals(actual, expected, margin) then
-                if not M.ORDER_ACTUAL_EXPECTED then
-                    expected, actual = actual, expected
-                end
-                local delta = math.abs(actual - expected) 
-                if type(actual) == 'number' and type(expected) == 'number' and type(margin) == 'number' then
-                    fail_fmt(2, extra_msg_or_nil, 'Values are not almost equal\n' ..
-                                'Actual: %s, expected: %s, delta %s above margin of %s',
-                                actual, expected, delta, margin)
-                else
-                    fail_fmt(2, extra_msg_or_nil, 'Values are not almost equal\n' ..
-                                'Actual: %s, expected: %s, delta %s above margin of %s',
-                                actual, expected, delta, margin)
-                end
-            end
-        else
-            error_fmt(3, 'almostEquals: must supply only number or table arguments.\nArguments supplied: %s, %s, %s',
-                prettystr(actual), prettystr(expected), prettystr(margin))
+        if not _is_table_equals(actual, expected, nil, margin) then
+            failure( errorMsgEquality(actual, expected, doDeepAnalysis, margin), extra_msg_or_nil, 2 )
         end
+    elseif type(actual) == 'number' and type(expected) == 'number' and type(margin) == 'number' then
+        if not M.almostEquals(actual, expected, margin) then
+            if not M.ORDER_ACTUAL_EXPECTED then
+                expected, actual = actual, expected
+            end
+            local delta = math.abs(actual - expected) 
+            fail_fmt(2, extra_msg_or_nil, 'Values are not almost equal\n' ..
+                        'Actual: %s, expected: %s, delta %s above margin of %s',
+                        actual, expected, delta, margin)
+        end
+    else
+        error_fmt(3, 'almostEquals: must supply only number or table arguments.\nArguments supplied: %s, %s, %s',
+            prettystr(actual), prettystr(expected), prettystr(margin))
     end
 end
 
