@@ -1378,14 +1378,30 @@ end
 function M.assertAlmostEquals( actual, expected, margin, extra_msg_or_nil )
     -- check that two floats are close by margin
     margin = margin or M.EPS
-    if not M.almostEquals(actual, expected, margin) then
-        if not M.ORDER_ACTUAL_EXPECTED then
-            expected, actual = actual, expected
+
+    if type(actual) == 'table' and type(expected) == 'table' then
+        -- handle almost equals for table
+    else 
+        if type(actual) == 'number' and type(expected) == 'number' and type(margin) == 'number' then
+            if not M.almostEquals(actual, expected, margin) then
+                if not M.ORDER_ACTUAL_EXPECTED then
+                    expected, actual = actual, expected
+                end
+                local delta = math.abs(actual - expected) 
+                if type(actual) == 'number' and type(expected) == 'number' and type(margin) == 'number' then
+                    fail_fmt(2, extra_msg_or_nil, 'Values are not almost equal\n' ..
+                                'Actual: %s, expected: %s, delta %s above margin of %s',
+                                actual, expected, delta, margin)
+                else
+                    fail_fmt(2, extra_msg_or_nil, 'Values are not almost equal\n' ..
+                                'Actual: %s, expected: %s, delta %s above margin of %s',
+                                actual, expected, delta, margin)
+                end
+            end
+        else
+            error_fmt(3, 'almostEquals: must supply only number or table arguments.\nArguments supplied: %s, %s, %s',
+                prettystr(actual), prettystr(expected), prettystr(margin))
         end
-        local delta = math.abs(actual - expected) 
-        fail_fmt(2, extra_msg_or_nil, 'Values are not almost equal\n' ..
-                    'Actual: %s, expected: %s, delta %s above margin of %s',
-                    actual, expected, delta, margin)
     end
 end
 

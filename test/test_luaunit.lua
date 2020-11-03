@@ -1241,9 +1241,10 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
         assertFailure( lu.assertAlmostEquals, 1, 1.11, 0.1 )
         assertFailure( lu.assertAlmostEquals, -1, -1.11, 0.1 )
-        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, -1, 1, "foobar" )
-        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, -1, nil, 0 )
-        lu.assertErrorMsgContains( "must supply only number arguments", lu.assertAlmostEquals, nil, 1, 0 )
+        lu.assertErrorMsgContains( "must supply only number or table arguments", lu.assertAlmostEquals, -1, 1, "foobar" )
+        lu.assertErrorMsgContains( "must supply only number or table arguments", lu.assertAlmostEquals, -1, nil, 0 )
+        lu.assertErrorMsgContains( "must supply only number or table arguments", lu.assertAlmostEquals, nil, nil, 0 )
+        lu.assertErrorMsgContains( "must supply only number or table arguments", lu.assertAlmostEquals, '123', '345', 0 )
         lu.assertErrorMsgContains( "margin must not be negative", lu.assertAlmostEquals, 1, 1.1, -0.1 )
     end
 
