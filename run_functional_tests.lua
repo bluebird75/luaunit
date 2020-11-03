@@ -246,12 +246,25 @@ local function check_nil_output( fileToRun, options, output, refOutput, refExitC
     return 0
 end
 
-local function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput, refOutput, refXmlOutput, refExitCode )
+local function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintOutput, refOutput, refXmlOutput, refExitCode, envOptions, outputArg )
     local retcode = 0
 
+    envOptions = envOptions or ''
+    outputArg = outputArg or ''
+
+    -- by default, if nothing is provided, we set output explicitely
+    -- but we leave the option for the caller to provide either environment and/or output arguments
+    if envOptions == '' and outputArg == '' then
+        outputArg = '--output junit --name '..xmlOutput
+    end
+
+    if envOptions ~= '' then
+        envOptions = '/usr/bin/env ' .. envOptions
+    end
+
     -- remove output
-    osExpectedCodeExec(refExitCode, '%s %s %s --output junit --name %s > %s',
-                       LUA, fileToRun, options, xmlOutput, output)
+    osExpectedCodeExec(refExitCode, '%s %s %s %s %s > %s',
+                       envOptions, LUA, fileToRun, outputArg, options, output)
 
     adjustFile( output, refOutput, '# XML output to (.*)')
     adjustFile( output, refOutput, '# Started on (.*)')
@@ -477,6 +490,18 @@ function testXmlDefault()
         check_xml_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
             'test/errFailPassXmlDefault-failures.txt', 'test/errFailPassXmlDefault-failures.xml', 'test/errFailPassXmllintDefault.xml',
             'test/ref/errFailPassXmlDefault-failures.txt', 'test/ref/errFailPassXmlDefault-failures.xml', 5 ) )
+
+    if IS_UNIX then
+        -- It is non-trivial to set the environment for new command execution
+        -- on Windows, so we'll only attempt it on UNIX.  These systems should
+        -- all have /usr/bin/env
+        lu.assertEquals( 0,
+            check_xml_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
+                'test/errFailPassXmlDefault-failures.txt', 'test/errFailPassXmlDefault-failures.xml', 'test/errFailPassXmllintDefault.xml',
+                'test/ref/errFailPassXmlDefault-failures.txt', 'test/ref/errFailPassXmlDefault-failures.xml', 5,
+                'LUAUNIT_OUTPUT=JUNIT LUAUNIT_JUNIT_FNAME=test/ref/errFailPassXmlDefault-failures.xml', '' ) )
+    end
+
 end
 
 function testXmlVerbose()
