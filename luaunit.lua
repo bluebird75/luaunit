@@ -97,8 +97,6 @@ Options:
                               TestClass or TestClass.testMethod
 ]]
 
-local is_equal -- defined here to allow calling from mismatchFormattingPureList
-
 ----------------------------------------------------------------
 --
 --                 general utility functions
@@ -812,6 +810,7 @@ local function mismatchFormattingPureList( table_a, table_b, margin )
     * result: if success is true, a multi-line string with deep analysis of the two lists
     ]]
     local result, descrTa, descrTb = {}, getTaTbDescr()
+    local is_equal = M.private._is_table_equals
 
     local len_a, len_b, refa, refb = #table_a, #table_b, '', ''
     if M.PRINT_TABLE_REF_IN_ERROR_MSG then
@@ -855,6 +854,7 @@ local function mismatchFormattingPureList( table_a, table_b, margin )
     end
 
     local function insertABValue(ai, bi)
+        local is_equal = M.private._is_table_equals
         bi = bi or ai
         if is_equal( table_a[ai], table_b[bi], nil, margin) then
             return extendWithStrFmt( result, '  = A[%d], B[%d]: %s', ai, bi, prettystr(table_a[ai]) )
@@ -1098,6 +1098,7 @@ end
 M.private._table_tostring_format_result = _table_tostring_format_result -- prettystr_sub() needs it
 
 local function table_findkeyof(t, element)
+    local is_equal = M.private._is_table_equals
     -- Return the key k of the given element in table t, so that t[k] == element
     -- (or `nil` if element is not present within t). Note that we use our
     -- 'general' is_equal comparison for matching, so this function should
@@ -1260,7 +1261,6 @@ local function _is_table_equals(actual, expected, cycleDetectTable, marginForAlm
     return true
 end
 M.private._is_table_equals = _is_table_equals
-is_equal = _is_table_equals
 
 local function failure(main_msg, extra_msg_or_nil, level)
     -- raise an error indicating a test failure
