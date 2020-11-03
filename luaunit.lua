@@ -810,7 +810,6 @@ local function mismatchFormattingPureList( table_a, table_b, margin )
     * result: if success is true, a multi-line string with deep analysis of the two lists
     ]]
     local result, descrTa, descrTb = {}, getTaTbDescr()
-    local is_equal = M.private.is_table_equals
 
     local len_a, len_b, refa, refb = #table_a, #table_b, '', ''
     if M.PRINT_TABLE_REF_IN_ERROR_MSG then
@@ -821,7 +820,7 @@ local function mismatchFormattingPureList( table_a, table_b, margin )
 
     local commonUntil = shortest
     for i = 1, shortest do
-        if not is_equal(table_a[i], table_b[i], margin) then
+        if not M.private.is_table_equals(table_a[i], table_b[i], margin) then
             commonUntil = i - 1
             break
         end
@@ -829,7 +828,7 @@ local function mismatchFormattingPureList( table_a, table_b, margin )
 
     local commonBackTo = shortest - 1
     for i = 0, shortest - 1 do
-        if not is_equal(table_a[len_a-i], table_b[len_b-i], margin) then
+        if not M.private.is_table_equals(table_a[len_a-i], table_b[len_b-i], margin) then
             commonBackTo = i - 1
             break
         end
@@ -854,9 +853,8 @@ local function mismatchFormattingPureList( table_a, table_b, margin )
     end
 
     local function insertABValue(ai, bi)
-        local is_equal = M.private.is_table_equals
         bi = bi or ai
-        if is_equal( table_a[ai], table_b[bi], margin) then
+        if M.private.is_table_equals( table_a[ai], table_b[bi], margin) then
             return extendWithStrFmt( result, '  = A[%d], B[%d]: %s', ai, bi, prettystr(table_a[ai]) )
         else
             extendWithStrFmt( result, '  - A[%d]: %s', ai, prettystr(table_a[ai]))
@@ -1098,14 +1096,13 @@ end
 M.private._table_tostring_format_result = _table_tostring_format_result -- prettystr_sub() needs it
 
 local function table_findkeyof(t, element)
-    local is_equal = M.private.is_table_equals
     -- Return the key k of the given element in table t, so that t[k] == element
     -- (or `nil` if element is not present within t). Note that we use our
     -- 'general' is_equal comparison for matching, so this function should
     -- handle table-type elements gracefully and consistently.
     if type(t) == "table" then
         for k, v in pairs(t) do
-            if is_equal(v, element) then
+            if M.private.is_table_equals(v, element) then
                 return k
             end
         end
