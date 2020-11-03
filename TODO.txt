@@ -9,13 +9,11 @@
 TODO Future:
 ============
 - run a full modules with a function
-- assertAlmostEquals can check lists and more complex structures
 - build lua with ASAN, memory sanitizer and so on on travis before running it
 - ensure that assert string functions like assertStr, strcontains, etc reject incorrect type with a correct error message
 - pretty function formatting: https://github.com/luarocks/luarocks/blob/master/src/luarocks/core/util.lua
 - platform detection:
 - document prettystr
-- add the ability to count the number of assertions that should have been executed in the test
 - validate output with ignored tests (0 failures or some failures)
 - parametrize tests
 - coloured output
@@ -44,10 +42,10 @@ TODO Future:
 
 Version 3.4 (future):
 ============
-- review the os environement stuff, probably two tests are needed => verify priority when both are specified
 
 Planned:
 --------
+- update documentation about env variables to control luaunit
 - update documentation about setOutputType() and how to run list of test classes
 - global setup / teardown
 - class setup / teardown
@@ -66,6 +64,8 @@ Planned:
 
 Already done:
 -------------
+- assertAlmostEquals can check lists and more complex structures
+- can choose test output type through environment variables LUAUNIT_OUTPUT
 - setOutputType() also accepts the xml filename when using the format junit
 - simplify printing of table-info in cycles
 - allow to skip tests
