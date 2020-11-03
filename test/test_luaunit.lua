@@ -1256,6 +1256,12 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertAlmostEquals( {1,   -1,   0.1,  0.1}, 
                                {1.1, -1.1, 0.1, -0.1}, 0.3 )
 
+        lu.assertAlmostEquals( {a=1,   b=-1,   c=0.1,  d=0.1}, 
+                               {a=1.1, b=-1.1, c=0.1, d=-0.1}, 0.3 )
+
+        lu.assertAlmostEquals( {0, {a=1,   b=-1,   c=0.1,  d=0.1}}, 
+                               {0, {a=1.1, b=-1.1, c=0.1, d=-0.1}}, 0.3 )
+
         -- Due to rounding errors, these user-supplied margins are too small.
         -- The tests should respect them, and so are required to fail.
         assertFailure( lu.assertAlmostEquals, {1}, {1.1}, 0.1 )
