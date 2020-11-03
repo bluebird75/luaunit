@@ -810,7 +810,7 @@ local function mismatchFormattingPureList( table_a, table_b, margin )
     * result: if success is true, a multi-line string with deep analysis of the two lists
     ]]
     local result, descrTa, descrTb = {}, getTaTbDescr()
-    local is_equal = M.private._is_table_equals
+    local is_equal = M.private.is_table_equals
 
     local len_a, len_b, refa, refb = #table_a, #table_b, '', ''
     if M.PRINT_TABLE_REF_IN_ERROR_MSG then
@@ -821,7 +821,7 @@ local function mismatchFormattingPureList( table_a, table_b, margin )
 
     local commonUntil = shortest
     for i = 1, shortest do
-        if not is_equal(table_a[i], table_b[i], nil, margin) then
+        if not is_equal(table_a[i], table_b[i], margin) then
             commonUntil = i - 1
             break
         end
@@ -829,7 +829,7 @@ local function mismatchFormattingPureList( table_a, table_b, margin )
 
     local commonBackTo = shortest - 1
     for i = 0, shortest - 1 do
-        if not is_equal(table_a[len_a-i], table_b[len_b-i], nil, margin) then
+        if not is_equal(table_a[len_a-i], table_b[len_b-i], margin) then
             commonBackTo = i - 1
             break
         end
@@ -854,9 +854,9 @@ local function mismatchFormattingPureList( table_a, table_b, margin )
     end
 
     local function insertABValue(ai, bi)
-        local is_equal = M.private._is_table_equals
+        local is_equal = M.private.is_table_equals
         bi = bi or ai
-        if is_equal( table_a[ai], table_b[bi], nil, margin) then
+        if is_equal( table_a[ai], table_b[bi], margin) then
             return extendWithStrFmt( result, '  = A[%d], B[%d]: %s', ai, bi, prettystr(table_a[ai]) )
         else
             extendWithStrFmt( result, '  - A[%d]: %s', ai, prettystr(table_a[ai]))
@@ -1098,7 +1098,7 @@ end
 M.private._table_tostring_format_result = _table_tostring_format_result -- prettystr_sub() needs it
 
 local function table_findkeyof(t, element)
-    local is_equal = M.private._is_table_equals
+    local is_equal = M.private.is_table_equals
     -- Return the key k of the given element in table t, so that t[k] == element
     -- (or `nil` if element is not present within t). Note that we use our
     -- 'general' is_equal comparison for matching, so this function should
@@ -1275,6 +1275,11 @@ local function failure(main_msg, extra_msg_or_nil, level)
     error(M.FAILURE_PREFIX .. msg, (level or 1) + 1 + M.STRIP_EXTRA_ENTRIES_IN_STACK_TRACE)
 end
 
+local function is_table_equals(actual, expected, marginForAlmostEqual)
+    return _is_table_equals(actual, expected, nil, marginForAlmostEqual)
+end
+M.private.is_table_equals = is_table_equals
+
 local function fail_fmt(level, extra_msg_or_nil, ...)
      -- failure with printf-style formatted message and given error level
     failure(string.format(...), extra_msg_or_nil, (level or 1) + 1)
@@ -1375,7 +1380,7 @@ end
 
 function M.assertEquals(actual, expected, extra_msg_or_nil, doDeepAnalysis)
     if type(actual) == 'table' and type(expected) == 'table' then
-        if not _is_table_equals(actual, expected) then
+        if not is_table_equals(actual, expected) then
             failure( errorMsgEquality(actual, expected, doDeepAnalysis), extra_msg_or_nil, 2 )
         end
     elseif type(actual) ~= type(expected) then
@@ -1405,7 +1410,7 @@ function M.assertAlmostEquals( actual, expected, margin, extra_msg_or_nil )
 
     if type(actual) == 'table' and type(expected) == 'table' then
         -- handle almost equals for table
-        if not _is_table_equals(actual, expected, nil, margin) then
+        if not is_table_equals(actual, expected, margin) then
             failure( errorMsgEquality(actual, expected, doDeepAnalysis, margin), extra_msg_or_nil, 2 )
         end
     elseif type(actual) == 'number' and type(expected) == 'number' and type(margin) == 'number' then
@@ -1430,7 +1435,7 @@ function M.assertNotEquals(actual, expected, extra_msg_or_nil)
     end
 
     if type(actual) == 'table' and type(expected) == 'table' then
-        if not _is_table_equals(actual, expected) then
+        if not is_table_equals(actual, expected) then
             return
         end
     elseif actual ~= expected then
