@@ -344,7 +344,13 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
     function TestLuaUnitUtilities:test_prettystr_numbers()
         lu.assertEquals( lu.prettystr( 1 ), "1" )
-        lu.assertEquals( lu.prettystr( 1.0 ), "1" )
+        if lu._LUAVERSION < 'Lua 5.4' then
+            lu.assertEquals( lu.prettystr( 1 ), "1" )
+            lu.assertEquals( lu.prettystr( 1.0 ), "1" )
+        else
+            lu.assertEquals( lu.prettystr( 1 ), "1" )
+            lu.assertEquals( lu.prettystr( 1.0 ), "1.0" )
+        end
         lu.assertEquals( lu.prettystr( 1.1 ), "1.1" )
         lu.assertEquals( lu.prettystr( 1/0 ), "#Inf" )
         lu.assertEquals( lu.prettystr( -1/0 ), "-#Inf" )
@@ -424,11 +430,6 @@ bar"=1}]] )
         y=2,
     33
 }]] )
-
-        local t6 = {}
-        local function t6_tostring() end
-        setmetatable( t6, { __tostring = t6_tostring } )
-        lu.assertEquals( lu.prettystr( t6 ), '<invalid tostring() result: "nil" >')
     end
 
     function TestLuaUnitUtilities:test_prettystr_adv_tables()
@@ -1758,7 +1759,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         -- this is verified with the value 1/-0
         -- lua 5.1, 5.3: 1/-0 = inf
         -- lua 5.2, luajit: 1/-0 = -inf
-        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.3" then
+        if lu._LUAVERSION ~= "Lua 5.2" then
             lu.assertIsPlusInf( 1/-0 ) 
         else
             assertFailure( lu.assertIsPlusInf, 1/-0 )
@@ -1792,7 +1793,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         -- this is verified with the value 1/-0
         -- lua 5.1, 5.3: 1/-0 = inf
         -- lua 5.2, luajit: 1/-0 = -inf
-        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.3" then
+        if lu._LUAVERSION ~= "Lua 5.2" then
             assertFailure( lu.assertIsMinusInf, 1/-0 )
         else
             lu.assertIsMinusInf( 1/-0 ) 
@@ -1969,7 +1970,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertIsPlusZero( 1/inf )    
 
         -- behavior with -0 is lua version dependant, see note above
-        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.3" then
+        if lu._LUAVERSION ~= "Lua 5.2" then
             lu.assertIsPlusZero( -0 )
         else
             assertFailure( lu.assertIsPlusZero, -0 )
@@ -2000,7 +2001,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure( lu.assertNotIsPlusZero, 1/inf )    
 
         -- behavior with -0 is lua version dependant, see note above
-        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.3" then
+        if lu._LUAVERSION ~= "Lua 5.2" then
             assertFailure( lu.assertNotIsPlusZero, -0 )
         else
             lu.assertNotIsPlusZero( -0 )
@@ -2031,7 +2032,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertIsMinusZero( 1/-inf )    
         
         -- behavior with -0 is lua version dependant, see note above
-        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.3" then
+        if lu._LUAVERSION ~= "Lua 5.2" then
             assertFailure( lu.assertIsMinusZero, -0 )
         else
             lu.assertIsMinusZero( -0 )
@@ -2060,7 +2061,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure( lu.assertNotIsMinusZero, 1/-inf )    
         
         -- behavior with -0 is lua version dependant, see note above
-        if lu._LUAVERSION == "Lua 5.1" or lu._LUAVERSION == "Lua 5.3" then
+        if lu._LUAVERSION ~= "Lua 5.2" then
             lu.assertNotIsMinusZero( -0 )
         else
             assertFailure( lu.assertNotIsMinusZero, -0 )
@@ -2730,7 +2731,7 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
         assertFailureEquals( 'expected: "exp"\nactual: "act"', lu.assertEquals, 'act', 'exp' )
         assertFailureEquals( 'expected: \n"exp\npxe"\nactual: \n"act\ntca"', lu.assertEquals, 'act\ntca', 'exp\npxe' )
         assertFailureEquals( 'expected: true, actual: false', lu.assertEquals, false, true )
-        assertFailureEquals( 'expected: 1.2, actual: 1', lu.assertEquals, 1.0, 1.2)
+        assertFailureEquals( 'expected: 1.2, actual: 1', lu.assertEquals, 1, 1.2)
         assertFailureMatches( 'expected: {1, 2}\nactual: {2, 1}', lu.assertEquals, {2,1}, {1,2} )
         assertFailureMatches( 'expected: {one=1, two=2}\nactual: {3, 2, 1}', lu.assertEquals, {3,2,1}, {one=1,two=2} )
         assertFailureEquals( 'expected: 2, actual: nil', lu.assertEquals, nil, 2 )

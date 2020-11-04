@@ -24,7 +24,6 @@ matrix:
   allow_failures:
     - os: osx
       env: LUA=lua5.1 LUANUMBER=double
-    - env: LUA=lua5.4 LUANUMBER=double
 
 before_install:
   - source .travis/setup_lua.sh

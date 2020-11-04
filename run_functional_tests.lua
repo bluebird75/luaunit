@@ -195,7 +195,7 @@ local function check_tap_output( fileToRun, options, output, refOutput, refExitC
 
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
-    if _VERSION == 'Lua 5.3' then
+    if _VERSION ~= 'Lua 5.2' and _VERSION ~= 'Lua 5.1' then
         -- For Lua 5.3: stack trace uses "method" instead of "function"
         adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true )
     end
@@ -222,7 +222,7 @@ local function check_text_output( fileToRun, options, output, refOutput, refExit
     adjustFile( output, refOutput, 'function: (0?x?[%x]+)', true )
     adjustFile( output, refOutput, '<table (01%-0?x?[%x]+)>', true )
     adjustFile( output, refOutput, '<table (02%-0?x?[%x]+)>', true )
-    if _VERSION == 'Lua 5.3' then
+    if _VERSION ~= 'Lua 5.2' and _VERSION ~= 'Lua 5.1' then
         -- For Lua 5.3: stack trace uses "method" instead of "function"
         adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true )
     end
@@ -274,7 +274,7 @@ local function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintO
     -- For Lua 5.1 / 5.2 compatibility
     adjustFile( xmlOutput, refXmlOutput, '.*<property name="Lua Version" value="(Lua 5%..)"/>')
 
-    if _VERSION == 'Lua 5.3' then
+    if _VERSION ~= 'Lua 5.2' and _VERSION ~= 'Lua 5.1' then
         -- For Lua 5.3: stack trace uses "method" instead of "function"
         adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true )
         adjustFile( xmlOutput, refXmlOutput, '.*%.lua:%d+: in (%S*) .*', true )
