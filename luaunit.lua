@@ -2462,7 +2462,8 @@ end
 M.LuaUnit = {
     outputType = TextOutput,
     verbosity = M.VERBOSITY_DEFAULT,
-    __class__ = 'LuaUnit'
+    __class__ = 'LuaUnit',
+    instances = {}
 }
 local LuaUnit_MT = { __index = M.LuaUnit }
 
@@ -2471,7 +2472,8 @@ if EXPORT_ASSERT_TO_GLOBALS then
 end
 
     function M.LuaUnit.new()
-        return setmetatable( {}, LuaUnit_MT )
+        newInstance = setmetatable( {}, LuaUnit_MT )
+        return newInstance
     end
 
     -----------------[[ Utility methods ]]---------------------
@@ -3022,6 +3024,7 @@ end
         -- When executing a class method, all parameters must be set
 
         if type(methodInstance) ~= 'function' then
+            self:unregisterSuite()
             error( tostring(methodName)..' must be a function, not '..type(methodInstance))
         end
 
@@ -3250,15 +3253,18 @@ end
                 instance = _G[instanceName]
 
                 if instance == nil then
+                    self:unregisterSuite()
                     error( "No such name in global space: "..instanceName )
                 end
 
                 if type(instance) ~= 'table' then
+                    self:unregisterSuite()
                     error( 'Instance of '..instanceName..' must be a table, not '..type(instance))
                 end
 
                 local methodInstance = instance[methodName]
                 if methodInstance == nil then
+                    self:unregisterSuite()
                     error( "Could not find method in class "..tostring(className).." for method "..tostring(methodName) )
                 end
 
@@ -3269,10 +3275,12 @@ end
             end
 
             if instance == nil then
+                self:unregisterSuite()
                 error( "No such name in global space: "..instanceName )
             end
 
             if (type(instance) ~= 'table' and type(instance) ~= 'function') then
+                self:unregisterSuite()
                 error( 'Name must match a function or a table: '..instanceName )
             end
 
@@ -3290,18 +3298,40 @@ end
         --
         -- If arguments are passed, they must be strings of the class names
         -- that you want to run or generic command line arguments (-o, -p, -v, ...)
-
         local runner = M.LuaUnit.new()
         return runner:runSuite(...)
     end
 
-    function M.LuaUnit:runSuite( ... )
+    function M.LuaUnit:registerSuite()
+        -- register the current instance into our global array of instances
+        -- print('-> Register suite')
+        M.LuaUnit.instances[ #M.LuaUnit.instances+1 ] = self
+    end
 
+    function M.LuaUnit:unregisterSuite()
+        -- print('<- Unregister suite')
+        -- remove our current instqances from the global array of instances
+        local instanceIdx = nil
+        for i, instance in ipairs(M.LuaUnit.instances) do
+            if instance == self then
+                instanceIdx = i
+                break
+            end
+        end
+
+        if instanceIdx ~= nil then
+            table.remove(M.LuaUnit.instances, instanceIdx)
+            -- print('Unregister done')
+        end
+
+    end
+
+    function M.LuaUnit:runSuite( ... )
         local args = {...}
         if type(args[1]) == 'table' and args[1].__class__ == 'LuaUnit' then
             -- run was called with the syntax M.LuaUnit:runSuite()
             -- we support both M.LuaUnit.run() and M.LuaUnit:run()
-            -- strip out the first argument
+            -- strip out the first argument self to make it a command-line argument list
             table.remove(args,1)
         end
 
@@ -3332,7 +3362,9 @@ end
             pcall_or_abort(self.setOutputType, self, options.output, options.fname)
         end
 
+        self:registerSuite()
         self:runSuiteByNames( options.testNames or M.LuaUnit.collectTests() )
+        self:unregisterSuite()
 
         return self.result.notSuccessCount
     end

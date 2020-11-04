@@ -3144,6 +3144,17 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.LuaUnit.isTestName = function( s ) return (string.sub(s,1,6) == 'MyTest') end
     end
 
+    function TestLuaUnitExecution:oneInstanceExists()
+        lu.assertEquals( #lu.LuaUnit.instances, 1 )
+
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType( "NIL" )
+        runner:runSuiteByNames( { 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' } )
+
+        -- number of instances cleanup was done properly
+        lu.assertEquals( #lu.LuaUnit.instances, 1 )
+    end
+
     function TestLuaUnitExecution:test_collectTests()
         local allTests = lu.LuaUnit.collectTests()
         lu.assertEquals( allTests, {"MyTestFunction", "MyTestOk", "MyTestToto1", "MyTestToto2","MyTestWithErrorsAndFailures"})
@@ -4066,28 +4077,46 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
     function TestLuaUnitExecution:testInvocation()
 
+        lu.assertEquals( #lu.LuaUnit.instances, 1)
         local runner = lu.LuaUnit.new()
+
+        -- this does not create a new registered instance
+        lu.assertEquals( #lu.LuaUnit.instances, 1)
 
         -- test alternative "object" syntax for run(), passing self
         runner:run('--output', 'nil', 'MyTestOk')
+
+        -- this does not create a new registered instance
+        lu.assertEquals( #lu.LuaUnit.instances, 1)
+
         -- select class instance by name
         runner.run('--output', 'nil', 'MyTestOk.testOk2')
+
+        -- this does not create a new registered instance
+        lu.assertEquals( #lu.LuaUnit.instances, 1)
 
         -- check error handling
         lu.assertErrorMsgContains('No such name in global space',
                                   runner.runSuite, runner, 'foobar')
+        lu.assertEquals( #lu.LuaUnit.instances, 1)
         lu.assertErrorMsgContains('Name must match a function or a table',
                                   runner.runSuite, runner, '_VERSION')
+        lu.assertEquals( #lu.LuaUnit.instances, 1)
         lu.assertErrorMsgContains('No such name in global space',
                                   runner.runSuite, runner, 'foo.bar')
+        lu.assertEquals( #lu.LuaUnit.instances, 1)
         lu.assertErrorMsgContains('must be a function, not',
                                   runner.runSuite, runner, '_G._VERSION')
+        lu.assertEquals( #lu.LuaUnit.instances, 1)
         lu.assertErrorMsgContains('Could not find method in class',
                                   runner.runSuite, runner, 'MyTestOk.foobar')
+        lu.assertEquals( #lu.LuaUnit.instances, 1)
         lu.assertErrorMsgContains('Instance must be a table or a function',
                                   runner.expandClasses, {{'foobar', 'INVALID'}})
+        lu.assertEquals( #lu.LuaUnit.instances, 1)
         lu.assertErrorMsgContains('Could not find method in class',
                                   runner.expandClasses, {{'MyTestOk.foobar', {}}})
+        lu.assertEquals( #lu.LuaUnit.instances, 1)
     end
 
     function TestLuaUnitExecution:test_filterWithPattern()
