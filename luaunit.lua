@@ -97,11 +97,38 @@ Options:
                               TestClass or TestClass.testMethod
 ]]
 
+
 ----------------------------------------------------------------
 --
 --                 general utility functions
 --
 ----------------------------------------------------------------
+
+--[[ Note on catching exit
+
+I have seen the case where running a big suite of test cases and one of them would
+perform a os.exit(0), making the outside world think that the full test suite was executed
+successfully.
+
+This is an attempt to mitigate this problem: we override os.exit() to now let a test
+exit the framework while we are running. When we are not running, it behaves normally.
+]]
+
+M.oldOsExit = os.exit
+os.exit = function(...) 
+    if M.LuaUnit and #M.LuaUnit.instances ~= 0 then
+        msg = [[You are trying to exit but there is still a running instance of LuaUnit.
+LuaUnit expects to run until the end before exiting with a complete status of successful/failed tests.
+
+To force exit LuaUnit while running, please call before os.exit (assuming lu is the luaunit module loaded):
+
+    lu.unregisterCurrentSuite() 
+
+]]
+        error(msg)
+    end
+    M.oldOsExit(...)
+end
 
 local function pcall_or_abort(func, ...)
     -- unpack is a global function for Lua 5.1, otherwise use table.unpack
@@ -3233,6 +3260,7 @@ end
 
         if self.result.aborted then
             print("LuaUnit ABORTED (as requested by --error or --failure option)")
+            self:unregisterSuite()
             os.exit(-2)
         end
     end
@@ -3306,6 +3334,11 @@ end
         -- register the current instance into our global array of instances
         -- print('-> Register suite')
         M.LuaUnit.instances[ #M.LuaUnit.instances+1 ] = self
+    end
+
+    function M.unregisterCurrentSuite()
+        -- force unregister the last registered suite
+        table.remove(M.LuaUnit.instances, #M.LuaUnit.instances)
     end
 
     function M.LuaUnit:unregisterSuite()
