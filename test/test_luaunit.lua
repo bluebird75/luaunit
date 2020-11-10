@@ -3155,6 +3155,10 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( #lu.LuaUnit.instances, 1 )
     end
 
+    function TestLuaUnitExecution:canNotExitDuringLuaUnitExecution()
+        lu.assertFailure(os.exit, 0)
+    end
+
     function TestLuaUnitExecution:test_collectTests()
         local allTests = lu.LuaUnit.collectTests()
         lu.assertEquals( allTests, {"MyTestFunction", "MyTestOk", "MyTestToto1", "MyTestToto2","MyTestWithErrorsAndFailures"})
