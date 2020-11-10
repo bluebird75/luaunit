@@ -11,7 +11,7 @@ ignore = {"[Tt]est[%w_]+"}
 
 files = {
     ["luaunit.lua"] = {
-        globals = {"EXPORT_ASSERT_TO_GLOBALS", "LuaUnit"},
+        globals = {"EXPORT_ASSERT_TO_GLOBALS", "LuaUnit", "os"},
     },
     ["test/compat_luaunit_v2x.lua"] = {
         ignore = {"EXPORT_ASSERT_TO_GLOBALS", "assert[%w_]+", "v", "y"}

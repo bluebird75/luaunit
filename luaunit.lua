@@ -117,7 +117,7 @@ exit the framework while we are running. When we are not running, it behaves nor
 M.oldOsExit = os.exit
 os.exit = function(...) 
     if M.LuaUnit and #M.LuaUnit.instances ~= 0 then
-        msg = [[You are trying to exit but there is still a running instance of LuaUnit.
+        local msg = [[You are trying to exit but there is still a running instance of LuaUnit.
 LuaUnit expects to run until the end before exiting with a complete status of successful/failed tests.
 
 To force exit LuaUnit while running, please call before os.exit (assuming lu is the luaunit module loaded):
@@ -1435,7 +1435,7 @@ function M.assertAlmostEquals( actual, expected, margin, extra_msg_or_nil )
     if type(actual) == 'table' and type(expected) == 'table' then
         -- handle almost equals for table
         if not is_table_equals(actual, expected, margin) then
-            failure( errorMsgEquality(actual, expected, doDeepAnalysis, margin), extra_msg_or_nil, 2 )
+            failure( errorMsgEquality(actual, expected, nil, margin), extra_msg_or_nil, 2 )
         end
     elseif type(actual) == 'number' and type(expected) == 'number' and type(margin) == 'number' then
         if not M.almostEquals(actual, expected, margin) then
@@ -2499,7 +2499,7 @@ if EXPORT_ASSERT_TO_GLOBALS then
 end
 
     function M.LuaUnit.new()
-        newInstance = setmetatable( {}, LuaUnit_MT )
+        local newInstance = setmetatable( {}, LuaUnit_MT )
         return newInstance
     end
 
