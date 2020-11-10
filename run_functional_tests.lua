@@ -270,7 +270,7 @@ local function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintO
     adjustFile( output, refOutput, '# Started on (.*)')
     adjustFile( output, refOutput, '# Ran %d+ tests in (%d+.%d*).*')
     adjustFile( xmlOutput, refXmlOutput, '.*<testsuite.*(timestamp=".-" time=".-").*')
-    adjustFile( xmlOutput, refXmlOutput, '.*<testcase .*(time=".-").*' )
+    adjustFile( xmlOutput, refXmlOutput, '.*<testcase .*(time=".-").*', nil, true )
     -- For Lua 5.1 / 5.2 compatibility
     adjustFile( xmlOutput, refXmlOutput, '.*<property name="Lua Version" value="(Lua 5%..)"/>')
 
@@ -491,16 +491,24 @@ function testXmlDefault()
             'test/errFailPassXmlDefault-failures.txt', 'test/errFailPassXmlDefault-failures.xml', 'test/errFailPassXmllintDefault.xml',
             'test/ref/errFailPassXmlDefault-failures.txt', 'test/ref/errFailPassXmlDefault-failures.xml', 5 ) )
 
-    -- disable this test not working !
-    if IS_UNIX and false then
+    if IS_UNIX then
         -- It is non-trivial to set the environment for new command execution
         -- on Windows, so we'll only attempt it on UNIX.  These systems should
         -- all have /usr/bin/env
-        lu.assertEquals( 0,
+        ret = 
             check_xml_output('test/test_with_err_fail_pass.lua', '-p Succ -p Fail',
                 'test/errFailPassXmlDefault-failures.txt', 'test/errFailPassXmlDefault-failures.xml', 'test/errFailPassXmllintDefault.xml',
                 'test/ref/errFailPassXmlDefault-failures.txt', 'test/ref/errFailPassXmlDefault-failures.xml', 5,
-                'LUAUNIT_OUTPUT=JUNIT LUAUNIT_JUNIT_FNAME=test/ref/errFailPassXmlDefault-failures.xml', '' ) )
+                'LUAUNIT_OUTPUT=JUNIT LUAUNIT_JUNIT_FNAME=test/ref/errFailPassXmlDefault-failures.xml', '' )
+        if ret ~= 0 then
+            cmd = 'cat test/ref/errFailPassXmlDefault-failures.xml'
+            print(cmd)
+            osExec(cmd)
+            cmd = 'cat test/errFailPassXmlDefault-failures.xml'
+            print(cmd)
+            osExec(cmd)
+        end
+        lu.assertEquals(ret, 0)
     end
 
 end
