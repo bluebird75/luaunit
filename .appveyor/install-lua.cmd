@@ -133,7 +133,9 @@ if NOT EXIST %LUA_EXE% (
     echo Compiling %PRETTY_VERSION% ...
     dir c:\MinGW
     dir c:\MinGW\bin
+    c:\mingw\bin\mingw32-make --version
     set PATH="C:\MinGW\bin;%PATH%"
+    mingw32-make --version
 
     REM tweak Makefile for a static LuaJIT build (Windows defaults to "dynamic" otherwise)
     sed -i "s/BUILDMODE=.*mixed/BUILDMODE=static/" %DL_ZIP%\src\Makefile
