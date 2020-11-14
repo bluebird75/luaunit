@@ -130,7 +130,7 @@ if NOT EXIST %LUA_EXE% (
     unzip -q %DL_ZIP%
 
     echo Compiling %PRETTY_VERSION% ...
-    set PATH=C:\MinGW\bin;%PATH%
+    set PATH="C:\MinGW\bin;%PATH%"
 
     REM tweak Makefile for a static LuaJIT build (Windows defaults to "dynamic" otherwise)
     sed -i "s/BUILDMODE=.*mixed/BUILDMODE=static/" %DL_ZIP%\src\Makefile
