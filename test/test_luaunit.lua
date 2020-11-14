@@ -344,7 +344,7 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
 
     function TestLuaUnitUtilities:test_prettystr_numbers()
         lu.assertEquals( lu.prettystr( 1 ), "1" )
-        if lu._LUAVERSION < 'Lua 5.4' then
+        if lu._LUAVERSION < 'Lua 5.4' or lu._LUAVERSION:sub(1,6) == "LuaJIT" then
             lu.assertEquals( lu.prettystr( 1 ), "1" )
             lu.assertEquals( lu.prettystr( 1.0 ), "1" )
         else
@@ -1759,7 +1759,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         -- this is verified with the value 1/-0
         -- lua 5.1, 5.3: 1/-0 = inf
         -- lua 5.2, luajit: 1/-0 = -inf
-        if lu._LUAVERSION ~= "Lua 5.2" then
+        if lu._LUAVERSION ~= "Lua 5.2" and lu._LUAVERSION:sub(1,6) ~= "LuaJIT" then
             lu.assertIsPlusInf( 1/-0 ) 
         else
             assertFailure( lu.assertIsPlusInf, 1/-0 )
@@ -1793,7 +1793,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         -- this is verified with the value 1/-0
         -- lua 5.1, 5.3: 1/-0 = inf
         -- lua 5.2, luajit: 1/-0 = -inf
-        if lu._LUAVERSION ~= "Lua 5.2" then
+        if lu._LUAVERSION ~= "Lua 5.2" and lu._LUAVERSION:sub(1,6) ~= "LuaJIT" then
             assertFailure( lu.assertIsMinusInf, 1/-0 )
         else
             lu.assertIsMinusInf( 1/-0 ) 
@@ -1970,7 +1970,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertIsPlusZero( 1/inf )    
 
         -- behavior with -0 is lua version dependant, see note above
-        if lu._LUAVERSION ~= "Lua 5.2" then
+        if lu._LUAVERSION ~= "Lua 5.2" and lu._LUAVERSION:sub(1,6) ~= "LuaJIT" then
             lu.assertIsPlusZero( -0 )
         else
             assertFailure( lu.assertIsPlusZero, -0 )
@@ -2001,7 +2001,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure( lu.assertNotIsPlusZero, 1/inf )    
 
         -- behavior with -0 is lua version dependant, see note above
-        if lu._LUAVERSION ~= "Lua 5.2" then
+        if lu._LUAVERSION ~= "Lua 5.2" and lu._LUAVERSION:sub(1,6) ~= "LuaJIT" then
             assertFailure( lu.assertNotIsPlusZero, -0 )
         else
             lu.assertNotIsPlusZero( -0 )
@@ -2032,7 +2032,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertIsMinusZero( 1/-inf )    
         
         -- behavior with -0 is lua version dependant, see note above
-        if lu._LUAVERSION ~= "Lua 5.2" then
+        if lu._LUAVERSION ~= "Lua 5.2" and lu._LUAVERSION:sub(1,6) ~= "LuaJIT" then
             assertFailure( lu.assertIsMinusZero, -0 )
         else
             lu.assertIsMinusZero( -0 )
@@ -2061,7 +2061,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure( lu.assertNotIsMinusZero, 1/-inf )    
         
         -- behavior with -0 is lua version dependant, see note above
-        if lu._LUAVERSION ~= "Lua 5.2" then
+        if lu._LUAVERSION ~= "Lua 5.2" and lu._LUAVERSION:sub(1,6) ~= "LuaJIT" then
             lu.assertNotIsMinusZero( -0 )
         else
             assertFailure( lu.assertNotIsMinusZero, -0 )
