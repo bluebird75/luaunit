@@ -86,18 +86,6 @@ goto download_and_intall_lua
 
 
 :luajit20
-@echo on
-echo Setting up LuaJIT 2.0 ...
-if NOT EXIST "luajit20\luajit.exe" (
-    call %~dp0install-luajit.cmd LuaJIT-2.0.5 luajit20
-) else (
-    echo Using cached version of LuaJIT 2.0
-)
-set LUA=luajit20\luajit.exe
-goto :EOF
-
-
-:luajit20
 set PRETTY_VERSION='LuaJIT 2.0'
 set LUA_BIN_DIR=luajit20
 set LUA_EXE=luajit20\luajit.exe
