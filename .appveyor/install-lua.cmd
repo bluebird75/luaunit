@@ -76,16 +76,22 @@ set LUA=luajit20\luajit.exe
 goto :EOF
 
 
+:luajit20
+set PRETTY_VERSION='LuaJIT 2.0'
+set LUA_BIN_DIR=luajit20
+set LUA_EXE=luajit20\luajit.exe
+set DL_ZIP=LuaJIT-2.0.5
+set DL_URL=http://luajit.org/download/%DL_ZIP%.zip
+goto download_and_intall_luajit
+
+
 :luajit21
-@echo on
-echo Setting up LuaJIT 2.1 ...
-if NOT EXIST "luajit21\luajit.exe" (
-    call %~dp0install-luajit.cmd LuaJIT-2.1.0-beta3 luajit21
-) else (
-    echo Using cached version of LuaJIT 2.1
-)
-set LUA=luajit21\luajit.exe
-goto :EOF
+set PRETTY_VERSION='LuaJIT 2.1'
+set LUA_BIN_DIR=luajit21
+set LUA_EXE=luajit21\luajit.exe
+set DL_ZIP=LuaJIT-2.1.0-beta3
+set DL_URL=http://luajit.org/download/%DL_ZIP%.zip
+goto download_and_intall_luajit
 
 
 :download_and_intall_lua
@@ -98,6 +104,33 @@ if NOT EXIST %LUA_EXE% (
 ) else (
     echo Using cached version of %PRETTY_VERSION
 )
+set LUA=%LUA_EXE%
+goto :eof
+
+:download_and_intall_luajit
+echo Downloading %PRETTY_VERSION% ...
+REM Do a minimalistic build of LuaJIT using the MinGW compiler
+
+REM retrieve and unpack source
+curl -fLsS -o %DL_ZIP%.zip %DL_URL%
+unzip -q %DL_ZIP%
+
+echo Compiling %PRETTY_VERSION% ...
+set PATH=C:\MinGW\bin;%PATH%
+
+REM tweak Makefile for a static LuaJIT build (Windows defaults to "dynamic" otherwise)
+sed -i "s/BUILDMODE=.*mixed/BUILDMODE=static/" %DL_ZIP%\src\Makefile
+
+mingw32-make TARGET_SYS=Windows -C %DL_ZIP%\src
+
+echo Installing %PRETTY_VERSION% ...
+REM copy luajit.exe to project dir
+mkdir %APPVEYOR_BUILD_FOLDER%\%LUA_BIN_DIR%
+copy %DL_ZIP%\src\luajit.exe %APPVEYOR_BUILD_FOLDER%\%LUA_BIN_DIR%\
+
+REM clean up (remove source folders and archive)
+rm -rf %DL_ZIP%/*
+rm -f %DL_ZIP%.zip
 set LUA=%LUA_EXE%
 goto :eof
 
