@@ -10,6 +10,10 @@ set ZIP_51=lua-%VER_51%_Win32_bin.zip
 set ZIP_52=lua-%VER_52%_Win32_bin.zip
 set ZIP_53=lua-%VER_53%_Win32_bin.zip
 set ZIP_54=lua-%VER_54%_Win32_bin.zip
+set ZIP_51_64=lua-%VER_51%_Win64_bin.zip
+set ZIP_52_64=lua-%VER_52%_Win64_bin.zip
+set ZIP_53_64=lua-%VER_53%_Win64_bin.zip
+set ZIP_54_64=lua-%VER_54%_Win64_bin.zip
 set ZIP_LUAJIT20=LuaJIT-2.0.5
 set ZIP_LUAJIT21=LuaJIT-2.1.0-beta3
 
@@ -36,7 +40,14 @@ set LUA_BIN_DIR=lua51
 set LUA_EXE=lua51\lua5.1.exe
 set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_51%/Tools%%20Executables/%ZIP_51%/download
 set DL_ZIP=%ZIP_51%
-set LUAJIT=no
+goto download_and_intall_lua
+
+:lua51_64
+set PRETTY_VERSION='Lua 5.1 - 64 bits'
+set LUA_BIN_DIR=lua51-64
+set LUA_EXE=lua51-64\lua5.1.exe
+set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_51%/Tools%%20Executables/%ZIP_51_64%/download
+set DL_ZIP=%ZIP_51_64%
 goto download_and_intall_lua
 
 :lua52

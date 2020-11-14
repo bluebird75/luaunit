@@ -5,6 +5,7 @@ shallow_clone: true
 environment:
   matrix:
     - LUAENV: lua51
+    - LUAENV: lua51_64
     - LUAENV: lua52
     - LUAENV: lua53
     - LUAENV: lua54
