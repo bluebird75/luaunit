@@ -42,7 +42,7 @@ goto download_and_intall_lua
 :lua52
 set PRETTY_VERSION='Lua 5.2'
 set LUADIR=lua52
-set LUAEXE=lua52\lua5.2.exe
+set LUAEXE=lua52\lua52.exe
 set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_52%/Tools%%20Executables/%ZIP_52%/download
 set DL_ZIP=%ZIP_52%
 goto download_and_intall_lua
@@ -50,7 +50,7 @@ goto download_and_intall_lua
 :lua53
 set PRETTY_VERSION='Lua 5.3'
 set LUADIR=lua53
-set LUAEXE=lua53\lua5.3.exe
+set LUAEXE=lua53\lua53.exe
 set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_53%/Tools%%20Executables/%ZIP_53%/download
 set DL_ZIP=%ZIP_53%
 goto download_and_intall_lua
@@ -58,7 +58,7 @@ goto download_and_intall_lua
 :lua54
 set PRETTY_VERSION='Lua 5.4'
 set LUADIR=lua54
-set LUAEXE=lua54\lua5.4.exe
+set LUAEXE=lua54\lua54.exe
 set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_54%/Tools%%20Executables/%ZIP_54%/download
 set DL_ZIP=%ZIP_54%
 goto download_and_intall_lua
