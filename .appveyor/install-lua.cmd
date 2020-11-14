@@ -120,6 +120,7 @@ goto :eof
 
 :download_and_intall_luajit
 echo download and install luajit
+echo on
 if NOT EXIST %LUA_EXE% (
     echo Downloading %PRETTY_VERSION% ...
     REM Do a minimalistic build of LuaJIT using the MinGW compiler
@@ -145,7 +146,7 @@ if NOT EXIST %LUA_EXE% (
     rm -rf %DL_ZIP%/*
     rm -f %DL_ZIP%.zip
 ) else (
-    echo Using cached version of %PRETTY_VERSION
+    echo Using cached version of %PRETTY_VERSION%
 )
 set LUA=%LUA_EXE%
 goto :eof
