@@ -20,20 +20,6 @@ set ZIP_LUAJIT21=LuaJIT-2.1.0-beta3
 goto %LUAENV%
 goto error
 
-:cinst
-@echo off
-echo Chocolatey install of Lua ...
-if NOT EXIST "C:\Program Files (x86)\Lua\5.1\lua.exe" (
-    @echo on
-    cinst lua
-) else (
-    @echo on
-    echo Using cached version of Lua
-)
-set LUA="C:\Program Files (x86)\Lua\5.1\lua.exe"
-@echo off
-goto :EOF
-
 :lua51
 set PRETTY_VERSION='Lua 5.1'
 set LUA_BIN_DIR=lua51
@@ -58,6 +44,14 @@ set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_52%/Tools%%20E
 set DL_ZIP=%ZIP_52%
 goto download_and_intall_lua
 
+:lua52_64
+set PRETTY_VERSION='Lua 5.2 - 64 bits'
+set LUA_BIN_DIR=lua52-64
+set LUA_EXE=lua52-64\lua52.exe
+set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_52%/Tools%%20Executables/%ZIP_52_64%/download
+set DL_ZIP=%ZIP_52_64%
+goto download_and_intall_lua
+
 :lua53
 set PRETTY_VERSION='Lua 5.3'
 set LUA_BIN_DIR=lua53
@@ -66,12 +60,28 @@ set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_53%/Tools%%20E
 set DL_ZIP=%ZIP_53%
 goto download_and_intall_lua
 
+:lua53_64
+set PRETTY_VERSION='Lua 5.3 - 64 bits'
+set LUA_BIN_DIR=lua53-64
+set LUA_EXE=lua53-64\lua53.exe
+set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_53%/Tools%%20Executables/%ZIP_53_64%/download
+set DL_ZIP=%ZIP_53_64%
+goto download_and_intall_lua
+
 :lua54
 set PRETTY_VERSION='Lua 5.4'
 set LUA_BIN_DIR=lua54
 set LUA_EXE=lua54\lua54.exe
 set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_54%/Tools%%20Executables/%ZIP_54%/download
 set DL_ZIP=%ZIP_54%
+goto download_and_intall_lua
+
+:lua54_64
+set PRETTY_VERSION='Lua 5.4 - 64 bits'
+set LUA_BIN_DIR=lua54-64
+set LUA_EXE=lua54-64\lua54.exe
+set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_54%/Tools%%20Executables/%ZIP_54_64%/download
+set DL_ZIP=%ZIP_54_64%
 goto download_and_intall_lua
 
 

@@ -7,16 +7,14 @@ environment:
     - LUAENV: lua51
     - LUAENV: lua51_64
     - LUAENV: lua52
+    - LUAENV: lua52_64
     - LUAENV: lua53
+    - LUAENV: lua53_64
     - LUAENV: lua54
+    - LUAENV: lua54_64
     - LUAENV: luajit20
     - LUAENV: luajit21
-    - LUAENV: cinst
 
-# cinst occasionally has problems, allow it to fail
-matrix:
-  allow_failures:
-    - LUAENV: cinst
 
 # install required binaries via batch file (also sets %LUA% path)
 install:
