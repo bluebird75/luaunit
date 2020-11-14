@@ -7,6 +7,7 @@ environment:
     - LUAENV: lua51
     - LUAENV: lua52
     - LUAENV: lua53
+    - LUAENV: lua54
     - LUAENV: luajit20
     - LUAENV: luajit21
     - LUAENV: cinst
@@ -20,13 +21,13 @@ matrix:
 install:
 - cmd: .appveyor\install-lua.cmd
 
-cache:
-  - lua51       -> .appveyor\install-lua.cmd
-  - lua52       -> .appveyor\install-lua.cmd
-  - lua53       -> .appveyor\install-lua.cmd
-  - luajit20    -> .appveyor\install-lua.cmd
-  - luajit21    -> .appveyor\install-lua.cmd
-  - 'C:\Program Files (x86)\Lua -> .appveyor\install-lua.cmd'
+#cache:
+#  - lua51       -> .appveyor\install-lua.cmd
+#  - lua52       -> .appveyor\install-lua.cmd
+#  - lua53       -> .appveyor\install-lua.cmd
+#  - luajit20    -> .appveyor\install-luajit.cmd
+#  - luajit21    -> .appveyor\install-luajit.cmd
+#  - 'C:\Program Files (x86)\Lua -> .appveyor\install-lua.cmd'
 
 build: off
 

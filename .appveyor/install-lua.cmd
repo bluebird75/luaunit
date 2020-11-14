@@ -5,9 +5,11 @@ REM version numbers and file names for binaries from http://sf.net/p/luabinaries
 set VER_51=5.1.5
 set VER_52=5.2.4
 set VER_53=5.3.3
+set VER_54=5.4.0
 set ZIP_51=lua-%VER_51%_Win32_bin.zip
 set ZIP_52=lua-%VER_52%_Win32_bin.zip
 set ZIP_53=lua-%VER_53%_Win32_bin.zip
+set ZIP_54=lua-%VER_54%_Win32_bin.zip
 
 :cinst
 @echo off
@@ -59,7 +61,7 @@ goto :EOF
 
 :lua53
 @echo off
-if NOT "%LUAENV%"=="lua53" goto luajit
+if NOT "%LUAENV%"=="lua53" goto lua54
 echo Setting up Lua 5.3 ...
 if NOT EXIST "lua53\lua53.exe" (
     @echo on
@@ -71,6 +73,23 @@ if NOT EXIST "lua53\lua53.exe" (
 )
 @echo on
 set LUA=lua53\lua53.exe
+@echo off
+goto :EOF
+
+:lua54
+@echo off
+if NOT "%LUAENV%"=="lua54" goto luajit
+echo Setting up Lua 5.4 ...
+if NOT EXIST "lua54\lua54.exe" (
+    @echo on
+    echo Fetching Lua v5.4 from internet
+    curl -fLsS -o %ZIP_54% http://sourceforge.net/projects/luabinaries/files/%VER_54%/Tools%%20Executables/%ZIP_54%/download
+    unzip -d lua54 %ZIP_54%
+) else (
+    echo Using cached version of Lua v5.4
+)
+@echo on
+set LUA=lua54\lua54.exe
 @echo off
 goto :EOF
 
