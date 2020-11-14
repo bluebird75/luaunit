@@ -4,6 +4,8 @@ shallow_clone: true
 # create a build matrix to use various Lua and LuaJIT versions
 environment:
   matrix:
+    - LUAENV: luajit20
+    - LUAENV: luajit21
     - LUAENV: lua51
     - LUAENV: lua51_64
     - LUAENV: lua52
@@ -12,8 +14,6 @@ environment:
     - LUAENV: lua53_64
     - LUAENV: lua54
     - LUAENV: lua54_64
-    - LUAENV: luajit20
-    - LUAENV: luajit21
 
 
 # install required binaries via batch file (also sets %LUA% path)

@@ -127,7 +127,8 @@ if NOT EXIST %LUA_EXE% (
 
     REM retrieve and unpack source
     curl -fLsS -o %DL_ZIP%.zip %DL_URL%
-    unzip -q %DL_ZIP%
+    echo Unzipping %DL_ZIP%
+    unzip %DL_ZIP%
 
     echo Compiling %PRETTY_VERSION% ...
     set PATH="C:\MinGW\bin;%PATH%"
