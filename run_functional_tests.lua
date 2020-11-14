@@ -54,7 +54,7 @@ local function osExec( ... )
 
     -- print('osExec('..cmd..')')
     local exitSuccess, exitReason, exitCode = os.execute( cmd )
-    print('\n', exitSuccess, exitReason, exitCode)
+    -- print('\n', exitSuccess, exitReason, exitCode)
 
     if exitReason == nil and exitCode == nil then
         -- Lua 5.1 returns only the exit code
