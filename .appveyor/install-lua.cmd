@@ -32,8 +32,8 @@ goto :EOF
 
 :lua51
 set PRETTY_VERSION='Lua 5.1'
-set LUADIR=lua51
-set LUAEXE=lua51\lua5.1.exe
+set LUA_BIN_DIR=lua51
+set LUA_EXE=lua51\lua5.1.exe
 set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_51%/Tools%%20Executables/%ZIP_51%/download
 set DL_ZIP=%ZIP_51%
 set LUAJIT=no
@@ -41,30 +41,30 @@ goto download_and_intall_lua
 
 :lua52
 set PRETTY_VERSION='Lua 5.2'
-set LUADIR=lua52
-set LUAEXE=lua52\lua52.exe
+set LUA_BIN_DIR=lua52
+set LUA_EXE=lua52\lua52.exe
 set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_52%/Tools%%20Executables/%ZIP_52%/download
 set DL_ZIP=%ZIP_52%
 goto download_and_intall_lua
 
 :lua53
 set PRETTY_VERSION='Lua 5.3'
-set LUADIR=lua53
-set LUAEXE=lua53\lua53.exe
+set LUA_BIN_DIR=lua53
+set LUA_EXE=lua53\lua53.exe
 set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_53%/Tools%%20Executables/%ZIP_53%/download
 set DL_ZIP=%ZIP_53%
 goto download_and_intall_lua
 
 :lua54
 set PRETTY_VERSION='Lua 5.4'
-set LUADIR=lua54
-set LUAEXE=lua54\lua54.exe
+set LUA_BIN_DIR=lua54
+set LUA_EXE=lua54\lua54.exe
 set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_54%/Tools%%20Executables/%ZIP_54%/download
 set DL_ZIP=%ZIP_54%
 goto download_and_intall_lua
 
 
-:luajit
+:luajit20
 @echo on
 echo Setting up LuaJIT 2.0 ...
 if NOT EXIST "luajit20\luajit.exe" (
@@ -90,15 +90,15 @@ goto :EOF
 
 :download_and_intall_lua
 echo Setting up %PRETTY_VERSION% ...
-if NOT EXIST %LUAEXE% (
+if NOT EXIST %LUA_EXE% (
     @echo on
     echo Fetching %PRETTY_VERSION% from internet
     curl -fLsS -o %DL_ZIP% %DL_URL%
-    unzip -d %LUADIR% %DL_ZIP%
+    unzip -d %LUA_BIN_DIR% %DL_ZIP%
 ) else (
     echo Using cached version of %PRETTY_VERSION
 )
-set LUA=%LUAEXE%
+set LUA=%LUA_EXE%
 goto :eof
 
 :error
