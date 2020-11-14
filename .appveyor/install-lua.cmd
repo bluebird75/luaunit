@@ -129,29 +129,33 @@ set LUA=%LUA_EXE%
 goto :eof
 
 :download_and_intall_luajit
-echo Downloading %PRETTY_VERSION% ...
-REM Do a minimalistic build of LuaJIT using the MinGW compiler
+if NOT EXIST %LUA_EXE% (
+    echo Downloading %PRETTY_VERSION% ...
+    REM Do a minimalistic build of LuaJIT using the MinGW compiler
 
-REM retrieve and unpack source
-curl -fLsS -o %DL_ZIP%.zip %DL_URL%
-unzip -q %DL_ZIP%
+    REM retrieve and unpack source
+    curl -fLsS -o %DL_ZIP%.zip %DL_URL%
+    unzip -q %DL_ZIP%
 
-echo Compiling %PRETTY_VERSION% ...
-set PATH=C:\MinGW\bin;%PATH%
+    echo Compiling %PRETTY_VERSION% ...
+    set PATH=C:\MinGW\bin;%PATH%
 
-REM tweak Makefile for a static LuaJIT build (Windows defaults to "dynamic" otherwise)
-sed -i "s/BUILDMODE=.*mixed/BUILDMODE=static/" %DL_ZIP%\src\Makefile
+    REM tweak Makefile for a static LuaJIT build (Windows defaults to "dynamic" otherwise)
+    sed -i "s/BUILDMODE=.*mixed/BUILDMODE=static/" %DL_ZIP%\src\Makefile
 
-mingw32-make TARGET_SYS=Windows -C %DL_ZIP%\src
+    mingw32-make TARGET_SYS=Windows -C %DL_ZIP%\src
 
-echo Installing %PRETTY_VERSION% ...
-REM copy luajit.exe to project dir
-mkdir %APPVEYOR_BUILD_FOLDER%\%LUA_BIN_DIR%
-copy %DL_ZIP%\src\luajit.exe %APPVEYOR_BUILD_FOLDER%\%LUA_BIN_DIR%\
+    echo Installing %PRETTY_VERSION% ...
+    REM copy luajit.exe to project dir
+    mkdir %APPVEYOR_BUILD_FOLDER%\%LUA_BIN_DIR%
+    copy %DL_ZIP%\src\luajit.exe %APPVEYOR_BUILD_FOLDER%\%LUA_BIN_DIR%\
 
-REM clean up (remove source folders and archive)
-rm -rf %DL_ZIP%/*
-rm -f %DL_ZIP%.zip
+    REM clean up (remove source folders and archive)
+    rm -rf %DL_ZIP%/*
+    rm -f %DL_ZIP%.zip
+) else (
+    echo Using cached version of %PRETTY_VERSION
+)
 set LUA=%LUA_EXE%
 goto :eof
 
