@@ -10,10 +10,14 @@ set ZIP_51=lua-%VER_51%_Win32_bin.zip
 set ZIP_52=lua-%VER_52%_Win32_bin.zip
 set ZIP_53=lua-%VER_53%_Win32_bin.zip
 set ZIP_54=lua-%VER_54%_Win32_bin.zip
+set ZIP_LUAJIT20=LuaJIT-2.0.5
+set ZIP_LUAJIT21=LuaJIT-2.1.0-beta3
+
+goto %LUAENV%
+goto error
 
 :cinst
 @echo off
-if NOT "%LUAENV%"=="cinst" goto lua51
 echo Chocolatey install of Lua ...
 if NOT EXIST "C:\Program Files (x86)\Lua\5.1\lua.exe" (
     @echo on
@@ -27,74 +31,41 @@ set LUA="C:\Program Files (x86)\Lua\5.1\lua.exe"
 goto :EOF
 
 :lua51
-@echo off
-if NOT "%LUAENV%"=="lua51" goto lua52
-echo Setting up Lua 5.1 ...
-if NOT EXIST "lua51\lua5.1.exe" (
-    @echo on
-    echo Fetching Lua v5.1 from internet
-    curl -fLsS -o %ZIP_51% http://sourceforge.net/projects/luabinaries/files/%VER_51%/Tools%%20Executables/%ZIP_51%/download
-    unzip -d lua51 %ZIP_51%
-) else (
-    echo Using cached version of Lua v5.1
-)
-set LUA=lua51\lua5.1.exe
-@echo off
-goto :EOF
+set PRETTY_VERSION='Lua 5.1'
+set LUADIR=lua51
+set LUAEXE=lua51\lua5.1.exe
+set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_51%/Tools%%20Executables/%ZIP_51%/download
+set DL_ZIP=%ZIP_51%
+set LUAJIT=no
+goto download_and_intall_lua
 
 :lua52
-@echo off
-if NOT "%LUAENV%"=="lua52" goto lua53
-echo Setting up Lua 5.2 ...
-if NOT EXIST "lua52\lua52.exe" (
-    @echo on
-    echo Fetching Lua v5.2 from internet
-    curl -fLsS -o %ZIP_52% http://sourceforge.net/projects/luabinaries/files/%VER_52%/Tools%%20Executables/%ZIP_52%/download
-    unzip -d lua52 %ZIP_52%
-) else (
-    echo Using cached version of Lua v5.2
-)
-@echo on
-set LUA=lua52\lua52.exe
-@echo off
-goto :EOF
+set PRETTY_VERSION='Lua 5.2'
+set LUADIR=lua52
+set LUAEXE=lua52\lua5.2.exe
+set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_52%/Tools%%20Executables/%ZIP_52%/download
+set DL_ZIP=%ZIP_52%
+goto download_and_intall_lua
 
 :lua53
-@echo off
-if NOT "%LUAENV%"=="lua53" goto lua54
-echo Setting up Lua 5.3 ...
-if NOT EXIST "lua53\lua53.exe" (
-    @echo on
-    echo Fetching Lua v5.3 from internet
-    curl -fLsS -o %ZIP_53% http://sourceforge.net/projects/luabinaries/files/%VER_53%/Tools%%20Executables/%ZIP_53%/download
-    unzip -d lua53 %ZIP_53%
-) else (
-    echo Using cached version of Lua v5.3
-)
-@echo on
-set LUA=lua53\lua53.exe
-@echo off
-goto :EOF
+set PRETTY_VERSION='Lua 5.3'
+set LUADIR=lua53
+set LUAEXE=lua53\lua5.3.exe
+set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_53%/Tools%%20Executables/%ZIP_53%/download
+set DL_ZIP=%ZIP_53%
+goto download_and_intall_lua
 
 :lua54
-@echo off
-if NOT "%LUAENV%"=="lua54" goto luajit
-echo Setting up Lua 5.4 ...
-if NOT EXIST "lua54\lua54.exe" (
-    @echo on
-    echo Fetching Lua v5.4 from internet
-    curl -fLsS -o %ZIP_54% http://sourceforge.net/projects/luabinaries/files/%VER_54%/Tools%%20Executables/%ZIP_54%/download
-    unzip -d lua54 %ZIP_54%
-) else (
-    echo Using cached version of Lua v5.4
-)
-@echo on
-set LUA=lua54\lua54.exe
-@echo off
-goto :EOF
+set PRETTY_VERSION='Lua 5.4'
+set LUADIR=lua54
+set LUAEXE=lua54\lua5.4.exe
+set DL_URL=http://sourceforge.net/projects/luabinaries/files/%VER_54%/Tools%%20Executables/%ZIP_54%/download
+set DL_ZIP=%ZIP_54%
+goto download_and_intall_lua
+
 
 :luajit
-if NOT "%LUAENV%"=="luajit20" goto luajit21
+@echo on
 echo Setting up LuaJIT 2.0 ...
 if NOT EXIST "luajit20\luajit.exe" (
     call %~dp0install-luajit.cmd LuaJIT-2.0.5 luajit20
@@ -104,7 +75,9 @@ if NOT EXIST "luajit20\luajit.exe" (
 set LUA=luajit20\luajit.exe
 goto :EOF
 
+
 :luajit21
+@echo on
 echo Setting up LuaJIT 2.1 ...
 if NOT EXIST "luajit21\luajit.exe" (
     call %~dp0install-luajit.cmd LuaJIT-2.1.0-beta3 luajit21
@@ -112,3 +85,21 @@ if NOT EXIST "luajit21\luajit.exe" (
     echo Using cached version of LuaJIT 2.1
 )
 set LUA=luajit21\luajit.exe
+goto :EOF
+
+
+:download_and_intall_lua
+echo Setting up %PRETTY_VERSION% ...
+if NOT EXIST %LUAEXE% (
+    @echo on
+    echo Fetching %PRETTY_VERSION% from internet
+    curl -fLsS -o %DL_ZIP% %DL_URL%
+    unzip -d %LUADIR% %DL_ZIP%
+) else (
+    echo Using cached version of %PRETTY_VERSION
+)
+set LUA=%LUAEXE%
+goto :eof
+
+:error
+echo Do not know how to install %LUAENV%
