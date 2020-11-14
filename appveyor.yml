@@ -1,4 +1,4 @@
-os: MinGW
+image: Visual Studio 2015
 shallow_clone: true
 
 # create a build matrix to use various Lua and LuaJIT versions
