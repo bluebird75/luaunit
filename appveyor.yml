@@ -23,13 +23,13 @@ install:
 cache:
   # each directory resulting from the previous download/build is cached
   - lua51       -> .appveyor\install-lua.cmd
-  - lua51_64    -> .appveyor\install-lua.cmd
+  - lua51-64    -> .appveyor\install-lua.cmd
   - lua52       -> .appveyor\install-lua.cmd
-  - lua52_64    -> .appveyor\install-lua.cmd
+  - lua52-64    -> .appveyor\install-lua.cmd
   - lua53       -> .appveyor\install-lua.cmd
-  - lua53_64    -> .appveyor\install-lua.cmd
+  - lua53-64    -> .appveyor\install-lua.cmd
   - lua54       -> .appveyor\install-lua.cmd
-  - lua54_64    -> .appveyor\install-lua.cmd
+  - lua54-64    -> .appveyor\install-lua.cmd
   - luajit20    -> .appveyor\install-lua.cmd
   - luajit21    -> .appveyor\install-lua.cmd
 
