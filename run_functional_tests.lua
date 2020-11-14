@@ -56,7 +56,7 @@ local function osExec( ... )
     local exitSuccess, exitReason, exitCode = os.execute( cmd )
     print('\n', exitSuccess, exitReason, exitCode)
 
-    if lu._LUAVERSION == 'Lua 5.1' or lu._LUAVERSION == 'LuaJIT 2.0.5' then
+    if exitReason == nil and exitCode == nil then
         -- Lua 5.1 returns only the exit code
         exitReason = 'exit'
         if IS_UNIX then
