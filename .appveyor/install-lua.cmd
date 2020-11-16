@@ -122,32 +122,7 @@ goto :eof
 echo download and install luajit
 echo on
 if NOT EXIST %LUA_EXE% (
-    echo Downloading %PRETTY_VERSION% ...
-    REM Do a minimalistic build of LuaJIT using the MinGW compiler
-
-    REM retrieve and unpack source
-    curl -fLsS -o %DL_ZIP%.zip %DL_URL%
-    echo Unzipping %DL_ZIP%
-    unzip -q %DL_ZIP%
-
-    echo Compiling %PRETTY_VERSION% ...
-
-    REM tweak Makefile for a static LuaJIT build (Windows defaults to "dynamic" otherwise)
-    sed -i "s/BUILDMODE=.*mixed/BUILDMODE=static/" %DL_ZIP%\src\Makefile
-
-    set PATH="c:\mingw\bin;C:\Program Files\Git\usr\bin\"
-    set PATH
-
-    mingw32-make TARGET_SYS=Windows -C %DL_ZIP%\src
-
-    echo Installing %PRETTY_VERSION% ...
-    REM copy luajit.exe to project dir
-    mkdir %APPVEYOR_BUILD_FOLDER%\%LUA_BIN_DIR%
-    copy %DL_ZIP%\src\luajit.exe %APPVEYOR_BUILD_FOLDER%\%LUA_BIN_DIR%\
-
-    REM clean up (remove source folders and archive)
-    rm -rf %DL_ZIP%/*
-    rm -f %DL_ZIP%.zip
+    call %~dp0install-luajit.cmd
 ) else (
     echo Using cached version of %PRETTY_VERSION%
 )
