@@ -131,6 +131,7 @@ if NOT EXIST %LUA_EXE% (
     unzip %DL_ZIP%
 
     echo Compiling %PRETTY_VERSION% ...
+    sed --version
     dir c:\MinGW
     dir c:\MinGW\bin
     c:\mingw\bin\mingw32-make --version
