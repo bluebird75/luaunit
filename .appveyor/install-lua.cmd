@@ -128,7 +128,7 @@ if NOT EXIST %LUA_EXE% (
     REM retrieve and unpack source
     curl -fLsS -o %DL_ZIP%.zip %DL_URL%
     echo Unzipping %DL_ZIP%
-    unzip %DL_ZIP%
+    unzip -q %DL_ZIP%
 
     echo Compiling %PRETTY_VERSION% ...
 
@@ -136,6 +136,7 @@ if NOT EXIST %LUA_EXE% (
     sed -i "s/BUILDMODE=.*mixed/BUILDMODE=static/" %DL_ZIP%\src\Makefile
 
     set PATH="c:\mingw\bin;C:\Program Files\Git\usr\bin\"
+    set PATH
 
     mingw32-make TARGET_SYS=Windows -C %DL_ZIP%\src
 
