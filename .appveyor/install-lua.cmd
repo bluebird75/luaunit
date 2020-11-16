@@ -132,15 +132,8 @@ if NOT EXIST %LUA_EXE% (
 
     echo Compiling %PRETTY_VERSION% ...
     sed --version
-    dir c:\MinGW
-    dir c:\MinGW\bin
-    c:\mingw\bin\mingw32-make --version
-    set PATH
-    echo Display path
-    echo %PATH%
-    echo Display path done
+    where sed
     set PATH="C:\MinGW\bin;%PATH%"
-    set PATH
     echo Display path
     echo %PATH%
     echo Display path done
