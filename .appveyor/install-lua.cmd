@@ -131,12 +131,11 @@ if NOT EXIST %LUA_EXE% (
     unzip %DL_ZIP%
 
     echo Compiling %PRETTY_VERSION% ...
-    sed --version
-    where sed
-    mingw32-make --version
 
     REM tweak Makefile for a static LuaJIT build (Windows defaults to "dynamic" otherwise)
     sed -i "s/BUILDMODE=.*mixed/BUILDMODE=static/" %DL_ZIP%\src\Makefile
+
+    set PATH="c:\mingw\bin;C:\Program Files\Git\usr\bin\"
 
     mingw32-make TARGET_SYS=Windows -C %DL_ZIP%\src
 
