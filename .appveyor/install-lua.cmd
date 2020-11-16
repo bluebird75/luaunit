@@ -136,8 +136,14 @@ if NOT EXIST %LUA_EXE% (
     dir c:\MinGW\bin
     c:\mingw\bin\mingw32-make --version
     set PATH
+    echo Display path
+    echo %PATH%
+    echo Display path done
     set PATH="C:\MinGW\bin;%PATH%"
     set PATH
+    echo Display path
+    echo %PATH%
+    echo Display path done
     mingw32-make --version
 
     REM tweak Makefile for a static LuaJIT build (Windows defaults to "dynamic" otherwise)
