@@ -128,6 +128,19 @@ then
     lua -v
     luarocks --version
     luarocks list
+    luarocks config --rock-trees
+
+    echo ">> luarocks install luacheck"
+    luarocks install luacheck 
+    echo ">> luarocks install luacov"
+    luarocks install luacov 
+    echo ">> luarocks install luacov-coversall"
+    luarocks install luacov-coveralls 
+
+    echo "Setting lua path to luarock user tree "
+    eval $(luarocks path --bin)
+
+    lua -l luacov -v
     
 else # -e $LUA_HOME_DIR
 
