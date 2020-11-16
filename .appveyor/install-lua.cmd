@@ -133,10 +133,6 @@ if NOT EXIST %LUA_EXE% (
     echo Compiling %PRETTY_VERSION% ...
     sed --version
     where sed
-    set PATH="C:\MinGW\bin;%PATH%"
-    echo Display path
-    echo %PATH%
-    echo Display path done
     mingw32-make --version
 
     REM tweak Makefile for a static LuaJIT build (Windows defaults to "dynamic" otherwise)
