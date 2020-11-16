@@ -120,8 +120,10 @@ goto :eof
 
 :download_and_intall_luajit
 echo download and install luajit
-echo on
 if NOT EXIST %LUA_EXE% (
+    REM We need to put the compiling logic into a separate script
+    REM else we hit the limitation on the length of the path variable
+    REM which somehow stops the script
     call %~dp0install-luajit.cmd
 ) else (
     echo Using cached version of %PRETTY_VERSION%

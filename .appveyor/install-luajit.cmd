@@ -15,7 +15,7 @@ mingw32-make TARGET_SYS=Windows -C %DL_ZIP%\src
 
 echo Installing %PRETTY_VERSION% ...
 REM copy luajit.exe to project dir
-mkdir %APPVEYOR_BUILD_FOLDER%\%targetdir%
+mkdir %APPVEYOR_BUILD_FOLDER%\%LUA_BIN_DIR%
 copy %DL_ZIP%\src\luajit.exe %APPVEYOR_BUILD_FOLDER%\%LUA_BIN_DIR%\
 
 REM clean up (remove source folders and archive)
