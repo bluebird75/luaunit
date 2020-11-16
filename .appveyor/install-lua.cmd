@@ -17,7 +17,6 @@ set ZIP_54_64=lua-%VER_54%_Win64_bin.zip
 set ZIP_LUAJIT20=LuaJIT-2.0.5
 set ZIP_LUAJIT21=LuaJIT-2.1.0-beta3
 
-echo Before goto
 goto %LUAENV%
 goto error
 
@@ -87,7 +86,6 @@ goto download_and_intall_lua
 
 
 :luajit20
-echo luajit20
 set PRETTY_VERSION='LuaJIT 2.0'
 set LUA_BIN_DIR=luajit20
 set LUA_EXE=luajit20\luajit.exe
