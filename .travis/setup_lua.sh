@@ -127,6 +127,7 @@ then
     # installation is ok ?
     lua -v
     luarocks --version
+    eval $(luarocks path --bin)
     luarocks list
     luarocks config --rock-trees
 
@@ -138,7 +139,6 @@ then
     luarocks install luacov-coveralls 
 
     echo "Setting lua path to luarock user tree "
-    eval $(luarocks path --bin)
 
     lua -l luacov -v
     
