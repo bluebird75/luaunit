@@ -127,20 +127,6 @@ then
     # installation is ok ?
     lua -v
     luarocks --version
-    eval $(luarocks path --bin)
-    luarocks list
-    luarocks config --rock-trees
-
-    echo ">> luarocks install luacheck"
-    luarocks install luacheck 
-    echo ">> luarocks install luacov"
-    luarocks install luacov 
-    echo ">> luarocks install luacov-coversall"
-    luarocks install luacov-coveralls 
-
-    echo "Setting lua path to luarock user tree "
-
-    lua -l luacov -v
     
 else # -e $LUA_HOME_DIR
 
@@ -231,12 +217,12 @@ else # -e $LUA_HOME_DIR
     echo ">> luarocks install luacov-coversall"
     luarocks install luacov-coveralls 
 
-    echo "Setting lua path to luarock user tree "
-    eval $(luarocks path --bin)
-
-    lua -l luacov -v
-
 fi # -e $LUA_HOME_DIR
+
+echo "Setting lua path to luarock user tree "
+eval $(luarocks path --bin)
+
+lua -l luacov -v
 
 cd $TRAVIS_BUILD_DIR
 
