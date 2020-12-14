@@ -44,6 +44,7 @@ def run_unit_tests():
 
 def run_tests():
     '''Run tests with all versions of lua'''
+    run_luacheck()
     run_unit_tests()
 
     for lua, luaversion in ALL_LUA:
@@ -53,15 +54,12 @@ def run_tests():
             report( 'Invalid retcode when running tests: %d' % retcode )
             sys.exit( retcode )
 
-    run_luacheck()
     report( 'All tests succeed!' )
 
 def run_luacheck():
     report('Running luacheck')
-    retcode = subprocess.call( ['luacheck.bat', '*.lua', 'test' ] )
-    if retcode != 0:
-        report( 'Invalid luacheck result' )
-        sys.exit( retcode )
+    subprocess.check_call([PATH_LUACHECK, 'example_with_luaunit.lua', 'luaunit.lua', 'run_unit_tests.lua', 'run_functional_tests.lua', 'test/'],
+                    shell=True)
 
 def run_example():
     for lua, luaversion in ALL_LUA:
@@ -71,6 +69,7 @@ def run_example():
             report( 'Invalid retcode when running examples: %d' % retcode )
             sys.exit( retcode )
     report( 'All examples ran!' )
+
 
 def pre_packageit_or_buildrock_step1():
     # shutil.rmtree('release', True)
