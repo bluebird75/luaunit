@@ -1,27 +1,31 @@
 # My universal runner for this project, the equivalent of a Makefile
-import subprocess, sys, os, shutil, os.path, optparse, glob
+import subprocess, sys, os, shutil, os.path, glob
 
 VERSION='3.3'
 RELEASE_NAME='luaunit-%s' % VERSION
 ROCK_RELEASE_NAME='rock-%s' % RELEASE_NAME
 RELEASE_DIR='release/' + RELEASE_NAME + '/'
-RELEASE_TAG='LUAUNIT_V3_3'
+RELEASE_TAG='LUAUNIT_V' + VERSION.replace('.', '_')
 TARGET_ZIP=RELEASE_NAME + '.zip'
 TARGET_TGZ=RELEASE_NAME + '.tgz'
 REPO_PATH='d:/work/luaunit/luaunit1'
 
-# LUA50='d:/program/dev/lua/lua50/lua50.exe'
+PATH_LUACHECK='d:\\program\\dev\\lua\\luarocks\\systree\\bin\\luacheck.bat'
+
 LUA51='d:/program/dev/lua/lua51/lua51.exe'
 LUA52='d:/program/dev/lua/lua52/lua52.exe'
 LUA53='d:/program/dev/lua/lua53/lua53.exe'
+LUA54='d:/program/dev/lua/lua54/lua54.exe'
 LUAJIT='d:/program/dev/lua/luajit/luajit.exe'
+LUAJIT21='d:/program/dev/lua/luajit21/luajit.exe'
 
 ALL_LUA = ( 
-    (LUA53, 'lua 5.3'), 
-    (LUA52, 'lua 5.2'), 
-    (LUA51, 'lua 5.1'), 
-    (LUAJIT, 'lua JIT'), 
-#    (LUA50, 'lua 5.0'),    no longer supported...
+    (LUA54, 'Lua 5.4'), 
+    (LUA53, 'Lua 5.3'), 
+    (LUA52, 'Lua 5.2'), 
+    (LUA51, 'Lua 5.1'), 
+    (LUAJIT, 'Lua JIT 2.0'), 
+    (LUAJIT21, 'Lua JIT 2.1'), 
 )
 
 os.environ["nodosfilewarning"] = "1"
