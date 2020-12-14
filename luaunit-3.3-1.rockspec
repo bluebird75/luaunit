@@ -1,8 +1,8 @@
 package = "LuaUnit"
-version = "3.3-1"
+version = "3.4-1"
 source =
 {
-	url = 'https://github.com/bluebird75/luaunit/releases/download/LUAUNIT_V3_3/rock-luaunit-3.3.zip'
+	url = 'https://github.com/bluebird75/luaunit/releases/download/LUAUNIT_V3_4/rock-luaunit-3.4.zip'
 }
 
 description =
@@ -29,12 +29,12 @@ description =
 	]],
 	homepage = "http://github.com/bluebird75/luaunit",
 	license = "BSD",
-	maintainer = 'Philippe Fremy <phil at freehackers dot org>',
+	maintainer = 'Philippe Fremy <phil at free dot fr>',
 }
 
 dependencies =
 {
-	"lua >= 5.1", "lua < 5.4"
+	"lua >= 5.1", "lua < 5.5"
 }
 
 build =
