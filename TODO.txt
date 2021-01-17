@@ -40,13 +40,11 @@ TODO Future:
 - review and enhance: TestLuaUnitExecution:test_withTableErrorInside
 
 
-Version 3.4 (future):
+Version 3.5 (future):
 ============
 
 Planned:
 --------
-- update documentation about env variables to control luaunit
-- update documentation about setOutputType() and how to run list of test classes
 - global setup / teardown
 - class setup / teardown
 - report test duration everywhere
@@ -54,7 +52,6 @@ Planned:
 - XML: report system information
 - align the "OK" vertically for text output
 - better detection of screen size
-- catch the os.exit call with a handler or something, to avoid aborting the tests
 - move all file:line description to stack trace
 - better deal with one line formatting
 - table_contains():
@@ -64,6 +61,22 @@ Planned:
 
 Already done:
 -------------
+- 
+
+Version 3.4:
+============
+TODO:
+- assertAlmostNotEquals shall support tables
+- add more documentation to new features
+- document the release process to luarocks and update dev manual
+- update documentation about how to run list of test classes
+- update doc about test skipping
+- update doc about TABLE_EQUALS_KEYBYCONTENT
+- add a list of environment variables controlling LuaUnit
+- move enabling global namespace pollution explanation to a later chapter
+
+Done
+- update documentation about setOutputType()
 - assertAlmostEquals can check lists and more complex structures
 - can choose test output type through environment variables LUAUNIT_OUTPUT
 - setOutputType() also accepts the xml filename when using the format junit
