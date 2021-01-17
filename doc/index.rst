@@ -100,7 +100,7 @@ Several installation methods are available.
 LuaRocks
 --------
 
-LuaUnit v3.3 is available as a `LuaRocks package`_ .
+LuaUnit is available as a `LuaRocks package`_ .
 
 .. _LuaRocks package: https://luarocks.org/modules/bluebird75/luaunit
 
@@ -130,7 +130,7 @@ the Lua version and installation directory. It uses, by default, Linux paths tha
 Upgrade note
 ================
 
-**Important note when upgrading to version 3.1 and above** : there is a break of backward compatibility in version 3.1, assertions functions are no longer exported directly to the global namespace. See :ref:`luaunit-global-asserts` on how to adjust or restore previous behavior.
+**Important note when upgrading from version below 3.1** : there is a break of backward compatibility in version 3.1, assertions functions are no longer exported directly to the global namespace. See :ref:`luaunit-global-asserts` on how to adjust or restore previous behavior.
 
 
 LuaUnit development
@@ -550,6 +550,11 @@ Example of TAP format::
     ok     7        TestDiv.testDivZero
     # Ran 7 tests in 0.007 seconds, 7 successes, 0 failures
 
+
+Output formats may also be controlled by the following environment variables:
+* LUAUNIT_OUTPUT: output format to use
+* LUAUNIT_JUNIT_FNAME: for junit output format, name of the xml file
+
 For a more detailed overview of all formats and their verbosity see the section `Output formats`_ .
 
 
@@ -578,9 +583,7 @@ Example::
 The most flexible approach for selecting tests to use the include and exclude functionality.
 With ``--pattern`` or ``-p``, you can provide a lua pattern and only the tests that contain
 the pattern will actually be run.
-
-Example::
-
+ Example::
     -- Run all tests of zero testing and error testing
     -- by using the magic character .
     $ lua my_test_suite.lua -v -p Err.r -p Z.ro
@@ -631,139 +634,6 @@ assertions, command-line options and specific behavior.
 Reference documentation
 ***********************
 
-.. _luaunit-global-asserts:
-
-Enabling global or module-level functions
-=========================================
-
-Versions of LuaUnit before version 3.1 would export all assertions functions to the global namespace. A typical
-lua test file would look like this:
-
-.. code-block:: lua
-
-    require('luaunit')
-
-    TestToto = {} --class
-
-        function TestToto:test1_withFailure()
-            local a = 1
-            assertEquals( a , 1 )
-            -- will fail
-            assertEquals( a , 2 )
-        end
-
-    [...]
-
-However, this is an obsolete practice in Lua. It is now recommended to keep all functions inside the module. Starting
-from version 3.1 LuaUnit follows this practice and the code should be adapted to look like this:
-
-.. code-block:: lua
-
-    -- the imported module must be stored
-    lu = require('luaunit')
-
-    TestToto = {} --class
-
-        function TestToto:test1_withFailure()
-            local a = 1
-            lu.assertEquals( a , 1 )
-            -- will fail
-            lu.assertEquals( a , 2 )
-        end
-
-    [...]
-
-If you prefer the old way, LuaUnit can continue to export assertions functions if you set the following
-global variable **prior** to importing LuaUnit:
-
-.. code-block:: lua
-
-    -- this works
-    EXPORT_ASSERT_TO_GLOBALS = true
-    require('luaunit')
-
-    TestToto = {} --class
-
-        function TestToto:test1_withFailure()
-            local a = 1
-            assertEquals( a , 1 )
-            -- will fail
-            assertEquals( a , 2 )
-        end
-
-    [...]
-
-
-LuaUnit.run() function
-======================
-
-**Return value**
-
-Run your test suite with the following line::
-
-    os.exit(lu.LauaUnit.run())
-
-The *run()* function returns the number of failures of the test suite. This is
-good for an exit code, 0 meaning success.
-
-
-**Arguments**
-
-If no arguments are supplied, it parses the command-line arguments of the script
-and interpret them. If arguments are supplied to the function, they are parsed
-instead of the command-line. It uses the same syntax.
-
-Example::
-
-    -- execute tests matching the 'withXY' pattern
-    os.exit(lu.LuaUnit.run('--pattern', 'withXY'))
-
-
-**Choice of tests**
-
-If test names were supplied, only those
-tests are executed. When test names are supplied as arguments, they don't have
-to start with *test*, they are run anyway.
-
-If no test names were supplied, a general test collection process starts
-under the following rules:
-
-* all variable starting with *test* or *Test* are scanned. 
-* if the variable is a function it is collected for testing
-* if the variable is a table:
-
-    * all keys starting with *test* or *Test* are collected (provided that they are functions)
-    * keys with name *setUp* and *tearDown* are also collected
-
-If one or more pattern were supplied, the test are then filtered according the
-pattern(s). Only the test that match the pattern(s) are actually executed.
-
-
-**setup and teardown**
-
-The function *setUp()* is executed before each test if it exists in the table. 
-The function *tearDown()* is executed after every test if it exists in the table.
-
-.. Note::
-    *tearDown()* is always executed if it exists, even if there was a failure in the test or in the *setUp()* function.
-    Failures in *setUp()* or *tearDown()* are considered as a general test failures.
-
-
-LuaUnit.runSuite() function
-==============================
-
-If you want to keep the flexibility of the command-line parsing, but want to force
-some parameters, like the output format, you must use a slightly different syntax::
-
-    runner = lu.LuaUnit.new()
-    runner:setOutputType("tap")
-    os.exit( runner:runSuite() )
-
-*runSuite()* behaves like *run()* except that it must be started
-with a LuaUnit instance as first argument, and it will use the LuaUnit
-instance settings.
- 
-
 Command-line options
 ====================
 
@@ -793,20 +663,246 @@ Selecting tests with --pattern and --exclude is usually more flexible. See `Flex
 --help, -h             Print help
 --version              Version information of LuaUnit
 
-Output formats
-------------------
 
-Choose the output format with the syntax ``-o FORMAT`` or ``--output FORMAT``.
+Output formats 
+----------------------
+
+Choose the output format with the syntax ``-o FORMAT`` or ``--output FORMAT`` or the environment variable ``LUAUNIT_OUTPUT``.
 
 Formats available:
 
 * ``text``: the default output format of LuaUnit
 * ``tap``: output compatible with the `Test Anything Protocol`_ 
 * ``junit``: output compatible with the *JUnit XML* format (used by many CI 
-  platforms). The XML is written to the file provided with the ``--name`` or ``-n`` option.
+  platforms). The XML is written to the file provided with the ``--name`` or ``-n`` option or the environment variable ``LUAUNIT_JUNIT_FNAME``.
 * ``nil``: no output at all
 
 .. _Test Anything Protocol: http://testanything.org/
+
+For more information on each format, see `Output format details`_
+
+
+Other options
+--------------
+
+**Stopping on first error or failure**
+
+If ``--failure`` or ``-f`` is passed as an option, LuaUnit will stop on the first failure or error and display the test results.
+
+If ``--error`` or ``-e`` is passed as an option, LuaUnit will stop on the first error (but continue on failures).
+
+**Randomize test order**
+
+If ``--shuffle`` or ``-s`` is passed as an option, LuaUnit will execute tests in random order. The randomisation works on all test functions
+and methods. As a consequence test methods of a given class may be splitted into multiple location, generating several test class creation and destruction.
+
+**Repeat test**
+
+When using luajit, the just-in-time compiler will kick in only after a given function has been executed a sufficient number of times. To make sure
+that the JIT is not introducing any bug, LuaUnit provides a way to repeat a test may times, with ``--repeat`` or ``-r`` followed by a number.
+
+Flexible test selection
+-------------------------
+
+LuaUnit provides very flexible way to select which tests to execute. We will illustrate this with several examples.
+
+In the examples, we use a test suite composed of the following test funcions::
+
+    -- class: TestAdd
+    TestAdd.testAddError
+    TestAdd.testAddPositive
+    TestAdd.testAddZero
+    TestAdd.testAdder
+
+    -- class: TestDiv
+    TestDiv.testDivError
+    TestDiv.testDivPositive
+    TestDiv.testDivZero
+
+
+With ``--pattern`` or ``-p``, you can provide a lua pattern and only the tests that contain
+the pattern will actually be run.
+
+Example::
+
+    -- Run all tests of zero testing and error testing
+    -- by using the magic character .
+    $ lua mytest_suite.lua -v -p Err.r -p Z.ro
+    Started on 02/19/17 22:29:45
+        TestAdd.testAddError ... Ok
+        TestAdd.testAddZero ... Ok
+        TestDiv.testDivError ... Ok
+        TestDiv.testDivZero ... Ok
+    =========================================================
+    Ran 4 tests in 0.004 seconds, 4 successes, 0 failures, 3 non-selected
+    OK
+
+The number of tests ignored by the selection is printed, along
+with the test result. The tests *TestAdd.testAdder testAdd.testPositive and
+testDiv.testDivPositive* have been correctly ignored.
+
+The pattern can be any lua pattern. Be sure to exclude all magic
+characters with % (like ``-+?*``) and protect your pattern from the shell
+interpretation by putting it in quotes.
+
+With ``--exclude`` or ``-x``, you can provide a lua pattern of tests which should
+be excluded from execution.
+
+Example::
+
+    -- Run all tests except zero testing and except error testing
+    $ lua mytest_suite.lua -v -x Error -x Zero
+    Started on 02/19/17 22:29:45
+        TestAdd.testAddPositive ... Ok
+        TestAdd.testAdder ... Ok
+        TestDiv.testDivPositive ... Ok
+    =========================================================
+    Ran 3 tests in 0.003 seconds, 3 successes, 0 failures, 4 non-selected
+    OK
+
+You can also combine test selection and test exclusion. The rules are the following:
+
+* if the first argument encountered is a inclusion pattern, the list of tests start empty
+* if the first argument encountered is an exclusion pattern, the list of tests start with all tests of the suite
+* each subsequent inclusion pattern will add new tests to the list
+* each subsequent exclusion pattern will remove test from the list
+* the final list is the list of tests executed
+
+In pure logic term, inclusion is the equivalent of ``or match(pattern)`` and exclusion is ``and not match(pattern)`` .
+
+Let's look at some practical examples::
+
+    -- Add all tests which include the word Add
+    -- except the test Adder
+    -- and also include the Zero tests
+    $ lua my_test_suite.lua -v --pattern Add --exclude Adder --pattern Zero
+    Started on 02/19/17 22:29:45
+        TestAdd.testAddError ... Ok
+        TestAdd.testAddPositive ... Ok
+        TestAdd.testAddZero ... Ok
+        TestDiv.testDivZero ... Ok
+    =========================================================
+    Ran 4 tests in 0.003 seconds, 4 successes, 0 failures, 3 non-selected
+    OK
+
+
+LuaUnit runner object
+==============
+
+The various options set on the command-line can be overridden by creating a LuaUnit runner explicitely and calling specific functions on it.
+
+.. function:: LuaUnit.new()
+
+The execution of a LuaUnit test suite is controlled through a runner object. This object is created with `LuaUnit.new()` .
+
+.. code-block:: lua
+
+    lu = require('luaunit')
+
+
+    runner = lu.LuaUnit.new()
+    -- use the runner object...
+    runner.runSuite()
+
+.. function:: runner:setVerbosity( verbosity )
+
+Set the verbosity of the runner. The value is an integer ranging from lu.VERBOSITY_QUIET to lu.VERBOSITY_VERBOSE .
+
+
+.. function:: runner:setQuitOnError( quitOnError )
+
+Set the quit-on-first-error behavior, like the command-line `--xx`. The argument is a boolean value.
+
+
+.. function:: runner:setQuitOnFailuer( quitOnFailure )
+
+Set the quit-on-first-failure-or-error behavior, like the command-line `--xx`. The argument is a boolean value.
+
+
+.. function:: runner:setRepeat( repeatNumber )
+
+Set the number of times a test function is executed, like the command-line `-xx`. The argument is an integer.
+
+
+.. function:: runner:setShuffle( shuffle )
+
+Set whether the test are run in randomized, like the command-line `--shuffle`. The argument is a boolean value.
+
+.. function:: runner:setOutputType(type [, junit_fname])
+
+Set the output type of the test suite. See `Output format`_ for possible values. When setting the format `junit`, it
+is mandatory to set the filename receiving the xml output. This can be done by passing it as second argument of this function.
+
+.. function:: runner:runSuite( [arguments] )
+
+This function runs the test suite.
+
+**Return value**
+
+It returns the number of failures and errors. On
+success 0 is returned, making is suitable for an exit code.
+
+.. code-block:: lua
+
+    lu = require('luaunit')
+
+    runner = lu.LuaUnit.new()
+    os.exit(runner.runSuite())
+
+
+**Arguments**
+
+If no arguments are supplied, it parses the command-line arguments of the script
+and interpret them. If arguments are supplied to the function, they are parsed
+instead of the command-line. It uses the same syntax.
+
+Test names may be supplied as extra arguments to the functions, to execute
+only these specific tests. Note that when explicit names are provided
+LuaUnit does not require the test names to necessarily start with *test*.
+
+If no test names were supplied, a general test collection process is done
+and the resulting tests are executed.
+
+
+Example of using pattern to select tests::
+
+.. code-block:: lua
+
+    lu = require('luaunit')
+
+    runner = lu.LuaUnit.new()
+    -- execute tests matching the 'withXY' pattern
+    os.exit(runner.runSuite('--pattern', 'withXY')
+
+
+Example of explicitly selecting tests:: 
+
+.. code-block:: lua
+
+    lu = require('luaunit')
+
+    runner = lu.LuaUnit.new()
+    os.exit(runner.runSuite('testABC', 'testDEF'))
+
+
+.. function:: LuaUnit.run( [arguments] )
+
+This function may be called directly from the LuaUnit table. It will
+create internally a LuaUnit runner and pass all arguments to it.
+
+Arguments and return value is the same as :func:`runner:runSuite()` 
+
+Example::
+
+    -- execute tests matching the 'withXY' pattern
+    os.exit(lu.LuaUnit.run('--pattern', 'withXY'))
+
+
+
+
+Output formats details
+=======================
+
 
 To demonstrate the different output formats, we will take the example of the `Getting started with LuaUnit`_
 section and add the following two failing cases:
@@ -986,10 +1082,8 @@ The XML file generated by this execution is the following::
 As you can see, the XML file is quite rich in terms of information. The verbosity level has no effect on junit output, all verbosity give the same output.
 
 Slight inconsistencies exist in the exact XML format in the different continuous integration suites. LuaUnit provides a compatible output which
-is validated against `Jenkins/Hudson schema`_ 
-and `Ant/Maven schema`_ . If you ever find an problem in the XML formats, please report a bug to us, more testing is always welcome.
+is validated against `Jenkins/Hudson schema`_ . If you ever find an problem in the XML formats, please report a bug to us, more testing is always welcome.
 
-.. _Ant/Maven schema:  https://github.com/bluebird75/luaunit/blob/LUAUNIT_V3_2_1/junitxml/junit-apache-ant.xsd 
 .. _Jenkins/Hudson schema: https://github.com/bluebird75/luaunit/blob/LUAUNIT_V3_2_1/junitxml/junit-jenkins.xsd  
 
 **TAP format**
@@ -1086,108 +1180,123 @@ This mode is used by LuaUnit for its internal validation.
 
 
 
-Other options
---------------
+Test collection and execution process
+-------------------------------------
+XXX
 
-**Stopping on first error or failure**
+under the following rules:
 
-If ``--failure`` or ``-f`` is passed as an option, LuaUnit will stop on the first failure or error and display the test results.
+* all variable starting with *test* or *Test* are scanned. 
+* if the variable is a function it is collected for testing
+* if the variable is a table:
 
-If ``--error`` or ``-e`` is passed as an option, LuaUnit will stop on the first error (but continue on failures).
+    * all keys starting with *test* or *Test* are collected (provided that they are functions)
+    * keys with name *setUp* and *tearDown* are also collected
 
-**Randomize test order**
-
-If ``--shuffle`` or ``-s`` is passed as an option, LuaUnit will execute tests in random order. The randomisation works on all test functions
-and methods. As a consequence test methods of a given class may be splitted into multiple location, generating several test class creation and destruction.
-
-**Repeat test**
-
-When using luajit, the just-in-time compiler will kick in only after a given function has been executed a sufficient number of times. To make sure
-that the JIT is not introducing any bug, LuaUnit provides a way to repeat a test may times, with ``--repeat`` or ``-r`` followed by a number.
-
-Flexible test selection
--------------------------
-
-LuaUnit provides very flexible way to select which tests to execute. We will illustrate this with several examples.
-
-In the examples, we use a test suite composed of the following test funcions::
-
-    -- class: TestAdd
-    TestAdd.testAddError
-    TestAdd.testAddPositive
-    TestAdd.testAddZero
-    TestAdd.testAdder
-
-    -- class: TestDiv
-    TestDiv.testDivError
-    TestDiv.testDivPositive
-    TestDiv.testDivZero
+If one or more pattern were supplied, the test are then filtered according the
+pattern(s). Only the test that match the pattern(s) are actually executed.
 
 
-With ``--pattern`` or ``-p``, you can provide a lua pattern and only the tests that contain
-the pattern will actually be run.
+**setup and teardown**
 
+The function *setUp()* is executed before each test if it exists in the table. 
+The function *tearDown()* is executed after every test if it exists in the table.
+
+.. Note::
+    *tearDown()* is always executed if it exists, even if there was a failure in the test or in the *setUp()* function.
+    Failures in *setUp()* or *tearDown()* are considered as a general test failures.
+
+With no arguments, the command-line arguments are
+t
+The *run()* function returns the number of failures of the test suite. This is
+good for an exit code, 0 meaning success.
+
+
+If you want to keep the flexibility of the command-line parsing, but want to force
+some parameters, like the output format, you must use a slightly different syntax::
+
+    runner = lu.LuaUnit.new()
+    runner:setOutputType("tap")
+    os.exit( runner:runSuite() )
+
+*runSuite()* behaves like *run()* except that it must be started
+with a LuaUnit instance as first argument, and it will use the LuaUnit
+instance settings.
+ 
 Example::
 
-    -- Run all tests of zero testing and error testing
-    -- by using the magic character .
-    $ lua mytest_suite.lua -v -p Err.r -p Z.ro
-    Started on 02/19/17 22:29:45
-        TestAdd.testAddError ... Ok
-        TestAdd.testAddZero ... Ok
-        TestDiv.testDivError ... Ok
-        TestDiv.testDivZero ... Ok
-    =========================================================
-    Ran 4 tests in 0.004 seconds, 4 successes, 0 failures, 3 non-selected
-    OK
+.. code-block:: lua
 
-The number of tests ignored by the selection is printed, along
-with the test result. The tests *TestAdd.testAdder testAdd.testPositive and
-testDiv.testDivPositive* have been correctly ignored.
+    lu = require('luaunit')
 
-The pattern can be any lua pattern. Be sure to exclude all magic
-characters with % (like ``-+?*``) and protect your pattern from the shell
-interpretation by putting it in quotes.
+    runner = lu.LuaUnit.new()
+    runner:setOutputType('junit', 'suite_xml_output.xml')
+    runner:setVerbosity(lu.VERBOSITY_VERBOSE)
+    ...
+    runner:runSuite()
 
-With ``--exclude`` or ``-x``, you can provide a lua pattern of tests which should
-be excluded from execution.
 
-Example::
+.. _luaunit-global-asserts:
 
-    -- Run all tests except zero testing and except error testing
-    $ lua mytest_suite.lua -v -x Error -x Zero
-    Started on 02/19/17 22:29:45
-        TestAdd.testAddPositive ... Ok
-        TestAdd.testAdder ... Ok
-        TestDiv.testDivPositive ... Ok
-    =========================================================
-    Ran 3 tests in 0.003 seconds, 3 successes, 0 failures, 4 non-selected
-    OK
+Enabling global or module-level functions
+=========================================
 
-You can also combine test selection and test exclusion. The rules are the following:
+Versions of LuaUnit before version 3.1 would export all assertions functions to the global namespace. A typical
+lua test file would look like this:
 
-* if the first argument encountered is a inclusion pattern, the list of tests start empty
-* if the first argument encountered is an exclusion pattern, the list of tests start with all tests of the suite
-* each subsequent inclusion pattern will add new tests to the list
-* each subsequent exclusion pattern will remove test from the list
-* the final list is the list of tests executed
+.. code-block:: lua
 
-In pure logic term, inclusion is the equivalent of ``or match(pattern)`` and exclusion is ``and not match(pattern)`` .
+    require('luaunit')
 
-Let's look at some practical examples::
+    TestToto = {} --class
 
-    -- Add all tests which include the word Add
-    -- except the test Adder
-    -- and also include the Zero tests
-    $ lua my_test_suite.lua -v --pattern Add --exclude Adder --pattern Zero
-    Started on 02/19/17 22:29:45
-        TestAdd.testAddError ... Ok
-        TestAdd.testAddPositive ... Ok
-        TestAdd.testAddZero ... Ok
-        TestDiv.testDivZero ... Ok
-    =========================================================
-    Ran 4 tests in 0.003 seconds, 4 successes, 0 failures, 3 non-selected
-    OK
+        function TestToto:test1_withFailure()
+            local a = 1
+            assertEquals( a , 1 )
+            -- will fail
+            assertEquals( a , 2 )
+        end
+
+    [...]
+
+However, this is an obsolete practice in Lua. It is now recommended to keep all functions inside the module. Starting
+from version 3.1 LuaUnit follows this practice and the code should be adapted to look like this:
+
+.. code-block:: lua
+
+    -- the imported module must be stored
+    lu = require('luaunit')
+
+    TestToto = {} --class
+
+        function TestToto:test1_withFailure()
+            local a = 1
+            lu.assertEquals( a , 1 )
+            -- will fail
+            lu.assertEquals( a , 2 )
+        end
+
+    [...]
+
+If you prefer the old way, LuaUnit can continue to export assertions functions if you set the following
+global variable **prior** to importing LuaUnit:
+
+.. code-block:: lua
+
+    -- this works
+    EXPORT_ASSERT_TO_GLOBALS = true
+    require('luaunit')
+
+    TestToto = {} --class
+
+        function TestToto:test1_withFailure()
+            local a = 1
+            assertEquals( a , 1 )
+            -- will fail
+            assertEquals( a , 2 )
+        end
+
+    [...]
 
 
 Assertions functions
@@ -1198,8 +1307,7 @@ relies on the :func:`prettystr` for printing nicely formatted values.
 
 All function accept an optional extra message which if provided, is printed along with the failure message.
 
-.. Note:: see :ref:`table-printing` and :ref:`comparing-table-keys-table` for more dealing with recursive tables and tables containing keys of type table.
-
+.. Note:: see :ref:`table-printing` for more information on how LuaUnit prints tables.
 
 Equality assertions
 ----------------------
@@ -1221,16 +1329,57 @@ not influence the test itself.
 
     **Alias**: *assert_equals()*
 
-    Assert that two values are equal. 
+    Assert that two values are equal. This is the most used function for assertion within LuaUnit.
+    The values being compared may be integers, floats, strings, tables, functions or a combination of 
+    those. If provided, *extra_msg* is a string which will be printed along with the failure message.
 
-    For tables, the comparison is a deep comparison :
+    When comparing floating point numbers, it is better to use :func:`assertAlmostEquals` which supports a margin
+    for the equality verification.
 
-    * number of elements must be the same
-    * tables must contain the same keys
-    * each key must contain the same values. The values
-      are also compared recursively with deep comparison.
+    For tables, the comparison supports nested tables and cyclic structures. To be equal, two tables must
+    have the same keys and the value associated with a key must compare equal with assertEquals() (using a recursive
+    algorithm).
 
-    If provided, *extra_msg* is a string which will be printed along with the failure message.
+    When displaying the difference between two tables used as lists, LuaUnit performs an analysis of the list content
+    to pinpoint the place where the list actually differs. See the below example:
+
+.. code-block:: lua
+
+    -- lua test code. Can you spot the difference ?
+    function TestListCompare:test1()
+        local A = { 121221, 122211, 121221, 122211, 121221, 122212, 121212, 122112, 122121, 121212, 122121 } 
+        local B = { 121221, 122211, 121221, 122211, 121221, 122212, 121212, 122112, 121221, 121212, 122121 }
+        lu.assertEquals( A, B )
+    end
+
+    $ lua test_some_lists_comparison.lua
+
+    TestListCompare.test1 ... FAIL
+    test/some_lists_comparisons.lua:22: expected: 
+
+    List difference analysis:
+    * lists A (actual) and B (expected) have the same size
+    * lists A and B start differing at index 9
+    * lists A and B are equal again from index 10
+    * Common parts:
+      = A[1], B[1]: 121221
+      = A[2], B[2]: 122211
+      = A[3], B[3]: 121221
+      = A[4], B[4]: 122211
+      = A[5], B[5]: 121221
+      = A[6], B[6]: 122212
+      = A[7], B[7]: 121212
+      = A[8], B[8]: 122112
+    * Differing parts:
+      - A[9]: 122121
+      + B[9]: 121221
+    * Common parts at the end of the lists
+      = A[10], B[10]: 121212
+      = A[11], B[11]: 122121
+
+
+
+.. Note:: see :ref:`comparing-table-keys-table` for information on comparison of tables containing keys of type table.
 
     LuaUnit provides other table-related assertions, see :ref:`assert-table` .
 
@@ -1240,7 +1389,8 @@ not influence the test itself.
     **Alias**: *assert_not_equals()*
 
     Assert that two values are different. The assertion
-    fails if the two values are identical. Like the previous function, it uses table deep comparison.
+    fails if the two values are identical. It behaves exactly like :func:`assertEquals` but checks
+    for the opposite condition.
 
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
@@ -1772,9 +1922,13 @@ This is either:
 
     **Alias**: *assert_almost_equals()*
 
-    Assert that two floating point numbers are equal by the defined margin. 
+    Assert that two floating point numbers or tables are equal by the defined margin. 
     If margin is not provided, the machine epsilon *EPS* is used.
     If provided, *extra_msg* is a string which will be printed along with the failure message.
+
+    The function accepts either floating point numbers or tables. Complex structures with
+    nested tables are supported. Comparing tables with assertAlmostEquals works just like :func:`assertEquals`
+    with the difference that values are compared with a margin instead of with direct equality.
 
     Be careful that depending on the calculation, it might make more sense to measure
     the absolute error or the relative error (see below):
