@@ -412,8 +412,8 @@ local function stripLuaunitTrace2( stackTrace, errMsg )
         [C]: in function 'xpcall'
         ./luaunit.lua:1449: in function 'protectedCall'
         ./luaunit.lua:1508: in function 'execOneFunction'
-        ./luaunit.lua:1596: in function 'runSuiteByInstances'
-        ./luaunit.lua:1660: in function 'runSuiteByNames'
+        ./luaunit.lua:1596: in function 'internalRunSuiteByInstances'
+        ./luaunit.lua:1660: in function 'internalRunSuiteByNames'
         ./luaunit.lua:1736: in function 'runSuite'
         example_with_luaunit.lua:140: in main chunk
         [C]: in ?>>
@@ -427,8 +427,8 @@ local function stripLuaunitTrace2( stackTrace, errMsg )
         [C]: in function 'xpcall'
         ./luaunit.lua:1517: in function 'protectedCall'
         ./luaunit.lua:1578: in function 'execOneFunction'
-        ./luaunit.lua:1677: in function 'runSuiteByInstances'
-        ./luaunit.lua:1730: in function 'runSuiteByNames'
+        ./luaunit.lua:1677: in function 'internalRunSuiteByInstances'
+        ./luaunit.lua:1730: in function 'internalRunSuiteByNames'
         ./luaunit.lua:1806: in function 'runSuite'
         example_with_luaunit.lua:140: in main chunk
         [C]: in ?>>
@@ -440,8 +440,8 @@ local function stripLuaunitTrace2( stackTrace, errMsg )
         [C]: in function 'xpcall'
         luaunit2/luaunit.lua:1532: in function 'protectedCall'
         luaunit2/luaunit.lua:1591: in function 'execOneFunction'
-        luaunit2/luaunit.lua:1679: in function 'runSuiteByInstances'
-        luaunit2/luaunit.lua:1743: in function 'runSuiteByNames'
+        luaunit2/luaunit.lua:1679: in function 'internalRunSuiteByInstances'
+        luaunit2/luaunit.lua:1743: in function 'internalRunSuiteByNames'
         luaunit2/luaunit.lua:1819: in function 'runSuite'
         luaunit2/example_with_luaunit.lua:140: in main chunk
         [C]: in ?>>
@@ -2929,7 +2929,7 @@ end
             if self.quitOnError or self.quitOnFailure then
                 -- Runtime error - abort test execution as requested by
                 -- "--error" option. This is done by setting a special
-                -- flag that gets handled in runSuiteByInstances().
+                -- flag that gets handled in internalRunSuiteByInstances().
                 print("\nERROR during LuaUnit test execution:\n" .. node.msg)
                 self.result.aborted = true
             end
@@ -2937,7 +2937,7 @@ end
             if self.quitOnFailure then
                 -- Failure - abort test execution as requested by
                 -- "--failure" option. This is done by setting a special
-                -- flag that gets handled in runSuiteByInstances().
+                -- flag that gets handled in internalRunSuiteByInstances().
                 print("\nFailure during LuaUnit test execution:\n" .. node.msg)
                 self.result.aborted = true
             end
@@ -3218,11 +3218,13 @@ end
         end
     end
 
-    function M.LuaUnit:runSuiteByInstances( listOfNameAndInst )
+    function M.LuaUnit:internalRunSuiteByInstances( listOfNameAndInst )
         --[[ Run an explicit list of tests. Each item of the list must be one of:
         * { function name, function instance }
         * { class name, class instance }
         * { class.method name, class instance }
+
+        This function is internal to LuaUnit. The official API to perform this action is runSuiteByInstances()
         ]]
 
         local expandedList = self.expandClasses( listOfNameAndInst )
@@ -3267,10 +3269,10 @@ end
         end
     end
 
-    function M.LuaUnit:runSuiteByNames( listOfName )
+    function M.LuaUnit:internalRunSuiteByNames( listOfName )
         --[[ Run LuaUnit with a list of generic names, coming either from command-line or from global
             namespace analysis. Convert the list into a list of (name, valid instances (table or function))
-            and calls runSuiteByInstances.
+            and calls internalRunSuiteByInstances.
         ]]
 
         local instanceName, instance
@@ -3317,7 +3319,7 @@ end
             table.insert( listOfNameAndInst, { name, instance } )
         end
 
-        self:runSuiteByInstances( listOfNameAndInst )
+        self:internalRunSuiteByInstances( listOfNameAndInst )
     end
 
     function M.LuaUnit.run(...)
@@ -3361,7 +3363,12 @@ end
 
     end
 
-    function M.LuaUnit:runSuite( ... )
+    function M.LuaUnit:initFromArguments( ... )
+        --[[Parses all arguments from either command-line or direct call and set internal
+        flags of LuaUnit runner according to it.
+
+        Return the list of names which were possibly passed on the command-line or as arguments
+        ]]
         local args = {...}
         if type(args[1]) == 'table' and args[1].__class__ == 'LuaUnit' then
             -- run was called with the syntax M.LuaUnit:runSuite()
@@ -3397,12 +3404,36 @@ end
             pcall_or_abort(self.setOutputType, self, options.output, options.fname)
         end
 
-        self:registerSuite()
-        self:runSuiteByNames( options.testNames or M.LuaUnit.collectTests() )
-        self:unregisterSuite()
+        return options.testNames
+    end
 
+    function M.LuaUnit:runSuite( ... )
+        testNames = self:initFromArguments(...)
+        self:registerSuite()
+        self:internalRunSuiteByNames( testNames or M.LuaUnit.collectTests() )
+        self:unregisterSuite()
         return self.result.notSuccessCount
     end
+
+    function M.LuaUnit:runSuiteByInstances( listOfNameAndInst )
+        --[[
+        Run all test functions or tables provided as input.
+
+        Input: a list of { name, instance }
+            instance can either be a function or a table containing test functions starting with the prefix "test"
+
+        return the number of failures and errors, 0 meaning success
+        ]]
+        -- parse the command-line arguments
+        testNames = self:initFromArguments()
+        self:registerSuite()
+        self:internalRunSuiteByInstances( listOfNameAndInst )
+        self:unregisterSuite()
+        return self.result.notSuccessCount
+    end
+
+
+
 -- class LuaUnit
 
 -- For compatbility with LuaUnit v2
@@ -3410,6 +3441,7 @@ M.run = M.LuaUnit.run
 M.Run = M.LuaUnit.run
 
 function M:setVerbosity( verbosity )
+    -- set the verbosity value (as integer)
     M.LuaUnit.verbosity = verbosity
 end
 M.set_verbosity = M.setVerbosity
