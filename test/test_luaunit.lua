@@ -3149,7 +3149,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByNames( { 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' } )
+        runner:runSuite( 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' )
 
         -- number of instances cleanup was done properly
         lu.assertEquals( #lu.LuaUnit.instances, 1 )
@@ -3176,11 +3176,11 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( executedTests[5], "MyTestToto1:testb" )
     end
 
-    function TestLuaUnitExecution:test_internalRunSuiteByNames()
+    function TestLuaUnitExecution:test_runSuite()
         -- note: this also test that names are executed in explicit order
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByNames( { 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' } )
+        runner:runSuite( 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' )
         lu.assertEquals( #executedTests, 7 )
         lu.assertEquals( executedTests[1], "MyTestToto2:test1" )
         lu.assertEquals( executedTests[2], "MyTestToto1:test1" )
@@ -3191,7 +3191,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( #executedTests, 0 )
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'Toto', MyTestToto1 } }  )
+        runner:runSuiteByInstances( { { 'Toto', MyTestToto1 } }  )
         lu.assertEquals( #executedTests, 5 )
 
         lu.assertEquals( #runner.result.allTests, 5 )
@@ -3210,7 +3210,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( #executedTests, 0 )
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { 
+        runner:runSuiteByInstances( { 
             { 'MyLocalTestToto1', MyLocalTestToto1 },
             { 'MyLocalTestToto2.test2', MyLocalTestToto2 },
             { 'MyLocalTestFunction', MyLocalTestFunction },
@@ -3277,7 +3277,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupTeardown.test1', MyTestWithSetupTeardown } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupTeardown.test1', MyTestWithSetupTeardown } } )
         lu.assertEquals( runner.result.notSuccessCount, 0 )
         lu.assertEquals( myExecutedTests[1], '1setUp' )   
         lu.assertEquals( myExecutedTests[2], '1test1')
@@ -3285,7 +3285,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( #myExecutedTests, 3)
 
         myExecutedTests = {}
-        runner:internalRunSuiteByInstances( { 
+        runner:runSuiteByInstances( { 
             { 'MyTestWithSetupTeardown', MyTestWithSetupTeardown },
             { 'MyTestWithSetupTeardown2', MyTestWithSetupTeardown2 },
             { 'MyTestWithSetupTeardown3', MyTestWithSetupTeardown3 },
@@ -3324,7 +3324,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         lu.assertEquals( runner.result.failureCount, 1 )
         lu.assertEquals( runner.result.errorCount, 0 )
@@ -3345,7 +3345,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         lu.assertEquals( runner.result.failureCount, 1 )
         lu.assertEquals( runner.result.errorCount, 0 )
@@ -3367,7 +3367,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         -- Note: in the future, we may want to report two failures for this
         lu.assertEquals( runner.result.failureCount, 1 )
@@ -3389,7 +3389,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         -- Note: in the future, we may want to report two failures for this
         lu.assertEquals( runner.result.failureCount, 1 )
@@ -3411,7 +3411,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupFailure', MyTestWithSetupFailure } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         -- Note: in the future, we may want to report two failures for this
         lu.assertEquals( runner.result.failureCount, 1 )
@@ -3434,7 +3434,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         lu.assertEquals( runner.result.failureCount, 0 )
         lu.assertEquals( runner.result.errorCount, 1 )
@@ -3455,7 +3455,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         lu.assertEquals( runner.result.failureCount, 0 )
         lu.assertEquals( runner.result.errorCount, 1 )
@@ -3477,7 +3477,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         -- Note: in the future, we may want to report two errors for this
         lu.assertEquals( runner.result.failureCount, 0 )
@@ -3499,7 +3499,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         -- Note: in the future, we may want to report two errors for this
         lu.assertEquals( runner.result.failureCount, 0 )
@@ -3521,7 +3521,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         -- Note: in the future, we may want to report two errors for this
         lu.assertEquals( runner.result.failureCount, 0 )
@@ -3544,7 +3544,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         -- Note: in the future, we may want to report failure + error for this
         lu.assertEquals( runner.result.failureCount, 1 )
@@ -3567,7 +3567,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         -- Note: in the future, we may want to report failure + error for this
         lu.assertEquals( runner.result.failureCount, 0 )
@@ -3590,7 +3590,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         -- Note: in the future, we may want to report failure + error for this
         lu.assertEquals( runner.result.failureCount, 0 )
@@ -3614,7 +3614,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
+        runner:runSuiteByInstances( { { 'MyTestWithSetupError', MyTestWithSetupError } } )
         lu.assertEquals( runner.result.notSuccessCount, 1 )
         -- Note: in the future, we may want to report failure + error for this
         lu.assertEquals( runner.result.failureCount, 1 )
@@ -3682,7 +3682,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         runner:setOutputType( "NIL" )
         runner.patternIncludeFilter = {"test"}
 
-        runner:internalRunSuiteByInstances( { 
+        runner:runSuiteByInstances( { 
             { 'MyTestClassA', MyTestClassA },
             { 'MyTestClassB', MyTestClassB }
         } )
@@ -3775,6 +3775,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( myExecutedTests[21], 'DteardownClass')
         lu.assertEquals( myExecutedTests[22], 'teardownSuite')
 
+
         lu.assertEquals( #myExecutedTests, 22)
     end
 
@@ -3787,7 +3788,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'my_test_fails', my_test_fails } } )
+        runner:runSuiteByInstances( { { 'my_test_fails', my_test_fails } } )
         lu.assertEquals( runner.result.selectedCount, 1 )
         lu.assertEquals( runner.result.failureCount, 1 )
         lu.assertEquals( runner.result.errorCount, 0 )
@@ -3805,7 +3806,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'my_test_fails', my_test_fails } } )
+        runner:runSuiteByInstances( { { 'my_test_fails', my_test_fails } } )
         lu.assertEquals( runner.result.selectedCount, 1 )
         lu.assertEquals( runner.result.errorCount, 0 )
         lu.assertEquals( runner.result.failureCount, 1 )
@@ -3822,7 +3823,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'my_test_success', my_test_success } } )
+        runner:runSuiteByInstances( { { 'my_test_success', my_test_success } } )
         lu.assertEquals( runner.result.selectedCount, 1 )
         lu.assertEquals( runner.result.errorCount, 0 )
         lu.assertEquals( runner.result.failureCount, 0 )
@@ -3845,7 +3846,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'my_test_fails', my_test_fails }, {'my_test_success', my_test_success} } )
+        runner:runSuiteByInstances( { { 'my_test_fails', my_test_fails }, {'my_test_success', my_test_success} } )
         lu.assertEquals( runner.result.selectedCount, 2 )
         -- print( lu.prettystr( runner.result ) )
         lu.assertEquals( runner.result.failureCount, 0 )
@@ -3863,7 +3864,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'my_test_skip', my_test_skip } } )
+        runner:runSuiteByInstances( { { 'my_test_skip', my_test_skip } } )
         lu.assertEquals( runner.result.selectedCount, 1 )
         lu.assertEquals( runner.result.runCount, 0 )
         lu.assertEquals( runner.result.failureCount, 0 )
@@ -3887,7 +3888,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'my_test_skip', my_test_skip }, {'my_test_no_skip', my_test_no_skip} } )
+        runner:runSuiteByInstances( { { 'my_test_skip', my_test_skip }, {'my_test_no_skip', my_test_no_skip} } )
         lu.assertEquals( runner.result.selectedCount, 2 )
         lu.assertEquals( runner.result.failureCount, 0 )
         lu.assertEquals( runner.result.successCount, 0 )
@@ -3913,7 +3914,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances( { { 'my_test_run_only_if', my_test_run_only_if }, {'my_test_not_run_only_if', my_test_not_run_only_if} } )
+        runner:runSuiteByInstances( { { 'my_test_run_only_if', my_test_run_only_if }, {'my_test_not_run_only_if', my_test_not_run_only_if} } )
         lu.assertEquals( runner.result.selectedCount, 2 )
         lu.assertEquals( runner.result.failureCount, 0 )
         lu.assertEquals( runner.result.successCount, 0 )
@@ -4156,7 +4157,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByInstances { { 'my_test_with_table_error', my_test_with_table_error } }
+        runner:runSuiteByInstances { { 'my_test_with_table_error', my_test_with_table_error } }
         lu.assertStrContains(runner.result.allTests[1].msg, '{code=123}')
     end
 
@@ -4265,7 +4266,7 @@ TestLuaUnitResults = { __class__ = 'TestLuaUnitResults' }
     function TestLuaUnitResults:test_runSuiteOk()
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:internalRunSuiteByNames( { 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' } )
+        runner:runSuite( 'MyTestToto2', 'MyTestToto1', 'MyTestFunction' )
         lu.assertEquals( #runner.result.allTests, 7 )
         lu.assertEquals( #runner.result.failedTests, 0 )
         lu.assertEquals( #runner.result.errorTests, 0 )
