@@ -412,8 +412,8 @@ local function stripLuaunitTrace2( stackTrace, errMsg )
         [C]: in function 'xpcall'
         ./luaunit.lua:1449: in function 'protectedCall'
         ./luaunit.lua:1508: in function 'execOneFunction'
-        ./luaunit.lua:1596: in function 'internalRunSuiteByInstances'
-        ./luaunit.lua:1660: in function 'internalRunSuiteByNames'
+        ./luaunit.lua:1596: in function 'runSuiteByInstances'
+        ./luaunit.lua:1660: in function 'runSuiteByNames'
         ./luaunit.lua:1736: in function 'runSuite'
         example_with_luaunit.lua:140: in main chunk
         [C]: in ?>>
@@ -427,8 +427,8 @@ local function stripLuaunitTrace2( stackTrace, errMsg )
         [C]: in function 'xpcall'
         ./luaunit.lua:1517: in function 'protectedCall'
         ./luaunit.lua:1578: in function 'execOneFunction'
-        ./luaunit.lua:1677: in function 'internalRunSuiteByInstances'
-        ./luaunit.lua:1730: in function 'internalRunSuiteByNames'
+        ./luaunit.lua:1677: in function 'runSuiteByInstances'
+        ./luaunit.lua:1730: in function 'runSuiteByNames'
         ./luaunit.lua:1806: in function 'runSuite'
         example_with_luaunit.lua:140: in main chunk
         [C]: in ?>>
@@ -440,8 +440,8 @@ local function stripLuaunitTrace2( stackTrace, errMsg )
         [C]: in function 'xpcall'
         luaunit2/luaunit.lua:1532: in function 'protectedCall'
         luaunit2/luaunit.lua:1591: in function 'execOneFunction'
-        luaunit2/luaunit.lua:1679: in function 'internalRunSuiteByInstances'
-        luaunit2/luaunit.lua:1743: in function 'internalRunSuiteByNames'
+        luaunit2/luaunit.lua:1679: in function 'runSuiteByInstances'
+        luaunit2/luaunit.lua:1743: in function 'runSuiteByNames'
         luaunit2/luaunit.lua:1819: in function 'runSuite'
         luaunit2/example_with_luaunit.lua:140: in main chunk
         [C]: in ?>>
