@@ -828,14 +828,29 @@ Set the number of times a test function is executed, like the command-line `-xx`
 
 Set whether the test are run in randomized, like the command-line `--shuffle`. The argument is a boolean value.
 
+
 .. function:: runner:setOutputType(type [, junit_fname])
 
 Set the output type of the test suite. See `Output format`_ for possible values. When setting the format `junit`, it
 is mandatory to set the filename receiving the xml output. This can be done by passing it as second argument of this function.
 
+
 .. function:: runner:runSuite( [arguments] )
 
 This function runs the test suite.
+
+**Arguments**
+
+If no arguments are supplied, it parses the command-line arguments of the script
+and interpret them. If arguments are supplied to the function, they are parsed
+as the command-line. It uses the same syntax.
+
+Test names may be supplied in arguments, to execute
+only these specific tests. Note that when explicit names are provided
+LuaUnit does not require the test names to necessarily start with *test*.
+
+If no test names were supplied, a general test collection process is done
+and the resulting tests are executed.
 
 **Return value**
 
@@ -849,19 +864,6 @@ success 0 is returned, making is suitable for an exit code.
     runner = lu.LuaUnit.new()
     os.exit(runner.runSuite())
 
-
-**Arguments**
-
-If no arguments are supplied, it parses the command-line arguments of the script
-and interpret them. If arguments are supplied to the function, they are parsed
-instead of the command-line. It uses the same syntax.
-
-Test names may be supplied as extra arguments to the functions, to execute
-only these specific tests. Note that when explicit names are provided
-LuaUnit does not require the test names to necessarily start with *test*.
-
-If no test names were supplied, a general test collection process is done
-and the resulting tests are executed.
 
 
 Example of using pattern to select tests::
@@ -894,9 +896,32 @@ Arguments and return value is the same as :func:`runner:runSuite()`
 
 Example::
 
+.. code-block:: lua
+
     -- execute tests matching the 'withXY' pattern
     os.exit(lu.LuaUnit.run('--pattern', 'withXY'))
 
+
+
+.. function:: runner:runSuiteByInstances( listOfNameAndInstances  )
+
+This function runs test without performing the global test collection process on the global namespace, the test
+are explicitely provided as argument, along with their names.
+
+Before execution, the function will parse the script command-line, like :func:`funner:runSuite()`.
+
+Input is provided as a list of { name, test_instance } . test_instance can either be a function or a table containing 
+test functions starting with the prefix "test".
+
+
+Example of using runSuiteByInstances
+
+.. code-block:: lua
+
+    lu = require('luaunit')
+
+    runner = lu.LuaUnit.new()
+    os.exit(runner.runSuiteByInstances( {'mySpecialTest1', mySpecialTest1}, {'mySpecialTest2', mySpecialTest2} } )
 
 
 
@@ -1182,6 +1207,11 @@ This mode is used by LuaUnit for its internal validation.
 
 Test collection and execution process
 -------------------------------------
+
+runSuite()
+runSuite('--output', 'junit', 'testToto', 'testTiti')
+internalRunSuiteByInstances({ {testToto, 'testToto',} {testTiti, 'testTiti'}}
+
 XXX
 
 under the following rules:
