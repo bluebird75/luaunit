@@ -1208,62 +1208,29 @@ This mode is used by LuaUnit for its internal validation.
 Test collection and execution process
 -------------------------------------
 
-runSuite()
-runSuite('--output', 'junit', 'testToto', 'testTiti')
-internalRunSuiteByInstances({ {testToto, 'testToto',} {testTiti, 'testTiti'}}
+**Test collection**
 
-XXX
+The test collection and execution process is the following:
+* If a list of tests is specified on the command-line or as argument to the runSuite() or runSuiteByInstances(), this 
+  the considered list of tests to run.
+* If no list of tests is specified, the global namespace *_G* is searched for names starting by *test* or *Test*. All
+  such names are put into the list of tests to run (provided they reference either a function or a table).
+* All tables are then scanned for table functions starting with *test* or *Test*, which are then added to the list of tests to run
+* From the list of tests to run, include and exclude patterns are applied
+* If shuffling is activated, the list is randomized. Else, it is sorted in alphabetical order.
 
-under the following rules:
+This constitutes the final list of tests to run.
 
-* all variable starting with *test* or *Test* are scanned. 
-* if the variable is a function it is collected for testing
-* if the variable is a table:
+**Test execution**
 
-    * all keys starting with *test* or *Test* are collected (provided that they are functions)
-    * keys with name *setUp* and *tearDown* are also collected
+Each test function is run in a protected call. If any luaunit assertion fails (assertEquals, ...), the test is considered as a failure. If
+an error is generated during the test execution, the test is marked as in error. Both errors and failures are reported at the end of the execution.
 
-If one or more pattern were supplied, the test are then filtered according the
-pattern(s). Only the test that match the pattern(s) are actually executed.
-
-
-**setup and teardown**
-
-The function *setUp()* is executed before each test if it exists in the table. 
-The function *tearDown()* is executed after every test if it exists in the table.
-
-.. Note::
-    *tearDown()* is always executed if it exists, even if there was a failure in the test or in the *setUp()* function.
-    Failures in *setUp()* or *tearDown()* are considered as a general test failures.
-
-With no arguments, the command-line arguments are
-t
-The *run()* function returns the number of failures of the test suite. This is
-good for an exit code, 0 meaning success.
-
-
-If you want to keep the flexibility of the command-line parsing, but want to force
-some parameters, like the output format, you must use a slightly different syntax::
-
-    runner = lu.LuaUnit.new()
-    runner:setOutputType("tap")
-    os.exit( runner:runSuite() )
-
-*runSuite()* behaves like *run()* except that it must be started
-with a LuaUnit instance as first argument, and it will use the LuaUnit
-instance settings.
- 
-Example::
-
-.. code-block:: lua
-
-    lu = require('luaunit')
-
-    runner = lu.LuaUnit.new()
-    runner:setOutputType('junit', 'suite_xml_output.xml')
-    runner:setVerbosity(lu.VERBOSITY_VERBOSE)
-    ...
-    runner:runSuite()
+When executing a table containing tests, the following methods are also considered:
+* setUp() is called prior to each test execution. Any failure or error during setUp() will prevent the test from being executed and will
+  be reported in the test suite.
+* tearDown() is called after each test, even if the setup() or the test failed. Any failure or error during tearDown() will be reported
+  in the test suite.
 
 
 .. _luaunit-global-asserts:
@@ -1774,28 +1741,62 @@ Table assertions
 
 
 
-Ending test 
----------------------
+Skipping and ending test 
+-------------------------
 
-LuaUnit allows to force test ending, either positevely or negatively, with the following functions.
+LuaUnit allows to force test ending in several ways.
+
+**Test skipping**
+
+.. function:: skip( message )
+
+    Stops the ongoing test and mark it as skipped with the given message. This can be used
+    to deactivate a given test.
+
+
+.. function:: skipIf( condition, message )
+
+    If the condition *condition* evaluates to *true*, stops the ongoing test and mark it as skipped with the given message.
+    Else, continue the test execution normally.
+
+    The expected usage is to call the function at the beginning of the test to
+    verify if the conditions are met for executing such tests.
+
+
+.. function:: runOnlyIf( condition, message )
+
+    If condition evaluates to *false*, stops the ongoing test and mark it as skipped with the 
+    given message. This is the opposite behavior of :func:`skipIf()` .
+
+    The expected usage is to call the function at the beginning of the test to
+    verify if the conditions are met for executing such tests.
+
+
+Number of skipped tests, if any, are reported at the end of the execution.
+
+
+**Force test failing**
 
 .. function:: fail( message )
 
     Stops the ongoing test and mark it as failed with the given message.
 
 
-.. function:: failIf( cond, message )
+.. function:: failIf( condition, message )
 
-    If the condition *cond* evaluates to *true*, stops the ongoing test and mark it as failed with the given message.
+    If the condition *condition* evaluates to *true*, stops the ongoing test and mark it as failed with the given message.
     Else, continue the test execution normally.
+
+
+**Force test success**
 
 .. function:: success()
 
     Stops the ongoing test and mark it as successful.
 
-.. function:: successIf( cond )
+.. function:: successIf( condition )
 
-    If the condition *cond* evaluates to *true*, stops the ongoing test and mark it as successful.
+    If the condition *condition* evaluates to *true*, stops the ongoing test and mark it as successful.
     Else, continue the test execution normally.
 
 
