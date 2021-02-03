@@ -1265,31 +1265,35 @@ This mode is used by LuaUnit for its internal validation.
 
 
 Test collection and execution process
--------------------------------------
+======================================
 
-**Test collection**
+Test collection
+-------------------
 
 The test collection and execution process is the following:
-* If a list of tests is specified on the command-line or as argument to the runSuite() or runSuiteByInstances(), this 
-the considered list of tests to run.
+
+* If a list of tests is specified on the command-line or as argument to the *runSuite()* or *runSuiteByInstances()*, this 
+  the considered list of tests to run.
 * If no list of tests is specified, the global namespace *_G* is searched for names starting by *test* or *Test*. All
-such names are put into the list of tests to run (provided they reference either a function or a table).
+  such names are put into the list of tests to run (provided they reference either a function or a table).
 * All tables are then scanned for table functions starting with *test* or *Test*, which are then added to the list of tests to run
 * From the list of tests to run, include and exclude patterns are applied
 * If shuffling is activated, the list is randomized. Else, it is sorted in alphabetical order.
 
 This constitutes the final list of tests to run.
 
-**Test execution**
+Test execution
+-------------------
 
 Each test function is run in a protected call. If any luaunit assertion fails (assertEquals, ...), the test is considered as a failure. If
 an error is generated during the test execution, the test is marked as in error. Both errors and failures are reported at the end of the execution.
 
 When executing a table containing tests, the following methods are also considered:
-* setUp() is called prior to each test execution. Any failure or error during setUp() will prevent the test from being executed and will
-be reported in the test suite.
-* tearDown() is called after each test, even if the setup() or the test failed. Any failure or error during tearDown() will be reported
-in the test suite.
+
+* *setUp()* is called prior to each test execution. Any failure or error during *setUp()* will prevent the test from being executed and will
+  be reported in the test suite.
+* *tearDown()* is called after each test, even if the *setup()* or the test failed. Any failure or error during *tearDown()* will be reported
+  in the test suite.
 
 
 Assertions functions
@@ -2029,33 +2033,45 @@ global variable **prior** to importing LuaUnit:
 Variables controlling LuaUnit behavior
 =========================================
 
-.. function:: luaunit.ORDER_ACTUAL_EXPECTED
+luaunit.ORDER_ACTUAL_EXPECTED
+------------------------------
 
-    This boolean value defines the order of arguments in assertion functions.
+This boolean value defines the order of arguments in assertion functions.
 
-    For example, in the code `luaunit.assertEquals( a, b )` , LuaUnit will treat by default
-    `a` as a calculated value under test (actual value) and `b` as a reference value aginst which `a` is 
-    compared (expected value). This will show up in the error reported for the test:
+For example, in the code `luaunit.assertEquals( a, b )` , LuaUnit will treat by default
+`a` as a calculated value under test (actual value) and `b` as a reference value aginst which `a` is 
+compared (expected value). This will show up in the error reported for the test:
+
+.. code-block:: shell
 
     1) TestWithFailures.testFail1
     doc\my_test_suite_with_failures.lua:79: expected: "titi"
     actual: "toto"
 
-    If you prefer the opposite convention, i.e having the expected argument as first
-    and actual argument as second, set the ORDER_ACTUAL_EXPECTED to false.
+If you prefer the opposite convention, i.e having the expected argument as first
+and actual argument as second, set the *ORDER_ACTUAL_EXPECTED* to *false*.
 
 
-function:: luaunit.PRINT_TABLE_REF_IN_ERROR_MSG
+luaunit.PRINT_TABLE_REF_IN_ERROR_MSG
+------------------------------------------
 
-    This controls whether table references are always printed along with table or not. See `table-printing`_ for details.
+This controls whether table references are always printed along with table or not. See `table-printing`_ for details. The
+default is `false`.
 
 
-function:: luaunit.STRIP_EXTRA_ENTRIES_IN_STACK_TRACE
+luaunit.STRIP_EXTRA_ENTRIES_IN_STACK_TRACE
+------------------------------------------
 
-    This controls how many extra entries in a stack-trace are stripped. By default, LuaUnit hides all its internals
-    functions to show only user code in the error stack trace. However, if LuaUnit is used as part of another test
-    framework, and one wants to also hide this global test framework entries, you can increase the number here.
+This controls how many extra entries in a stack-trace are stripped. By default, LuaUnit hides all its internals
+functions to show only user code in the error stack trace. However, if LuaUnit is used as part of another test
+framework, and one wants to also hide this global test framework entries, you can increase the number here. The default
+is *0* .
 
+
+luaunit.VERSION
+------------------------------------------
+
+Current version of LuaUnit as a string.
 
 
 Developing LuaUnit
