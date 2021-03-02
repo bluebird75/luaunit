@@ -37,7 +37,7 @@ def run_unit_tests():
     '''Run unit-tests with all versions of lua'''
     for lua, luaversion in ALL_LUA:
         report( 'Running unit-tests tests with %s' % luaversion )
-        retcode = subprocess.call( [lua, 'run_unit_tests.lua'] )
+        retcode = subprocess.call( [lua, 'run_unit_tests.lua', '--shuffle'] )
         if retcode != 0:
             report( 'Invalid retcode when running tests: %d' % retcode )
             sys.exit( retcode )
@@ -208,7 +208,9 @@ def rundoctests():
 
 OptToFunc = {
     'rununittests'  : run_unit_tests,
+    'run_unit_tests': run_unit_tests,   # alias
     'runtests'      : run_tests,
+    'run_tests'     : run_tests,        # alis
     'luacheck'      : run_luacheck,
     'runexample'    : run_example,
     'packageit'     : packageit,
