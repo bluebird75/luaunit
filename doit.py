@@ -51,7 +51,7 @@ def run_tests(with_linting=True):
         report( 'Running functional tests tests with %s' % luaversion )
         args = [lua, 'run_functional_tests.lua']
         if not with_linting:
-            args.append('--no-linting')
+            args.append('--with-linting')
         retcode = subprocess.call( args )
         if retcode != 0:
             report( 'Invalid retcode when running tests: %d' % retcode )
