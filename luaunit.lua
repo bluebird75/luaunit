@@ -3416,7 +3416,7 @@ end
         return self.result.notSuccessCount
     end
 
-    function M.LuaUnit:runSuiteByInstances( listOfNameAndInst )
+    function M.LuaUnit:runSuiteByInstances( listOfNameAndInst, commandLineArguments )
         --[[
         Run all test functions or tables provided as input.
 
@@ -3426,7 +3426,7 @@ end
         return the number of failures and errors, 0 meaning success
         ]]
         -- parse the command-line arguments
-        testNames = self:initFromArguments()
+        testNames = self:initFromArguments( commandLineArguments )
         self:registerSuite()
         self:internalRunSuiteByInstances( listOfNameAndInst )
         self:unregisterSuite()

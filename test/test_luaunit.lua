@@ -3198,7 +3198,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( #executedTests, 0 )
         local runner = lu.LuaUnit.new()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstances( { { 'Toto', MyTestToto1 } }  )
+        runner:runSuiteByInstances( { { 'Toto', MyTestToto1 } }, 'fake_run_unit_tests.lua'  )
         lu.assertEquals( #executedTests, 5 )
 
         lu.assertEquals( #runner.result.allTests, 5 )
@@ -3221,7 +3221,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
             { 'MyLocalTestToto1', MyLocalTestToto1 },
             { 'MyLocalTestToto2.test2', MyLocalTestToto2 },
             { 'MyLocalTestFunction', MyLocalTestFunction },
-        } )
+        }, 'fake_run_unit_tests.lua' )
         lu.assertEquals( #executedTests, 3 )
         lu.assertEquals( executedTests[1], 'MyLocalTestToto1:test1')
         lu.assertEquals( executedTests[2], 'MyLocalTestToto2:test2')
@@ -3298,7 +3298,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
             { 'MyTestWithSetupTeardown3', MyTestWithSetupTeardown3 },
             { 'MyTestWithSetupTeardown4', MyTestWithSetupTeardown4 },
             { 'MyTestWithSetupTeardown5', MyTestWithSetupTeardown5 }
-        } )
+        }, 'fake_run_unit_tests.lua' )
         lu.assertEquals( runner.result.notSuccessCount, 0 )
         lu.assertEquals( myExecutedTests[1], '1setUp' )   
         lu.assertEquals( myExecutedTests[2], '1test1')
@@ -3692,7 +3692,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         runner:runSuiteByInstances( { 
             { 'MyTestClassA', MyTestClassA },
             { 'MyTestClassB', MyTestClassB }
-        } )
+        }, 'fake_run_unit_tests.lua' )
         lu.assertEquals( runner.result.notSuccessCount, 0 )
         lu.assertEquals( myExecutedTests[1], 'AsetupClass' )   
         lu.assertEquals( myExecutedTests[2], 'Atest1')
