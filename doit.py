@@ -1,7 +1,7 @@
 # My universal runner for this project, the equivalent of a Makefile
 import subprocess, sys, os, shutil, os.path, glob
 
-VERSION='3.3'
+VERSION='3.4'
 RELEASE_NAME='luaunit-%s' % VERSION
 ROCK_RELEASE_NAME='rock-%s' % RELEASE_NAME
 RELEASE_DIR='release/' + RELEASE_NAME + '/'

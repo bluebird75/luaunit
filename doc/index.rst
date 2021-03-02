@@ -2365,6 +2365,8 @@ Process of releasing a new version of LuaUnit
 The steps are the following:
 
 * update luaunit with the desired functionality, ready for a release
+* update the version number in luaunit.lua
+* update the version number in doit.py
 * check that all tests pass on all supported lua versions
 
 .. code-block:: shell
