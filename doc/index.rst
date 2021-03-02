@@ -142,6 +142,25 @@ Version and Changelog
 =====================
 This documentation describes the functionality of LuaUnit v3.2 .
 
+New in version 3.4 - 02 March 2021
+----------------------------------
+* support for Lua 5.4
+* :func:`assertAlmostEquals` works also on tables and nested structures
+* choose test output style with environment variable `LUAUNIT_OUTPUT`
+* :func:`runner:setOutputType()` accepts the xml filename as second argument when using the format *junit*
+* improve printing of table information in case of cycles
+* add ability to skip tests with :func:`skip` and :func:`skipIf`  
+* detect attempts to exit the test suite before it is finished running
+* add :func:`assertErrorMsgContentEquals` to validate exactly any error message
+* filter out some stack entries when printing assertions (useful when embedding LuaUnit inside another test layer) with :ref:`strip_extra_entries_in_stack_trace`
+* add :func:`assertTableContains` and :func:`assertNotTableContains` to verify the presence of a given value within a table
+* remove option `TABLE_EQUALS_KEYBYCONTENT`, it did not make sense
+* bugfix:
+    * :func:`assertIs`/:func:`assertNotIs` deals better with protected metatables
+    * :func:`assertEquals` deals better with tables containing cycles of different structure
+    * fix table length comparison for table returning inconsistent length
+
+
 New in version 3.3 - 6. Mar 2018
 --------------------------------
 * General
@@ -1612,10 +1631,20 @@ Error related assertions, to verify error generation and error messages.
     function does not yield an error, or if the error message is not identical, the assertion fails.
 
     Be careful when using this function that error messages usually contain the file name and
-    line number information of where the error was generated. This is usually inconvenient. To 
-    ignore the filename and line number information, you can either use a pattern with :func:`assertErrorMsgMatches`
-    or simply check for the message content with :func:`assertErrorMsgContains` .
-    
+    line number information of where the error was generated. This is usually inconvenient so we have
+    introduced the :func:`assertErrorMsgContentEquals` . Be sure to check it.
+
+
+.. function:: assertErrorMsgContentEquals( expectedMsg, func, ... )
+
+    **Alias**: *assert_error_msg_content_equals()*
+
+    Assert that calling function *func* will generate exactly the given error message, excluding the
+    file and line information. File and line information may change as your programs evolve so we
+    find this version more convenient than :func:`assertErrorMsgEquals` .
+
+
+
 .. function:: assertErrorMsgContains( partialMsg, func, ... )
 
     **Alias**: *assert_error_msg_contains()*
@@ -1623,6 +1652,8 @@ Error related assertions, to verify error generation and error messages.
     Assert that calling function *func* will generate an error message containing *partialMsg* . If the
     function does not yield an error, or if the expected message is not contained in the error message, the 
     assertion fails.
+
+
     
 .. function:: assertErrorMsgMatches( expectedPattern, func, ... )
 
@@ -1738,6 +1769,39 @@ Table assertions
 .. code-block:: lua
 
         lu.assertItemsEquals( {1,{2,3},4}, {4,{3,2,},1} ) -- assertion fails because {2,3} ~= {3,2}
+
+
+
+.. function:: assertTableContains(table, element [, extra_msg])
+
+    **Alias**: *assert_table_contains()*
+
+    Assert that the table contains at least one key with value `element`. Element
+    may be of any type (including table), the recursive equality algorithm of assertEquals()
+    is used for verifying the presence of the element.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
+
+.. code-block:: lua
+
+        lu.assertTableContains( {'a', 'b', 'c', 'd'}, 'b' ) -- assertion succeeds
+        lu.assertTableContains( {1, 2, 3, {4} }, {4} } -- assertion succeeds
+
+
+.. function:: assertNotTableContains(table, element [, extra_msg])
+
+    **Alias**: *assert_not_table_contains()*
+
+    Negative version of :func:`assertTableContains` .
+
+    Assert that the table contains no element with value `element`. Element
+    may be of any type (including table), the recursive equality algorithm of assertEquals()
+    is used for verifying the presence of the element.
+    If provided, *extra_msg* is a string which will be printed along with the failure message.
+
+.. code-block:: lua
+
+        lu.assertNotTableContains( {'a', 'b', 'c', 'd'}, 'e' ) -- assertion succeeds
+        lu.assertNotTableContains( {1, 2, 3, {4} }, {5} } -- assertion succeeds
 
 
 
@@ -2059,6 +2123,8 @@ This controls whether table references are always printed along with table or no
 default is `false`.
 
 
+.. _strip_extra_entries_in_stack_trace:
+
 luaunit.STRIP_EXTRA_ENTRIES_IN_STACK_TRACE
 ------------------------------------------
 
@@ -2291,6 +2357,33 @@ README and LICENSE, tests, and everything else stripped out.
 Create a zip and tar.gz archive suitable to be uploaded to github. The archive is composed of a clone
 of the current git content, stripped from everything not related to using luaunit (no CI files, no doit.lu, ...)
 but with full documentation generated.
+
+
+Process of releasing a new version of LuaUnit
+=============================================
+
+The steps are the following:
+
+* update luaunit with the desired functionality, ready for a release
+* check that all tests pass on all supported lua versions
+
+.. code-block:: shell
+
+    doit.py runtests 
+
+* update *examples* if needed to reflect new features
+* update index.rst with documentation of new features/behavior
+* update README.md and index.rst with the release information (date and content)
+* generate package for github:
+
+.. code-block:: shell
+
+    doit.py packageit
+
+* verify the content of the packages:
+    * documentation must be properly generated
+    * examples should work
+    * unit-tests should pass
 
 
 

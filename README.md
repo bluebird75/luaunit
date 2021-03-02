@@ -128,7 +128,7 @@ The version of the main branch on GitHub is always stable and can be used safely
 
 ### History 
 
-#### Version 3.4 - 20. December 2020
+#### Version 3.4 - 02 March 2021
 * support for Lua 5.4
 * assertAlmostEquals() works also on tables and nested structures
 * choose test output style with environment variable LUAUNIT_OUTPUT
