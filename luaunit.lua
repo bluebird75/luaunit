@@ -127,7 +127,7 @@ To force exit LuaUnit while running, please call before os.exit (assuming lu is 
     lu.unregisterCurrentSuite() 
 
 ]]
-        error(msg)
+        M.private.error_fmt(2, msg)
     end
     M.oldOsExit(...)
 end
@@ -1316,6 +1316,7 @@ local function error_fmt(level, ...)
      -- printf-style error()
     error(string.format(...), (level or 1) + 1 + M.STRIP_EXTRA_ENTRIES_IN_STACK_TRACE)
 end
+M.private.error_fmt = error_fmt
 
 ----------------------------------------------------------------
 --
