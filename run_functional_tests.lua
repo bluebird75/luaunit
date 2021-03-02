@@ -113,11 +113,14 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
     fileIn lines are read and the first line matching pattern is analysed. The first pattern
     capture is memorized.
 
-    fileOut lines are then read, and the first line matching pattern2 is modified, by applying
+    fileOut lines are then read, and the first line matching pattern is modified, by applying
     the first capture of fileIn. fileOut is then rewritten.
 
     In most cases, pattern2 may be nil in which case, pattern is used when matching in fileout.
     ]]
+    if verbose then
+        print('Using reference file: '..fileIn)
+    end
     local source, idxStart, idxEnd, capture = nil
     for line in io.lines(fileIn) do
         idxStart, idxEnd, capture = line:find( pattern )
@@ -139,6 +142,7 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
 
     if verbose then
         print('Captured in source: '.. source )
+        print('Modifying file: '..fileOut)
     end
 
     local dest, linesOut = nil, {}
@@ -276,6 +280,7 @@ local function check_xml_output( fileToRun, options, output, xmlOutput, xmlLintO
 
     if _VERSION ~= 'Lua 5.2' and _VERSION ~= 'Lua 5.1' then
         -- For Lua 5.3: stack trace uses "method" instead of "function"
+        -- For Lua 5.4: stack trace uses "method" or "upvalue" instead of "function"
         adjustFile( output, refOutput, '.*%.lua:%d+: in (%S*) .*', true )
         adjustFile( xmlOutput, refXmlOutput, '.*%.lua:%d+: in (%S*) .*', true )
     end
