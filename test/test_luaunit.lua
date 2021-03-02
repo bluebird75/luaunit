@@ -1602,6 +1602,13 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertTableContains(t, 'grape')
         lu.assertTableContains(t, 'cherry')
         assertFailure(lu.assertTableContains, t, 'kiwi')
+
+        t = {a={1,2,3}, b={4,5,6} }
+        lu.assertTableContains(t, {1,2,3} )
+        lu.assertTableContains(t, {4,5,6} )
+        assertFailure(lu.assertTableContains, t, {3,2,1} )
+
+
     end
 
     function TestLuaUnitAssertions:test_assertNotTableContains()
