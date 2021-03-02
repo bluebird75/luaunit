@@ -50,7 +50,7 @@ def run_tests(with_linting=True):
     for lua, luaversion in ALL_LUA:
         report( 'Running functional tests tests with %s' % luaversion )
         args = [lua, 'run_functional_tests.lua']
-        if not with_linting:
+        if with_linting:
             args.append('--with-linting')
         retcode = subprocess.call( args )
         if retcode != 0:

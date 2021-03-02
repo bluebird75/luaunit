@@ -779,6 +779,7 @@ local function main()
 
     if arg[1] ~= '--with-linting' then
         HAS_XMLLINT = false
+    else
         table.remove(arg, 1)
     end
     
