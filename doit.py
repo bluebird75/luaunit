@@ -190,14 +190,6 @@ def rundoctests():
 
         print( open('toto.xml').read() )
 
-def install():
-    installpath = '/usr/local/share/lua/'
-    for lua, luaversion in ALL_LUA:
-        lua,ver = luaversion.split( )
-        if os.path.exists(installpath+ver):
-            shutil.copy('luaunit.lua',installpath+ver)
-            
-
 
 OptToFunc = {
     'rununittests'  : run_unit_tests,
@@ -208,7 +200,6 @@ OptToFunc = {
     'buildrock'     : buildrock,
     'makedoc'       : makedoc,
     'rundoctests'   : rundoctests,
-    'install'       : install,
     'help'          : help,
 }
 
