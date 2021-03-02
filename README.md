@@ -126,14 +126,6 @@ Then copy the file luaunit.lua into your project or the Lua libs directory.
 
 The version of the main branch on GitHub is always stable and can be used safely.
 
-On Linux, you can also install it into your Lua directories
-
-    sudo python doit.py install
-
-If that fail, edit the function `install()` in the file `doit.py` to adjust
-the Lua version and installation directory. It uses, by default, Linux paths that depend on the version.
-
-
 ### History 
 
 #### Version 3.4 - 20. December 2020

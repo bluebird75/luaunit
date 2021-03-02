@@ -67,15 +67,18 @@ Version 3.4:
 ============
 TODO:
 - assertAlmostNotEquals shall support tables
-- add more documentation to new features
 - document the release process to luarocks and update dev manual
-- update doc about test skipping
-- update doc about TABLE_EQUALS_KEYBYCONTENT
-- add a list of environment variables controlling LuaUnit
-- move enabling global namespace pollution explanation to a later chapter
 - add test for the runner interface of luaunit
+- update examples
+- dev guide: explain doit.py
+- dev guide: explain CI
 
 Done
+- add a list of environment variables controlling LuaUnit
+- double-check documentation generation
+- move enabling global namespace pollution explanation to a later chapter
+- update doc about TABLE_EQUALS_KEYBYCONTENT
+- update doc about test skipping
 - update documentation about how to run list of test classes
 - update documentation about setOutputType()
 - assertAlmostEquals can check lists and more complex structures
