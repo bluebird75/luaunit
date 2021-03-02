@@ -1292,7 +1292,7 @@ When executing a table containing tests, the following methods are also consider
 
 * *setUp()* is called prior to each test execution. Any failure or error during *setUp()* will prevent the test from being executed and will
   be reported in the test suite.
-* *tearDown()* is called after each test, even if the *setup()* or the test failed. Any failure or error during *tearDown()* will be reported
+* *tearDown()* is called after each test, even if the *setUp()* or the test failed. Any failure or error during *tearDown()* will be reported
   in the test suite.
 
 
@@ -2232,6 +2232,67 @@ Functional tests may start failing when:
 2. Improving or breaking LuaUnit output
 
 This a good place to start looking if you see failures occurring.
+
+
+Using doit.py
+--------------
+
+The utility *doit.py* is a useful developer tool to repeat common developer commands.
+
+**Running syntax check**
+
+.. code-block:: shell
+
+    doit.py luacheck
+
+Run luacheck on the LuaUnit code.
+
+
+**Running unit-tests**
+
+.. code-block:: shell
+
+    doit.py rununittests 
+
+Use it to run all unit tests, on all installed versions of Lua on the sytem.
+
+
+**Running all tests**
+
+.. code-block:: shell
+
+    doit.py runtests
+
+Run luacheck then run unit-tests then run functional tests. Just like the continuous integration.
+
+**Creating documentation**
+
+.. code-block:: shell
+
+    doit.py makedoc
+
+Runs sphinx to generate the html documentation. You must have sphinx installed on your path.
+
+
+**Preparing a release**
+
+.. code-block:: shell
+
+    doit.py buildrock
+
+Create a rock file ready to be uploaded to luarocks, containing a clone of the current git, with documentation generated
+README and LICENSE, tests, and everything else stripped out.
+
+
+.. code-block:: shell
+
+    doit.py packageit
+
+Create a zip and tar.gz archive suitable to be uploaded to github. The archive is composed of a clone
+of the current git content, stripped from everything not related to using luaunit (no CI files, no doit.lu, ...)
+but with full documentation generated.
+
+
 
 Annexes
 ********

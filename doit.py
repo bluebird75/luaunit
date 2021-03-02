@@ -72,6 +72,16 @@ def run_example():
 
 
 def pre_packageit_or_buildrock_step1():
+    '''
+    - create a release directory
+    - export the content of the git project but strips
+        * git stuff
+        * CI stuff (travis, appveyor)
+        * doit.py, todo.txt
+        * junitxml directory
+        * rockspec
+        * build documentation and move the html documentation to just doc
+    '''
     # shutil.rmtree('release', True)
     try:
         os.mkdir('release')
@@ -108,7 +118,9 @@ def pre_packageit_or_buildrock_step1():
     os.unlink('.luacheckrc')    # keep it to run the tests successfully
 
 def packageit():
-    # Prepare a user release package, strip out all development stuff
+    '''Generate zip and targz archives for a release to GitHub
+    '''
+    
     pre_packageit_or_buildrock_step1()
 
     # Packaging into zip and tgz
