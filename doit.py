@@ -42,14 +42,17 @@ def run_unit_tests():
             report( 'Invalid retcode when running tests: %d' % retcode )
             sys.exit( retcode )
 
-def run_tests():
+def run_tests(with_linting=True):
     '''Run tests with all versions of lua'''
     run_luacheck()
     run_unit_tests()
 
     for lua, luaversion in ALL_LUA:
         report( 'Running functional tests tests with %s' % luaversion )
-        retcode = subprocess.call( [lua, 'run_functional_tests.lua'] )
+        args = [lua, 'run_functional_tests.lua']
+        if not with_linting:
+            args.append('--no-linting')
+        retcode = subprocess.call( args )
         if retcode != 0:
             report( 'Invalid retcode when running tests: %d' % retcode )
             sys.exit( retcode )
@@ -113,7 +116,7 @@ def pre_packageit_or_buildrock_step1():
     shutil.copy( 'olddoc/my_test_suite.lua', 'doc')
     shutil.rmtree('olddoc/')
     
-    run_tests()
+    run_tests(False)
     run_example()
     os.unlink('.luacheckrc')    # keep it to run the tests successfully
 

@@ -776,6 +776,12 @@ local function main()
         LUA = LUA .." -lluacov" -- run tests with LuaCov active
         table.remove(arg, 1)
     end
+
+    if arg[1] == '--no-linting' then
+        HAS_XMLLINT = false
+        table.remove(arg, 1)
+    end
+    
     if arg[1] == '--update' then
         if #arg == 1 then
             -- generate all files
