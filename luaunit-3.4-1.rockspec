@@ -29,7 +29,7 @@ description =
 	]],
 	homepage = "http://github.com/bluebird75/luaunit",
 	license = "BSD",
-	maintainer = 'Philippe Fremy <phil at free dot fr>',
+	maintainer = 'Philippe Fremy <phil dot fremy at free dot fr>',
 }
 
 dependencies =
