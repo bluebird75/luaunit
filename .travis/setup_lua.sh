@@ -25,8 +25,8 @@ LUAROCKS_VERSION=3.4.0
 LUAROCKS_URL=http://luarocks.org/releases/luarocks-3.4.0.tar.gz
 
 # Note: TRAVIS_BUILD_DIR=/home/travis/build/bluebird75/luaunit/
-LUA_HOME_DIR=$TRAVIS_BUILD_DIR/install/$LUA
-LUAROCK_HOME_DIR=$TRAVIS_BUILD_DIR/install/luarocks
+LUA_HOME_DIR=$GITHUB_WORKSPACE/install/$LUA
+LUAROCK_HOME_DIR=$GITHUB_WORKSPACE/install/luarocks
 
 # setup a wide path
 export PATH=$HOME/.lua:${LUAROCK_HOME_DIR}/bin:${PATH}
@@ -224,7 +224,7 @@ eval $(luarocks path --bin)
 
 lua -l luacov -v
 
-cd $TRAVIS_BUILD_DIR
+cd $GITHUB_WORKSPACE
 
 # To make travis happy, we must no fail on unassigned variables so reset this option to its default value
 set +u 
