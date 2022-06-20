@@ -38,19 +38,7 @@ jobs:
       - name: Compile lua
         run: |
           source .travis/setup_lua.sh
-
-      - name: Run unit-tests
-        run: |
-          lua -v -lluacov run_unit_tests.lua --shuffle
-          
-      - name: Run functional tests
-        run: |
+          lua -v -lluacov run_unit_tests.lua --shuffle          
           lua run_functional_tests.lua --coverage
-          
-      - name: Run luacheck
-        run: |
           luacheck example_with_luaunit.lua luaunit.lua run_unit_tests.lua run_functional_tests.lua test/
-
-      - name: Collect coverage data
-        run: |
           luacov-coveralls -v --include %./luaunit.lua
