@@ -22,7 +22,7 @@ jobs:
     env:
       LUA: lua5.4
       LUANUMBER: double
-      TRAVIS_OS_NAME: linux
+      PLATFORM: $RUNNER_OS
 
 
     # Steps represent a sequence of tasks that will be executed as part of the job
