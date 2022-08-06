@@ -32,7 +32,14 @@
 # - $HOME/.lua/luarocks
 #
 # Lua installation:
-# - $CI_WORKDIR/install
+# - $CI_WORKDIR/install/lua
+# 
+## Luarocks installation
+# - $CI_WORKDIR/install/luarocks
+#
+# Don't forget to setup lua + luarocks to use them:
+#         export PATH=$HOME/.lua:${LUAROCK_HOME_DIR}/bin:${PATH}
+#         eval $(luarocks path --bin) && echo 'Setup for luarocks done' || echo 'Failed luarocks setup'
 #
 
 set -eufox pipefail
@@ -211,6 +218,8 @@ else # -e $LUA_HOME_DIR
 
     # cleanup LUA build dir
     rm -rf $LUA_BUILD_DIR
+
+    cd $CI_WORKDIR
 
     # lua is OK ?
     echo ">> lua -v"
