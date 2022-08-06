@@ -110,7 +110,7 @@ if [ "$PLATFORM" == "Linux" ]; then
   PLATFORM="linux";
 fi
 
-if [ "$PLATFORM" != "linux" || "$PLATFORM" != "macosx"  ]; then
+if [ "$PLATFORM" != "linux" ] || [ "$PLATFORM" != "macosx"  ]; then
     echo The environment variable PLATFORM must be either: empty, "linux", "macosx"
     exit 1
 fi
