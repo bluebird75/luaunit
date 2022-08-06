@@ -84,6 +84,10 @@ jobs:
           PLATFORM: ${{ runner.os }}
         run: |
           source ci/setup_lua.sh
+
+      - name: Run tests
+        run: |
+          export PATH=$HOME/.lua:${LUAROCK_HOME_DIR}/bin:${PATH}
           lua -v -lluacov run_unit_tests.lua --shuffle          
           lua run_functional_tests.lua --coverage
           luacheck example_with_luaunit.lua luaunit.lua run_unit_tests.lua run_functional_tests.lua test/
