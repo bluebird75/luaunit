@@ -79,17 +79,11 @@ jobs:
         # run: sudo apt-get install -y libxml2-utils
 
       # Runs a set of commands using the runners shell
-      - name: Compile lua
+      - name: Compile lua & run tests
         env:
           PLATFORM: ${{ runner.os }}
         run: |
           source ci/setup_lua.sh
-
-      - name: Run tests
-        run: |
-          export PATH=$HOME/.lua:${PATH}
-          luarocks path --bin
-          eval $(luarocks path --bin) && echo 'Luarocks setup OK'
           lua -v -lluacov run_unit_tests.lua --shuffle          
           lua run_functional_tests.lua --coverage
           luacheck example_with_luaunit.lua luaunit.lua run_unit_tests.lua run_functional_tests.lua test/
