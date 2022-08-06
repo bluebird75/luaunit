@@ -19,6 +19,9 @@
 #   - "linux" or "Linux" or not defined
 #   - "macosx" or "osx"
 # 
+# - LUANUMBER: does stock lua uses float or double for storing numbers ?
+#   - "double", empty: default, uses double
+#   - "float": store numbers on float (less precision)
 # 
 # Output:
 # -------
@@ -242,6 +245,9 @@ echo "Setting lua path to luarock user tree "
 eval $(luarocks path --bin)
 
 lua -l luacov -v
+
+# restore current directory
+cd $CI_WORKDIR
 
 # To make travis happy, we must no fail on unassigned variables so reset this option to its default value
 # set +u 
