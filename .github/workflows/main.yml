@@ -87,7 +87,7 @@ jobs:
 
       - name: Run tests
         run: |
-          export PATH=$HOME/.lua:./install/luarocks/bin:${PATH}
+          export PATH=$HOME/.lua:${PATH}
           luarocks path --bin
           eval $(luarocks path --bin) && echo 'Luarocks setup OK'
           lua -v -lluacov run_unit_tests.lua --shuffle          
