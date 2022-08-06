@@ -112,7 +112,7 @@ if [ -z "${PLATFORM:-}" ]; then
   PLATFORM="linux"
 fi
 
-if [ "$PLATFORM" == "osx" ]; then
+if [ "$PLATFORM" == "osx" ] || [ "$PLATFORM" == "macOS" ]; then
   PLATFORM="macosx";
 fi
 
