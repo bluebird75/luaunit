@@ -1,5 +1,5 @@
+[![CI](https://github.com/bluebird75/luaunit/actions/workflows/main.yml/badge.svg)](https://github.com/bluebird75/luaunit/actions/workflows/main.yml)
 [![Build status](https://ci.appveyor.com/api/projects/status/us6uh4e5q597jj54?svg=true&passingText=Windows%20Build%20passing&failingText=Windows%20Build%20failed)](https://ci.appveyor.com/project/bluebird75/luaunit)
-[![Build Status](https://travis-ci.org/bluebird75/luaunit.svg?branch=master)](https://travis-ci.org/bluebird75/luaunit)
 [![Documentation Status](https://readthedocs.org/projects/luaunit/badge/?version=latest)](https://readthedocs.org/projects/luaunit/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/bluebird75/luaunit/badge.svg?branch=master)](https://coveralls.io/github/bluebird75/luaunit?branch=master)
 [![Downloads](https://img.shields.io/badge/downloads-235k-brightgreen.svg)](https://luarocks.org/modules/bluebird75/luaunit)
