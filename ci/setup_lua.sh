@@ -39,7 +39,7 @@ if [ -z "${CI_WORKDIR:-}" ]; then
 fi
 
 # Note: TRAVIS_BUILD_DIR=/home/travis/build/bluebird75/luaunit/
-# LUA_HOME_DIR=$GITHUB_WORKSPACE/install/$LUA
+LUA_HOME_DIR=$CI_WORKDIR/install/lua
 LUAROCK_HOME_DIR=$CI_WORKDIR/install/luarocks
 
 LUAROCKS_VERSION=3.4.0
