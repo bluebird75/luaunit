@@ -217,7 +217,7 @@ else # -e $LUA_HOME_DIR
     fi # $LUAJIT == "yes"
 
     # cleanup LUA build dir
-    rm -rf $LUA_BUILD_DIR
+    #    rm -rf $LUA_BUILD_DIR
 
     cd $CI_WORKDIR
 
