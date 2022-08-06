@@ -1,32 +1,46 @@
 #! /bin/bash
 
-# A script for setting up environment for travis-ci testing.
-# Sets up Lua and Luarocks.
-# LUA must be "lua5.1", "lua5.2" or "luajit".
-# luajit2.0 - master v2.0
-# luajit2.1 - master v2.1
-
-### 
-# This script will create the following symbolic links, to refer to the installed lua:
-# $HOME/.lua/lua
-# $HOME/.lua/luajit
-# $HOME/.lua/luac
-# $HOME/.lua/luarocks
+# A script to setup different versions of lua. The versions are compiled locally and installed in the home directory.
+# Luarocks is also pulled in (to benefit from luacov)
 #
-# Building of the targeted lua version is done in:
-# $HOME/install/<lua-version>
+# Inputs env var:
+# ---------------
+# - LUA: which version to build
+#   - "lua5.1"
+#   - "lua5.2" 
+#   - "lua5.3" 
+#   - "lua5.4" 
+#   - "luajit2.0"
+#   - "luajit2.1"
+# 
+# - CI_WORKDIR: directory where we can operate (directory creation, compiling, ...). Defaults to .
+# 
+# 
+# Output:
+# -------
+# Links to run lua and luarocks:
+# - $HOME/.lua/lua                
+# - $HOME/.lua/luajit   (only for luajit)
+# - $HOME/.lua/luac     (only for stock lua)
+# - $HOME/.lua/luarocks
 #
-# Lua rocks in installed in 
-# $HOME/install/luacoks
+# Lua installation:
+# - $CI_WORKDIR/install
+#
 
 set -eufox pipefail
 
-LUAROCKS_VERSION=3.4.0
-LUAROCKS_URL=http://luarocks.org/releases/luarocks-3.4.0.tar.gz
+if [ -z "${CI_WORKDIR:-}" ]; then
+  CI_WORKDIR=`pwd`;
+fi
 
 # Note: TRAVIS_BUILD_DIR=/home/travis/build/bluebird75/luaunit/
-LUA_HOME_DIR=$GITHUB_WORKSPACE/install/$LUA
-LUAROCK_HOME_DIR=$GITHUB_WORKSPACE/install/luarocks
+# LUA_HOME_DIR=$GITHUB_WORKSPACE/install/$LUA
+LUA_HOME_DIR=$CI_WORKDIR/install/$LUA
+LUAROCK_HOME_DIR=$CI_WORKDIR/install/luarocks
+
+LUAROCKS_VERSION=3.4.0
+LUAROCKS_URL=http://luarocks.org/releases/luarocks-3.4.0.tar.gz
 
 # setup a wide path
 export PATH=$HOME/.lua:${LUAROCK_HOME_DIR}/bin:${PATH}
@@ -130,6 +144,7 @@ then
     
 else # -e $LUA_HOME_DIR
 
+    cd $LUA_HOME_DIR
     echo ">> Compiling lua into $LUA_HOME_DIR"
 
     mkdir -p "$LUA_HOME_DIR"
@@ -227,5 +242,5 @@ lua -l luacov -v
 cd $GITHUB_WORKSPACE
 
 # To make travis happy, we must no fail on unassigned variables so reset this option to its default value
-set +u 
+# set +u 
 
