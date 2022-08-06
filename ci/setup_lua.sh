@@ -13,7 +13,11 @@
 #   - "luajit2.0"
 #   - "luajit2.1"
 # 
-# - CI_WORKDIR: directory where we can operate (directory creation, compiling, ...). Defaults to .
+# - CI_WORKDIR: optional, directory where to operate. Defaults to .
+#
+# - PLATFORM: optional, name of the platform. Defaults to linux
+#   - "linux" or "Linux" or not defined
+#   - "macosx" or "osx"
 # 
 # 
 # Output:
@@ -36,7 +40,6 @@ fi
 
 # Note: TRAVIS_BUILD_DIR=/home/travis/build/bluebird75/luaunit/
 # LUA_HOME_DIR=$GITHUB_WORKSPACE/install/$LUA
-LUA_HOME_DIR=$CI_WORKDIR/install/$LUA
 LUAROCK_HOME_DIR=$CI_WORKDIR/install/luarocks
 
 LUAROCKS_VERSION=3.4.0
@@ -96,20 +99,20 @@ esac
 # - macosx
 
 if [ -z "${PLATFORM:-}" ]; then
-  PLATFORM=$TRAVIS_OS_NAME;
+  PLATFORM="linux"
 fi
 
 if [ "$PLATFORM" == "osx" ]; then
   PLATFORM="macosx";
 fi
 
-# Allow running not on travis
-if [ -z "$PLATFORM" ]; then
-  if [ "$(uname)" == "Linux" ]; then
-    PLATFORM="linux";
-  else
-    PLATFORM="macosx";
-  fi;
+if [ "$PLATFORM" == "Linux" ]; then
+  PLATFORM="linux";
+fi
+
+if [ "$PLATFORM" != "linux" || "$PLATFORM" != "macosx"  ]; then
+    echo The environment variable PLATFORM must be either: empty, "linux", "macosx"
+    exit 1
 fi
 
 
@@ -238,8 +241,6 @@ echo "Setting lua path to luarock user tree "
 eval $(luarocks path --bin)
 
 lua -l luacov -v
-
-cd $GITHUB_WORKSPACE
 
 # To make travis happy, we must no fail on unassigned variables so reset this option to its default value
 # set +u 
