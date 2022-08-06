@@ -47,25 +47,27 @@ jobs:
     strategy:
       matrix:
         include:
-          - runs-on: ubuntu-latest
-            env:
-              LUA: lua5.1
-              LUANUMBER: double
+          - os: ubuntu-latest
+            lua: lua5.1
+            luanumber: double
 
-          - runs-on: ubuntu-latest
-            env:
-              LUA: lua5.2
-              LUANUMBER: float
+          - os: ubuntu-latest
+            lua: lua5.2
+            luanumber: float
 
-          - runs-on: ubuntu-latest
-            env:
-              LUA: lua5.3
-              LUANUMBER: float
+          - os: ubuntu-latest
+            lua: lua5.3
+            luanumber: float
 
-          - runs-on: ubuntu-latest
-            env:
-              LUA: lua5.4
-              LUANUMBER: double
+          - os: ubuntu-latest
+            lua: lua5.4
+            luanumber: double
+
+    runs-on: ${{ matrix.os }}
+    env:
+      PLATFORM: ${{ runner.os }}
+      LUA: ${{ matrix.lua }}
+      LUANUMBER: ${{ matrix.luanumber }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -79,8 +81,6 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Compile lua
-        env:
-          PLATFORM: ${{ runner.os }}
         run: |
           source ci/setup_lua.sh
           lua -v -lluacov run_unit_tests.lua --shuffle          
