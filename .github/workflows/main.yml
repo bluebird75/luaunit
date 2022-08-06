@@ -20,10 +20,14 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     env:
-      LUA: lua5.4
+      LUA: lua5.1
       LUANUMBER: double
       PLATFORM: runner.os
 
+    env:
+      LUA: lua5.4
+      LUANUMBER: double
+      PLATFORM: ${{ runner.os }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
