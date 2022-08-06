@@ -48,7 +48,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         lua: [lua5.1, lua5.4]
-        uanumber: double
+        luanumber: [double]
 
         include:
           - os: ubuntu-latest
@@ -64,7 +64,7 @@ jobs:
 
           - os: macos-latest
             lua: luajit2.1
-            
+
     runs-on: ${{ matrix.os }}
     env:
       LUA: ${{ matrix.lua }}
