@@ -22,7 +22,7 @@ jobs:
     env:
       LUA: lua5.4
       LUANUMBER: double
-      PLATFORM: $RUNNER_OS
+      PLATFORM: runner.os
 
 
     # Steps represent a sequence of tasks that will be executed as part of the job
