@@ -30,9 +30,9 @@ on:
 # Lua 5.4     | float        |           |            |           |
 #             | double       |     X     |      X     |    X      |
 # ------------|--------------|------------------------------------|
-# LuaJit 2.0  | double       |     X     |            |           |
+# LuaJit 2.0  | N.A.         |     X     |            |           |
 # ------------|--------------|------------------------------------|
-# LuaJit 2.1  | double       |           |            |    X      |
+# LuaJit 2.1  | N.A.         |           |            |    X      |
 # ------------|--------------|------------------------------------|
 #
 # Strategy:
@@ -46,23 +46,25 @@ jobs:
   run:
     strategy:
       matrix:
-        include:
-          - os: ubuntu-latest
-            lua: lua5.1
-            luanumber: double
+        os: [ubuntu-latest, macos-latest]
+        lua: [lua5.1, lua5.4]
+        uanumber: double
 
+        include:
           - os: ubuntu-latest
             lua: lua5.2
             luanumber: float
 
-          - os: ubuntu-latest
+          - os: macos-latest
             lua: lua5.3
             luanumber: float
 
           - os: ubuntu-latest
-            lua: lua5.4
-            luanumber: double
+            lua: luajit2.0
 
+          - os: macos-latest
+            lua: luajit2.1
+            
     runs-on: ${{ matrix.os }}
     env:
       LUA: ${{ matrix.lua }}
