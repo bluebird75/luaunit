@@ -221,6 +221,14 @@ else # -e $LUA_HOME_DIR
 
     cd $CI_WORKDIR
 
+    echo find $HOME/.lua
+    find $HOME/.lua
+    ls -lrt $HOME/.lua
+
+    echo PATH
+    echo $PATH
+
+
     # lua is OK ?
     echo ">> lua -v"
     lua -v 
