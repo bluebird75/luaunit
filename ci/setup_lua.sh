@@ -228,6 +228,7 @@ else # -e $LUA_HOME_DIR
     echo PATH
     echo $PATH
 
+    hash -r
 
     # lua is OK ?
     echo ">> lua -v"
