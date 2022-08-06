@@ -232,6 +232,7 @@ else # -e $LUA_HOME_DIR
 
     # lua is OK ?
     echo ">> lua -v"
+    $HOME/.lua/lua -v 
     lua -v 
 
     echo ">> Downloading luarocks"
