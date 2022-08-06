@@ -140,7 +140,6 @@ See `Developing luaunit`_
 
 Version and Changelog
 =====================
-This documentation describes the functionality of LuaUnit v3.2 .
 
 New in version 3.4 - 02 March 2021
 ----------------------------------
@@ -2367,25 +2366,33 @@ The steps are the following:
 * update luaunit with the desired functionality, ready for a release
 * update the version number in luaunit.lua
 * update the version number in doit.py
-* check that all tests pass on all supported lua versions
-
-.. code-block:: shell
-
-    doit.py runtests 
-
+* check that all tests pass on all supported lua versions: ```doit.py runtests```
 * update *examples* if needed to reflect new features
 * update index.rst with documentation of new features/behavior
 * update README.md and index.rst with the release information (date and content)
-* generate package for github:
+* create a git branch LUAUNIT_VX_X for the packaging process
+* GitHub packages:
+    * generate package for github: ```doit.py packageit```
+    * verify the content of the packages:
+        * documentation must be properly generated
+        * examples should work
+        * unit-tests should pass
+        * functional tests should pass
+    * merge branch LUAUNIT_VX_X into master
+    * push to GitHub to check for CI results and rendering of the README
+* LuaRocks packages:
+    * rename luaunit-*.rockspec to the current version
+    * generate luarock package:  
+* GitHub release:
+    * create a release page on GitHub
+    * Upload the zip, tgz and rock-luaunit.zip and validate the release
+* LuaRocks packages (continued):
+    * Copy the url of the rock package in the rock spec
+    * upload the rockspec to luarocks
+    * run luarocks install luaunit to check that the new version gets installed
+    * use the new luaunit and verify the version
+* tag the result
 
-.. code-block:: shell
-
-    doit.py packageit
-
-* verify the content of the packages:
-    * documentation must be properly generated
-    * examples should work
-    * unit-tests should pass
 
 
 

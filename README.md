@@ -130,19 +130,19 @@ The version of the main branch on GitHub is always stable and can be used safely
 
 #### Version 3.4 - 02 March 2021
 * support for Lua 5.4
-* assertAlmostEquals() works also on tables and nested structures
-* choose test output style with environment variable LUAUNIT_OUTPUT
-* setOutputType() accepts the xml filename as second argument when using the format junit
+* `assertAlmostEquals()` works also on tables and nested structures
+* choose test output style with environment variable `LUAUNIT_OUTPUT` 
+* `setOutputType()` accepts the xml filename as second argument when using the format junit
 * improve printing of table information in case of cycles
 * add ability to skip tests with `skip()` and `skipIf()`  
 * detect attempts to exit the test suite before it is finished running
-* add assertErrorMsgContentEquals() to validate exactly any error message
+* add `assertErrorMsgContentEquals()` to validate exactly any error message
 * filter out some stack entries when printing assertions (useful when embedding LuaUnit inside another test layer) with `STRIP_EXTRA_ENTRIES_IN_STACK_TRACE`
 * add `assertTableContains()` and `assertNotTableContains()` to verify the presence of a given value within a table
-* remove option TABLE_EQUALS_KEYBYCONTENT, it did not make sense
+* remove option `TABLE_EQUALS_KEYBYCONTENT`, it did not make sense
 * bugfix:
-	* assertIs()/assertNotIs() deals better with protected metatables
-	* assertEquals() deals better with tables containing cycles of different structure
+	* `assertIs()`/`assertNotIs()` deals better with protected metatables
+	* `assertEquals()` deals better with tables containing cycles of different structure
 	* fix table length comparison for table returning inconsistent length
 
 
