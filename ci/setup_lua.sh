@@ -147,10 +147,11 @@ then
     
 else # -e $LUA_HOME_DIR
 
-    cd $LUA_HOME_DIR
+
     echo ">> Compiling lua into $LUA_HOME_DIR"
 
     mkdir -p "$LUA_HOME_DIR"
+    cd $LUA_HOME_DIR
 
     echo ">> Downloading $LUA from $LUA_SOURCE_URL"
     curl $LUA_SOURCE_URL | tar xz
