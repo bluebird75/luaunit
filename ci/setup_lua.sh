@@ -224,6 +224,11 @@ else # -e $LUA_HOME_DIR
     echo find $HOME/.lua
     find $HOME/.lua
     ls -lrt $HOME/.lua
+    echo find HOME
+    find $HOME
+    echo find ci workdir
+    find $HOME
+    echo $CI_WORKDIR
 
     echo PATH
     echo $PATH
