@@ -11,7 +11,7 @@
 #   - "lua5.3" 
 #   - "lua5.4" 
 #   - "luajit2.0"
-#   - "luajit2.1"
+#   - "luajit2.1" (experimental, may fail)
 # 
 # - CI_WORKDIR: optional, directory where to operate. Defaults to .
 #
@@ -22,6 +22,7 @@
 # - LUANUMBER: does stock lua uses float or double for storing numbers ?
 #   - "double", empty: default, uses double
 #   - "float": store numbers on float (less precision)
+#   Note that this setting applies only to regular lua, it does nothing on luajit.
 # 
 # Output:
 # -------
@@ -95,6 +96,8 @@ case $LUA in
     LUAROCKS_CONFIGURE_ARGS2=--with-lua-include="$LUA_HOME_DIR/include/luajit-2.0"
     ;;
 "luajit2.1")
+    echo 'Warning, luajit 2.1.0 is not supported!'
+    exit 1
     LUA_SOURCE_URL=https://luajit.org/download/LuaJIT-2.1.0-beta3.tar.gz
     LUA_BUILD_DIR=LuaJIT-2.1.0-beta3
     LUAJIT="yes"
@@ -176,7 +179,7 @@ else # -e $LUA_HOME_DIR
         fi
 
         echo ">> Compiling LuaJIT"
-        make && make install PREFIX="$LUA_HOME_DIR"
+        make && make install PREFIX="$LUA_HOME_DIR" || exit 1
 
         ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/luajit
         ln -s $LUA_HOME_DIR/bin/luajit $HOME/.lua/lua
