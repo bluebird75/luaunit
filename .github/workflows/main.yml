@@ -32,12 +32,10 @@ on:
 # ------------|--------------|------------------------------------|
 # LuaJit 2.0  | N.A.         |     X     |            |           |
 # ------------|--------------|------------------------------------|
-# LuaJit 2.1  | N.A.         |           |            |    X      |
-# ------------|--------------|------------------------------------|
 #
 # Strategy:
 # - oldest and newest version are tested on all platform, in default configuration (double)
-# - Each of lua 5.2, lua 5.3, luajit 2.0, luajit 2.1 is tested only on one platforms
+# - Each of lua 5.2, lua 5.3, luajit 2.0 is tested only on one platforms
 # - float is tested on two platform
 
 
@@ -61,9 +59,6 @@ jobs:
 
           - os: ubuntu-latest
             lua: luajit2.0
-
-          - os: macos-latest
-            lua: luajit2.1
 
     runs-on: ${{ matrix.os }}
     env:
