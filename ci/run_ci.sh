@@ -1,16 +1,14 @@
-echo == Travis emulation mode ==
+echo ===== CI emulation mode =====
 rm -rf $HOME/.lua
 
-export LUA=lua5.4
 # export LUA=luajit2.1
+export LUA=lua5.4
 
+export CI_WORKDIR=`pwd`
+export PLATFORM=linux
 export LUANUMBER=double
 
-
-export TRAVIS_BUILD_DIR=`pwd`
-export TRAVIS_OS_NAME=linux
-
 # erase previous builds
-rm -rf $TRAVIS_BUILD_DIR/install
+rm -rf $CI_WORKDIR/install
 
-bash ../.travis/setup_lua.sh
+bash setup_lua.sh
