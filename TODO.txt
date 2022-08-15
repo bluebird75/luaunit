@@ -1,3 +1,10 @@
+- enable luacov
+- remove any references to travis
+- run windows version on GitHub actions
+- update documentation to latest features
+- fix bug preventing working on debian packaging
+
+
 # make all instead of make platform, this would allow to remove platform.sh
 # also avoid setnv_lua.sh if possible
 
