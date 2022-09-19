@@ -79,30 +79,10 @@ jobs:
       - name: Compile lua & run tests
         env:
           PLATFORM: ${{ runner.os }}
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           source ci/setup_lua.sh
           lua -v -lluacov run_unit_tests.lua --shuffle          
           lua run_functional_tests.lua --coverage
           luacheck example_with_luaunit.lua luaunit.lua run_unit_tests.lua run_functional_tests.lua test/
-          # luacov-coveralls -v --include %./luaunit.lua
-          find . 
-
-      - name: Coveralls Parallel
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.github_token }}
-          path-to-lcov: luacov.stats.out
-          flag-name: run-${{ matrix.lua }}-${{ matrix.luanumber }}-${{ matrix.os }}
-          parallel: true
-          
-         
-  finish:
-    needs: run
-    runs-on: ubuntu-latest
-    steps:
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.github_token }}
-        parallel-finished: true         
-
+          luacov-coveralls -v --include %./luaunit.lua
