@@ -85,6 +85,7 @@ jobs:
           lua run_functional_tests.lua --coverage
           luacheck example_with_luaunit.lua luaunit.lua run_unit_tests.lua run_functional_tests.lua test/
           # luacov-coveralls -v --include %./luaunit.lua
+          find . 
 
       - name: Coveralls Parallel
         uses: coverallsapp/github-action@master
