@@ -84,4 +84,22 @@ jobs:
           lua -v -lluacov run_unit_tests.lua --shuffle          
           lua run_functional_tests.lua --coverage
           luacheck example_with_luaunit.lua luaunit.lua run_unit_tests.lua run_functional_tests.lua test/
-          luacov-coveralls -v --include %./luaunit.lua
+          # luacov-coveralls -v --include %./luaunit.lua
+
+      - name: Coveralls Parallel
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          flag-name: run-${{ matrix.lua }}-${{ matrix.luanumber }}-${{ matrix.os }}
+          parallel: true
+          
+         
+  finish:
+    needs: run
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        parallel-finished: true         
