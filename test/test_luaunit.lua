@@ -681,11 +681,11 @@ bar"=1}]] )
     end
 
     function TestLuaUnitUtilities:test_isTestName()
-        lu.assertEquals( lu.LuaUnit.isTestName( 'testToto' ), true )
-        lu.assertEquals( lu.LuaUnit.isTestName( 'TestToto' ), true )
-        lu.assertEquals( lu.LuaUnit.isTestName( 'TESTToto' ), true )
-        lu.assertEquals( lu.LuaUnit.isTestName( 'xTESTToto' ), false )
-        lu.assertEquals( lu.LuaUnit.isTestName( '' ), false )
+        lu.assertEquals( lu.LuaUnit:isTestName( 'testToto' ), true )
+        lu.assertEquals( lu.LuaUnit:isTestName( 'TestToto' ), true )
+        lu.assertEquals( lu.LuaUnit:isTestName( 'TESTToto' ), true )
+        lu.assertEquals( lu.LuaUnit:isTestName( 'xTESTToto' ), false )
+        lu.assertEquals( lu.LuaUnit:isTestName( '' ), false )
     end
 
     function TestLuaUnitUtilities:test_parseCmdLine()
@@ -737,6 +737,18 @@ bar"=1}]] )
             { pattern={'toto', 'tutu'}, verbosity=lu.VERBOSITY_VERBOSE, output='tintin', testNames={'titi', 'tata', 'prout'}, fname='toto.xml' } )
 
         lu.assertErrorMsgContains( 'option: -$', lu.LuaUnit.parseCmdLine, { '-$', } )
+
+        -- method-prefix
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--method-prefix', 'should' } ), { methodPrefix='should' } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-m', 'should' } ), { methodPrefix='should' } )
+        lu.assertErrorMsgContains( 'Missing argument after -m', lu.LuaUnit.parseCmdLine, { '-m', } )
+
+        -- test-prefix
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '--test-prefix', 'should' } ), { testPrefix='should' } )
+        lu.assertEquals( lu.LuaUnit.parseCmdLine( { '-t', 'should' } ), { testPrefix='should' } )
+        lu.assertErrorMsgContains( 'Missing argument after -t', lu.LuaUnit.parseCmdLine, { '-t', } )
+
+        lu.assertErrorMsgContains( 'Missing argument after -x', lu.LuaUnit.parseCmdLine, { '-x', } )
     end
 
     function TestLuaUnitUtilities:test_patternFilter()
@@ -846,12 +858,12 @@ bar"=1}]] )
 
     function TestLuaUnitUtilities:test_expandOneClass()
         local result = {}
-        lu.LuaUnit.expandOneClass( result, 'titi', {} )
+        lu.LuaUnit:expandOneClass( result, 'titi', {} )
         lu.assertEquals( result, {} )
 
         result = {}
-        lu.LuaUnit.expandOneClass( result, 'MyTestToto1', MyTestToto1 )
-        lu.assertEquals( result, { 
+        lu.LuaUnit:expandOneClass( result, 'MyTestToto1', MyTestToto1 )
+        lu.assertEquals( result, {
             {'MyTestToto1.test1', MyTestToto1 },
             {'MyTestToto1.test2', MyTestToto1 },
             {'MyTestToto1.test3', MyTestToto1 },
@@ -862,16 +874,16 @@ bar"=1}]] )
 
     function TestLuaUnitUtilities:test_expandClasses()
         local result
-        result = lu.LuaUnit.expandClasses( {} )
+        result = lu.LuaUnit:expandClasses( {} )
         lu.assertEquals( result, {} )
 
-        result = lu.LuaUnit.expandClasses( { { 'MyTestFunction', MyTestFunction } } )
+        result = lu.LuaUnit:expandClasses( { { 'MyTestFunction', MyTestFunction } } )
         lu.assertEquals( result, { { 'MyTestFunction', MyTestFunction } } )
 
-        result = lu.LuaUnit.expandClasses( { { 'MyTestToto1.test1', MyTestToto1 } } )
+        result = lu.LuaUnit:expandClasses( { { 'MyTestToto1.test1', MyTestToto1 } } )
         lu.assertEquals( result, { { 'MyTestToto1.test1', MyTestToto1 } } )
 
-        result = lu.LuaUnit.expandClasses( { { 'MyTestToto1', MyTestToto1 } } )
+        result = lu.LuaUnit:expandClasses( { { 'MyTestToto1', MyTestToto1 } } )
         lu.assertEquals( result, { 
             {'MyTestToto1.test1', MyTestToto1 },
             {'MyTestToto1.test2', MyTestToto1 },
@@ -3148,7 +3160,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
     function TestLuaUnitExecution:setUp()
         executedTests = {}
         lu.LuaUnit.isTestNameOld = lu.LuaUnit.isTestName
-        lu.LuaUnit.isTestName = function( s ) return (string.sub(s,1,6) == 'MyTest') end
+        lu.LuaUnit.isTestName = function( _, s ) return (string.sub(s,1,6) == 'MyTest') end
     end
 
     function TestLuaUnitExecution:oneInstanceExists()
@@ -3167,7 +3179,8 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
     end
 
     function TestLuaUnitExecution:test_collectTests()
-        local allTests = lu.LuaUnit.collectTests()
+        local runner = lu.LuaUnit.new()
+        local allTests = runner:collectTests()
         lu.assertEquals( allTests, {"MyTestFunction", "MyTestOk", "MyTestToto1", "MyTestToto2","MyTestWithErrorsAndFailures"})
     end
 
@@ -4124,10 +4137,10 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
                                   runner.runSuite, runner, 'MyTestOk.foobar')
         lu.assertEquals( #lu.LuaUnit.instances, 1)
         lu.assertErrorMsgContains('Instance must be a table or a function',
-                                  runner.expandClasses, {{'foobar', 'INVALID'}})
+                                  runner.expandClasses, runner, {{'foobar', 'INVALID'}})
         lu.assertEquals( #lu.LuaUnit.instances, 1)
         lu.assertErrorMsgContains('Could not find method in class',
-                                  runner.expandClasses, {{'MyTestOk.foobar', {}}})
+                                  runner.expandClasses, runner, {{'MyTestOk.foobar', {}}})
         lu.assertEquals( #lu.LuaUnit.instances, 1)
     end
 
