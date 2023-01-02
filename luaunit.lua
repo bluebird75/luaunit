@@ -76,25 +76,28 @@ M.SKIP_PREFIX    = 'LuaUnit test SKIP:    ' -- prefix string for skipped tests
 
 M.USAGE=[[Usage: lua <your_test_suite.lua> [options] [testname1 [testname2] ... ]
 Options:
-  -h, --help:             Print this help
-  --version:              Print version information
-  -v, --verbose:          Increase verbosity
-  -q, --quiet:            Set verbosity to minimum
-  -e, --error:            Stop on first error
-  -f, --failure:          Stop on first failure or error
-  -s, --shuffle:          Shuffle tests before running them
-  -o, --output OUTPUT:    Set output type to OUTPUT
-                          Possible values: text, tap, junit, nil
-  -n, --name NAME:        For junit only, mandatory name of xml file
-  -r, --repeat NUM:       Execute all tests NUM times, e.g. to trig the JIT
-  -p, --pattern PATTERN:  Execute all test names matching the Lua PATTERN
-                          May be repeated to include several patterns
-                          Make sure you escape magic chars like +? with %
-  -x, --exclude PATTERN:  Exclude all test names matching the Lua PATTERN
-                          May be repeated to exclude several patterns
-                          Make sure you escape magic chars like +? with %
-  testname1, testname2, ... : tests to run in the form of testFunction,
-                              TestClass or TestClass.testMethod
+  -h, --help:                  Print this help
+  --version:                   Print version information
+  -v, --verbose:               Increase verbosity
+  -q, --quiet:                 Set verbosity to minimum
+  -e, --error:                 Stop on first error
+  -f, --failure:               Stop on first failure or error
+  -s, --shuffle:               Shuffle tests before running them
+  -o, --output OUTPUT:         Set output type to OUTPUT
+                               Possible values: text, tap, junit, nil
+  -n, --name NAME:             For junit only, mandatory name of xml file
+  -r, --repeat NUM:            Execute all tests NUM times, e.g. to trig the JIT
+  -p, --pattern PATTERN:       Execute all test names matching the Lua PATTERN
+                               May be repeated to include several patterns
+                               Make sure you escape magic chars like +? with %
+  -x, --exclude PATTERN:       Exclude all test names matching the Lua PATTERN
+                               May be repeated to exclude several patterns
+                               Make sure you escape magic chars like +? with %
+  -m, --method-prefix PREFIX:  Execute methods that start with the PREFIX (default: test)
+  -t, --test-prefix PREFIX:    Execute tests that start with the PREFIX (default: test)
+  -T, --test-suffix SUFFIX:    Execute tests that end with the SUFFIX
+  testname1, testname2, ... :  tests to run in the form of testFunction,
+                               TestClass or TestClass.testMethod
 
 You may also control LuaUnit options with the following environment variables:
 * LUAUNIT_OUTPUT: same as --output
@@ -2531,28 +2534,32 @@ end
         return nil, someName
     end
 
-    function M.LuaUnit.isMethodTestName( s )
+    function M.LuaUnit:isMethodTestName( s )
         -- return true is the name matches the name of a test method
         -- default rule is that is starts with 'Test' or with 'test'
-        return string.sub(s, 1, 4):lower() == 'test'
+        local prefix = self.methodPrefix or 'test'
+        return string.sub(s, 1, #prefix):lower() == prefix:lower()
     end
 
-    function M.LuaUnit.isTestName( s )
+    function M.LuaUnit:isTestName( s )
         -- return true is the name matches the name of a test
-        -- default rule is that is starts with 'Test' or with 'test'
-        return string.sub(s, 1, 4):lower() == 'test'
+        -- default ruleeis that is starts with 'Test' or with 'test'
+        local prefix = self.testPrefix or 'test'
+        return string.sub(s, 1, #prefix):lower() == prefix:lower() or
+            self.testSuffix and s:sub(-#self.testSuffix) == self.testSuffix or false
     end
 
-    function M.LuaUnit.collectTests()
+    function M.LuaUnit:collectTests()
         -- return a list of all test names in the global namespace
         -- that match LuaUnit.isTestName
 
         local testNames = {}
         for k, _ in pairs(_G) do
-            if type(k) == "string" and M.LuaUnit.isTestName( k ) then
+            if type(k) == "string" and self:isTestName( k ) then
                 table.insert( testNames , k )
             end
         end
+
         table.sort( testNames )
         return testNames
     end
@@ -2566,6 +2573,9 @@ end
         -- --output, -o, + name: select output type
         -- --pattern, -p, + pattern: run test matching pattern, may be repeated
         -- --exclude, -x, + pattern: run test not matching pattern, may be repeated
+        -- --method-prefix, -m, + prefix: prefix of test methods (default: test)
+        -- --test-prefix, -t, + prefix: prefix of tests (default: test)
+        -- --test-suffix, -T, + suffix: suffix of tests
         -- --shuffle, -s, : shuffle tests before reunning them
         -- --name, -n, + fname: name of output file for junit, default to stdout
         -- --repeat, -r, + num: number of times to execute each test
@@ -2585,6 +2595,9 @@ end
         local SET_EXCLUDE = 3
         local SET_FNAME = 4
         local SET_REPEAT = 5
+        local SET_METHOD_PREFIX = 6
+        local SET_TEST_PREFIX = 7
+        local SET_TEST_SUFFIX = 8
 
         if cmdLine == nil then
             return result
@@ -2627,6 +2640,15 @@ end
             elseif option == '--exclude' or option == '-x' then
                 state = SET_EXCLUDE
                 return state
+            elseif option == '--method-prefix' or option == '-m' then
+                state = SET_METHOD_PREFIX
+                return state
+            elseif option == '--test-prefix' or option == '-t' then
+                state = SET_TEST_PREFIX
+                return state
+            elseif option == '--test-suffix' or option == '-T' then
+                state = SET_TEST_SUFFIX
+                return state
             end
             error('Unknown option: '..option,3)
         end
@@ -2656,6 +2678,15 @@ end
                 else
                     result['pattern'] = { notArg }
                 end
+                return
+            elseif state == SET_METHOD_PREFIX then
+                result['methodPrefix'] = cmdArg
+                return
+            elseif state == SET_TEST_PREFIX then
+                result['testPrefix'] = cmdArg
+                return
+            elseif state == SET_TEST_SUFFIX then
+                result['testSuffix'] = cmdArg
                 return
             end
             error('Unknown parse state: '.. state)
@@ -3115,21 +3146,21 @@ end
         self:endTest()
     end
 
-    function M.LuaUnit.expandOneClass( result, className, classInstance )
+    function M.LuaUnit:expandOneClass( result, className, classInstance )
         --[[
         Input: a list of { name, instance }, a class name, a class instance
         Ouptut: modify result to add all test method instance in the form:
         { className.methodName, classInstance }
         ]]
         for methodName, methodInstance in sortedPairs(classInstance) do
-            if M.LuaUnit.asFunction(methodInstance) and M.LuaUnit.isMethodTestName( methodName ) then
+            if M.LuaUnit.asFunction(methodInstance) and self:isMethodTestName( methodName ) then
                 table.insert( result, { className..'.'..methodName, classInstance } )
             end
         end
     end
-
-    function M.LuaUnit.expandClasses( listOfNameAndInst )
+    function M.LuaUnit:expandClasses( listOfNameAndInst )
         --[[
+
         -- expand all classes (provided as {className, classInstance}) to a list of {className.methodName, classInstance}
         -- functions and methods remain untouched
 
@@ -3158,7 +3189,7 @@ end
                     end
                     table.insert( result, { name, instance } )
                 else
-                    M.LuaUnit.expandOneClass( result, name, instance )
+                    self:expandOneClass( result, name, instance )
                 end
             end
         end
@@ -3228,7 +3259,7 @@ end
         This function is internal to LuaUnit. The official API to perform this action is runSuiteByInstances()
         ]]
 
-        local expandedList = self.expandClasses( listOfNameAndInst )
+        local expandedList = self:expandClasses( listOfNameAndInst )
         if self.shuffle then
             randomizeTable( expandedList )
         end
@@ -3393,6 +3424,9 @@ end
         self.exeRepeat            = options.exeRepeat
         self.patternIncludeFilter = options.pattern
         self.shuffle              = options.shuffle
+        self.methodPrefix         = self.methodPrefix or options.methodPrefix
+        self.testPrefix           = self.testPrefix or options.testPrefix
+        self.testSuffix           = self.testSuffix or options.testSuffix
 
         options.output     = options.output or os.getenv('LUAUNIT_OUTPUT')
         options.fname      = options.fname  or os.getenv('LUAUNIT_JUNIT_FNAME')
@@ -3411,7 +3445,7 @@ end
     function M.LuaUnit:runSuite( ... )
         testNames = self:initFromArguments(...)
         self:registerSuite()
-        self:internalRunSuiteByNames( testNames or M.LuaUnit.collectTests() )
+        self:internalRunSuiteByNames( testNames or self:collectTests() )
         self:unregisterSuite()
         return self.result.notSuccessCount
     end
