@@ -3194,6 +3194,15 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( executedTests[7], "MyTestFunction" )
     end
 
+    function TestLuaUnitExecution:test_runSuiteWithArguments()
+      local runner = lu.LuaUnit.new()
+      runner:setOutputType( "NIL" )
+      runner:runSuite( 'MyTestToto2', 'MyTestToto1', 'MyTestFunction', '-x', 'test1', '-p', 'test%a$' )
+      lu.assertEquals( #executedTests, 2 )
+      lu.assertTableContains( executedTests, "MyTestToto1:testa" )
+      lu.assertTableContains( executedTests, "MyTestToto1:testb" )
+    end
+
     function TestLuaUnitExecution:testRunSomeTestByGlobalInstance( )
         lu.assertEquals( #executedTests, 0 )
         local runner = lu.LuaUnit.new()
@@ -3226,6 +3235,27 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( executedTests[1], 'MyLocalTestToto1:test1')
         lu.assertEquals( executedTests[2], 'MyLocalTestToto2:test2')
         lu.assertEquals( executedTests[3], 'MyLocalTestFunction')
+    end
+
+    function TestLuaUnitExecution:testRunSomeTestByLocalInstanceWithArguments()
+      local MyLocalTestIncluded = {}
+      function MyLocalTestIncluded:test1() table.insert(executedTests, "MyLocalTestIncluded:test1") end
+      function MyLocalTestIncluded:test2() table.insert(executedTests, "MyLocalTestIncluded:test2") end
+      local MyLocalTestExcluded = {}
+      function MyLocalTestExcluded:test1() table.insert(executedTests, "MyLocalTestExcluded:test1") end
+      local function MyLocalTestFunction1() table.insert(executedTests, "MyLocalTestFunction1") end
+
+      lu.assertEquals(#executedTests, 0)
+      local runner = lu.LuaUnit.new()
+      runner:setOutputType("NIL")
+      runner:runSuiteByInstances( {
+        { "MyLocalTestIncluded", MyLocalTestIncluded },
+        { "MyLocalTestExcluded", MyLocalTestExcluded },
+        { "MyLocalTestFunction1", MyLocalTestFunction1 },
+      }, "-p", "1$", "-x", "Excluded" )
+      lu.assertEquals(#executedTests, 2)
+      lu.assertEquals(executedTests[1], "MyLocalTestIncluded:test1")
+      lu.assertEquals(executedTests[2], "MyLocalTestFunction1")
     end
 
     function TestLuaUnitExecution:testRunReturnsNumberOfFailures()
