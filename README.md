@@ -28,37 +28,41 @@ a pretty stringifier which converts any type into a nicely formatted string (inc
 LuaUnit provides a wide range of assertions and goes into great efforts to provide the most useful output. For example
 since version 3.3 , comparing lists will provide a detailed difference analysis:
 
-	-- lua test code. Can you spot the difference ?
-    function TestListCompare:test1()
-        local A = { 121221, 122211, 121221, 122211, 121221, 122212, 121212, 122112, 122121, 121212, 122121 } 
-        local B = { 121221, 122211, 121221, 122211, 121221, 122212, 121212, 122112, 121221, 121212, 122121 }
-        lu.assertEquals( A, B )
-    end
+```lua
+-- lua test code. Can you spot the difference ?
+function TestListCompare:test1()
+	local A = { 121221, 122211, 121221, 122211, 121221, 122212, 121212, 122112, 122121, 121212, 122121 } 
+	local B = { 121221, 122211, 121221, 122211, 121221, 122212, 121212, 122112, 121221, 121212, 122121 }
+	lu.assertEquals( A, B )
+end
+```
 
-    $ lua test_some_lists_comparison.lua
+```sh
+$ lua test_some_lists_comparison.lua
 
-    TestListCompare.test1 ... FAIL
-	test/some_lists_comparisons.lua:22: expected: 
+TestListCompare.test1 ... FAIL
+test/some_lists_comparisons.lua:22: expected: 
 
-	List difference analysis:
-	* lists A (actual) and B (expected) have the same size
-	* lists A and B start differing at index 9
-	* lists A and B are equal again from index 10
-	* Common parts:
-	  = A[1], B[1]: 121221
-	  = A[2], B[2]: 122211
-	  = A[3], B[3]: 121221
-	  = A[4], B[4]: 122211
-	  = A[5], B[5]: 121221
-	  = A[6], B[6]: 122212
-	  = A[7], B[7]: 121212
-	  = A[8], B[8]: 122112
-	* Differing parts:
-	  - A[9]: 122121
-	  + B[9]: 121221
-	* Common parts at the end of the lists
-	  = A[10], B[10]: 121212
-	  = A[11], B[11]: 122121
+List difference analysis:
+* lists A (actual) and B (expected) have the same size
+* lists A and B start differing at index 9
+* lists A and B are equal again from index 10
+* Common parts:
+  = A[1], B[1]: 121221
+  = A[2], B[2]: 122211
+  = A[3], B[3]: 121221
+  = A[4], B[4]: 122211
+  = A[5], B[5]: 121221
+  = A[6], B[6]: 122212
+  = A[7], B[7]: 121212
+  = A[8], B[8]: 122112
+* Differing parts:
+  - A[9]: 122121
+  + B[9]: 121221
+* Common parts at the end of the lists
+  = A[10], B[10]: 121212
+  = A[11], B[11]: 122121
+```
 
 
 The command-line options provide a flexible interface to select tests by name or patterns, control output
