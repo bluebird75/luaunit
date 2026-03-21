@@ -147,4 +147,8 @@ end
 
 local runner = lu.LuaUnit.new()
 runner:setOutputType("text")
-os.exit( runner:runSuite('--shuffle', '--verbose') )
+
+-- You can force come command-line options to LuaUnit runner but it won't parse the command-line
+-- os.exit( runner:runSuite('--shuffle', '--verbose') )
+
+os.exit( runner:runSuite() )
