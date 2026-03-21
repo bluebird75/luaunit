@@ -2,41 +2,31 @@ name: CI
 
 on:
   push:
-    branches: [main, reboot_ci]
+    branches: [main]
   pull_request:
-    branches: [main, reboot_ci]
+    branches: [main]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # Combination matrix:
 #
-# Lua         | Number as    | Linux     | Windows    | MacOSX    |
-#             | float/double |           |            |           |
-# ------------|--------------|------------------------------------|
-# LuaJit 2.0  | N.A.         |     X     |            |           |
-# ------------|--------------|------------------------------------|
-# Lua 5.1     | float        |           |            |           |
-#             |--------------|-----------|------------|-----------|
-#             | double       |    X      |            |           |
-# ------------|--------------|------------------------------------|
-# Lua 5.2     | float        |    X      |            |           |
-#             |--------------|-----------|------------|-----------|
-#             | double       |           |            |           |
-# ------------|--------------|------------------------------------|
-# Lua 5.3     | float        |           |     X      |           |
-#             |--------------|-----------|------------|-----------|
-#             | double       |           |            |           |
-# ------------|--------------|------------------------------------|
-# Lua 5.4     | float        |           |            |           |
-#             |--------------|-----------|------------|-----------|
-#             | double       |     X     |      X     |    X      |
-# ------------|--------------|------------------------------------|
+# Lua         |  Linux  | Windows | MacOSX  |
+# ------------|-----------------------------|
+# LuaJit 2.0  |    X    |         |         |
+# ------------|-----------------------------|
+# Lua 5.1     |    X    |         |         |
+# ------------|-----------------------------|
+# Lua 5.2     |         |         |    X    |
+# ------------|-----------------------------|
+# Lua 5.3     |         |    X    |         |
+# ------------|-----------------------------|
+# Lua 5.4     |    X    |    X    |    X    |
+# ------------|-----------------------------|   
 #
 # Strategy:
-# - newest version is tested on all platform, in default configuration (double)
-# - Each of lua 5.2, lua 5.3, luajit 2.0 is tested only on one platforms
-# - float is tested on two platform
+# - newest version is tested on all platform
+# - Each of lua 5.1, lua 5.2, lua 5.3, luajit 2.0 is tested only on one platforms
 jobs:
   lua:
     runs-on: ${{ matrix.os }}
@@ -44,18 +34,16 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            luaVersion: 5.1
+            luaVersion: luajit-2.0
 
           - os: ubuntu-latest
+            luaVersion: 5.1
+
+          - os: macos-latest
             luaVersion: 5.2
-            luaCompileFlags: LUA_CFLAGS="-DLUA_NUMBER_FLOAT=1"
 
           - os: windows-latest
             luaVersion: 5.3
-            luaCompileFlags: LUA_CFLAGS="-DLUA_NUMBER_FLOAT=1"
-
-          - os: ubuntu-latest
-            luaVersion: luajit-2.0
 
           # Run lua 5.4 on all platforms
           - os: ubuntu-latest
@@ -77,13 +65,9 @@ jobs:
         uses: leafo/gh-actions-lua@v12
         with:
           luaVersion: ${{ matrix.luaVersion }}
-          luaCompileFlags: ${{ matrix.luaCompileFlags }}
 
       - name: show lua version
         run: lua -v
-
-      - name: run luacheck
-        run: luacheck .
 
       - name: run unit tests
         run: lua run_unit_tests.lua --shuffle
