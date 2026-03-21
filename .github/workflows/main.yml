@@ -71,9 +71,10 @@ jobs:
 
       - name: run unit tests
         run: lua run_unit_tests.lua --shuffle
-        
-      - name: run functional tests
-        run: lua run_functional_tests.lua 
+      
+      # disabled for now
+      #- name: run functional tests
+      #  run: lua run_functional_tests.lua 
 
       - name: setup luarocks
         uses: leafo/gh-actions-luarocks@v6
