@@ -68,7 +68,7 @@ format, set verbosity and more. See [the documentation](http://luaunit.readthedo
 
 LuaUnit also provides some dedicated support to scientific computing. See [the documentation](http://luaunit.readthedocs.io/en/latest/#scientific-computing-and-luaunit) .
 
-LuaUnit is very well tested: code coverage is 99.5% . The test suite is run on every version of Lua (Lua 5.1 to 5.4 and LuaJIT 2.0)
+LuaUnit is very well tested: code coverage is 99.5% . The test suite is run on every version of Lua (Lua 5.1 to 5.5 and LuaJIT 2.0)
 and on several OS (Windows Server, MacOs X and Ubuntu)
 
 LuaUnit is maintained on GitHub: https://github.com/bluebird75/luaunit . We gladly accept feature requests and even better Pull Requests.
