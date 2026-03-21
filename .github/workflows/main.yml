@@ -72,9 +72,8 @@ jobs:
       - name: run unit tests
         run: lua run_unit_tests.lua --shuffle
       
-      # disabled for now
-      #- name: run functional tests
-      #  run: lua run_functional_tests.lua 
+      - name: run functional tests
+        run: lua run_functional_tests.lua 
 
       - name: setup luarocks
         if: matrix.os == 'ubuntu-latest' && matrix.luaVersion == '5.4'
