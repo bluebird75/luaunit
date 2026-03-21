@@ -1,0 +1,105 @@
+Started on 03/21/26 17:42:01
+    TestToto.test6 ... FAIL
+example_with_luaunit.lua:57: expected: false, actual: nil
+    TestTiti.test2_withFailure ... FAIL
+example_with_luaunit.lua:118: expected: "bof"
+actual: "hop"
+    test2_withAssertionError ... ERROR
+example_with_luaunit.lua:140: assertion failed!
+    TestToto.test5 ... FAIL
+example_with_luaunit.lua:49: expected: false or nil, actual: 1
+    TestToto.test8b ... ERROR
+example_with_luaunit.lua:81: Bouhouhoum error!
+    test3 ... Ok
+    TestToto.test1_withFailure ... FAIL
+example_with_luaunit.lua:21: expected: 2, actual: 1
+    TestToto.test3 ... Ok
+    test1_withAssertionError ... ERROR
+example_with_luaunit.lua:134: assertion failed!
+    TestToto.test7 ... FAIL
+example_with_luaunit.lua:63: expected: {1, 2, three=3}
+actual: {1, 2}
+    TestTiti.test3 ... Ok
+    TestToto.test4 ... FAIL
+example_with_luaunit.lua:43: Received the not expected value: 1
+    TestToto.test8a ... ERROR
+example_with_luaunit.lua:81: Bouhouhoum error!
+    TestTiti.test1_withFailure ... FAIL
+example_with_luaunit.lua:109: expected: 2, actual: 1
+    TestToto.test_skipped ... SKIP
+Test is skipped because ...
+    TestToto.test2_withFailure ... FAIL
+example_with_luaunit.lua:30: expected: "bof"
+actual: "hop"
+=========================================================
+Tests with errors:
+------------------
+1) test2_withAssertionError
+example_with_luaunit.lua:140: assertion failed!
+stack traceback:
+	example_with_luaunit.lua:140: in function 'test2_withAssertionError'
+
+2) TestToto.test8b
+example_with_luaunit.lua:81: Bouhouhoum error!
+stack traceback:
+	example_with_luaunit.lua:81: in method 'funcWithError'
+	example_with_luaunit.lua:77: in method 'funcWithFuncWithError'
+	example_with_luaunit.lua:73: in upvalue 'TestToto.test8b'
+
+3) test1_withAssertionError
+example_with_luaunit.lua:134: assertion failed!
+stack traceback:
+	example_with_luaunit.lua:134: in function 'test1_withAssertionError'
+
+4) TestToto.test8a
+example_with_luaunit.lua:81: Bouhouhoum error!
+stack traceback:
+	example_with_luaunit.lua:81: in method 'funcWithError'
+	example_with_luaunit.lua:68: in upvalue 'TestToto.test8a'
+
+Failed tests:
+-------------
+1) TestToto.test6
+example_with_luaunit.lua:57: expected: false, actual: nil
+stack traceback:
+	example_with_luaunit.lua:57: in upvalue 'TestToto.test6'
+
+2) TestTiti.test2_withFailure
+example_with_luaunit.lua:118: expected: "bof"
+actual: "hop"
+stack traceback:
+	example_with_luaunit.lua:118: in upvalue 'TestTiti.test2_withFailure'
+
+3) TestToto.test5
+example_with_luaunit.lua:49: expected: false or nil, actual: 1
+stack traceback:
+	example_with_luaunit.lua:49: in upvalue 'TestToto.test5'
+
+4) TestToto.test1_withFailure
+example_with_luaunit.lua:21: expected: 2, actual: 1
+stack traceback:
+	example_with_luaunit.lua:21: in upvalue 'TestToto.test1_withFailure'
+
+5) TestToto.test7
+example_with_luaunit.lua:63: expected: {1, 2, three=3}
+actual: {1, 2}
+stack traceback:
+	example_with_luaunit.lua:63: in upvalue 'TestToto.test7'
+
+6) TestToto.test4
+example_with_luaunit.lua:43: Received the not expected value: 1
+stack traceback:
+	example_with_luaunit.lua:43: in upvalue 'TestToto.test4'
+
+7) TestTiti.test1_withFailure
+example_with_luaunit.lua:109: expected: 2, actual: 1
+stack traceback:
+	example_with_luaunit.lua:109: in upvalue 'TestTiti.test1_withFailure'
+
+8) TestToto.test2_withFailure
+example_with_luaunit.lua:30: expected: "bof"
+actual: "hop"
+stack traceback:
+	example_with_luaunit.lua:30: in upvalue 'TestToto.test2_withFailure'
+
+Ran 15 tests in 0.006 seconds, 3 successes, 8 failures, 4 errors, 1 skipped
