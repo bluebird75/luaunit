@@ -1,19 +1,26 @@
 image: Visual Studio 2015
 shallow_clone: true
 
+
+# Testing matrix strategy:
+# * we want to test every version of lua
+# * we want at least one test in x86 and one test in x64
+# * the last version of lua is tested in both x86 and x64
+#
+# So, x64 support is tested on some lua versions
+
+
+
 # create a build matrix to use various Lua and LuaJIT versions
 environment:
   matrix:
-    - LUAENV: luajit20
-    - LUAENV: luajit21
     - LUAENV: lua51
-    - LUAENV: lua51_64
-    - LUAENV: lua52
     - LUAENV: lua52_64
     - LUAENV: lua53
-    - LUAENV: lua53_64
     - LUAENV: lua54
     - LUAENV: lua54_64
+    - LUAENV: luajit20
+    - LUAENV: luajit21
 
 
 # install required binaries via batch file (also sets %LUA% path)

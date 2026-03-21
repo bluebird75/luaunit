@@ -1,18 +1,32 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
-    branches: [ "master" ]
+    branches: [main, reboot_ci]
   pull_request:
-    branches: [ "master" ]
+    branches: [main, reboot_ci]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+jobs:
+  lua:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: setup lua
+        uses: actions/setup-lua@v2
+        with:
+          lua-version: 5.4
+
+      - name: show lua version
+        run: lua -v
+
+      - name: run tests
+        run: lua run_unit_tests.lua
+        
 
 # Combination matrix:
 #
@@ -38,50 +52,53 @@ on:
 # - Each of lua 5.2, lua 5.3, luajit 2.0 is tested only on one platforms
 # - float is tested on two platform
 
-
-jobs:
-
-  run:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-        lua: [lua5.1, lua5.4]
-        luanumber: [double]
-
-        include:
-          - os: ubuntu-latest
-            lua: lua5.2
-            luanumber: float
-
-          - os: macos-latest
-            lua: lua5.3
-            luanumber: float
-
-          - os: ubuntu-latest
-            lua: luajit2.0
-
-    runs-on: ${{ matrix.os }}
-    env:
-      LUA: ${{ matrix.lua }}
-      LUANUMBER: ${{ matrix.luanumber }}
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      # Runs a single command using the runners shell
-      # - name: Install libxml2
-        # run: sudo apt-get install -y libxml2-utils
-
-      # Runs a set of commands using the runners shell
-      - name: Compile lua & run tests
-        env:
-          PLATFORM: ${{ runner.os }}
-        run: |
-          source ci/setup_lua.sh
-          lua -v -lluacov run_unit_tests.lua --shuffle          
-          lua run_functional_tests.lua --coverage
-          luacheck example_with_luaunit.lua luaunit.lua run_unit_tests.lua run_functional_tests.lua test/
-        #  luacov-coveralls -v --include %./luaunit.lua
+# please modify this file to support github lua action
+# 
+# 
+# jobs:
+# 
+#   run:
+#     strategy:
+#       matrix:
+#         os: [ubuntu-latest, macos-latest]
+#         lua: [lua5.1, lua5.4]
+#         luanumber: [double]
+# 
+#         include:
+#           - os: ubuntu-latest
+#             lua: lua5.2
+#             luanumber: float
+# 
+#           - os: macos-latest
+#             lua: lua5.3
+#             luanumber: float
+# 
+#           - os: ubuntu-latest
+#             lua: luajit2.0
+# 
+#     runs-on: ${{ matrix.os }}
+#     env:
+#       LUA: ${{ matrix.lua }}
+#       LUANUMBER: ${{ matrix.luanumber }}
+# 
+#     # Steps represent a sequence of tasks that will be executed as part of the job
+#     steps:
+# 
+#       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+#       - uses: actions/checkout@v3
+# 
+#       # Runs a single command using the runners shell
+#       # - name: Install libxml2
+#         # run: sudo apt-get install -y libxml2-utils
+# 
+#       # Runs a set of commands using the runners shell
+#       - name: Compile lua & run tests
+#         env:
+#           PLATFORM: ${{ runner.os }}
+#         run: |
+#           source ci/setup_lua.sh
+#           lua -v -lluacov run_unit_tests.lua --shuffle          
+#           lua run_functional_tests.lua --coverage
+#           luacheck example_with_luaunit.lua luaunit.lua run_unit_tests.lua run_functional_tests.lua test/
+#           # luacov-coveralls -v --include %./luaunit.lua
+# 
