@@ -146,7 +146,8 @@ local function adjustFile( fileOut, fileIn, pattern, mayBeAbsent, verbose )
     end
 
     local dest, linesOut = nil, {}
-    for line in io.lines(fileOut) do
+    for cline in io.lines(fileOut) do
+        local line = cline
         idxStart, idxEnd, capture = line:find( pattern )
         while idxStart ~= nil do
             if capture == nil then

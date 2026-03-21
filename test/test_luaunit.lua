@@ -2763,14 +2763,23 @@ TestLuaUnitErrorMsg = { __class__ = 'TestLuaUnitErrorMsg' }
 
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsMsg()
         -- single precision math Lua won't output an "exact" delta (0.1) here, so we do a partial match
-        assertFailureContains('Values are almost equal\nActual: 1.1, expected: 1, delta 0.1 below margin of 0.2', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
-        assertFailureContains('toto\nValues are almost equal\nActual: 1.1, expected: 1, delta 0.1 below margin of 0.2', lu.assertNotAlmostEquals, 1.1, 1, 0.2, 'toto' )
+        if (_VERSION >= "Lua 5.5") then
+            assertFailureContains('Values are almost equal\nActual: 1.1, expected: 1, delta 0.10000000000000009 below margin of 0.2', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
+            assertFailureContains('toto\nValues are almost equal\nActual: 1.1, expected: 1, delta 0.10000000000000009 below margin of 0.2', lu.assertNotAlmostEquals, 1.1, 1, 0.2, 'toto' )
+        else
+            assertFailureContains('Values are almost equal\nActual: 1.1, expected: 1, delta 0.1 below margin of 0.2', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
+            assertFailureContains('toto\nValues are almost equal\nActual: 1.1, expected: 1, delta 0.1 below margin of 0.2', lu.assertNotAlmostEquals, 1.1, 1, 0.2, 'toto' )
+        end
     end
 
     function TestLuaUnitErrorMsg:test_assertNotAlmostEqualsOrderReversedMsg()
         -- single precision math Lua won't output an "exact" delta (0.1) here, so we do a partial match
         lu.ORDER_ACTUAL_EXPECTED = false
-        assertFailureContains('Values are almost equal\nActual: 1, expected: 1.1, delta 0.1 below margin of 0.2', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
+        if (_VERSION >= "Lua 5.5") then
+            assertFailureContains('Values are almost equal\nActual: 1, expected: 1.1, delta 0.10000000000000009 below margin of 0.2', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
+        else
+            assertFailureContains('Values are almost equal\nActual: 1, expected: 1.1, delta 0.1 below margin of 0.2', lu.assertNotAlmostEquals, 1.1, 1, 0.2 )
+        end
     end
 
     function TestLuaUnitErrorMsg:test_assertNotEqualsMsg()
