@@ -147,4 +147,4 @@ end
 
 local runner = lu.LuaUnit.new()
 runner:setOutputType("text")
-os.exit( runner:runSuite() )
+os.exit( runner:runSuite('--shuffle', '--verbose') )
