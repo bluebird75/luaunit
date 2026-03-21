@@ -12,14 +12,17 @@ on:
 jobs:
   lua:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        luaVersion: [5.1.5, 5.2.4, 5.3.5, 5.4, luajit-2.0.5]
     steps:
       - name: checkout
         uses: actions/checkout@v4
 
       - name: setup lua
-        uses: actions/setup-lua@v2
+        uses: leafo/gh-actions-lua@v12
         with:
-          lua-version: 5.4
+          luaVersion: ${{ matrix.luaVersion }}
 
       - name: show lua version
         run: lua -v
