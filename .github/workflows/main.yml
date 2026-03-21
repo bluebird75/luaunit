@@ -77,13 +77,14 @@ jobs:
       #  run: lua run_functional_tests.lua 
 
       - name: setup luarocks
+        if: matrix.os == 'ubuntu-latest' && matrix.luaVersion == '5.4'
         uses: leafo/gh-actions-luarocks@v6
 
-      - name: install luacheck
-        run: luarocks install luacheck
-
-      - name: code check
-        run: luacheck example_with_luaunit.lua luaunit.lua run_unit_tests.lua run_functional_tests.lua test/
+      - name: install + run luacheck
+        if: matrix.os == 'ubuntu-latest' && matrix.luaVersion == '5.4'
+        run: |
+          luarocks install luacheck
+          luacheck example_with_luaunit.lua luaunit.lua run_unit_tests.lua run_functional_tests.lua test/
 
 
 # 
