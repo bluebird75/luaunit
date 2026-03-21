@@ -11,10 +11,22 @@ on:
 
 jobs:
   lua:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        luaVersion: [5.1.5, 5.2.4, 5.3.5, 5.4, luajit-2.0.5]
+        include:
+          - os: ubuntu-latest
+            luaVersion: 5.1.5
+          - os: ubuntu-latest
+            luaVersion: 5.2.4
+          - os: ubuntu-latest
+            luaVersion: 5.3.5
+          - os: ubuntu-latest
+            luaVersion: 5.4
+          - os: ubuntu-latest
+            luaVersion: luajit-2.0.5
+          - os: macos-latest
+            luaVersion: 5.4
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -28,7 +40,7 @@ jobs:
         run: lua -v
 
       - name: run tests
-        run: lua run_unit_tests.lua
+        run: lua run_unit_tests.lua --shuffle
         
 
 # Combination matrix:
