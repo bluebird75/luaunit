@@ -1,8 +1,6 @@
 [![CI](https://github.com/bluebird75/luaunit/actions/workflows/main.yml/badge.svg)](https://github.com/bluebird75/luaunit/actions/workflows/main.yml)
-[![Build status](https://ci.appveyor.com/api/projects/status/us6uh4e5q597jj54?svg=true&passingText=Windows%20Build%20passing&failingText=Windows%20Build%20failed)](https://ci.appveyor.com/project/bluebird75/luaunit)
 [![Documentation Status](https://readthedocs.org/projects/luaunit/badge/?version=latest)](https://readthedocs.org/projects/luaunit/?badge=latest)
-[![Coverage Status](https://coveralls.io/repos/github/bluebird75/luaunit/badge.svg?branch=master)](https://coveralls.io/github/bluebird75/luaunit?branch=master)
-[![Downloads](https://img.shields.io/badge/downloads-235k-brightgreen.svg)](https://luarocks.org/modules/bluebird75/luaunit)
+[![Downloads](https://img.shields.io/badge/downloads-700k-brightgreen.svg)](https://luarocks.org/modules/bluebird75/luaunit)
 [![License](http://img.shields.io/badge/License-BSD-green.svg)](LICENSE.txt)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2756/badge)](https://bestpractices.coreinfrastructure.org/projects/2756)
 
@@ -17,7 +15,7 @@ several output formats (Text, TAP, JUnit, ...) to be used directly or work with 
 LuaUnit may be installed as a [rock](https://luarocks.org/modules/bluebird75/luaunit) or directly added to your project.
 For simplicity, LuaUnit is contained into a single-file and has no external dependency. 
 
-Tutorial and reference documentation is available on
+Tutorial and reference documentation is slightly outdated and available on
 [read-the-docs](http://luaunit.readthedocs.org/en/latest/)
 
 LuaUnit may also be used as an assertion library, to validate assertions inside a running program. In addition, it provides
@@ -70,8 +68,8 @@ format, set verbosity and more. See [the documentation](http://luaunit.readthedo
 
 LuaUnit also provides some dedicated support to scientific computing. See [the documentation](http://luaunit.readthedocs.io/en/latest/#scientific-computing-and-luaunit) .
 
-LuaUnit is very well tested: code coverage is 99.5% . The test suite is run on every version of Lua (Lua 5.1 to 5.4, LuaJIT 2.0 and 2.1 beta)
-and on many OS (Windows Seven, Windows Server 2012, MacOs X and Ubuntu). You can check the continuous build results on [Travis-CI](https://travis-ci.org/bluebird75/luaunit) and [AppVeyor](https://ci.appveyor.com/project/bluebird75/luaunit).
+LuaUnit is very well tested: code coverage is 99.5% . The test suite is run on every version of Lua (Lua 5.1 to 5.4 and LuaJIT 2.0)
+and on several OS (Windows Server, MacOs X and Ubuntu)
 
 LuaUnit is maintained on GitHub: https://github.com/bluebird75/luaunit . We gladly accept feature requests and even better Pull Requests.
 For more information on LuaUnit development, please check: [Developing LuaUnit](http://luaunit.readthedocs.org/en/latest/#developing-luaunit) . 
@@ -82,7 +80,7 @@ The main developer can be reached at *phil.fremy at free.fr* . If you have secur
 
 ## LuaUnit successes
 
-Version 3.2 of LuaUnit has been downloaded more than 235 000 times on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit)
+Version 3.4 of LuaUnit has been downloaded more than 270 000 times on [LuaRocks](https://luarocks.org/modules/bluebird75/luaunit)
 
 LuaUnit is used in some very nice technological products. I like to mention:
 
