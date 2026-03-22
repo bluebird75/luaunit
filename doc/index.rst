@@ -885,7 +885,7 @@ success 0 is returned, making is suitable for an exit code.
 
 
 
-Example of using pattern to select tests::
+Example of using pattern to select tests:
 
 .. code-block:: lua
 
@@ -896,7 +896,7 @@ Example of using pattern to select tests::
     os.exit(runner.runSuite('--pattern', 'withXY')
 
 
-Example of explicitly selecting tests:: 
+Example of explicitly selecting tests: 
 
 .. code-block:: lua
 
@@ -913,7 +913,7 @@ create internally a LuaUnit runner and pass all arguments to it.
 
 Arguments and return value is the same as :func:`runner:runSuite()` 
 
-Example::
+Example:
 
 .. code-block:: lua
 
