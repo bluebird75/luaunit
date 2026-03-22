@@ -3348,7 +3348,7 @@ end
 
     function M.LuaUnit:unregisterSuite()
         -- print('<- Unregister suite')
-        -- remove our current instqances from the global array of instances
+        -- remove our current instances from the global array of instances
         local instanceIdx = nil
         for i, instance in ipairs(M.LuaUnit.instances) do
             if instance == self then
