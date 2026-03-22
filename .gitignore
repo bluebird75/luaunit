@@ -31,6 +31,7 @@ Thumbs.db
 obj/
 [Rr]elease*/
 _ReSharper*/
+.vscode
 
 # LuaCov output (stats and report)
 luacov.*.out
