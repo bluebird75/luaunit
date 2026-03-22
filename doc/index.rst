@@ -31,7 +31,7 @@ LuaUnit also provides some dedicated support to scientific computing. See the se
 LuaUnit may also be used as an assertion library. In that case, you will call the assertion functions, which generate errors
 when the assertion fails. The error includes a detailed analysis of the failed assertion, like when executing a test suite.
 
-LuaUnit provides another generic usage function: :func:`prettystr` which converts any value to a nicely
+LuaUnit provides another generic usage function: :lua:func:`prettystr` which converts any value to a nicely
 formatted string. It supports in particular tables, nested table and even recursive tables.
 
 
@@ -144,32 +144,32 @@ Version and Changelog
 New in version 3.4 - 02 March 2021
 ----------------------------------
 * support for Lua 5.4
-* :func:`assertAlmostEquals` works also on tables and nested structures
+* :lua:func:`assertAlmostEquals` works also on tables and nested structures
 * choose test output style with environment variable `LUAUNIT_OUTPUT`
-* :func:`runner:setOutputType()` accepts the xml filename as second argument when using the format *junit*
+* :lua:meth:`LuaUnit.setOutputType()` accepts the xml filename as second argument when using the format *junit*
 * improve printing of table information in case of cycles
-* add ability to skip tests with :func:`skip` and :func:`skipIf`  
+* add ability to skip tests with :lua:func:`skip` and :lua:func:`skipIf`  
 * detect attempts to exit the test suite before it is finished running
-* add :func:`assertErrorMsgContentEquals` to validate exactly any error message
+* add :lua:func:`assertErrorMsgContentEquals` to validate exactly any error message
 * filter out some stack entries when printing assertions (useful when embedding LuaUnit inside another test layer) with :ref:`strip_extra_entries_in_stack_trace`
-* add :func:`assertTableContains` and :func:`assertNotTableContains` to verify the presence of a given value within a table
+* add :lua:func:`assertTableContains` and :lua:func:`assertNotTableContains` to verify the presence of a given value within a table
 * remove option `TABLE_EQUALS_KEYBYCONTENT`, it did not make sense
 * bugfix:
-    * :func:`assertIs`/:func:`assertNotIs` deals better with protected metatables
-    * :func:`assertEquals` deals better with tables containing cycles of different structure
+    * :lua:func:`assertIs`/:lua:func:`assertNotIs` deals better with protected metatables
+    * :lua:func:`assertEquals` deals better with tables containing cycles of different structure
     * fix table length comparison for table returning inconsistent length
 
 
 New in version 3.3 - 6. Mar 2018
 --------------------------------
 * General
-    * when comparing lists with :func:`assertEquals`, failure message provides an advanced comparison of the lists
-    * :func:`assertErrorMsgEquals` can check for error raised as tables
-    * tests may be finished early with :func:`fail`, :func:`failIf`, :func:`success` or :func:`successIf`
+    * when comparing lists with :lua:func:`assertEquals`, failure message provides an advanced comparison of the lists
+    * :lua:func:`assertErrorMsgEquals` can check for error raised as tables
+    * tests may be finished early with :lua:func:`fail`, :lua:func:`failIf`, :lua:func:`success` or :lua:func:`successIf`
     * improve printing of recursive tables
     * improvements and fixes to JUnit and TAP output
-    * stricter :func:`assertTrue` and :func:`assertFalse`: they only succeed with boolean values
-    * add :func:`assertEvalToTrue` and :func:`assertEvalToFalse` with previous :func:`assertTrue`/:func:`assertFalse` behavior of coercing to boolean before asserting
+    * stricter :lua:func:`assertTrue` and :lua:func:`assertFalse`: they only succeed with boolean values
+    * add :lua:func:`assertEvalToTrue` and :lua:func:`assertEvalToFalse` with previous :lua:func:`assertTrue`/:lua:func:`assertFalse` behavior of coercing to boolean before asserting
     * all assertion functions accept an optional extra message, to be printed along the failure
 * New command-line arguments:
     * can now shuffle tests with ``--shuffle`` or ``-s``
@@ -177,9 +177,9 @@ New in version 3.3 - 6. Mar 2018
     * more flexible test selection with inclusion (``--pattern`` / ``-p``) or exclusion (``--exclude`` / ``-x``) or combination of both
 * Scientific computing dedicated support (see documentation):
     * provide the machine epsilon in EPS
-    * new functions: :func:`assertNan`, :func:`assertInf`, :func:`assertPlusInf`, :func:`assertMinusInf`, :func:`assertPlusZero`, :func:`assertMinusZero` and
+    * new functions: :lua:func:`assertNan`, :lua:func:`assertInf`, :lua:func:`assertPlusInf`, :lua:func:`assertMinusInf`, :lua:func:`assertPlusZero`, :lua:func:`assertMinusZero` and
       their negative version
-    * in :func:`assertAlmostEquals`, margin no longer provides a default value of 1E-11, the machine epsilon is used instead
+    * in :lua:func:`assertAlmostEquals`, margin no longer provides a default value of 1E-11, the machine epsilon is used instead
 * Platform and continuous integration support:
     * validate LuaUnit on MacOs platform (thank to Travis CI)
     * validate LuaUnit with 32 bits numbers (floats) and 64 bits numbers (double)
@@ -310,7 +310,7 @@ If they are functions, or if they are tables that contain
 functions that start with *test* or *Test*, they are run as part of the test suite.
 
 So just write a function whose name starts with test. Inside test functions, use the assertions functions provided by LuaUnit, such
-as :func:`assertEquals`.
+as :lua:func:`assertEquals`.
 
 Let's see that in practice.
 
@@ -342,7 +342,7 @@ You write the following tests::
     end
 
 
-:func:`assertEquals` is the most commonly used assertion function. It 
+:lua:func:`assertEquals` is the most commonly used assertion function. It 
 verifies that both argument are equals, in the order actual value, expected value.
 
 Rerun your test script (``-v`` is to activate a more verbose output)::
@@ -373,9 +373,9 @@ The difference between failures and errors are:
 
 
 If we continue with our example, we also want to test that when the function receives negative numbers, it generates an error. Use
-:func:`assertError` or even better, :func:`assertErrorMsgContains` to also validate the content
+:lua:func:`assertError` or even better, :lua:func:`assertErrorMsgContains` to also validate the content
 of the error message. There are other types or error checking functions, see `Error assertions`_ . Here
-we use :func:`assertErrorMsgContains` . First argument is the expected message, then the function to call
+we use :lua:func:`assertErrorMsgContains` . First argument is the expected message, then the function to call
 and the optional arguments::
 
     function testAddError()
@@ -392,7 +392,7 @@ Now, suppose we also have the following function to test::
 
 We want to test the type of the value returned by adder and its behavior. LuaUnit
 provides assertion for type testing (see `Type assertions`_ ). In this case, we use
-:func:`assertIsFunction`::
+:lua:func:`assertIsFunction`::
 
     function testAdder()
         f = adder(3)
@@ -535,7 +535,7 @@ Using the command-line
 
 You can control the LuaUnit execution from the command-line:
 
-**Output format**
+*Output format**
 
 Choose the test output format with ``-o`` or ``--output``. Available formats are:
 
@@ -603,6 +603,7 @@ With ``--pattern`` or ``-p``, you can provide a lua pattern and only the tests t
 the pattern will actually be run.
 
 Example::
+
     -- Run all tests of zero testing and error testing
     -- by using the magic character .
     $ lua my_test_suite.lua -v -p Err.r -p Z.ro
@@ -810,137 +811,139 @@ LuaUnit runner object
 
 The various options set on the command-line can be overridden by creating a LuaUnit runner explicitely and calling specific functions on it.
 
-.. function:: LuaUnit.new()
+.. lua:class:: LuaUnit 
 
-The execution of a LuaUnit test suite is controlled through a runner object. This object is created with `LuaUnit.new()` .
+    .. lua:staticmethod:: LuaUnit.new()
 
-.. code-block:: lua
+        The execution of a LuaUnit test suite is controlled through a runner object. This object is created with `LuaUnit.new()` .
 
-    lu = require('luaunit')
+    .. code-block:: lua
 
-
-    runner = lu.LuaUnit.new()
-    -- use the runner object...
-    runner.runSuite()
-
-.. function:: runner:setVerbosity( verbosity )
-
-Set the verbosity of the runner. The value is an integer ranging from lu.VERBOSITY_QUIET to lu.VERBOSITY_VERBOSE .
+        lu = require('luaunit')
 
 
-.. function:: runner:setQuitOnError( quitOnError )
-
-Set the quit-on-first-error behavior, like the command-line `--xx`. The argument is a boolean value.
-
-
-.. function:: runner:setQuitOnFailuer( quitOnFailure )
-
-Set the quit-on-first-failure-or-error behavior, like the command-line `--xx`. The argument is a boolean value.
+        runner = lu.LuaUnit.new()
+        -- use the runner object...
+        runner.runSuite()
 
 
-.. function:: runner:setRepeat( repeatNumber )
+    .. lua:method:: setVerbosity( verbosity )
 
-Set the number of times a test function is executed, like the command-line `-xx`. The argument is an integer.
-
-
-.. function:: runner:setShuffle( shuffle )
-
-Set whether the test are run in randomized, like the command-line `--shuffle`. The argument is a boolean value.
+        Set the verbosity of the runner. The value is an integer ranging from lu.VERBOSITY_QUIET to lu.VERBOSITY_VERBOSE .
 
 
-.. function:: runner:setOutputType(type [, junit_fname])
+    .. lua:method:: setQuitOnError( quitOnError )
 
-Set the output type of the test suite. See `Output formats`_ for possible values. When setting the format `junit`, it
-is mandatory to set the filename receiving the xml output. This can be done by passing it as second argument of this function.
-
-
-.. function:: runner:runSuite( [arguments] )
-
-This function runs the test suite.
-
-**Arguments**
-
-If no arguments are supplied, it parses the command-line arguments of the script
-and interpret them. If arguments are supplied to the function, they are parsed
-as the command-line. It uses the same syntax.
-
-Test names may be supplied in arguments, to execute
-only these specific tests. Note that when explicit names are provided
-LuaUnit does not require the test names to necessarily start with *test*.
-
-If no test names were supplied, a general test collection process is done
-and the resulting tests are executed.
-
-**Return value**
-
-It returns the number of failures and errors. On
-success 0 is returned, making is suitable for an exit code.
-
-.. code-block:: lua
-
-    lu = require('luaunit')
-
-    runner = lu.LuaUnit.new()
-    os.exit(runner.runSuite())
+        Set the quit-on-first-error behavior, like the command-line `--xx`. The argument is a boolean value.
 
 
+    .. lua:method:: setQuitOnFailure( quitOnFailure )
 
-Example of using pattern to select tests:
-
-.. code-block:: lua
-
-    lu = require('luaunit')
-
-    runner = lu.LuaUnit.new()
-    -- execute tests matching the 'withXY' pattern
-    os.exit(runner.runSuite('--pattern', 'withXY')
+        Set the quit-on-first-failure-or-error behavior, like the command-line `--xx`. The argument is a boolean value.
 
 
-Example of explicitly selecting tests: 
+    .. lua:method:: setRepeat( repeatNumber )
 
-.. code-block:: lua
-
-    lu = require('luaunit')
-
-    runner = lu.LuaUnit.new()
-    os.exit(runner.runSuite('testABC', 'testDEF'))
+        Set the number of times a test function is executed, like the command-line `-xx`. The argument is an integer.
 
 
-.. function:: LuaUnit.run( [arguments] )
+    .. lua:method:: setShuffle( shuffle )
 
-This function may be called directly from the LuaUnit table. It will
-create internally a LuaUnit runner and pass all arguments to it.
+        Set whether the test are run in randomized, like the command-line `--shuffle`. The argument is a boolean value.
 
-Arguments and return value is the same as :func:`runner:runSuite()` 
+    .. lua:method:: setOutputType(type [, junit_fname])
 
-Example:
+        Set the output type of the test suite. See `Output formats`_ for possible values. When setting the format `junit`, it
+        is mandatory to set the filename receiving the xml output. This can be done by passing it as second argument of this function.
 
-.. code-block:: lua
 
-    -- execute tests matching the 'withXY' pattern
-    os.exit(lu.LuaUnit.run('--pattern', 'withXY'))
+    .. lua:method:: runSuite( [arguments] )
+
+        This function runs the test suite.
+
+        **Arguments**
+
+        If no arguments are supplied, it parses the command-line arguments of the script
+        and interpret them. If arguments are supplied to the function, they are parsed
+        as the command-line. It uses the same syntax.
+
+        Test names may be supplied in arguments, to execute
+        only these specific tests. Note that when explicit names are provided
+        LuaUnit does not require the test names to necessarily start with *test*.
+
+        If no test names were supplied, a general test collection process is done
+        and the resulting tests are executed.
+
+        **Return value**
+
+        It returns the number of failures and errors. On
+        success 0 is returned, making is suitable for an exit code.
+
+        .. code-block:: lua
+
+            lu = require('luaunit')
+
+            runner = lu.LuaUnit.new()
+            os.exit(runner.runSuite())
 
 
 
-.. function:: runner:runSuiteByInstances( listOfNameAndInstances  )
+        **Example of using pattern to select tests:**
 
-This function runs test without performing the global test collection process on the global namespace, the test
-are explicitely provided as argument, along with their names.
+        .. code-block:: lua
 
-Before execution, the function will parse the script command-line, like :func:`funner:runSuite()`.
+            lu = require('luaunit')
 
-Input is provided as a list of { name, test_instance } . test_instance can either be a function or a table containing 
-test functions starting with the prefix "test".
+            runner = lu.LuaUnit.new()
+            -- execute tests matching the 'withXY' pattern
+            os.exit(runner.runSuite('--pattern', 'withXY')
 
 
-Example of using runSuiteByInstances
+        **Example of explicitly selecting tests:**
 
-.. code-block:: lua
+        .. code-block:: lua
 
-    lu = require('luaunit')
+            lu = require('luaunit')
 
-    runner = lu.LuaUnit.new()
-    os.exit(runner.runSuiteByInstances( {'mySpecialTest1', mySpecialTest1}, {'mySpecialTest2', mySpecialTest2} } )
+            runner = lu.LuaUnit.new()
+            os.exit(runner.runSuite('testABC', 'testDEF'))
+
+
+    .. lua:staticmethod:: run( [arguments] )
+
+        This function may be called directly from the LuaUnit table. It will
+        create internally a LuaUnit runner and pass all arguments to it.
+
+        Arguments and return value is the same as :lua:meth:`LuaUnit.runSuite()` 
+
+        Example:
+
+        .. code-block:: lua
+
+            -- execute tests matching the 'withXY' pattern
+            os.exit(lu.LuaUnit.run('--pattern', 'withXY'))
+
+
+
+    .. lua:method:: runSuiteByInstances( listOfNameAndInstances  )
+
+        This function runs test without performing the global test collection process on the global namespace, the test
+        are explicitely provided as argument, along with their names.
+
+        Before execution, the function will parse the script command-line, like :lua:meth:`LuaUnit.runSuite()`.
+
+        Input is provided as a list of *{ name, test_instance }* where *test_instance* can either be a function or a table containing 
+        test functions starting with the prefix *test*.
+
+
+        **Example of using runSuiteByInstances**
+
+        .. code-block:: lua
+
+            lu = require('luaunit')
+
+            runner = lu.LuaUnit.new()
+            os.exit(runner.runSuiteByInstances( {'mySpecialTest1', mySpecialTest1}, {'mySpecialTest2', mySpecialTest2} } )
 
 
 Skipping and ending test 
@@ -948,15 +951,16 @@ Skipping and ending test
 
 LuaUnit allows to force test ending in several ways.
 
-**Test skipping**
+Test skipping
+-----------------
 
-.. function:: skip( message )
+.. lua:function:: skip( message )
 
     Stops the ongoing test and mark it as skipped with the given message. This can be used
     to deactivate a given test.
 
 
-.. function:: skipIf( condition, message )
+.. lua:function:: skipIf( condition, message )
 
     If the condition *condition* evaluates to *true*, stops the ongoing test and mark it as skipped with the given message.
     Else, continue the test execution normally.
@@ -965,10 +969,10 @@ LuaUnit allows to force test ending in several ways.
     verify if the conditions are met for executing such tests.
 
 
-.. function:: runOnlyIf( condition, message )
+.. lua:function:: runOnlyIf( condition, message )
 
     If condition evaluates to *false*, stops the ongoing test and mark it as skipped with the 
-    given message. This is the opposite behavior of :func:`skipIf()` .
+    given message. This is the opposite behavior of :lua:func:`skipIf()` .
 
     The expected usage is to call the function at the beginning of the test to
     verify if the conditions are met for executing such tests.
@@ -977,26 +981,28 @@ LuaUnit allows to force test ending in several ways.
 Number of skipped tests, if any, are reported at the end of the execution.
 
 
-**Force test failing**
+Force test failing
+------------------
 
-.. function:: fail( message )
+.. lua:function:: fail( message )
 
     Stops the ongoing test and mark it as failed with the given message.
 
 
-.. function:: failIf( condition, message )
+.. lua:function:: failIf( condition, message )
 
     If the condition *condition* evaluates to *true*, stops the ongoing test and mark it as failed with the given message.
     Else, continue the test execution normally.
 
 
-**Force test success**
+Force test success
+-------------------
 
-.. function:: success()
+.. lua:function:: success()
 
     Stops the ongoing test and mark it as successful.
 
-.. function:: successIf( condition )
+.. lua:function:: successIf( condition )
 
     If the condition *condition* evaluates to *true*, stops the ongoing test and mark it as successful.
     Else, continue the test execution normally.
@@ -1028,7 +1034,8 @@ section and add the following two failing cases:
         end
 
 
-**Text format**
+Text format
+------------
 
 By default, LuaUnit uses the output format TEXT, with minimum verbosity::
 
@@ -1106,7 +1113,8 @@ In this format, you get:
 
 This format is usually interesting if some tests print debug output, to match the output to the test.
 
-**JUNIT format**
+JUNIT format
+------------
 
 The Junit XML format was introduced by the `Java testing framework JUnit`_ and has been then used by many continuous
 integration platform as an interoperability format between test suites and the platform.
@@ -1188,7 +1196,8 @@ is validated against `Jenkins/Hudson schema`_ . If you ever find an problem in t
 
 .. _Jenkins/Hudson schema: https://github.com/bluebird75/luaunit/blob/LUAUNIT_V3_2_1/junitxml/junit-jenkins.xsd  
 
-**TAP format**
+TAP format
+----------
 
 The `TAP format`_ for test results has been around since 1988. LuaUnit produces TAP reports compatible with version 12 of
 the specification.
@@ -1270,7 +1279,8 @@ Example with full verbosiy::
 
 With maximum verbosity, the stack trace is also displayed in the test diagnostic.
 
-**NIL format**
+NIL format
+----------
 
 With the nil format output, absolutely nothing is displayed while running the tests. Only the
 exit code of the command can tell whether the test was successful or not::
@@ -1318,7 +1328,7 @@ Assertions functions
 =====================
 We will now list all assertion functions. For every functions, the failure
 message tries to be as informative as possible, by displaying the expectation and value that caused the failure. It
-relies on the :func:`prettystr` for printing nicely formatted values.
+relies on the :lua:func:`prettystr` for printing nicely formatted values.
 
 All function accept an optional extra message which if provided, is printed along with the failure message.
 
@@ -1340,7 +1350,7 @@ The order only matters for the message that is displayed in case of failures. It
 not influence the test itself.
 
 
-.. function:: assertEquals(actual, expected [, extra_msg] )
+.. lua:function:: assertEquals(actual, expected [, extra_msg] )
 
     **Alias**: *assert_equals()*
 
@@ -1348,7 +1358,7 @@ not influence the test itself.
     The values being compared may be integers, floats, strings, tables, functions or a combination of 
     those. If provided, *extra_msg* is a string which will be printed along with the failure message.
 
-    When comparing floating point numbers, it is better to use :func:`assertAlmostEquals` which supports a margin
+    When comparing floating point numbers, it is better to use :lua:func:`assertAlmostEquals` which supports a margin
     for the equality verification.
 
     For tables, the comparison supports nested tables and cyclic structures. To be equal, two tables must
@@ -1399,12 +1409,12 @@ not influence the test itself.
     LuaUnit provides other table-related assertions, see :ref:`assert-table` .
 
 
-.. function:: assertNotEquals(actual, expected [, extra_msg])
+.. lua:function:: assertNotEquals(actual, expected [, extra_msg])
 
     **Alias**: *assert_not_equals()*
 
     Assert that two values are different. The assertion
-    fails if the two values are identical. It behaves exactly like :func:`assertEquals` but checks
+    fails if the two values are identical. It behaves exactly like :lua:func:`assertEquals` but checks
     for the opposite condition.
 
     If provided, *extra_msg* is a string which will be printed along with the failure message.
@@ -1447,7 +1457,7 @@ Input Value   assertNotFalse()  assertFalse()  assertEvalToFalse()
 *"hello"*     Fail              Fail           Fail
 ============  ================  =============  ===================
 
-.. function:: assertEvalToTrue(value [, extra_msg])
+.. lua:function:: assertEvalToTrue(value [, extra_msg])
 
     **Alias**: *assert_eval_to_true()*
 
@@ -1455,9 +1465,9 @@ Input Value   assertNotFalse()  assertFalse()  assertEvalToFalse()
     so that values like ``0``, ``""``, ``1.17`` **succeed** in this assertion. If provided, 
     extra_msg is a string which will be printed along with the failure message.
 
-    See :func:`assertTrue` for a strict assertion to boolean ``true``.
+    See :lua:func:`assertTrue` for a strict assertion to boolean ``true``.
 
-.. function:: assertEvalToFalse(value [, extra_msg])
+.. lua:function:: assertEvalToFalse(value [, extra_msg])
 
     **Alias**: *assert_eval_to_false()*
 
@@ -1465,9 +1475,9 @@ Input Value   assertNotFalse()  assertFalse()  assertEvalToFalse()
     so that ``nil`` and ``false``  **succeed** in this assertion. If provided, extra_msg 
     is a string which will be printed along with the failure message.
 
-    See :func:`assertFalse` for a strict assertion to boolean ``false``.
+    See :lua:func:`assertFalse` for a strict assertion to boolean ``false``.
     
-.. function:: assertTrue(value [, extra_msg])
+.. lua:function:: assertTrue(value [, extra_msg])
 
     **Alias**: *assert_true()*
 
@@ -1475,9 +1485,9 @@ Input Value   assertNotFalse()  assertFalse()  assertEvalToFalse()
     so that values like ``0``, ``""``, ``1.17`` **fail** in this assertion. If provided, 
     extra_msg is a string which will be printed along with the failure message.
 
-    See :func:`assertEvalToTrue` for an assertion to ``true`` where Lua coercion rules apply.
+    See :lua:func:`assertEvalToTrue` for an assertion to ``true`` where Lua coercion rules apply.
     
-.. function:: assertFalse(value [, extra_msg])
+.. lua:function:: assertFalse(value [, extra_msg])
 
     **Alias**: *assert_false()*
 
@@ -1485,16 +1495,16 @@ Input Value   assertNotFalse()  assertFalse()  assertEvalToFalse()
     so that ``nil`` **fails** in this assertion. If provided, *extra_msg* is a string 
     which will be printed along with the failure message.
 
-    See :func:`assertEvalToFalse` for an assertion to ``false`` where Lua coertion fules apply.
+    See :lua:func:`assertEvalToFalse` for an assertion to ``false`` where Lua coertion fules apply.
     
-.. function:: assertNil(value [, extra_msg])
+.. lua:function:: assertNil(value [, extra_msg])
 
     **Aliases**: *assert_nil()*, *assertIsNil()*, *assert_is_nil()*
 
     Assert that a given value is *nil* . If provided, *extra_msg* is 
     a string which will be printed along with the failure message.
     
-.. function:: assertNotNil(value [, extra_msg])
+.. lua:function:: assertNotNil(value [, extra_msg])
 
     **Aliases**: *assert_not_nil()*, *assertNotIsNil()*, *assert_not_is_nil()*
 
@@ -1502,40 +1512,40 @@ Input Value   assertNotFalse()  assertFalse()  assertEvalToFalse()
     so that values like ``0``, ``""``, ``false`` all validate the assertion.
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
-.. function:: assertIs(actual, expected [, extra_msg])
+.. lua:function:: assertIs(actual, expected [, extra_msg])
 
     **Alias**: *assert_is()*
 
     Assert that two variables are identical. For string, numbers, boolean and for nil, 
-    this gives the same result as :func:`assertEquals` . For the other types, identity
+    this gives the same result as :lua:func:`assertEquals` . For the other types, identity
     means that the two variables refer to the same object. 
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
     **Example :**
 
-.. code-block:: lua
+    .. code-block:: lua
 
-        s1='toto'
-        s2='to'..'to'
-        t1={1,2}
-        t2={1,2}
-        v1=nil
-        v2=false
+            s1='toto'
+            s2='to'..'to'
+            t1={1,2}
+            t2={1,2}
+            v1=nil
+            v2=false
 
-        lu.assertIs(s1,s1) -- ok
-        lu.assertIs(s1,s2) -- ok
-        lu.assertIs(t1,t1) -- ok
-        lu.assertIs(t1,t2) -- fail
-        lu.assertIs(v1,v2) -- fail
+            lu.assertIs(s1,s1) -- ok
+            lu.assertIs(s1,s2) -- ok
+            lu.assertIs(t1,t1) -- ok
+            lu.assertIs(t1,t2) -- fail
+            lu.assertIs(v1,v2) -- fail
     
-.. function:: assertNotIs(actual, expected [, extra_msg])
+.. lua:function:: assertNotIs(actual, expected [, extra_msg])
 
     **Alias**: *assert_not_is()*
 
     Assert that two variables are not identical, in the sense that they do not
     refer to the same value. If provided, *extra_msg* is a string which will be printed along with the failure message.
 
-    See :func:`assertIs` for more details.
+    See :lua:func:`assertIs` for more details.
     
 
 String assertions
@@ -1543,7 +1553,7 @@ String assertions
 
 Assertions related to string and patterns.
 
-.. function:: assertStrContains( str, sub [, isPattern [, extra_msg ]] )
+.. lua:function:: assertStrContains( str, sub [, isPattern [, extra_msg ]] )
 
     **Alias**: *assert_str_contains()*
 
@@ -1555,18 +1565,18 @@ Assertions related to string and patterns.
     is searched inside the string *str* .
     
 
-.. function:: assertStrIContains( str, sub [, extra_msg] )
+.. lua:function:: assertStrIContains( str, sub [, extra_msg] )
 
     **Alias**: *assert_str_icontains()*
 
     Assert that the string *str* contains the given substring *sub*, irrespective of the case. 
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
-    Note that unlike :func:`assertStrcontains`, you can not search for a pattern.
+    Note that unlike :lua:func:`assertStrcontains`, you can not search for a pattern.
 
 
 
-.. function:: assertNotStrContains( str, sub, [isPattern [, extra_msg]] )
+.. lua:function:: assertNotStrContains( str, sub, [isPattern [, extra_msg]] )
 
     **Alias**: *assert_not_str_contains()*
 
@@ -1578,17 +1588,17 @@ Assertions related to string and patterns.
     is searched inside the string *str* .
     
 
-.. function:: assertNotStrIContains( str, sub [, extra_msg] )
+.. lua:function:: assertNotStrIContains( str, sub [, extra_msg] )
 
     **Alias**: *assert_not_str_icontains()*
 
     Assert that the string *str* does not contain the substring *sub*, irrespective of the case. 
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
-    Note that unlike :func:`assertNotStrcontains`, you can not search for a pattern.
+    Note that unlike :lua:func:`assertNotStrcontains`, you can not search for a pattern.
 
 
-.. function:: assertStrMatches( str, pattern [, start [, final [, extra_msg ]]]  )
+.. lua:function:: assertStrMatches( str, pattern [, start [, final [, extra_msg ]]]  )
 
     **Alias**: *assert_str_matches()*
 
@@ -1603,7 +1613,7 @@ Error assertions
 --------------------------
 Error related assertions, to verify error generation and error messages.
 
-.. function:: assertError( func, ...)
+.. lua:function:: assertError( func, ...)
 
     **Alias**: *assert_error()*
 
@@ -1622,7 +1632,7 @@ Error related assertions, to verify error generation and error messages.
     When testing LuaUnit, switching from *assertError()* to  *assertErrorMsgEquals()*
     revealed quite a few bugs!
     
-.. function:: assertErrorMsgEquals( expectedMsg, func, ... )
+.. lua:function:: assertErrorMsgEquals( expectedMsg, func, ... )
 
     **Alias**: *assert_error_msg_equals()*
 
@@ -1631,20 +1641,20 @@ Error related assertions, to verify error generation and error messages.
 
     Be careful when using this function that error messages usually contain the file name and
     line number information of where the error was generated. This is usually inconvenient so we have
-    introduced the :func:`assertErrorMsgContentEquals` . Be sure to check it.
+    introduced the :lua:func:`assertErrorMsgContentEquals` . Be sure to check it.
 
 
-.. function:: assertErrorMsgContentEquals( expectedMsg, func, ... )
+.. lua:function:: assertErrorMsgContentEquals( expectedMsg, func, ... )
 
     **Alias**: *assert_error_msg_content_equals()*
 
     Assert that calling function *func* will generate exactly the given error message, excluding the
     file and line information. File and line information may change as your programs evolve so we
-    find this version more convenient than :func:`assertErrorMsgEquals` .
+    find this version more convenient than :lua:func:`assertErrorMsgEquals` .
 
 
 
-.. function:: assertErrorMsgContains( partialMsg, func, ... )
+.. lua:function:: assertErrorMsgContains( partialMsg, func, ... )
 
     **Alias**: *assert_error_msg_contains()*
 
@@ -1654,7 +1664,7 @@ Error related assertions, to verify error generation and error messages.
 
 
     
-.. function:: assertErrorMsgMatches( expectedPattern, func, ... )
+.. lua:function:: assertErrorMsgMatches( expectedPattern, func, ... )
 
     **Alias**: *assert_error_msg_matches()*
 
@@ -1669,72 +1679,72 @@ Error related assertions, to verify error generation and error messages.
 Type assertions
 --------------------------
 
-    The following functions all perform type checking on their argument. If the
-    received value is not of the right type, the failure message will contain
-    the expected type, the received type and the received value to help you
-    identify better the problem.
+The following functions all perform type checking on their argument. If the
+received value is not of the right type, the failure message will contain
+the expected type, the received type and the received value to help you
+identify better the problem.
 
-.. function:: assertIsNumber(value [, extra_msg])
+.. lua:function:: assertIsNumber(value [, extra_msg])
 
     **Aliases**: *assertNumber()*, *assert_is_number()*, *assert_number()*
 
     Assert that the argument is a number (integer or float).
     If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsString(value [, extra_msg])
+.. lua:function:: assertIsString(value [, extra_msg])
 
     **Aliases**: *assertString()*, *assert_is_string()*, *assert_string()*
 
     Assert that the argument is a string.
     If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsTable(value [, extra_msg])
+.. lua:function:: assertIsTable(value [, extra_msg])
 
     **Aliases**: *assertTable()*, *assert_is_table()*, *assert_table()*
 
     Assert that the argument is a table.
     If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsBoolean(value [, extra_msg])
+.. lua:function:: assertIsBoolean(value [, extra_msg])
 
     **Aliases**: *assertBoolean()*, *assert_is_boolean()*, *assert_boolean()*
 
     Assert that the argument is a boolean.
     If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsNil(value [, extra_msg])
+.. lua:function:: assertIsNil(value [, extra_msg])
 
     **Aliases**: *assertNil()*, *assert_is_nil()*, *assert_nil()*
 
     Assert that the argument is nil.
     If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsFunction(value [, extra_msg])
+.. lua:function:: assertIsFunction(value [, extra_msg])
 
     **Aliases**: *assertFunction()*, *assert_is_function()*, *assert_function()*
 
     Assert that the argument is a function.
     If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsUserdata(value [, extra_msg])
+.. lua:function:: assertIsUserdata(value [, extra_msg])
 
     **Aliases**: *assertUserdata()*, *assert_is_userdata()*, *assert_userdata()*
 
     Assert that the argument is a userdata.
     If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsCoroutine(value [, extra_msg])
+.. lua:function:: assertIsCoroutine(value [, extra_msg])
 
     **Aliases**: *assertCoroutine()*, *assert_is_coroutine()*, *assert_coroutine()*
 
     Assert that the argument is a coroutine (an object with type *thread* ).
     If provided, *extra_msg* is a string which will be printed along with the failure message.
     
-.. function:: assertIsThread(value [, extra_msg])
+.. lua:function:: assertIsThread(value [, extra_msg])
 
     **Aliases**: *assertIsThread()*, *assertThread()*, *assert_is_thread()*, *assert_thread()*
 
-    Same function as :func:assertIsCoroutine . Since Lua coroutines have the type thread, it's not
+    Same function as :lua:func:`assertIsCoroutine` . Since Lua coroutines have the type thread, it's not
     clear which name is the clearer, so we provide syntax for both names.
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
@@ -1744,7 +1754,7 @@ Type assertions
 Table assertions
 --------------------------
 
-.. function:: assertItemsEquals(actual, expected [, extra_msg])
+.. lua:function:: assertItemsEquals(actual, expected [, extra_msg])
 
     **Alias**: *assert_items_equals()*
 
@@ -1761,7 +1771,7 @@ Table assertions
 ..
 
     The comparison is not recursive on the items: if any of the items are tables,
-    they are compared using table equality (like as in :func:`assertEquals` ), where
+    they are compared using table equality (like as in :lua:func:`assertEquals` ), where
     the key matters.
 
 
@@ -1771,7 +1781,7 @@ Table assertions
 
 
 
-.. function:: assertTableContains(table, element [, extra_msg])
+.. lua:function:: assertTableContains(table, element [, extra_msg])
 
     **Alias**: *assert_table_contains()*
 
@@ -1786,11 +1796,11 @@ Table assertions
         lu.assertTableContains( {1, 2, 3, {4} }, {4} } -- assertion succeeds
 
 
-.. function:: assertNotTableContains(table, element [, extra_msg])
+.. lua:function:: assertNotTableContains(table, element [, extra_msg])
 
     **Alias**: *assert_not_table_contains()*
 
-    Negative version of :func:`assertTableContains` .
+    Negative version of :lua:func:`assertTableContains` .
 
     Assert that the table contains no element with value `element`. Element
     may be of any type (including table), the recursive equality algorithm of assertEquals()
@@ -1838,9 +1848,10 @@ If your calculation shall be portable to multiple OS or compilers, you may get d
 
 .. _EPS:
 
-**EPS** *constant*
+EPS *constant*
+-----------------
 
-The machine epsilon, to be used with :func:`assertAlmostEquals` .
+The machine epsilon, to be used with :lua:func:`assertAlmostEquals` .
 
 This is either:
 
@@ -1848,7 +1859,7 @@ This is either:
 * 2^-23 or ~1.19E-07 (with lua number defined as float)
 
 
-.. function:: assertNan( value  [, extra_msg])
+.. lua:function:: assertNan( value  [, extra_msg])
 
     **Alias**: *assert_nan()*
 
@@ -1856,7 +1867,7 @@ This is either:
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertNotNan( value  [, extra_msg])
+.. lua:function:: assertNotNan( value  [, extra_msg])
 
     **Alias**: *assert_not_nan()*
 
@@ -1864,7 +1875,7 @@ This is either:
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertPlusInf( value  [, extra_msg])
+.. lua:function:: assertPlusInf( value  [, extra_msg])
 
     **Alias**: *assert_plus_inf()*
 
@@ -1872,7 +1883,7 @@ This is either:
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertMinusInf( value  [, extra_msg])
+.. lua:function:: assertMinusInf( value  [, extra_msg])
 
     **Alias**: *assert_minus_inf()*
 
@@ -1880,7 +1891,7 @@ This is either:
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertInf( value  [, extra_msg])
+.. lua:function:: assertInf( value  [, extra_msg])
 
     **Alias**: *assert_inf()*
 
@@ -1888,7 +1899,7 @@ This is either:
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertNotPlusInf( value  [, extra_msg])
+.. lua:function:: assertNotPlusInf( value  [, extra_msg])
 
     **Alias**: *assert_not_plus_inf()*
 
@@ -1896,7 +1907,7 @@ This is either:
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertNotMinusInf( value  [, extra_msg])
+.. lua:function:: assertNotMinusInf( value  [, extra_msg])
 
     **Alias**: *assert_not_minus_inf()*
 
@@ -1904,7 +1915,7 @@ This is either:
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertNotInf( value  [, extra_msg])
+.. lua:function:: assertNotInf( value  [, extra_msg])
 
     **Alias**: *assert_not_inf()*
 
@@ -1912,7 +1923,7 @@ This is either:
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. function:: assertPlusZero( value  [, extra_msg])
+.. lua:function:: assertPlusZero( value  [, extra_msg])
 
     **Alias**: *assert_plus_zero()*
 
@@ -1923,7 +1934,7 @@ This is either:
     Be careful when dealing with *+0* and *-0*, see note above.
 
 
-.. function:: assertMinusZero( value  [, extra_msg])
+.. lua:function:: assertMinusZero( value  [, extra_msg])
 
     **Alias**: *assert_minus_zero()*
 
@@ -1934,7 +1945,7 @@ This is either:
     Be careful when dealing with *+0* and *-0*, see MinusZero_
 
 
-.. function:: assertNotPlusZero( value  [, extra_msg])
+.. lua:function:: assertNotPlusZero( value  [, extra_msg])
 
     **Alias**: *assert_not_plus_zero()*
 
@@ -1944,7 +1955,7 @@ This is either:
     Be careful when dealing with *+0* and *-0*, see MinusZero_
 
 
-.. function:: assertNotMinusZero( value  [, extra_msg])
+.. lua:function:: assertNotMinusZero( value  [, extra_msg])
 
     **Alias**: *assert_not_minus_zero()*
 
@@ -1954,7 +1965,7 @@ This is either:
     Be careful when dealing with *+0* and *-0*, see MinusZero_
 
 
-.. function:: assertAlmostEquals( actual, expected [, margin=EPS [, extra_msg]] )
+.. lua:function:: assertAlmostEquals( actual, expected [, margin=EPS [, extra_msg]] )
 
     **Alias**: *assert_almost_equals()*
 
@@ -1963,14 +1974,14 @@ This is either:
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
     The function accepts either floating point numbers or tables. Complex structures with
-    nested tables are supported. Comparing tables with assertAlmostEquals works just like :func:`assertEquals`
+    nested tables are supported. Comparing tables with assertAlmostEquals works just like :lua:func:`assertEquals`
     with the difference that values are compared with a margin instead of with direct equality.
 
     Be careful that depending on the calculation, it might make more sense to measure
     the absolute error or the relative error (see below):
 
 
-.. function:: assertNotAlmostEquals( actual, expected [, margin=EPS [, extra_msg]] )
+.. lua:function:: assertNotAlmostEquals( actual, expected [, margin=EPS [, extra_msg]] )
 
     **Alias**: *assert_not_almost_equals()*
 
@@ -1981,64 +1992,65 @@ This is either:
     Be careful that depending on the calculation, it might make more sense to measure
     the absolute error or the relative error (see below).
 
-**Example of absolute versus relative error**
-    
-.. code-block:: lua
 
-        -- convert pi/6 radian to 30 degree 
-        pi_div_6_deg_calculated = math.deg(math.pi/6)
-        pi_div_6_deg_expected = 30
+    **Example of absolute versus relative error**
+        
+    .. code-block:: lua
 
-        -- convert pi/3 radian to 60 degree 
-        pi_div_3_deg_calculated = math.deg(math.pi/3)
-        pi_div_3_deg_expected = 60
+            -- convert pi/6 radian to 30 degree 
+            pi_div_6_deg_calculated = math.deg(math.pi/6)
+            pi_div_6_deg_expected = 30
 
-        -- check absolute error: it is not constant
-        print( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / lu.EPS ) -- prints: 16
-        print( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / lu.EPS ) -- prints: 3
+            -- convert pi/3 radian to 60 degree 
+            pi_div_3_deg_calculated = math.deg(math.pi/3)
+            pi_div_3_deg_expected = 60
 
-        -- The difference between expected value and calculated value is bigger than the machine epsilon, so 
-        -- it will fail an assertAlmostEquals with default margin. You could supply a bigger margin, but it is not a 
-        -- good solution because the error is not constant and it will be bigger for some calculations than for others.
+            -- check absolute error: it is not constant
+            print( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / lu.EPS ) -- prints: 16
+            print( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / lu.EPS ) -- prints: 3
 
-        -- A better approach is to use relative error:
-        print( ( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / pi_div_6_deg_expected) / lu.EPS ) -- prints: 0.53333
-        print( ( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / pi_div_3_deg_expected) / lu.EPS ) -- prints: 0.53333
+            -- The difference between expected value and calculated value is bigger than the machine epsilon, so 
+            -- it will fail an assertAlmostEquals with default margin. You could supply a bigger margin, but it is not a 
+            -- good solution because the error is not constant and it will be bigger for some calculations than for others.
 
-        -- By dividing the error by the expected value, we get a constant error for both calculations, which is less than
-        -- the machine epsilon. This is more reliable and assertAlmostEquals() will succeed with the default margin.
+            -- A better approach is to use relative error:
+            print( ( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / pi_div_6_deg_expected) / lu.EPS ) -- prints: 0.53333
+            print( ( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / pi_div_3_deg_expected) / lu.EPS ) -- prints: 0.53333
 
-        -- relative error is constant. Assertion can take the form of:
-        assertAlmostEquals( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / pi_div_6_deg_expected, lu.EPS )
-        assertAlmostEquals( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / pi_div_3_deg_expected, lu.EPS )
+            -- By dividing the error by the expected value, we get a constant error for both calculations, which is less than
+            -- the machine epsilon. This is more reliable and assertAlmostEquals() will succeed with the default margin.
 
-        -- or simply (relying on the default margin):
-        assertAlmostEquals( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / pi_div_6_deg_expected)
-        assertAlmostEquals( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / pi_div_3_deg_expected)
+            -- relative error is constant. Assertion can take the form of:
+            assertAlmostEquals( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / pi_div_6_deg_expected, lu.EPS )
+            assertAlmostEquals( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / pi_div_3_deg_expected, lu.EPS )
+
+            -- or simply (relying on the default margin):
+            assertAlmostEquals( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / pi_div_6_deg_expected)
+            assertAlmostEquals( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / pi_div_3_deg_expected)
 
 
 Pretty printing
 ----------------
 
-.. function:: prettystr( value )
+.. lua:function:: prettystr( value )
 
     Converts *value* to a nicely formatted string, whatever the type of the value.
     It supports in particular tables, nested table and even recursive tables.
 
     You can use it in your code to replace calls to *tostring()* .
 
-**Example of prettystr()**
-    
-.. code-block:: 
+    **Example of prettystr()**
+        
+    .. code-block:: 
 
-        > lu = require('luaunit')
-        > t1 = {1,2,3}
-        > t1['toto'] = 'titi'
-        > t1.f = function () end
-        > t1.fa = (1 == 0)
-        > t1.tr = (1 == 1)
-        > print( lu.prettystr(t1) )
-        {1, 2, 3, f=function: 00635d68, fa=false, toto="titi", tr=true}
+            > lu = require('luaunit')
+            > t1 = {1,2,3}
+            > t1['toto'] = 'titi'
+            > t1.f = function () end
+            > t1.fa = (1 == 0)
+            > t1.tr = (1 == 1)
+            > print( lu.prettystr(t1) )
+            {1, 2, 3, f=function: 00635d68, fa=false, toto="titi", tr=true}
 
 
 .. _luaunit-global-asserts:
@@ -2392,7 +2404,7 @@ The steps are the following:
     * merge branch LUAUNIT_VX_X into master
     * push to GitHub to check for CI results and rendering of the README
 * LuaRocks packages:
-    * rename luaunit-*.rockspec to the current version
+    * rename luaunit-\*.rockspec to the current version
     * generate luarock package:  
 * GitHub release:
     * create a release page on GitHub
