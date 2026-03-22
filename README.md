@@ -124,7 +124,7 @@ The simplest way to install LuaUnit is to fetch the GitHub version:
 
     git clone git@github.com:bluebird75/luaunit.git
 
-Then copy the file luaunit.lua into your project or the Lua libs directory.
+Then copy the file luaunit.lua into your project or in the Lua libs directory (if you are using regular Lua) or in the lua directory if you are using LuaJIT.
 
 The version of the main branch on GitHub is always stable and can be used safely.
 
