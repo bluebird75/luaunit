@@ -3148,6 +3148,12 @@ function MyTestFunction()
 end
 
 TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
+    --[[
+        Tests verifying that:
+        - setup and teardown are properly called
+        - test methods are executed in right order
+        - errors are properly handled during execution
+    ]]--
 
     function TestLuaUnitExecution:tearDown()
         executedTests = {}
@@ -3675,6 +3681,36 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( myExecutedTests[3], 'Btest1')
         lu.assertEquals( myExecutedTests[4], 'teardownSuite')
         lu.assertEquals( #myExecutedTests, 4)
+    end
+
+    function TestLuaUnitExecution:testWithErrorInSetupSuite()
+        lu.skip("Code is not ready for this feature")
+        local myExecutedTests = {}
+
+        local setupSuite = function() 
+            table.insert( myExecutedTests, 'setupSuite' ) 
+            local a = 1 + {2} -- will cause an error
+        end
+        local teardownSuite = function() table.insert( myExecutedTests, 'teardownSuite') end
+
+        local MyTestClassA = {
+            test1 = function() table.insert( myExecutedTests, 'Atest1' ) end
+        }
+
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType( "NIL" )
+        runner.patternIncludeFilter = {"test"}
+
+        runner:internalRunSuiteByInstances( { 
+            { 'setupSuite', setupSuite },
+            { 'teardownSuite', teardownSuite },
+            { 'MyTestClassA', MyTestClassA },
+        } )
+        lu.assertEquals( runner.result.notSuccessCount, 0 )
+        lu.assertEquals( myExecutedTests[1], 'setupSuite' )   
+        lu.assertEquals( myExecutedTests[2], 'Atest1')
+        lu.assertEquals( myExecutedTests[3], 'teardownSuite')
+        lu.assertEquals( #myExecutedTests, 3)
     end
 
     function TestLuaUnitExecution:testWithSetupClass_TeardownClass()
