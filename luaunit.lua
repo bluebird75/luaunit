@@ -18,6 +18,7 @@ M.VERSION='3.4'
 M._VERSION=M.VERSION -- For LuaUnit v2 compatibility
 
 -- a version which distinguish between regular Lua and LuaJit
+M._LUAVERSION = rawget(_G, 'jit') and jit.version or _VERSION
 M._LUAVERSION = (jit and jit.version) or _VERSION
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer
@@ -63,7 +64,7 @@ M.FORCE_DEEP_ANALYSIS   = true
 M.DISABLE_DEEP_ANALYSIS = false
 
 -- set EXPORT_ASSERT_TO_GLOBALS to have all asserts visible as global values
--- EXPORT_ASSERT_TO_GLOBALS = true
+local EXPORT_ASSERT_TO_GLOBALS = rawget(_G, 'EXPORT_ASSERT_TO_GLOBALS') and EXPORT_ASSERT_TO_GLOBALS
 
 -- we need to keep a copy of the script args before it is overriden
 local cmdline_argv = rawget(_G, "arg")
