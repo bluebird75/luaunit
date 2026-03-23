@@ -35,6 +35,20 @@ LuaUnit provides another generic usage function: :lua:func:`prettystr` which con
 formatted string. It supports in particular tables, nested table and even recursive tables.
 
 
+.. toctree::
+   :maxdepth: 3
+   :caption: Contents:
+
+   introduction
+   installation
+   getting-started
+   reference
+
+.. contents::
+   :local:
+   :depth: 3
+
+
 More details
 ************
 
