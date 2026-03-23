@@ -71,7 +71,7 @@ since version 3.3 , comparing lists will provide a detailed difference analysis:
 
 
 The command-line options provide a flexible interface to select tests by name or patterns, control output
-format, set verbosity and more. See `Using the command-line`_ .
+format, set verbosity and more. See :ref:`Using-the-command-line` .
 
 LuaUnit is very well tested: code coverage is 99.5% . The test suite is run on every version of Lua (Lua 5.1 to 5.3, LuaJIT 2.0 and 2.1 beta)
 and on many OS (Windows Seven, Windows Server 2012, MacOs X and Ubuntu). You can check the continuous build results on `Travis-CI`_ and `AppVeyor`_ .

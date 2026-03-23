@@ -1,3 +1,6 @@
+
+.. _developing-luaUnit:
+
 Developing LuaUnit
 ******************
 

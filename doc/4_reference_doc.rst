@@ -14,23 +14,24 @@ When no test names are supplied, all tests are collected.
 The syntax for supplying test names can be either: name of the function, name of the table
 or [name of the table].[name of the function]. Only the supplied tests will be executed.
 
-Selecting tests with --pattern and --exclude is usually more flexible. See `Flexible test selection`_
+Selecting tests with --pattern and --exclude is usually more flexible. See :ref:`flexible-test-selection`
 
 **Options**
 
---output, -o FORMAT    Set output format to FORMAT. Possible values: text, tap, junit, nil . See `Output formats`_
+--output, -o FORMAT    Set output format to FORMAT. Possible values: text, tap, junit, nil . See :ref:`output-formats`
 --name, -n FILENAME    For junit format only, mandatory name of xml file. Ignored for other formats.
---pattern, -p PATTERN  Execute all test names matching the Lua PATTERN. May be repeated to include severals patterns. See `Flexible test selection`_
---exclude, -x PATTERN  Exclude all test names matching the Lua PATTERN. May be repeated to exclude severals patterns. See `Flexible test selection`_
---repeat, -r NUM       Repeat all tests NUM times, e.g. to trigger the JIT. See `Other options`_
---shuffle, -s          Shuffle tests before running them. See `Other options`_
---error, -e            Stop on first error. See `Other options`_
---failure, -f          Stop on first failure or error. See `Other options`_
+--pattern, -p PATTERN  Execute all test names matching the Lua PATTERN. May be repeated to include severals patterns. See :ref:`flexible-test-selection`
+--exclude, -x PATTERN  Exclude all test names matching the Lua PATTERN. May be repeated to exclude severals patterns. See :ref:`flexible-test-selection`
+--repeat, -r NUM       Repeat all tests NUM times, e.g. to trigger the JIT. See :ref:`other-options`
+--shuffle, -s          Shuffle tests before running them. See :ref:`other-options`
+--error, -e            Stop on first error. See :ref:`other-options`
+--failure, -f          Stop on first failure or error. See :ref:`other-options`
 --verbose, -v          Increase verbosity
 --quiet, -q            Set verbosity to minimum
 --help, -h             Print help
 --version              Version information of LuaUnit
 
+.. _output-formats:
 
 Output formats 
 ----------------------
@@ -47,8 +48,10 @@ Formats available:
 
 .. _Test Anything Protocol: http://testanything.org/
 
-For more information on each format, see `Output formats details`_
+For more information on each format, see :ref:`output-formats-details`
 
+
+.. _other-options:
 
 Other options
 --------------
@@ -68,6 +71,8 @@ and methods. As a consequence test methods of a given class may be splitted into
 
 When using luajit, the just-in-time compiler will kick in only after a given function has been executed a sufficient number of times. To make sure
 that the JIT is not introducing any bug, LuaUnit provides a way to repeat a test may times, with ``--repeat`` or ``-r`` followed by a number.
+
+.. _flexible-test-selection:
 
 Flexible test selection
 -------------------------
@@ -201,7 +206,7 @@ The various options set on the command-line can be overridden by creating a LuaU
 
     .. lua:method:: setOutputType(type [, junit_fname])
 
-        Set the output type of the test suite. See `Output formats`_ for possible values. When setting the format `junit`, it
+        Set the output type of the test suite. See :ref:`output-formats` for possible values. When setting the format `junit`, it
         is mandatory to set the filename receiving the xml output. This can be done by passing it as second argument of this function.
 
 
@@ -356,12 +361,14 @@ Force test success
     Else, continue the test execution normally.
 
 
+
+.. _output-formats-details:
+
 Output formats details
 =======================
 
 
-To demonstrate the different output formats, we will take the example of the `Getting started with LuaUnit`_
-section and add the following two failing cases:
+To demonstrate the different output formats, we will take the example of the :ref:`getting-started` section and add the following two failing cases:
 
 .. code-block:: lua
 
@@ -682,6 +689,8 @@ All function accept an optional extra message which if provided, is printed alon
 
 .. Note:: see :ref:`table-printing` for more information on how LuaUnit prints tables.
 
+.. _equality-assertions:
+
 Equality assertions
 ----------------------
 All equality assertions functions take two arguments, in the order 
@@ -955,7 +964,8 @@ Assertions related to string and patterns.
     If *start* and *final* are not provided or are *nil*, the pattern must match the full string, from start to end. The
     function allows to specify the expected start and end position of the pattern in the string. If provided, 
     *extra_msg* is a string which will be printed along with the failure message.
-    
+
+.. _error-assertions:    
 
 Error assertions
 --------------------------
@@ -1022,7 +1032,8 @@ Error related assertions, to verify error generation and error messages.
 
     Note that matching is done from the start to the end of the error message. Be sure to escape magic all magic
     characters with ``%`` (like ``-+.?*``) .
-    
+
+.. _type-assertions:    
 
 Type assertions
 --------------------------
@@ -1489,7 +1500,7 @@ and actual argument as second, set the *ORDER_ACTUAL_EXPECTED* to *false*.
 luaunit.PRINT_TABLE_REF_IN_ERROR_MSG
 ------------------------------------------
 
-This controls whether table references are always printed along with table or not. See `table-printing`_ for details. The
+This controls whether table references are always printed along with table or not. See :ref:`table-printing` for details. The
 default is `false`.
 
 

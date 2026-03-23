@@ -1,9 +1,11 @@
 
+.. _getting-started:
+
 Getting started with LuaUnit
 ===================================
 
 This section will guide you through a step by step usage of *LuaUnit* . The full source code
-of the example below is available in the : `source_code_example`_ or in the file *my_test_suite.lua* 
+of the example below is available in the : :ref:`source_code_example` or in the file *my_test_suite.lua* 
 in the doc directory.
 
 Setting up your test script
@@ -103,7 +105,7 @@ The difference between failures and errors are:
 
 If we continue with our example, we also want to test that when the function receives negative numbers, it generates an error. Use
 :lua:func:`assertError` or even better, :lua:func:`assertErrorMsgContains` to also validate the content
-of the error message. There are other types or error checking functions, see `Error assertions`_ . Here
+of the error message. There are other types or error checking functions, see :ref:`error-assertions` . Here
 we use :lua:func:`assertErrorMsgContains` . First argument is the expected message, then the function to call
 and the optional arguments::
 
@@ -120,7 +122,7 @@ Now, suppose we also have the following function to test::
     end
 
 We want to test the type of the value returned by adder and its behavior. LuaUnit
-provides assertion for type testing (see `Type assertions`_ ). In this case, we use
+provides assertion for type testing (see :ref:`type-assertions` ). In this case, we use
 :lua:func:`assertIsFunction`::
 
     function testAdder()
@@ -259,6 +261,8 @@ log file name, and delete the log filename after every test::
     setUp() and tearDown() may also be named setup(), SetUp(), Setup() and teardown(), TearDown(), Teardown().*
 
 
+.. _Using-the-command-line:
+
 Using the command-line
 ----------------------------------
 
@@ -302,7 +306,7 @@ Output formats may also be controlled by the following environment variables:
 * LUAUNIT_OUTPUT: output format to use
 * LUAUNIT_JUNIT_FNAME: for junit output format, name of the xml file
 
-For a more detailed overview of all formats and their verbosity see the section `Output formats`_ .
+For a more detailed overview of all formats and their verbosity see the section :ref:`output-formats` .
 
 
 **List of tests to run**
@@ -370,7 +374,7 @@ For our test suite, it gives the following output::
     Ran 3 tests in 0.003 seconds, 3 successes, 0 failures, 4 non-selected
     OK
 
-You can also combine test selection and test exclusion. See `Flexible test selection`_
+You can also combine test selection and test exclusion. See :ref:`flexible-test-selection`
 
 Conclusion
 ----------

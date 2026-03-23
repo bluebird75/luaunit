@@ -63,12 +63,12 @@ New in version 3.3 - 6. Mar 2018
 
 New in version 3.2 - 12. Jul 2016
 ---------------------------------
-* Add command-line option to stop on first error or failure. See `Other options`_
+* Add command-line option to stop on first error or failure. See :ref:`other-options`
 * Distinguish between failures (failed assertion) and errors
 * Support for new versions: Lua 5.3 and LuaJIT (2.0, 2.1 beta)
 * Validation of all lua versions on Travis CI and AppVeyor
 * Add compatibility layer with forked luaunit v2.x
-* Added documentation about development process. See `Developing luaUnit`_
+* Added documentation about development process. See :ref:`developing-luaUnit`
 * Improved support for table containing keys of type table. See :ref:`comparing-table-keys-table`
 * Small bug fixes, several internal improvements
 * Availability of a Luarock package. See `https://luarocks.org/modules/bluebird75/luaunit` .
@@ -92,7 +92,7 @@ Because LuaUnit was forked and released as some 2.x version, version number
 is now jumping to 3.0 . 
 
 * full documentation available in text, html and pdf at http://luaunit.read-the-docs.org
-* new output format: JUnit, compatible with Bamboo and other CI platforms. See `Output formats`_
+* new output format: JUnit, compatible with Bamboo and other CI platforms. See :ref:`output-formats`
 * much better table assertions
 * new assertions for strings, with patterns and case insensitivity: assertStrContains, 
   assertNotStrContains, assertNotStrIContains, assertStrIContains, assertStrMatches
@@ -117,7 +117,7 @@ New in version 1.5 - 8. Nov 2012
 New in version 1.4 - 26. Jul 2012
 ---------------------------------
 * switch from X11 to more popular BSD license
-* add TAP output format for integration into Jenkins. See `Output formats`_
+* add TAP output format for integration into Jenkins. See :ref:`output-formats`
 * official repository now on GitHub
 
 
@@ -125,7 +125,7 @@ New in version 1.3 - 30. Oct 2007
 ---------------------------------
 * port to lua 5.1
 * iterate over the test classes, methods and functions in the alphabetical order
-* change the default order of expected, actual in assertEquals.  See `Equality assertions`_ 
+* change the default order of expected, actual in assertEquals.  See :ref:`equality-assertions` 
 
 
 Version 1.2 - 13. Jun 2005  
@@ -136,7 +136,7 @@ Version 1.2 - 13. Jun 2005
 Version 1.1
 ------------
 * move global variables to internal variables
-* assertion order is configurable between expected/actual or actual/expected. See `Equality assertions`_
+* assertion order is configurable between expected/actual or actual/expected. See :ref:`equality-assertions`
 * new assertion to check that a function call returns an error
 * display the calling stack when an error is spotted
 * two verbosity level, like in python unittest

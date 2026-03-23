@@ -93,7 +93,7 @@ If using the same table as key, they are now considered equal:
 Annex C: Source code of example
 =================================
 
-Source code of the example used in the `Getting started with LuaUnit`_
+Source code of the example used in the :ref:`getting-started` section
 
 .. code-block:: lua
 
