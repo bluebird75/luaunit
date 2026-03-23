@@ -2,6 +2,13 @@
 Reference documentation
 ***********************
 
+Index and Search page
+===========================
+
+* :ref:`genindex`
+* :ref:`search`
+
+
 Command-line options
 ====================
 

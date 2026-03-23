@@ -21,9 +21,3 @@
    :depth: 3
 
 
-Index and Search page
-**********************
-
-* :ref:`genindex`
-* :ref:`search`
-
