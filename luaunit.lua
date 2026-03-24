@@ -94,9 +94,9 @@ Options:
   -x, --exclude PATTERN:       Exclude all test names matching the Lua PATTERN
                                May be repeated to exclude several patterns
                                Make sure you escape magic chars like +? with %
-  -m, --method-prefix PREFIX:  Execute methods that start with the PREFIX (default: test)
-  -t, --test-prefix PREFIX:    Execute tests that start with the PREFIX (default: test)
-  -T, --test-suffix SUFFIX:    Execute tests that end with the SUFFIX
+  -t, --test-prefix PREFIX:    Prefix used for detecting test tables or functions (default: test)
+  -T, --test-suffix SUFFIX:    Suffix used for detecting test tables or functions (default: none)
+  -m, --method-prefix PREFIX:  Prefix used for detecting test methods (default: test)
   testname1, testname2, ... :  tests to run in the form of testFunction,
                                TestClass or TestClass.testMethod
 

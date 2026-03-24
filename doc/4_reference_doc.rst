@@ -8,6 +8,7 @@ Index and Search page
 * :ref:`genindex`
 * :ref:`search`
 
+.. _command-line-options:
 
 Command-line options
 ====================
@@ -25,18 +26,21 @@ Selecting tests with --pattern and --exclude is usually more flexible. See :ref:
 
 **Options**
 
---output, -o FORMAT    Set output format to FORMAT. Possible values: text, tap, junit, nil . See :ref:`output-formats`
---name, -n FILENAME    For junit format only, mandatory name of xml file. Ignored for other formats.
---pattern, -p PATTERN  Execute all test names matching the Lua PATTERN. May be repeated to include severals patterns. See :ref:`flexible-test-selection`
---exclude, -x PATTERN  Exclude all test names matching the Lua PATTERN. May be repeated to exclude severals patterns. See :ref:`flexible-test-selection`
---repeat, -r NUM       Repeat all tests NUM times, e.g. to trigger the JIT. See :ref:`other-options`
---shuffle, -s          Shuffle tests before running them. See :ref:`other-options`
---error, -e            Stop on first error. See :ref:`other-options`
---failure, -f          Stop on first failure or error. See :ref:`other-options`
---verbose, -v          Increase verbosity
---quiet, -q            Set verbosity to minimum
---help, -h             Print help
---version              Version information of LuaUnit
+--output, -o FORMAT         Set output format to FORMAT. Possible values: text, tap, junit, nil . See :ref:`output-formats`
+--name, -n FILENAME         For junit format only, mandatory name of xml file. Ignored for other formats.
+--pattern, -p PATTERN       Execute all test names matching the Lua PATTERN. May be repeated to include severals patterns. See :ref:`flexible-test-selection`
+--exclude, -x PATTERN       Exclude all test names matching the Lua PATTERN. May be repeated to exclude severals patterns. See :ref:`flexible-test-selection`
+--test-prefix, -t prefix    Prefix for detecting test tables or functions. See :ref:`test-naming`
+--test-suffix, -T suffix    Suffix for detecting test tables or functions. See :ref:`test-naming`
+--method-prefix, -m prefix  Prefix for test methods. See :ref:`test-naming`
+--repeat, -r NUM            Repeat all tests NUM times, e.g. to trigger the JIT. See :ref:`other-options`
+--shuffle, -s               Shuffle tests before running them. See :ref:`other-options`
+--error, -e                 Stop on first error. See :ref:`other-options`
+--failure, -f               Stop on first failure or error. See :ref:`other-options`
+--verbose, -v               Increase verbosity
+--quiet, -q                 Set verbosity to minimum
+--help, -h                  Print help
+--version                   Version information of LuaUnit
 
 .. _output-formats:
 
@@ -166,6 +170,33 @@ Let's look at some practical examples::
     OK
 
 
+.. _test-naming:
+
+Test naming
+--------------
+
+The most common way to define tests is to create functions whose name starts with *test* or *Test* and/or 
+tables that start with *test* or *Test* and contain functions whose name starts with *test* or *Test*. LuaUnit will 
+automatically detect these functions as tests and execute them.
+
+However, if you have a different convention, it is possible to make adjustments to this process:
+
+* with the command-line option ``--test-prefix`` or ``-t``, you can ask LuaUnit to consider as tests only functions or 
+  tables that start with a specific prefix.
+* with the command-line option ``--test-suffix`` or ``-T``, you can ask LuaUnit to consider as tests only functions or 
+  tables that end with a specific suffix
+* with the command-line option ``--method-prefix`` or ``-m``, you can ask LuaUnit to consider as test methods only functions 
+  that start with a specific prefix.
+
+Test prefix and suffix can be used together, the list of collected tests will be the union of that either start with the given
+prefix or end with the given suffix.
+
+The test prefix, test suffix and method prefix can also be set on the LuaUnit runner object, with the attributes ``testPrefix`` and ``testSuffix``. The method prefix 
+can be set with the attribute ``methodPrefix``. See :ref:`LuaUnit-runner-object` for more details.
+
+
+.. _LuaUnit-runner-object:
+
 LuaUnit runner object
 =======================
 
@@ -215,6 +246,18 @@ The various options set on the command-line can be overridden by creating a LuaU
 
         Set the output type of the test suite. See :ref:`output-formats` for possible values. When setting the format `junit`, it
         is mandatory to set the filename receiving the xml output. This can be done by passing it as second argument of this function.
+
+    .. lua:attribute:: testPrefix
+
+        Prefix used for detecting test tables or functions. Default value is *test*. See :ref:`test-naming` for more details.
+
+    .. lua:attribute:: testSuffix
+
+        Suffix used for detecting test tables or functions. Default value is *nil*. See :ref:`test-naming` for more details.
+
+    .. lua:attribute:: methodPrefix
+
+        Prefix used for detecting test methods. Default value is *test*. See :ref:`test-naming` for more details.
 
 
     .. lua:method:: runSuite( [arguments] )

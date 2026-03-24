@@ -132,6 +132,7 @@ The version of the main branch on GitHub is always stable and can be used safely
 
 #### Version 3.5 - in development
 * support for Lua 5.5
+* The name convention used to detect tests and test methods can now be adjusted with options `--test-prefix`, `--test-suffix`, `--method-prefix`
 
 
 #### Version 3.4 - 02 March 2021

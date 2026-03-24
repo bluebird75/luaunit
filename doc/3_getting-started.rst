@@ -38,7 +38,9 @@ Writing tests
 
 LuaUnit scans all variables that start with *test* or *Test*. 
 If they are functions, or if they are tables that contain
-functions that start with *test* or *Test*, they are run as part of the test suite.
+functions that start with *test* or *Test*, they are run as part of the test suite. Note that this
+prefix can be ajusted with command-line options (see :ref:`command-line-options`).
+
 
 So just write a function whose name starts with test. Inside test functions, use the assertions functions provided by LuaUnit, such
 as :lua:func:`assertEquals`.
