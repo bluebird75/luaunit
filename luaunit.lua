@@ -19,7 +19,7 @@ M._VERSION=M.VERSION -- For LuaUnit v2 compatibility
 
 -- a version which distinguish between regular Lua and LuaJit
 M._LUAVERSION = rawget(_G, 'jit') and jit.version or _VERSION
-M._LUAVERSION = (jit and jit.version) or _VERSION
+
 
 --[[ Some people like assertEquals( actual, expected ) and some people prefer
 assertEquals( expected, actual ).
