@@ -328,12 +328,13 @@ The various options set on the command-line can be overridden by creating a LuaU
 
 
 
-    .. lua:method:: runSuiteByInstances( listOfNameAndInstances  )
+    .. lua:method:: runSuiteByInstances( listOfNameAndInstances, [arguments] )
 
         This function runs test without performing the global test collection process on the global namespace, the test
         are explicitely provided as argument, along with their names.
 
-        Before execution, the function will parse the script command-line, like :lua:meth:`LuaUnit.runSuite()`.
+        Arguments are handled the same way as in :lua:meth`runner:runSuite()`, in particular, if no arguments are supplied, the
+        function will parse the script command-line.
 
         Input is provided as a list of *{ name, test_instance }* where *test_instance* can either be a function or a table containing 
         test functions starting with the prefix *test*.
