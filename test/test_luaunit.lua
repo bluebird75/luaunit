@@ -4368,14 +4368,20 @@ TestLuaUnitResults = { __class__ = 'TestLuaUnitResults' }
         lu.assertEquals( es.stackTrace, 'stackTraceToto2' )
         lu.assertStrContains( es:statusXML(), "<error" )
 
-        es:success()
-        lu.assertEquals( es.status, lu.NodeStatus.SUCCESS )
-        lu.assertTrue( es:isSuccess() )
-        lu.assertFalse( es:isNotSuccess() )
-        lu.assertFalse( es:isFailure() )
-        lu.assertFalse( es:isError() )
-        lu.assertNil( es.msg )
-        lu.assertNil( es.stackTrace )
+        local es3 = lu.NodeStatus.new()
+        lu.assertEquals( es3.status, lu.NodeStatus.SUCCESS )
+        lu.assertNil( es3.msg )
+        lu.assertNil( es3.stackTrace )
+
+        es3:updateFromNode( es )
+        lu.assertEquals( es3.status, lu.NodeStatus.ERROR )
+        lu.assertEquals( es3.msg, 'msgToto2' )
+        lu.assertEquals( es3.stackTrace, 'stackTraceToto2' )
+
+        es3:updateFromNode( es2 )
+        lu.assertEquals( es3.status, lu.NodeStatus.SUCCESS )
+        lu.assertNil( es3.msg )
+        lu.assertNil( es3.stackTrace )
 
     end
 

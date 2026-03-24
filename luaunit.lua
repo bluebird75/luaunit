@@ -2785,6 +2785,12 @@ end
         self.stackTrace = stackTrace
     end
 
+    function NodeStatus:updateFromNode(node)
+        self.status = node.status
+        self.msg = node.msg
+        self.stackTrace = node.stackTrace
+    end
+
     function NodeStatus:isSuccess()
         return self.status == NodeStatus.SUCCESS
     end
