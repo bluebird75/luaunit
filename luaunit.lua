@@ -3161,6 +3161,8 @@ end
             end
         end
     end
+
+
     function M.LuaUnit:expandClasses( listOfNameAndInst )
         --[[
 
@@ -3463,6 +3465,7 @@ end
         return the number of failures and errors, 0 meaning success
         ]]
         -- parse the command-line arguments
+        -- Note: testNames is ignored because we take our list of tests from the argument provided
         local testNames = self:initFromArguments( commandLineArguments )
         self:registerSuite()
         self:internalRunSuiteByInstances( listOfNameAndInst )
