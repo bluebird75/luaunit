@@ -2911,13 +2911,12 @@ end
         self.output:startTest( testName )
     end
 
-    function M.LuaUnit:updateStatus( err )
+    function M.LuaUnit:updateStatus( node, err )
+        -- "node" is the test node to update
         -- "err" is expected to be a table / result from protectedCall()
         if err.status == NodeStatus.SUCCESS then
             return
         end
-
-        local node = self.result.currentNode
 
         --[[ As a first approach, we will report only one error or one failure for one test.
 
@@ -3125,13 +3124,13 @@ end
                              self.asFunction( classInstance.setup ) or
                              self.asFunction( classInstance.SetUp )
                 if func then
-                    self:updateStatus(self:protectedCall(classInstance, func, className..'.setUp'))
+                    self:updateStatus(node, self:protectedCall(classInstance, func, className..'.setUp'))
                 end
             end
 
             -- run testMethod()
             if node:isSuccess() then
-                self:updateStatus(self:protectedCall(classInstance, methodInstance, prettyFuncName))
+                self:updateStatus(node, self:protectedCall(classInstance, methodInstance, prettyFuncName))
             end
 
             -- lastly, run tearDown (if any)
@@ -3141,7 +3140,7 @@ end
                              self.asFunction( classInstance.teardown ) or
                              self.asFunction( classInstance.Teardown )
                 if func then
-                    self:updateStatus(self:protectedCall(classInstance, func, className..'.tearDown'))
+                    self:updateStatus(node, self:protectedCall(classInstance, func, className..'.tearDown'))
                 end
             end
         end
@@ -3232,26 +3231,26 @@ end
     function M.LuaUnit:setupSuite( listOfNameAndInst )
         local setupSuite = getKeyInListWithGlobalFallback("setupSuite", listOfNameAndInst)
         if  self.asFunction( setupSuite ) then
-            self:updateStatus( self:protectedCall( nil, setupSuite, 'setupSuite' ) )
+            self:updateStatus( self.result.currentNode, self:protectedCall( nil, setupSuite, 'setupSuite' ) )
         end
     end
 
     function M.LuaUnit:teardownSuite(listOfNameAndInst)
         local teardownSuite = getKeyInListWithGlobalFallback("teardownSuite", listOfNameAndInst)
         if self.asFunction( teardownSuite ) then
-            self:updateStatus( self:protectedCall( nil, teardownSuite, 'teardownSuite') )
+            self:updateStatus( self.result.currentNode, self:protectedCall( nil, teardownSuite, 'teardownSuite') )
         end
     end
 
     function  M.LuaUnit:setupClass( className, instance )
         if type( instance ) == 'table' and self.asFunction( instance.setupClass ) then
-            self:updateStatus( self:protectedCall( instance, instance.setupClass, className..'.setupClass' ) )
+            self:updateStatus( self.result.currentNode, self:protectedCall( instance, instance.setupClass, className..'.setupClass' ) )
         end
     end
 
     function M.LuaUnit:teardownClass( className, instance )
         if type( instance ) == 'table' and self.asFunction( instance.teardownClass ) then
-            self:updateStatus( self:protectedCall( instance, instance.teardownClass, className..'.teardownClass' ) )
+            self:updateStatus( self.result.currentNode, self:protectedCall( instance, instance.teardownClass, className..'.teardownClass' ) )
         end
     end
 
