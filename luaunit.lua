@@ -110,6 +110,19 @@ You may also control LuaUnit options with the following environment variables:
 --
 ----------------------------------------------------------------
 
+local function dbg(...)
+    -- print debug information if the environment variable _DEBUG is set
+    if (os.getenv("LUAUNIT_DEBUG")) then
+        local n = select("#", ...)
+        local unpack = rawget(_G, "unpack") or table.unpack
+        local values = { 'DEBUG' }
+        for i = 1, n do
+            values[i+1] = M.prettystr(select(i, ...))
+        end
+        print(table.concat(values, ' '))
+    end
+end
+
 --[[ Note on catching exit
 
 I have seen the case where running a big suite of test cases and one of them would
@@ -2915,11 +2928,14 @@ end
         self.result.currentNode.startTime = os.clock()
         table.insert( self.result.allTests, self.result.currentNode )
         self.output:startTest( testName )
+
+        dbg('startTest() - ', self.result.currentClassNode)
     end
 
     function M.LuaUnit:updateStatus( node, err )
         -- "node" is the test node to update
         -- "err" is expected to be a table / result from protectedCall()
+        dbg('updateStatus() - node: ', node, ' err: ', err)
         if err.status == NodeStatus.SUCCESS then
             return
         end
@@ -3268,14 +3284,18 @@ end
 
         This function is internal to LuaUnit. The official API to perform this action is runSuiteByInstances()
         ]]
+        
+        dbg('internalRunSuiteByInstances() - called with '.. #listOfNameAndInst .. ' items')
 
         local expandedList = self:expandClasses( listOfNameAndInst )
         if self.shuffle then
             randomizeTable( expandedList )
         end
+        dbg('internalRunSuiteByInstances() - #expandedList: '.. #expandedList .. ' items')
         local filteredList, filteredOutList = self.applyPatternFilter(
             self.patternIncludeFilter, expandedList )
 
+        dbg('internalRunSuiteByInstances() - #filteredList: '.. #filteredList .. ' items')
         self:startSuite( #filteredList, #filteredOutList )
         self:setupSuite( listOfNameAndInst )
 
@@ -3316,6 +3336,8 @@ end
             namespace analysis. Convert the list into a list of (name, valid instances (table or function))
             and calls internalRunSuiteByInstances.
         ]]
+
+        dbg('internalRunSuiteByNames', listOfName)
 
         local instanceName, instance
         local listOfNameAndInst = {}
@@ -3379,16 +3401,18 @@ end
     function M.LuaUnit:registerSuite()
         -- register the current instance into our global array of instances
         -- print('-> Register suite')
+        dbg('registerSuite()')
         M.LuaUnit.instances[ #M.LuaUnit.instances+1 ] = self
     end
 
     function M.unregisterCurrentSuite()
         -- force unregister the last registered suite
+        dbg('unregisterCurrentSuite()')
         table.remove(M.LuaUnit.instances, #M.LuaUnit.instances)
     end
 
     function M.LuaUnit:unregisterSuite()
-        -- print('<- Unregister suite')
+        dbg('unregisterSuite()')
         -- remove our current instances from the global array of instances
         local instanceIdx = nil
         for i, instance in ipairs(M.LuaUnit.instances) do
@@ -3471,6 +3495,7 @@ end
         ]]
         -- parse the command-line arguments
         -- Note: testNames is ignored because we take our list of tests from the argument provided
+        dbg('runSuiteByInstances() - called with '.. #listOfNameAndInst .. ' items')
         local testNames = self:initFromArguments( ... )
         self:registerSuite()
         self:internalRunSuiteByInstances( listOfNameAndInst )
