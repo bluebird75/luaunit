@@ -687,11 +687,20 @@ bar"=1}]] )
     end
 
     function TestLuaUnitUtilities:test_isTestName()
-        lu.assertEquals( lu.LuaUnit:isTestName( 'testToto' ), true )
-        lu.assertEquals( lu.LuaUnit:isTestName( 'TestToto' ), true )
-        lu.assertEquals( lu.LuaUnit:isTestName( 'TESTToto' ), true )
-        lu.assertEquals( lu.LuaUnit:isTestName( 'xTESTToto' ), false )
-        lu.assertEquals( lu.LuaUnit:isTestName( '' ), false )
+        local runner = lu.LuaUnit.new()
+        lu.assertEquals( runner:isTestName( 'testToto' ), true )
+        lu.assertEquals( runner:isTestName( 'TestToto' ), true )
+        lu.assertEquals( runner:isTestName( 'TESTToto' ), true )
+        lu.assertEquals( runner:isTestName( 'xTESTToto' ), false )
+        lu.assertEquals( runner:isTestName( '' ), false )
+
+        runner.testPrefix = 'check'
+        runner.testSuffix = 'Validate'
+        lu.assertEquals( runner:isTestName( 'testToto' ), false )
+        lu.assertEquals( runner:isTestName( 'checkToto' ), true )
+        lu.assertEquals( runner:isTestName( 'ChecKToto' ), true )
+        lu.assertEquals( runner:isTestName( 'totoValidate' ), true )
+        lu.assertEquals( runner:isTestName( 'totoValidateX' ), false )
     end
 
     function TestLuaUnitUtilities:test_parseCmdLine()
@@ -862,14 +871,14 @@ bar"=1}]] )
         lu.assertEquals( lu.private.strMatch('ototot', 't.t.',2,6), false )
     end
 
-    function TestLuaUnitUtilities:test_expandOneClass()
+    function TestLuaUnitUtilities:test_expandOneClassWithMethodPrefix()
         local result = {}
         local runner = runnerWithPrefixMyTest()
         runner:expandOneClass( result, 'titi', {} )
         lu.assertEquals( result, {} )
 
         result = {}
-        lu.LuaUnit:expandOneClass( result, 'MyTestToto1', MyTestToto1 )
+        runner:expandOneClass( result, 'MyTestToto1', MyTestToto1 )
         lu.assertEquals( result, {
             {'MyTestToto1.test1', MyTestToto1 },
             {'MyTestToto1.test2', MyTestToto1 },
@@ -877,6 +886,15 @@ bar"=1}]] )
             {'MyTestToto1.testa', MyTestToto1 },
             {'MyTestToto1.testb', MyTestToto1 },
         } )
+
+        result = {}
+        runner.methodPrefix = 'check'
+        runner:expandOneClass( result, 'TotoChecked', MyTestToto1 )
+        lu.assertEquals( result, {
+            {'TotoChecked.check1', MyTestToto1 },
+            {'TotoChecked.check2', MyTestToto1 },
+        } )
+
     end
 
     function TestLuaUnitUtilities:test_expandClasses()
@@ -3149,6 +3167,8 @@ MyTestToto1 = {} --class
     function MyTestToto1:test3() table.insert( executedTests, "MyTestToto1:test3" ) end
     function MyTestToto1:testa() table.insert( executedTests, "MyTestToto1:testa" ) end
     function MyTestToto1:test2() table.insert( executedTests, "MyTestToto1:test2" ) end
+    function MyTestToto1:check1() table.insert( executedTests, "MyTestToto1:check1" ) end
+    function MyTestToto1:check2() table.insert( executedTests, "MyTestToto1:check2" ) end
 
 MyTestToto2 = {} --class
     function MyTestToto2:test1() table.insert( executedTests, "MyTestToto2:test1" ) end
