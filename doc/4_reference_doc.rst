@@ -1269,7 +1269,7 @@ This is either:
 * 2^-23 or ~1.19E-07 (with lua number defined as float)
 
 
-.. lua:function:: assertNan( value  [, extra_msg])
+.. lua:function:: assertNaN( value  [, extra_msg])
 
     **Alias**: *assert_nan()*
 
@@ -1277,7 +1277,7 @@ This is either:
     If provided, *extra_msg* is a string which will be printed along with the failure message.
 
 
-.. lua:function:: assertNotNan( value  [, extra_msg])
+.. lua:function:: assertNotNaN( value  [, extra_msg])
 
     **Alias**: *assert_not_nan()*
 
