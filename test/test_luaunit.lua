@@ -4103,6 +4103,84 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( #myExecutedTests, 22)
     end
 
+    function TestLuaUnitExecution:testWithSetupAndTeardownForSuiteAndClassAndTestsErrors()
+        local myExecutedTests = {}
+
+        local setupSuite = function() table.insert( myExecutedTests, 'setupSuite' ) end
+        local teardownSuite = function() table.insert( myExecutedTests, 'teardownSuite') error('teardownSuite error') end
+
+        local MyTestClassA = {
+            setupClass = function() table.insert( myExecutedTests, 'AsetupClass' ) end,
+            teardownClass = function() table.insert( myExecutedTests, 'AteardownClass' ) error('teardownClass error') end,
+            test1 = function() table.insert( myExecutedTests, 'Atest1' ) end,
+            test2 = function() table.insert( myExecutedTests, 'Atest2' ) end
+        }
+        
+        local MyTestClassB = {
+            test1 = function() table.insert( myExecutedTests, 'Btest1' ) end,
+            test2 = function() table.insert( myExecutedTests, 'Btest2' ) end,
+            setup = function() table.insert( myExecutedTests, 'Bsetup' ) end
+        }
+
+        local MyTestClassC = {
+            test1 = function() table.insert( myExecutedTests, 'Ctest1' ) end,
+            test2 = function() table.insert( myExecutedTests, 'Ctest2' ) end,
+            teardown = function() table.insert( myExecutedTests, 'Cteardown' ) end
+        }
+
+        local MyTestClassD = {
+            test1 = function() table.insert( myExecutedTests, 'Dtest1' ) end,
+            test2 = function() table.insert( myExecutedTests, 'Dtest2' ) end,
+            teardown = function() table.insert( myExecutedTests, 'Dteardown' ) error('teardown error') end,
+            setup = function() table.insert( myExecutedTests, 'Dsetup' ) end,
+            setupClass = function() table.insert( myExecutedTests, 'DsetupClass' ) end,
+            teardownClass = function() table.insert( myExecutedTests, 'DteardownClass' ) error('teardownClass error') end
+        }
+
+
+        local runner = runnerWithPrefixMyTest()
+        runner:setOutputType( "NIL" )
+
+        runner:runSuiteByInstancesNoCmdLineParsing( { 
+            { 'MyTestClassA', MyTestClassA },
+            { 'MyTestClassB', MyTestClassB },
+            { 'MyTestClassC', MyTestClassC },
+            { 'MyTestClassD', MyTestClassD },
+            { 'setupSuite', setupSuite },
+            { 'teardownSuite', teardownSuite }
+        } )
+        lu.assertEquals( runner.result.notSuccessCount, 5 )
+        lu.assertEquals( runner.result.errorCount, 5 )
+        lu.assertEquals( myExecutedTests[1], 'setupSuite' )   
+
+        lu.assertEquals( myExecutedTests[2], 'AsetupClass')
+        lu.assertEquals( myExecutedTests[3], 'Atest1')
+        lu.assertEquals( myExecutedTests[4], 'Atest2')
+        lu.assertEquals( myExecutedTests[5], 'AteardownClass')
+
+        lu.assertEquals( myExecutedTests[6], 'Bsetup')
+        lu.assertEquals( myExecutedTests[7], 'Btest1')
+        lu.assertEquals( myExecutedTests[8], 'Bsetup')
+        lu.assertEquals( myExecutedTests[9], 'Btest2')
+
+        lu.assertEquals( myExecutedTests[10], 'Ctest1')
+        lu.assertEquals( myExecutedTests[11], 'Cteardown')
+        lu.assertEquals( myExecutedTests[12], 'Ctest2')
+        lu.assertEquals( myExecutedTests[13], 'Cteardown')
+
+        lu.assertEquals( myExecutedTests[14], 'DsetupClass')
+        lu.assertEquals( myExecutedTests[15], 'Dsetup')
+        lu.assertEquals( myExecutedTests[16], 'Dtest1')
+        lu.assertEquals( myExecutedTests[17], 'Dteardown')
+        lu.assertEquals( myExecutedTests[18], 'Dsetup')
+        lu.assertEquals( myExecutedTests[19], 'Dtest2')
+        lu.assertEquals( myExecutedTests[20], 'Dteardown')
+        lu.assertEquals( myExecutedTests[21], 'DteardownClass')
+        lu.assertEquals( myExecutedTests[22], 'teardownSuite')
+
+        lu.assertEquals( #myExecutedTests, 22)
+    end
+
     function TestLuaUnitExecution:test_failFromTest()
 
         local function MyTest_fails()
