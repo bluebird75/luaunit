@@ -368,6 +368,8 @@ TestLuaUnitUtilities = { __class__ = 'TestLuaUnitUtilities' }
         lu.assertEquals( lu.prettystr( 'ab\ncd' ), '"ab\ncd"' )
         lu.assertEquals( lu.prettystr( 'ab"cd' ), "'ab\"cd'" )
         lu.assertEquals( lu.prettystr( "ab'cd" ), '"ab\'cd"' )
+        lu.assertEquals( lu.prettystr( "q\000\000\002w\000" ), '"q\\x00\\x00\\x02w\\x00"' )
+        lu.assertEquals( lu.prettystr( "\255" ), '"\\xFF"' )
     end
 
     function TestLuaUnitUtilities:test_prettystr_tables1()

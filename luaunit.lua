@@ -528,17 +528,26 @@ local function stripLuaunitTrace2( stackTrace, errMsg )
 end
 M.private.stripLuaunitTrace2 = stripLuaunitTrace2
 
+local function escapeBinaryForPrettystr(s)
+    -- Replace non-printable and high bytes with visible byte escapes.
+    return s:gsub('[%z\1-\8\11\12\14-\31\127-\255]', function(c)
+        return string.format('\\x%02X', string.byte(c))
+    end)
+end
+M.private.escapeBinaryForPrettystr = escapeBinaryForPrettystr
+
 
 local function prettystr_sub(v, indentLevel, printTableRefs, cycleDetectTable )
     local type_v = type(v)
     if "string" == type_v  then
+        local escaped = escapeBinaryForPrettystr(v)
         -- use clever delimiters according to content:
         -- enclose with single quotes if string contains ", but no '
-        if v:find('"', 1, true) and not v:find("'", 1, true) then
-            return "'" .. v .. "'"
+        if escaped:find('"', 1, true) and not escaped:find("'", 1, true) then
+            return "'" .. escaped .. "'"
         end
         -- use double quotes otherwise, escape embedded "
-        return '"' .. v:gsub('"', '\\"') .. '"'
+        return '"' .. escaped:gsub('"', '\\"') .. '"'
 
     elseif "table" == type_v then
         --if v.__class__ then
