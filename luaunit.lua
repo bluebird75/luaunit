@@ -3082,6 +3082,11 @@ end
         end
         -- print('ok="'..prettystr(ok)..'" err="'..prettystr(err)..'"')
 
+        if type(err) == 'string' then
+            -- if the error is a string, we assume it's a runtime error and we keep the message as is
+            return { status = NodeStatus.ERROR, msg = err, trace = 'M.LuaUnit:protectedCall()\nerr_handler()' }
+        end
+
         local iter_msg
         iter_msg = self.exeRepeat and 'iteration '..self.currentCount
 
