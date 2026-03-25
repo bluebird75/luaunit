@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="3" timestamp="2019-04-28T21:05:11" time="1.101" errors="0" failures="2" skipped="0">
+    <testsuite name="LuaUnit" id="00001" package="" hostname="localhost" tests="4" timestamp="2026-03-25T22:44:19" time="1.105" errors="0" failures="3" skipped="0">
         <properties>
             <property name="Lua Version" value="Lua 5.4"/>
             <property name="LuaUnit Version" value="3.4"/>
         </properties>
-        <testcase classname="TestFailuresWithXml" name="TestFailuresWithXml.test_failure_with_cdata_xml" time="0.000">
+        <testcase classname="TestFailuresWithXml" name="TestFailuresWithXml.test_failure_with_binary_xml" time="0.001">
+            <failure type="test/test_with_xml.lua:19: expected: &quot;q\x00\x00\x02w\x00\x00]]&gt;\xFF&quot;
+actual: &quot;q\x00\x00\x02w\x00&quot;">
+                <![CDATA[stack traceback:
+	test/test_with_xml.lua:19: in upvalue 'TestFailuresWithXml.test_failure_with_binary_xml']]></failure>
+        </testcase>
+        <testcase classname="TestFailuresWithXml" name="TestFailuresWithXml.test_failure_with_cdata_xml" time="0.001">
             <failure type="test/test_with_xml.lua:13: expected: &quot;got it&quot;
 actual: &quot;cdata does not like ]]&gt;&quot;">
                 <![CDATA[stack traceback:
-	test/test_with_xml.lua:13: in function 'TestFailuresWithXml.test_failure_with_cdata_xml']]></failure>
+	test/test_with_xml.lua:13: in upvalue 'TestFailuresWithXml.test_failure_with_cdata_xml']]></failure>
         </testcase>
-        <testcase classname="TestFailuresWithXml" name="TestFailuresWithXml.test_failure_with_simple_xml" time="0.000">
+        <testcase classname="TestFailuresWithXml" name="TestFailuresWithXml.test_failure_with_simple_xml" time="0.001">
             <failure type="test/test_with_xml.lua:9: expected: &quot;got it&quot;
 actual: &apos;&lt;toto&gt;ti&quot;ti&lt;/toto&gt;&apos;">
                 <![CDATA[stack traceback:
-	test/test_with_xml.lua:9: in function 'TestFailuresWithXml.test_failure_with_simple_xml']]></failure>
+	test/test_with_xml.lua:9: in upvalue 'TestFailuresWithXml.test_failure_with_simple_xml']]></failure>
         </testcase>
-        <testcase classname="[TestFunctions]" name="TestThatLastsALongTime" time="0.000">
+        <testcase classname="[TestFunctions]" name="TestThatLastsALongTime" time="0.001">
         </testcase>
     <system-out/>
     <system-err/>
