@@ -3797,12 +3797,47 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( #myExecutedTests, 4)
     end
 
+    function TestLuaUnitExecution:testWithSetupTearDownClassAndSuite()
+        local myExecutedTests = {}
+
+        local setupSuite = function() table.insert( myExecutedTests, 'setupSuite' ) end
+        local teardownSuite = function() table.insert( myExecutedTests, 'teardownSuite') end
+
+        local MyTestClassA = {
+            setupClass = function() table.insert( myExecutedTests, 'AsetupClass' ) end,
+            setup = function() table.insert( myExecutedTests, 'Asetup' ) end,
+            test1 = function() table.insert( myExecutedTests, 'Atest1' ) end,
+            teardown = function() table.insert( myExecutedTests, 'Ateardown' ) end,
+            teardownClass = function() table.insert( myExecutedTests, 'AteardownClass' ) end,
+        }
+
+        local runner = runnerWithPrefixMyTest()
+        runner:setOutputType( "NIL" )
+        runner.patternIncludeFilter = {"test"}
+
+        runner:runSuiteByInstancesNoCmdLineParsing( {
+            { 'setupSuite', setupSuite },
+            { 'teardownSuite', teardownSuite },
+            { 'MyTestClassA', MyTestClassA },
+        } )
+        lu.assertEquals( runner.result.notSuccessCount, 0 )
+        lu.assertEquals( myExecutedTests[1], 'setupSuite' )
+        lu.assertEquals( myExecutedTests[2], 'AsetupClass' )
+        lu.assertEquals( myExecutedTests[3], 'Asetup' )
+        lu.assertEquals( myExecutedTests[4], 'Atest1')
+        lu.assertEquals( myExecutedTests[5], 'Ateardown' )
+        lu.assertEquals( myExecutedTests[6], 'AteardownClass' )
+        lu.assertEquals( myExecutedTests[7], 'teardownSuite')
+        lu.assertEquals( #myExecutedTests, 7)
+    end
+
+
     function TestLuaUnitExecution:testSetupSuiteError()
         local myExecutedTests = {}
 
         local setupSuite = function() 
             table.insert( myExecutedTests, 'setupSuite' ) 
-            local a = 1 + {2} -- will cause an error
+            error('setupSuite error')
         end
         local teardownSuite = function() table.insert( myExecutedTests, 'teardownSuite') end
 
@@ -3837,13 +3872,13 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local setupSuite = function() 
             table.insert( myExecutedTests, 'setupSuite' ) 
-            local a = 1 + {2} -- will cause an error
+            error('setupSuite error')
         end
         local teardownSuite = function() 
             table.insert( myExecutedTests, 'teardownSuite') 
-            local a = 1 + {2} -- will cause an error
+            error('teardownSuite error')
         end
-        lu.dbg('function teardownSuite', teardownSuite)
+
         local MyTestClassA = {
             setupClass = function() table.insert( myExecutedTests, 'AsetupClass' ) end,
             setup = function() table.insert( myExecutedTests, 'Asetup' ) end,
@@ -3909,6 +3944,88 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( #myExecutedTests, 8)
     end
 
+    function TestLuaUnitExecution:testWithSetupClassTeardownClassErrors1()
+        local myExecutedTests = {}
+
+        local MyTestClassA = {
+            setupClass = function() table.insert( myExecutedTests, 'AsetupClass' ) error('setupClass error') end,
+            teardownClass = function() table.insert( myExecutedTests, 'AteardownClass' ) end,
+            setup = function() table.insert( myExecutedTests, 'Asetup' ) end,
+            teardown = function() table.insert( myExecutedTests, 'Ateardown' ) end,
+            test1 = function() table.insert( myExecutedTests, 'Atest1' ) end,
+            test2 = function() table.insert( myExecutedTests, 'Atest2' ) end
+        }
+ 
+        local MyTestClassB = {
+            setupClass = function() table.insert( myExecutedTests, 'BsetupClass' ) end,
+            teardownClass = function() table.insert( myExecutedTests, 'BteardownClass' ) error('teardownClass error') end,
+            setup = function() table.insert( myExecutedTests, 'Bsetup' ) end,
+            teardown = function() table.insert( myExecutedTests, 'Bteardown' ) end,
+            test1 = function() table.insert( myExecutedTests, 'Btest1' ) end,
+            test2 = function() table.insert( myExecutedTests, 'Btest2' ) end
+        }
+
+        local runner = runnerWithPrefixMyTest()
+        runner:setOutputType( "NIL" )
+
+        runner:runSuiteByInstancesNoCmdLineParsing( { 
+            { 'MyTestClassA', MyTestClassA },
+            { 'MyTestClassB', MyTestClassB }
+        } )
+        lu.assertEquals( runner.result.notSuccessCount, 2 )
+        lu.assertEquals( runner.result.errorCount, 2 )
+        lu.assertEquals( myExecutedTests[1], 'AsetupClass' )   
+        lu.assertEquals( myExecutedTests[2], 'AteardownClass')
+
+        lu.assertEquals( myExecutedTests[3], 'BsetupClass' )   
+        lu.assertEquals( myExecutedTests[4], 'Bsetup' )
+        lu.assertEquals( myExecutedTests[5], 'Btest1')
+        lu.assertEquals( myExecutedTests[6], 'Bteardown')
+        lu.assertEquals( myExecutedTests[7], 'Bsetup' )
+        lu.assertEquals( myExecutedTests[8], 'Btest2')
+        lu.assertEquals( myExecutedTests[9], 'Bteardown')
+        lu.assertEquals( myExecutedTests[10], 'BteardownClass')
+
+        lu.assertEquals( #myExecutedTests, 10)
+    end
+
+    function TestLuaUnitExecution:testWithSetupClassTeardownClassErrors2()
+        local myExecutedTests = {}
+
+        local MyTestClassA = {
+            setupClass = function() table.insert( myExecutedTests, 'AsetupClass' ) error('setupClass error') end,
+            teardownClass = function() table.insert( myExecutedTests, 'AteardownClass' ) end,
+            test1 = function() table.insert( myExecutedTests, 'Atest1' ) end,
+            test2 = function() table.insert( myExecutedTests, 'Atest2' ) end
+        }
+ 
+        local MyTestClassB = {
+            setupClass = function() table.insert( myExecutedTests, 'BsetupClass' ) end,
+            teardownClass = function() table.insert( myExecutedTests, 'BteardownClass' ) error('teardownClass error') end,
+            test1 = function() table.insert( myExecutedTests, 'Btest1' ) error('Btest1 error') end,
+            test2 = function() table.insert( myExecutedTests, 'Btest2' ) end
+        }
+
+        local runner = runnerWithPrefixMyTest()
+        runner:setOutputType( "NIL" )
+
+        runner:runSuiteByInstancesNoCmdLineParsing( { 
+            { 'MyTestClassA', MyTestClassA },
+            { 'MyTestClassB', MyTestClassB }
+        } )
+        lu.assertEquals( runner.result.notSuccessCount, 3 )
+        lu.assertEquals( runner.result.errorCount, 3 )
+        lu.assertEquals( myExecutedTests[1], 'AsetupClass' )   
+        lu.assertEquals( myExecutedTests[2], 'AteardownClass')
+
+        lu.assertEquals( myExecutedTests[3], 'BsetupClass' )   
+        lu.assertEquals( myExecutedTests[4], 'Btest1')
+        lu.assertEquals( myExecutedTests[5], 'Btest2')
+        lu.assertEquals( myExecutedTests[6], 'BteardownClass')
+
+        lu.assertEquals( #myExecutedTests, 6)
+    end
+
     function TestLuaUnitExecution:testWithSetupAndTeardownForSuiteAndClassAndTests()
         local myExecutedTests = {}
 
@@ -3946,7 +4063,6 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = runnerWithPrefixMyTest()
         runner:setOutputType( "NIL" )
-        runner.patternIncludeFilter = {"test"}
 
         runner:runSuiteByInstancesNoCmdLineParsing( { 
             { 'MyTestClassA', MyTestClassA },
@@ -3983,7 +4099,6 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( myExecutedTests[20], 'Dteardown')
         lu.assertEquals( myExecutedTests[21], 'DteardownClass')
         lu.assertEquals( myExecutedTests[22], 'teardownSuite')
-
 
         lu.assertEquals( #myExecutedTests, 22)
     end
