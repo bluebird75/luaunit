@@ -10,14 +10,14 @@ TARGET_ZIP=RELEASE_NAME + '.zip'
 TARGET_TGZ=RELEASE_NAME + '.tgz'
 REPO_PATH='d:/work/luaunit/luaunit1'
 
-PATH_LUACHECK='d:\\program\\dev\\lua\\luarocks\\systree\\bin\\luacheck.bat'
+PATH_LUACHECK='c:\\d\\program\\dev\\lua\\luarocks\\systree\\bin\\luacheck.bat'
 
-LUA51='d:/program/dev/lua/lua51/lua51.exe'
-LUA52='d:/program/dev/lua/lua52/lua52.exe'
-LUA53='d:/program/dev/lua/lua53/lua53.exe'
-LUA54='d:/program/dev/lua/lua54/lua54.exe'
-LUAJIT='d:/program/dev/lua/luajit/luajit.exe'
-LUAJIT21='d:/program/dev/lua/luajit21/luajit.exe'
+LUA51='c:/d/program/dev/lua/lua51/lua51.exe'
+LUA52='c:/d/program/dev/lua/lua52/lua52.exe'
+LUA53='c:/d/program/dev/lua/lua53/lua53.exe'
+LUA54='c:/d/program/dev/lua/lua54/lua54.exe'
+LUAJIT='c:/d/program/dev/lua/luajit/luajit.exe'
+LUAJIT21='c:/d/program/dev/lua/luajit21/luajit.exe'
 
 ALL_LUA = ( 
     (LUA54, 'Lua 5.4'), 
