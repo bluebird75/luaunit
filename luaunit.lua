@@ -122,6 +122,7 @@ local function dbg(...)
         print(table.concat(values, ' '))
     end
 end
+M.dbg = dbg
 
 --[[ Note on catching exit
 
@@ -2950,10 +2951,19 @@ end
         end
     end
 
-    function M.LuaUnit:updateStatus( node, err )
+    function M.LuaUnit:updateStatus( nodeType, err )
         -- "node" is the test node to update
         -- "err" is expected to be a table / result from protectedCall()
-        dbg('updateStatus() - node: ', node, ' err: ', err)
+        if nodeType == 'suite' then
+            node = self.result.currentSuiteNode
+        elseif nodeType == 'class' then
+            node = self.result.currentClassNode
+        elseif nodeType == 'test' then
+            node = self.result.currentNode
+        else
+            error('No such node type: ' .. prettystr(nodeType))
+        end
+        dbg('updateStatus() - node '..nodeType, node, ' err: ', err)
         if err.status == NodeStatus.SUCCESS then
             return
         end
@@ -3024,7 +3034,10 @@ end
     end
 
     function M.LuaUnit:endClass()
-        self:teardownClass( self.lastClassName, self.lastClassInstance )
+        -- do not teardown class if setupSuite() is in failure/error
+        if self.result.currentSuiteNode:isSuccess() then 
+            self:teardownClass( self.lastClassName, self.lastClassInstance )
+        end
         self.output:endClass()
     end
 
@@ -3171,13 +3184,13 @@ end
                              self.asFunction( classInstance.setup ) or
                              self.asFunction( classInstance.SetUp )
                 if func then
-                    self:updateStatus(node, self:protectedCall(classInstance, func, className..'.setUp'))
+                    self:updateStatus('test', self:protectedCall(classInstance, func, className..'.setUp'))
                 end
             end
 
             -- run testMethod()
             if node:isSuccess() then
-                self:updateStatus(node, self:protectedCall(classInstance, methodInstance, prettyFuncName))
+                self:updateStatus('test', self:protectedCall(classInstance, methodInstance, prettyFuncName))
             end
 
             -- lastly, run tearDown (if any)
@@ -3187,7 +3200,7 @@ end
                              self.asFunction( classInstance.teardown ) or
                              self.asFunction( classInstance.Teardown )
                 if func then
-                    self:updateStatus(node, self:protectedCall(classInstance, func, className..'.tearDown'))
+                    self:updateStatus('test', self:protectedCall(classInstance, func, className..'.tearDown'))
                 end
             end
         end
@@ -3278,26 +3291,29 @@ end
     function M.LuaUnit:setupSuite( listOfNameAndInst )
         local setupSuite = getKeyInListWithGlobalFallback("setupSuite", listOfNameAndInst)
         if  self.asFunction( setupSuite ) then
-            self:updateStatus( self.result.currentSuiteNode, self:protectedCall( nil, setupSuite, 'setupSuite' ) )
+            self:updateStatus( 'suite', self:protectedCall( nil, setupSuite, 'setupSuite' ) )
         end
     end
 
     function M.LuaUnit:teardownSuite(listOfNameAndInst)
+        dbg('teardownSuite() - listOfNameAndInst: ', listOfNameAndInst)
         local teardownSuite = getKeyInListWithGlobalFallback("teardownSuite", listOfNameAndInst)
         if self.asFunction( teardownSuite ) then
-            self:updateStatus( self.result.currentSuiteNode, self:protectedCall( nil, teardownSuite, 'teardownSuite') )
+            local result = self:protectedCall( nil, teardownSuite, 'teardownSuite')
+            dbg('Result of teardownSuite()', result)
+            self:updateStatus( 'suite', result )
         end
     end
 
     function  M.LuaUnit:setupClass( className, instance )
         if type( instance ) == 'table' and self.asFunction( instance.setupClass ) then
-            self:updateStatus( self.result.currentClassNode, self:protectedCall( instance, instance.setupClass, className..'.setupClass' ) )
+            self:updateStatus( 'class', self:protectedCall( instance, instance.setupClass, className..'.setupClass' ) )
         end
     end
 
     function M.LuaUnit:teardownClass( className, instance )
         if type( instance ) == 'table' and self.asFunction( instance.teardownClass ) then
-            self:updateStatus( self.result.currentClassNode, self:protectedCall( instance, instance.teardownClass, className..'.teardownClass' ) )
+            self:updateStatus( 'class', self:protectedCall( instance, instance.teardownClass, className..'.teardownClass' ) )
         end
     end
 
