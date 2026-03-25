@@ -3499,15 +3499,25 @@ end
         return the number of failures and errors, 0 meaning success
         ]]
         -- parse the command-line arguments
-        -- Note: testNames is ignored because we take our list of tests from the argument provided
-        dbg('runSuiteByInstances() - called with '.. #listOfNameAndInst .. ' items')
-        local testNames = self:initFromArguments( ... )
+        dbg('runSuiteByInstances() - called with '.. #listOfNameAndInst .. ' items' .. ' and arguments: '.. prettystr({...}))
+        local _ = self:initFromArguments( ... )
+        self:runSuiteByInstancesNoCmdLineParsing( listOfNameAndInst )
+    end
+
+    function M.LuaUnit:runSuiteByInstancesNoCmdLineParsing( listOfNameAndInst )
+        --[[ Run all test functions or tables provided as input, without parsing any command-line arguments.
+
+        Input: a list of { name, instance }
+            instance can either be a function or a table containing test functions starting with the prefix "test"
+
+        return the number of failures and errors, 0 meaning success
+        ]]
+        dbg('runSuiteByInstancesNoCmdLineParsing() - called with '.. #listOfNameAndInst .. ' items')
         self:registerSuite()
         self:internalRunSuiteByInstances( listOfNameAndInst )
         self:unregisterSuite()
         return self.result.notSuccessCount
     end
-
 
 
 -- class LuaUnit
