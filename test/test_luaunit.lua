@@ -808,6 +808,38 @@ bar"=1}]] )
         lu.assertEquals( lu.private.patternFilter( { '!f..', 'foo', '!__foo__' }, '__foo__'), false )
     end
 
+    function TestLuaUnitUtilities:test_applyTestPrefixSuffixFilter()
+        local runner = lu.LuaUnit.new()
+        local dummy = function() end
+        local testset1 = {
+            { 'MyTestFunc', dummy },
+            { 'MyTestToto', MyTestToto1 }
+        }
+
+        local testset2 = {
+            { 'MyTestFunc', dummy },
+            { 'MyTestToto', MyTestToto1 },
+            { 'setupSuite', dummy },
+            { 'teardownSuite', dummy },
+        }
+
+        lu.assertEquals( runner:applyTestPrefixSuffixFilter( testset1 ), {} )
+        lu.assertEquals( runner:applyTestPrefixSuffixFilter( testset2 ), {
+            { 'setupSuite', dummy },
+            { 'teardownSuite', dummy },
+        } )
+
+        runner.testPrefix = 'MyTest'
+        lu.assertEquals( runner:applyTestPrefixSuffixFilter( testset1 ), testset1 )
+        lu.assertEquals( runner:applyTestPrefixSuffixFilter( testset2 ), testset2 )
+
+        runner.testPrefix = ''
+        runner.testSuffix = 'Toto'
+        lu.assertEquals( runner:applyTestPrefixSuffixFilter( testset1 ), testset1 )
+        lu.assertEquals( runner:applyTestPrefixSuffixFilter( testset2 ), testset2 )
+
+    end
+
     function TestLuaUnitUtilities:test_applyPatternFilter()
         local dummy = function() end
         local testset = {
@@ -3187,6 +3219,14 @@ function MyTestFunction()
     table.insert( executedTests, "MyTestFunction" )
 end
 
+MyTestString = 'MyTestString'
+
+MyTestTableWithString = {
+    testString = 'Some test string'
+}
+
+
+
 TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
     --[[
         Tests verifying that:
@@ -3221,7 +3261,9 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
     function TestLuaUnitExecution:test_collectTests()
         local runner = runnerWithPrefixMyTest()
         local allTests = runner:collectTests(true)
-        lu.assertEquals( allTests, {"MyTestFunction", "MyTestOk", "MyTestToto1", "MyTestToto2","MyTestWithErrorsAndFailures"})
+        lu.assertEquals( allTests, {"MyTestFunction", "MyTestOk", 
+        "MyTestString", "MyTestTableWithString",
+        "MyTestToto1", "MyTestToto2","MyTestWithErrorsAndFailures"})
     end
 
     function TestLuaUnitExecution:test_MethodsAreExecutedInRightOrder()
@@ -3260,12 +3302,12 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( #executedTests, 0 )
         local runner = runnerWithPrefixMyTest()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstances( { { 'Toto', MyTestToto1 } }, 'fake_run_unit_tests.lua'  )
+        runner:runSuiteByInstancesNoCmdLineParsing( { { 'MyTestToto1', MyTestToto1 } } )
         lu.assertEquals( #executedTests, 5 )
 
         lu.assertEquals( #runner.result.allTests, 5 )
-        lu.assertEquals( runner.result.allTests[1].testName, "Toto.test1" )
-        lu.assertEquals( runner.result.allTests[5].testName, "Toto.testb" )
+        lu.assertEquals( runner.result.allTests[1].testName, "MyTestToto1.test1" )
+        lu.assertEquals( runner.result.allTests[5].testName, "MyTestToto1.testb" )
     end
 
     function TestLuaUnitExecution:testRunSomeTestByLocalInstance( )
@@ -3278,12 +3320,13 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         lu.assertEquals( #executedTests, 0 )
         local runner = runnerWithPrefixMyTest()
+      runner.testPrefix = "MyLocalTest"
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstances( {
+        runner:runSuiteByInstancesNoCmdLineParsing( {
             { 'MyLocalTestToto1', MyLocalTestToto1 },
             { 'MyLocalTestToto2.test2', MyLocalTestToto2 },
             { 'MyLocalTestFunction', MyLocalTestFunction },
-        }, 'fake_run_unit_tests.lua' )
+        })
         lu.assertEquals( #executedTests, 3 )
         lu.assertEquals( executedTests[1], 'MyLocalTestToto1:test1')
         lu.assertEquals( executedTests[2], 'MyLocalTestToto2:test2')
@@ -3300,12 +3343,13 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
       lu.assertEquals(#executedTests, 0)
       local runner = runnerWithPrefixMyTest()
+      runner.testPrefix = "MyLocalTest"
       runner:setOutputType("NIL")
       runner:runSuiteByInstances( {
         { "MyLocalTestIncluded", MyLocalTestIncluded },
         { "MyLocalTestExcluded", MyLocalTestExcluded },
         { "MyLocalTestFunction1", MyLocalTestFunction1 },
-      }, "-p", "1$", "-x", "Excluded" )
+      }, "-p", "1$", "-x", "Excluded")
       lu.assertEquals(#executedTests, 2)
       lu.assertEquals(executedTests[1], "MyLocalTestIncluded:test1")
       lu.assertEquals(executedTests[2], "MyLocalTestFunction1")
@@ -3805,10 +3849,10 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         runner:setOutputType( "NIL" )
         runner.patternIncludeFilter = {"test"}
 
-        runner:runSuiteByInstances( { 
+        runner:runSuiteByInstancesNoCmdLineParsing( { 
             { 'MyTestClassA', MyTestClassA },
             { 'MyTestClassB', MyTestClassB }
-        }, 'fake_run_unit_tests.lua' )
+        } )
         lu.assertEquals( runner.result.notSuccessCount, 0 )
         lu.assertEquals( myExecutedTests[1], 'AsetupClass' )   
         lu.assertEquals( myExecutedTests[2], 'Atest1')
@@ -3904,14 +3948,14 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
     function TestLuaUnitExecution:test_failFromTest()
 
-        local function my_test_fails()
+        local function MyTest_fails()
             lu.assertEquals( 1, 1 )
             lu.fail( 'Stop early.')
         end
 
         local runner = runnerWithPrefixMyTest()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstancesNoCmdLineParsing( { { 'my_test_fails', my_test_fails } } )
+        runner:runSuiteByInstancesNoCmdLineParsing( { { 'MyTest_fails', MyTest_fails } } )
         lu.assertEquals( runner.result.selectedCount, 1 )
         lu.assertEquals( runner.result.failureCount, 1 )
         lu.assertEquals( runner.result.errorCount, 0 )
@@ -3920,7 +3964,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
     function TestLuaUnitExecution:test_failIfFromTest()
 
-        local function my_test_fails()
+        local function MyTest_fails()
             lu.assertEquals( 1, 1 )
             lu.failIf( false, 'NOOOOOOOOOO')
             lu.failIf( nil, 'NOOOOOOOOOO')
@@ -3929,7 +3973,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = runnerWithPrefixMyTest()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstancesNoCmdLineParsing( { { 'my_test_fails', my_test_fails } } )
+        runner:runSuiteByInstancesNoCmdLineParsing( { { 'MyTest_fails', MyTest_fails } } )
         lu.assertEquals( runner.result.selectedCount, 1 )
         lu.assertEquals( runner.result.errorCount, 0 )
         lu.assertEquals( runner.result.failureCount, 1 )
@@ -3938,15 +3982,15 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
     function TestLuaUnitExecution:test_callSuccessFromTest()
 
-        local function my_test_success()
+        local function MyTest_success()
             lu.assertEquals( 1, 1 )
             lu.success()
-            error('toto')
+            error('should not happen')
         end
 
         local runner = runnerWithPrefixMyTest()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstancesNoCmdLineParsing( { { 'my_test_success', my_test_success } } )
+        runner:runSuiteByInstancesNoCmdLineParsing( { { 'MyTest_success', MyTest_success } } )
         lu.assertEquals( runner.result.selectedCount, 1 )
         lu.assertEquals( runner.result.errorCount, 0 )
         lu.assertEquals( runner.result.failureCount, 0 )
@@ -3955,13 +3999,13 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
     function TestLuaUnitExecution:test_callSuccessIfFromTest()
 
-        local function my_test_fails()
+        local function MyTest_fails()
             lu.assertEquals( 1, 1 )
             lu.successIf( false )
             error('titi')
         end
 
-        local function my_test_success()
+        local function MyTest_success()
             lu.assertEquals( 1, 1 )
             lu.successIf( true )
             error('toto')
@@ -3969,7 +4013,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         local runner = runnerWithPrefixMyTest()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstancesNoCmdLineParsing( { { 'my_test_fails', my_test_fails }, {'my_test_success', my_test_success} } )
+        runner:runSuiteByInstancesNoCmdLineParsing( { { 'MyTest_fails', MyTest_fails }, {'MyTest_success', MyTest_success} } )
         lu.assertEquals( runner.result.selectedCount, 2 )
         -- print( lu.prettystr( runner.result ) )
         lu.assertEquals( runner.result.failureCount, 0 )
@@ -3980,38 +4024,38 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
     function TestLuaUnitExecution:test_callSkipFromTest()
 
-        local function my_test_skip()
-            lu.skip('my_skip_msg_is_there')
+        local function MyTest_skip()
+            lu.skip('MyTest_msg_is_there')
             error('skip does not work!')
         end
 
         local runner = runnerWithPrefixMyTest()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstancesNoCmdLineParsing( { { 'my_test_skip', my_test_skip } } )
+        runner:runSuiteByInstancesNoCmdLineParsing( { { 'MyTest_skip', MyTest_skip } } )
         lu.assertEquals( runner.result.selectedCount, 1 )
         lu.assertEquals( runner.result.runCount, 0 )
         lu.assertEquals( runner.result.failureCount, 0 )
         lu.assertEquals( runner.result.errorCount, 0 )
         lu.assertEquals( runner.result.successCount, 0 )
         lu.assertEquals( runner.result.skippedCount, 1 )
-        lu.assertStrContains( runner.result.skippedTests[1].msg, 'my_skip_msg_is_there' )
+        lu.assertStrContains( runner.result.skippedTests[1].msg, 'MyTest_msg_is_there' )
     end
 
     function TestLuaUnitExecution:test_callSkipIfFromTest()
 
-        local function my_test_skip()
+        local function MyTest_skip()
             lu.skipIf( false, 'test is not skipped' )
             error('titi')
         end
 
-        local function my_test_no_skip()
+        local function MyTest_no_skip()
             lu.skipIf( true, 'test should be skipped' )
             error('toto')
         end
 
         local runner = runnerWithPrefixMyTest()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstancesNoCmdLineParsing( { { 'my_test_skip', my_test_skip }, {'my_test_no_skip', my_test_no_skip} } )
+        runner:runSuiteByInstancesNoCmdLineParsing( { { 'MyTest_skip', MyTest_skip }, {'MyTest_no_skip', MyTest_no_skip} } )
         lu.assertEquals( runner.result.selectedCount, 2 )
         lu.assertEquals( runner.result.failureCount, 0 )
         lu.assertEquals( runner.result.successCount, 0 )
@@ -4025,19 +4069,22 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
     function TestLuaUnitExecution:test_callRunOnlyIfFromTest()
 
-        local function my_test_run_only_if()
+        local function MyTest_run_only_if()
             lu.runOnlyIf( true, 'test is executed' )
             error('titi')
         end
 
-        local function my_test_not_run_only_if()
+        local function MyTest_not_run_only_if()
             lu.runOnlyIf( false, 'test should be skipped' )
             error('toto')
         end
 
         local runner = runnerWithPrefixMyTest()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstancesNoCmdLineParsing( { { 'my_test_run_only_if', my_test_run_only_if }, {'my_test_not_run_only_if', my_test_not_run_only_if} } )
+        runner:runSuiteByInstancesNoCmdLineParsing( { 
+            { 'MyTest_run_only_if', MyTest_run_only_if }, 
+            {'MyTest_not_run_only_if', MyTest_not_run_only_if} 
+        } )
         lu.assertEquals( runner.result.selectedCount, 2 )
         lu.assertEquals( runner.result.failureCount, 0 )
         lu.assertEquals( runner.result.successCount, 0 )
@@ -4238,7 +4285,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
                                   runner.runSuite, runner, 'foo.bar')
         lu.assertEquals( #lu.LuaUnit.instances, 1)
         lu.assertErrorMsgContains('must be a function, not',
-                                  runner.runSuite, runner, '_G._VERSION')
+                                  runner.runSuite, runner, 'MyTestTableWithString.testString')
         lu.assertEquals( #lu.LuaUnit.instances, 1)
         lu.assertErrorMsgContains('Could not find method in class',
                                   runner.runSuite, runner, 'MyTestOk.foobar')
@@ -4251,24 +4298,6 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( #lu.LuaUnit.instances, 1)
     end
 
-    function TestLuaUnitExecution:test_filterWithPattern()
-
-        local runner = runnerWithPrefixMyTest()
-        runner:setOutputType( "NIL" )
-        runner:runSuite('-p', 'Function', '-p', 'Toto.' )
-        lu.assertEquals( executedTests[1], "MyTestFunction" )
-        lu.assertEquals( executedTests[2], "MyTestToto1:test1" )
-        lu.assertEquals( executedTests[3], "MyTestToto1:test2" )
-        lu.assertEquals( executedTests[4], "MyTestToto1:test3" )
-        lu.assertEquals( executedTests[5], "MyTestToto1:testa" )
-        lu.assertEquals( executedTests[6], "MyTestToto1:testb" )
-        lu.assertEquals( executedTests[7], "MyTestToto2:test1" )
-        lu.assertEquals( #executedTests, 7)
-
-        runner:runSuite('-p', 'Toto.', '-x', 'Toto2' )
-        lu.assertEquals( runner.result.selectedCount, 5) -- MyTestToto2 excluded
-    end
-
     function TestLuaUnitExecution:test_endSuiteTwice()
         local runner = runnerWithPrefixMyTest()
         runner:setOutputType( "NIL" )
@@ -4278,13 +4307,13 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
     end
 
     function TestLuaUnitExecution:test_withTableErrorInside(args)
-        local function my_test_with_table_error()
+        local function MyTest_with_table_error()
             error {code = 123}
         end
 
         local runner = runnerWithPrefixMyTest()
         runner:setOutputType( "NIL" )
-        runner:runSuiteByInstancesNoCmdLineParsing( { { 'my_test_with_table_error', my_test_with_table_error } } )
+        runner:runSuiteByInstancesNoCmdLineParsing( { { 'MyTest_with_table_error', MyTest_with_table_error } } )
         lu.assertStrContains(runner.result.allTests[1].msg, '{code=123}')
     end
 

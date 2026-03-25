@@ -3261,6 +3261,17 @@ end
         return result
     end
 
+    function M.LuaUnit:applyTestPrefixSuffixFilter( listOfNameAndInst )
+        local testObjects = {}
+        for i, v in ipairs( listOfNameAndInst ) do
+            -- local name, instance = v[1], v[2]
+            if self:isTestName( v[1] ) or v[1] == 'setupSuite' or v[1] == 'teardownSuite' then
+                table.insert( testObjects, v )
+            end
+        end
+        return testObjects
+    end
+
     function M.LuaUnit.applyPatternFilter( patternIncFilter, listOfNameAndInst )
         local included, excluded = {}, {}
         for i, v in ipairs( listOfNameAndInst ) do
@@ -3328,7 +3339,10 @@ end
         
         dbg('internalRunSuiteByInstances() - called with '.. #listOfNameAndInst .. ' items')
 
-        local expandedList = self:expandClasses( listOfNameAndInst )
+        local testableObjectList = self:applyTestPrefixSuffixFilter( listOfNameAndInst )
+        dbg('internalRunSuiteByInstances() - #testableObjectList: '.. #testableObjectList .. ' items')
+
+        local expandedList = self:expandClasses( testableObjectList )
         if self.shuffle then
             randomizeTable( expandedList )
         end
@@ -3417,6 +3431,8 @@ end
                 self:unregisterSuite()
                 error( "No such name in global space: "..instanceName )
             end
+
+            dbg('internalRunSuiteByNames() - found instance for name '..instanceName..' of type '..type(instance))
 
             if (type(instance) ~= 'table' and type(instance) ~= 'function') then
                 self:unregisterSuite()
@@ -3520,6 +3536,7 @@ end
     end
 
     function M.LuaUnit:runSuite( ... )
+        dbg('runSuite() - called with ', ... )
         local testNames = self:initFromArguments(...)
         self:registerSuite()
         self:internalRunSuiteByNames( testNames or self:collectTests() )
@@ -3538,7 +3555,25 @@ end
         ]]
         -- parse the command-line arguments
         dbg('runSuiteByInstances() - called with '.. #listOfNameAndInst .. ' items' .. ' and arguments: '.. prettystr({...}))
-        local _ = self:initFromArguments( ... )
+        local testNames = self:initFromArguments( ... )
+
+        -- if test names were provided as arguments, we need to filter the list of instances according to these names
+        if testNames then
+            table.insert(testNames, 'setupSuite')
+            table.insert(testNames, 'teardownSuite')
+
+            local filteredList = {}
+            for i, testNamePairToRun in ipairs( listOfNameAndInst ) do
+                for i, allowedTestName in ipairs( testNames ) do
+                    if testNamePairToRun[1] == allowedTestName then
+                        table.insert( filteredList, testNamePairToRun )
+                        break
+                    end
+                end
+            end
+            listOfNameAndInst = filteredList
+        end
+
         self:runSuiteByInstancesNoCmdLineParsing( listOfNameAndInst )
     end
 
