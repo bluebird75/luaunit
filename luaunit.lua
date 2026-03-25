@@ -2969,19 +2969,17 @@ end
             return
         end
 
-        --[[ As a first approach, we will report only one error or one failure for one test.
+        --[[ We record every error and failures.
 
-        However, we can have the case where the test is in failure, and the teardown is in error.
-        In such case, it's a good idea to report both a failure and an error in the test suite. This is
-        what Python unittest does for example. However, it mixes up counts so need to be handled carefully: for
-        example, there could be more (failures + errors) count that tests. What happens to the current node ?
-
-        We will do this more intelligent version later.
+        In some cases, you can have more errors/failures than test counts, for example if there is an error
+        in a test and another one in the tearDown.
         ]]
 
         -- if the node is already in failure/error, just don't report the new error (see above)
         if node.status ~= NodeStatus.SUCCESS then
-            return
+            -- report the error with a new node
+            dbg('updateStatus() - node already in failure/error, reporting new error with a new node')
+            node = NodeStatus.new( node.number, node.testName, node.className )
         end
 
         if err.status == NodeStatus.FAIL then
@@ -3002,8 +3000,6 @@ end
 
     function M.LuaUnit:endTest()
         local node = self.result.currentNode
-        -- print( 'endTest() '..prettystr(node))
-        -- print( 'endTest() '..prettystr(node:isNotSuccess()))
         node.duration = os.clock() - node.startTime
         node.startTime = nil
         self.output:endTest( node )
@@ -3366,11 +3362,11 @@ end
                     self:execOneFunction( nil, name, nil, instance )
                 else
                     -- expandClasses() should have already taken care of sanitizing the input
-                    assert( type(instance) == 'table' )
+                    assert( type(instance) == 'table', 'Instance must be a table not '..type(instance)..' with value '..prettystr(instance))
                     local className, methodName = M.LuaUnit.splitClassMethod( name )
-                    assert( className ~= nil )
+                    assert( className ~= nil, 'Class name must not be nil for name '..name )
                     local methodInstance = instance[methodName]
-                    assert(methodInstance ~= nil)
+                    assert(methodInstance ~= nil, "Could not find method in class "..tostring(className).." for method "..tostring(methodName))
                     self:execOneFunction( className, methodName, instance, methodInstance )
                 end
                 if self.result.aborted then
