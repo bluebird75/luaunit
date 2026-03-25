@@ -3369,19 +3369,22 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         runner:setOutputType( "NIL" )
         runner:runSuiteByInstancesNoCmdLineParsing( { { 'MyTestWithSetupTeardown.test1', MyTestWithSetupTeardown } } )
         lu.assertEquals( runner.result.notSuccessCount, 0 )
+        lu.assertEquals( runner.result.runCount, 1 )
         lu.assertEquals( myExecutedTests[1], '1setUp' )   
         lu.assertEquals( myExecutedTests[2], '1test1')
         lu.assertEquals( myExecutedTests[3], '1tearDown')
         lu.assertEquals( #myExecutedTests, 3)
 
         myExecutedTests = {}
-        runner:runSuiteByInstances( { 
+        local runner = runnerWithPrefixMyTest()
+        runner:setOutputType( "NIL" )
+        runner:runSuiteByInstancesNoCmdLineParsing( { 
             { 'MyTestWithSetupTeardown', MyTestWithSetupTeardown },
             { 'MyTestWithSetupTeardown2', MyTestWithSetupTeardown2 },
             { 'MyTestWithSetupTeardown3', MyTestWithSetupTeardown3 },
             { 'MyTestWithSetupTeardown4', MyTestWithSetupTeardown4 },
             { 'MyTestWithSetupTeardown5', MyTestWithSetupTeardown5 }
-        }, 'fake_run_unit_tests.lua' )
+        } )
         lu.assertEquals( runner.result.notSuccessCount, 0 )
         lu.assertEquals( myExecutedTests[1], '1setUp' )   
         lu.assertEquals( myExecutedTests[2], '1test1')
@@ -3751,7 +3754,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
     end
 
     function TestLuaUnitExecution:testWithErrorInSetupSuite()
-        lu.skip("Code is not ready for this feature")
+        -- lu.skip("Code is not ready for this feature")
         local myExecutedTests = {}
 
         local setupSuite = function() 
@@ -3773,11 +3776,12 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
             { 'teardownSuite', teardownSuite },
             { 'MyTestClassA', MyTestClassA },
         } )
-        lu.assertEquals( runner.result.notSuccessCount, 0 )
+        lu.assertEquals( runner.result.notSuccessCount, 1 )
+        lu.assertEquals( runner.result.failureCount, 0 )
+        lu.assertEquals( runner.result.errorCount, 1 )
         lu.assertEquals( myExecutedTests[1], 'setupSuite' )   
-        lu.assertEquals( myExecutedTests[2], 'Atest1')
-        lu.assertEquals( myExecutedTests[3], 'teardownSuite')
-        lu.assertEquals( #myExecutedTests, 3)
+        lu.assertEquals( myExecutedTests[2], 'teardownSuite')
+        lu.assertEquals( #myExecutedTests, 2)
     end
 
     function TestLuaUnitExecution:testWithSetupClass_TeardownClass()
@@ -4069,6 +4073,8 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         _G.MyTestWithIteration = MyTestWithIteration
         nbIter = 0
+        local runner = runnerWithPrefixMyTest()
+        runner:setOutputType( "NIL" )
         runner:runSuite( '--repeat', '10',
                          'MyTestWithIteration')
         _G.MyTestWithIteration = nil -- clean up
@@ -4090,6 +4096,8 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
 
         _G.MyTestWithIteration = MyTestWithIteration
         nbIter = 0
+        local runner = runnerWithPrefixMyTest()
+        runner:setOutputType( "NIL" )
         runner:runSuite( '--repeat', '10',
                          'MyTestWithIteration')
         _G.MyTestWithIteration = nil -- clean up

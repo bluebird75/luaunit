@@ -2709,6 +2709,7 @@ end
         end
 
 
+        cmdLine = cmdLine or {}
         for i, cmdArg in ipairs(cmdLine) do
             if state ~= nil then
                 setArg( cmdArg, state, result )
@@ -2887,6 +2888,8 @@ end
             runCount = 0,
             currentTestNumber = 0,
             currentClassName = "",
+            currentSuiteNode = nil,
+            currentClassNode = nil,
             currentNode = nil,
             suiteStarted = true,
             startTime = os.clock(),
@@ -2906,14 +2909,22 @@ end
             skippedCount = 0,
         }
 
+        self.result.currentSuiteNode = NodeStatus.new( 0, 'setupSuite', '')
         self.outputType = self.outputType or TextOutput
         self.output = self.outputType.new(self)
         self.output:startSuite()
     end
 
     function M.LuaUnit:startClass( className, classInstance )
+        dbg('startClass() ', className)
         self.result.currentClassName = className
+        self.result.currentClassNode = NodeStatus.new( self.result.currentTestNumber, 'setupClass', className )
         self.output:startClass( className )
+        if self.result.currentSuiteNode:isNotSuccess() then 
+            self.result.currentClassNode:updateFromNode( self.result.currentSuiteNode )
+            -- do not start anything if setupSuite() is in failure/error
+            return
+        end
         self:setupClass( className, classInstance )
     end
 
@@ -2929,7 +2940,14 @@ end
         table.insert( self.result.allTests, self.result.currentNode )
         self.output:startTest( testName )
 
-        dbg('startTest() - ', self.result.currentClassNode)
+        dbg('startTest() currentClassNode=', self.result.currentClassNode)
+        dbg('startTest() currentNode=', self.result.currentNode)
+
+        if self.result.currentClassNode:isNotSuccess() then 
+            self.result.currentNode:updateFromNode( self.result.currentClassNode )
+            -- do not start anything if setupClass() is in failure/error
+            return
+        end
     end
 
     function M.LuaUnit:updateStatus( node, err )
@@ -3135,6 +3153,8 @@ end
             self.lastClassInstance = classInstance
         end
 
+        dbg('execOneFunction() currentClassNode='..prettystr(self.result.currentClassNode))
+
         self:startTest(prettyFuncName)
 
         local node = self.result.currentNode
@@ -3258,26 +3278,26 @@ end
     function M.LuaUnit:setupSuite( listOfNameAndInst )
         local setupSuite = getKeyInListWithGlobalFallback("setupSuite", listOfNameAndInst)
         if  self.asFunction( setupSuite ) then
-            self:updateStatus( self.result.currentNode, self:protectedCall( nil, setupSuite, 'setupSuite' ) )
+            self:updateStatus( self.result.currentSuiteNode, self:protectedCall( nil, setupSuite, 'setupSuite' ) )
         end
     end
 
     function M.LuaUnit:teardownSuite(listOfNameAndInst)
         local teardownSuite = getKeyInListWithGlobalFallback("teardownSuite", listOfNameAndInst)
         if self.asFunction( teardownSuite ) then
-            self:updateStatus( self.result.currentNode, self:protectedCall( nil, teardownSuite, 'teardownSuite') )
+            self:updateStatus( self.result.currentSuiteNode, self:protectedCall( nil, teardownSuite, 'teardownSuite') )
         end
     end
 
     function  M.LuaUnit:setupClass( className, instance )
         if type( instance ) == 'table' and self.asFunction( instance.setupClass ) then
-            self:updateStatus( self.result.currentNode, self:protectedCall( instance, instance.setupClass, className..'.setupClass' ) )
+            self:updateStatus( self.result.currentClassNode, self:protectedCall( instance, instance.setupClass, className..'.setupClass' ) )
         end
     end
 
     function M.LuaUnit:teardownClass( className, instance )
         if type( instance ) == 'table' and self.asFunction( instance.teardownClass ) then
-            self:updateStatus( self.result.currentNode, self:protectedCall( instance, instance.teardownClass, className..'.teardownClass' ) )
+            self:updateStatus( self.result.currentClassNode, self:protectedCall( instance, instance.teardownClass, className..'.teardownClass' ) )
         end
     end
 
@@ -3297,6 +3317,8 @@ end
             randomizeTable( expandedList )
         end
         dbg('internalRunSuiteByInstances() - #expandedList: '.. #expandedList .. ' items')
+
+        dbg('Applying pattern filter: '.. prettystr(self.patternIncludeFilter))
         local filteredList, filteredOutList = self.applyPatternFilter(
             self.patternIncludeFilter, expandedList )
 
