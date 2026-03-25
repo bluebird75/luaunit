@@ -3739,7 +3739,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         runner:setOutputType( "NIL" )
         runner.patternIncludeFilter = {"test"}
 
-        runner:internalRunSuiteByInstances( {
+        runner:runSuiteByInstancesNoCmdLineParsing( {
             { 'setupSuite', setupSuite },
             { 'teardownSuite', teardownSuite },
             { 'MyTestClassA', MyTestClassA },
@@ -3771,7 +3771,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         runner:setOutputType( "NIL" )
         runner.patternIncludeFilter = {"test"}
 
-        runner:internalRunSuiteByInstances( { 
+        runner:runSuiteByInstancesNoCmdLineParsing( { 
             { 'setupSuite', setupSuite },
             { 'teardownSuite', teardownSuite },
             { 'MyTestClassA', MyTestClassA },
@@ -3862,7 +3862,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         runner:setOutputType( "NIL" )
         runner.patternIncludeFilter = {"test"}
 
-        runner:internalRunSuiteByInstances( { 
+        runner:runSuiteByInstancesNoCmdLineParsing( { 
             { 'MyTestClassA', MyTestClassA },
             { 'MyTestClassB', MyTestClassB },
             { 'MyTestClassC', MyTestClassC },
