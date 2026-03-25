@@ -1,14 +1,6 @@
 - enable luacov
-- update documentation to latest features
 - fix bug preventing working on debian packaging
 - why do we need libxml ?
-- fix the documentation not being the latest
-
-
-
-# ensure luarocks package are installed inside insall location
-/home/travis/build/bluebird75/luaunit/install/luarocks/share/lua/5.1/luarocks"
-/home/travis/build/bluebird75/luaunit/install/luarocks/share/lua/5.1/luarocks"
 
 
 TODO Future:
@@ -50,8 +42,6 @@ Version 3.5 (future):
 
 Planned:
 --------
-- global setup / teardown
-- class setup / teardown
 - report test duration everywhere
 - add date and duration to tap output
 - XML: report system information
