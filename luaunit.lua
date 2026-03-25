@@ -3361,23 +3361,22 @@ end
             local name, instance = v[1], v[2]
             if name == 'setupSuite' or name == 'teardownSuite' then
                 -- these are not tests, ignore them
-                goto continue
-            end
-            if M.LuaUnit.asFunction(instance) then
-                self:execOneFunction( nil, name, nil, instance )
             else
-                -- expandClasses() should have already taken care of sanitizing the input
-                assert( type(instance) == 'table' )
-                local className, methodName = M.LuaUnit.splitClassMethod( name )
-                assert( className ~= nil )
-                local methodInstance = instance[methodName]
-                assert(methodInstance ~= nil)
-                self:execOneFunction( className, methodName, instance, methodInstance )
+                if M.LuaUnit.asFunction(instance) then
+                    self:execOneFunction( nil, name, nil, instance )
+                else
+                    -- expandClasses() should have already taken care of sanitizing the input
+                    assert( type(instance) == 'table' )
+                    local className, methodName = M.LuaUnit.splitClassMethod( name )
+                    assert( className ~= nil )
+                    local methodInstance = instance[methodName]
+                    assert(methodInstance ~= nil)
+                    self:execOneFunction( className, methodName, instance, methodInstance )
+                end
+                if self.result.aborted then
+                    break -- "--error" or "--failure" option triggered
+                end
             end
-            if self.result.aborted then
-                break -- "--error" or "--failure" option triggered
-            end
-            ::continue::
         end
 
         if self.lastClassName ~= nil then
