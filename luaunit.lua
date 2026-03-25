@@ -359,6 +359,14 @@ local function patternFilter(patterns, expr)
 end
 M.private.patternFilter = patternFilter
 
+local function escapeBinaryBytes(s)
+    -- Replace non-printable and high bytes with visible byte escapes.
+    return s:gsub('[%z\1-\8\11\12\14-\31\127-\255]', function(c)
+        return string.format('\\x%02X', string.byte(c))
+    end)
+end
+M.private.escapeBinaryBytes = escapeBinaryBytes
+
 local function xmlEscape( s )
     -- Return s escaped for XML attributes
     -- escapes table:
@@ -368,6 +376,7 @@ local function xmlEscape( s )
     -- >   &gt;
     -- &   &amp;
 
+    s = escapeBinaryBytes(s)
     return string.gsub( s, '.', {
         ['&'] = "&amp;",
         ['"'] = "&quot;",
@@ -380,6 +389,7 @@ M.private.xmlEscape = xmlEscape
 
 local function xmlCDataEscape( s )
     -- Return s escaped for CData section, escapes: "]]>"
+    s = escapeBinaryBytes(s)
     return string.gsub( s, ']]>', ']]&gt;' )
 end
 M.private.xmlCDataEscape = xmlCDataEscape
@@ -528,19 +538,10 @@ local function stripLuaunitTrace2( stackTrace, errMsg )
 end
 M.private.stripLuaunitTrace2 = stripLuaunitTrace2
 
-local function escapeBinaryForPrettystr(s)
-    -- Replace non-printable and high bytes with visible byte escapes.
-    return s:gsub('[%z\1-\8\11\12\14-\31\127-\255]', function(c)
-        return string.format('\\x%02X', string.byte(c))
-    end)
-end
-M.private.escapeBinaryForPrettystr = escapeBinaryForPrettystr
-
-
 local function prettystr_sub(v, indentLevel, printTableRefs, cycleDetectTable )
     local type_v = type(v)
     if "string" == type_v  then
-        local escaped = escapeBinaryForPrettystr(v)
+        local escaped = escapeBinaryBytes(v)
         -- use clever delimiters according to content:
         -- enclose with single quotes if string contains ", but no '
         if escaped:find('"', 1, true) and not escaped:find("'", 1, true) then

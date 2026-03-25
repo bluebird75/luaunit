@@ -958,6 +958,8 @@ bar"=1}]] )
         lu.assertEquals( lu.private.xmlEscape( 'a"bc' ), 'a&quot;bc' )
         lu.assertEquals( lu.private.xmlEscape( "a'bc" ), 'a&apos;bc' )
         lu.assertEquals( lu.private.xmlEscape( "a<b&c>" ), 'a&lt;b&amp;c&gt;' )
+        lu.assertEquals( lu.private.xmlEscape( "q\000\000\002w\000" ), 'q\\x00\\x00\\x02w\\x00' )
+        lu.assertEquals( lu.private.xmlEscape( "a<\255&>" ), 'a&lt;\\xFF&amp;&gt;' )
     end
 
     function TestLuaUnitUtilities:test_xmlCDataEscape()
@@ -966,6 +968,7 @@ bar"=1}]] )
         lu.assertEquals( lu.private.xmlCDataEscape( "a'bc" ), "a'bc" )
         lu.assertEquals( lu.private.xmlCDataEscape( "a<b&c>" ), 'a<b&c>' )
         lu.assertEquals( lu.private.xmlCDataEscape( "a<b]]>--" ), 'a<b]]&gt;--' )
+        lu.assertEquals( lu.private.xmlCDataEscape( "q\000]]>\255" ), 'q\\x00]]&gt;\\xFF' )
     end
 
     function TestLuaUnitUtilities:test_hasNewline()
@@ -4627,6 +4630,13 @@ TestLuaUnitResults = { __class__ = 'TestLuaUnitResults' }
         lu.assertEquals( es.msg, 'msgToto' )
         lu.assertEquals( es.stackTrace, 'stackTraceToto' )
         lu.assertStrContains( es:statusXML(), "<failure" )
+
+        es:fail( "msg\000\002", "stack\000]]>\255" )
+        local xml = es:statusXML()
+        lu.assertStrContains( xml, "\\x00" )
+        lu.assertStrContains( xml, "\\x02" )
+        lu.assertStrContains( xml, "\\xFF" )
+        lu.assertFalse( xml:find('\000', 1, true) ~= nil )
 
         local es2 = lu.NodeStatus.new()
         lu.assertEquals( es2.status, lu.NodeStatus.SUCCESS )
