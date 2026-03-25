@@ -9,19 +9,19 @@
             <failure type="test/test_with_xml.lua:19: expected: &quot;q\x00\x00\x02w\x00\x00]]&gt;\xFF&quot;
 actual: &quot;q\x00\x00\x02w\x00&quot;">
                 <![CDATA[stack traceback:
-	test/test_with_xml.lua:19: in upvalue 'TestFailuresWithXml.test_failure_with_binary_xml']]></failure>
+	test/test_with_xml.lua:19: in function 'TestFailuresWithXml.test_failure_with_binary_xml']]></failure>
         </testcase>
         <testcase classname="TestFailuresWithXml" name="TestFailuresWithXml.test_failure_with_cdata_xml" time="0.001">
             <failure type="test/test_with_xml.lua:13: expected: &quot;got it&quot;
 actual: &quot;cdata does not like ]]&gt;&quot;">
                 <![CDATA[stack traceback:
-	test/test_with_xml.lua:13: in upvalue 'TestFailuresWithXml.test_failure_with_cdata_xml']]></failure>
+	test/test_with_xml.lua:13: in function 'TestFailuresWithXml.test_failure_with_cdata_xml']]></failure>
         </testcase>
         <testcase classname="TestFailuresWithXml" name="TestFailuresWithXml.test_failure_with_simple_xml" time="0.001">
             <failure type="test/test_with_xml.lua:9: expected: &quot;got it&quot;
 actual: &apos;&lt;toto&gt;ti&quot;ti&lt;/toto&gt;&apos;">
                 <![CDATA[stack traceback:
-	test/test_with_xml.lua:9: in upvalue 'TestFailuresWithXml.test_failure_with_simple_xml']]></failure>
+	test/test_with_xml.lua:9: in function 'TestFailuresWithXml.test_failure_with_simple_xml']]></failure>
         </testcase>
         <testcase classname="[TestFunctions]" name="TestThatLastsALongTime" time="0.001">
         </testcase>
