@@ -3358,6 +3358,10 @@ end
 
         for i,v in ipairs( filteredList ) do
             local name, instance = v[1], v[2]
+            if name == 'setupSuite' or name == 'teardownSuite' then
+                -- these are not tests, ignore them
+                goto continue
+            end
             if M.LuaUnit.asFunction(instance) then
                 self:execOneFunction( nil, name, nil, instance )
             else
@@ -3372,6 +3376,7 @@ end
             if self.result.aborted then
                 break -- "--error" or "--failure" option triggered
             end
+            ::continue::
         end
 
         if self.lastClassName ~= nil then

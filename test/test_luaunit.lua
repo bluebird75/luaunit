@@ -3797,8 +3797,7 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( #myExecutedTests, 4)
     end
 
-    function TestLuaUnitExecution:testWithErrorInSetupSuite()
-        -- lu.skip("Code is not ready for this feature")
+    function TestLuaUnitExecution:testSetupSuiteError()
         local myExecutedTests = {}
 
         local setupSuite = function() 
@@ -3808,12 +3807,55 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         local teardownSuite = function() table.insert( myExecutedTests, 'teardownSuite') end
 
         local MyTestClassA = {
-            test1 = function() table.insert( myExecutedTests, 'Atest1' ) end
+            setupClass = function() table.insert( myExecutedTests, 'AsetupClass' ) end,
+            setup = function() table.insert( myExecutedTests, 'Asetup' ) end,
+            test1 = function() table.insert( myExecutedTests, 'Atest1' ) end,
+            teardown = function() table.insert( myExecutedTests, 'Ateardown' ) end,
+            teardownClass = function() table.insert( myExecutedTests, 'AteardownClass' ) end,
         }
 
-        local runner = lu.LuaUnit.new()
+        local runner = runnerWithPrefixMyTest()
         runner:setOutputType( "NIL" )
-        runner.patternIncludeFilter = {"test"}
+
+        runner:runSuiteByInstancesNoCmdLineParsing( { 
+            { 'setupSuite', setupSuite },
+            { 'teardownSuite', teardownSuite },
+            { 'MyTestClassA', MyTestClassA },
+        } )
+        lu.assertEquals( runner.result.notSuccessCount, 1 )
+        lu.assertEquals( runner.result.failureCount, 0 )
+        lu.assertEquals( runner.result.errorCount, 1 )
+        lu.assertEquals( #runner.result.allTests, 1 )
+        lu.assertEquals( runner.result.allTests[1].testName, 'MyTestClassA.test1' )
+        lu.assertEquals( myExecutedTests[1], 'setupSuite' )   
+        lu.assertEquals( myExecutedTests[2], 'teardownSuite')
+        lu.assertEquals( #myExecutedTests, 2)
+    end
+
+    function TestLuaUnitExecution:testSetupSuiteAndTeardownSuiteError()
+        local myExecutedTests = {}
+
+        local setupSuite = function() 
+            table.insert( myExecutedTests, 'setupSuite' ) 
+            local a = 1 + {2} -- will cause an error
+        end
+        local teardownSuite = function() 
+            table.insert( myExecutedTests, 'teardownSuite') 
+            print('coucou1')
+            local a = 1 + {2} -- will cause an error
+            print('coucou2')
+        end
+        lu.dbg('function teardownSuite', teardownSuite)
+        local MyTestClassA = {
+            setupClass = function() table.insert( myExecutedTests, 'AsetupClass' ) end,
+            setup = function() table.insert( myExecutedTests, 'Asetup' ) end,
+            test1 = function() table.insert( myExecutedTests, 'Atest1' ) end,
+            teardown = function() table.insert( myExecutedTests, 'Ateardown' ) end,
+            teardownClass = function() table.insert( myExecutedTests, 'AteardownClass' ) end,
+        }
+
+        local runner = runnerWithPrefixMyTest()
+        runner:setOutputType( "NIL" )
 
         runner:runSuiteByInstancesNoCmdLineParsing( { 
             { 'setupSuite', setupSuite },
@@ -3825,6 +3867,8 @@ TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
         lu.assertEquals( runner.result.errorCount, 1 )
         lu.assertEquals( myExecutedTests[1], 'setupSuite' )   
         lu.assertEquals( myExecutedTests[2], 'teardownSuite')
+        lu.assertEquals( #runner.result.allTests, 1 )
+        lu.assertEquals( runner.result.allTests[1].testName, 'MyTestClassA.test1' )
         lu.assertEquals( #myExecutedTests, 2)
     end
 
