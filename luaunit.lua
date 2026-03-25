@@ -2954,6 +2954,7 @@ end
     function M.LuaUnit:updateStatus( nodeType, err )
         -- "node" is the test node to update
         -- "err" is expected to be a table / result from protectedCall()
+        local node
         if nodeType == 'suite' then
             node = self.result.currentSuiteNode
         elseif nodeType == 'class' then
