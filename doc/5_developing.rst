@@ -233,7 +233,7 @@ The steps are the following:
         * they should fail because of the version update (the XML captures the version of luaunit used for running them)
         * run WinMerge on the test directory and the ref directory
         * check only the differences between files ending in .xml
-        * update the ref/*.xml files by just updating the version number, nothing else
+        * update the ref/\*.xml files by just updating the version number, nothing else
         * commit the updated files
         * run the functional tests, they should now pass
         * review the changes carefully and commit them: only luaunit version in xml file should be recored

@@ -9,8 +9,7 @@
    :maxdepth: 3
    :caption: Contents:
 
-   1_introduction
-   2_changelog
+   0_readme
    3_getting-started
    4_reference_doc
    5_developing
