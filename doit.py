@@ -8,7 +8,7 @@ RELEASE_DIR='release/' + RELEASE_NAME + '/'
 RELEASE_TAG='LUAUNIT_V' + VERSION.replace('.', '_')
 TARGET_ZIP=RELEASE_NAME + '.zip'
 TARGET_TGZ=RELEASE_NAME + '.tgz'
-REPO_PATH='d:/work/luaunit/luaunit1'
+REPO_PATH='c:/d/work/luaunit/luaunit1'
 
 PATH_LUACHECK='c:\\d\\program\\dev\\lua\\luarocks\\systree\\bin\\luacheck.bat'
 
@@ -16,10 +16,12 @@ LUA51='c:/d/program/dev/lua/lua51/lua51.exe'
 LUA52='c:/d/program/dev/lua/lua52/lua52.exe'
 LUA53='c:/d/program/dev/lua/lua53/lua53.exe'
 LUA54='c:/d/program/dev/lua/lua54/lua54.exe'
+LUA55='c:/d/program/dev/lua/lua55/lua55.exe'
 LUAJIT='c:/d/program/dev/lua/luajit/luajit.exe'
 LUAJIT21='c:/d/program/dev/lua/luajit21/luajit.exe'
 
 ALL_LUA = ( 
+    (LUA55, 'Lua 5.5'), 
     (LUA54, 'Lua 5.4'), 
     (LUA53, 'Lua 5.3'), 
     (LUA52, 'Lua 5.2'), 
@@ -90,23 +92,14 @@ def pre_packageit_or_buildrock_step1():
         os.mkdir('release')
     except OSError:
         pass
-    subprocess.check_call(['d:/program/utils/Git/bin/git.exe', 'clone', '--no-hardlinks', '--branch', RELEASE_TAG, REPO_PATH, RELEASE_DIR])
+    subprocess.check_call(['git.exe', 'clone', '--no-hardlinks', '--branch', RELEASE_TAG, REPO_PATH, RELEASE_DIR])
 
     os.chdir( RELEASE_DIR )
 
     # Release dir cleanup. 
     shutil.rmtree('.git')
-    os.unlink('.gitignore')
-    shutil.rmtree('.travis')
-    os.unlink('.travis.yml')
-    shutil.rmtree('.appveyor')
-    os.unlink('appveyor.yml')
-    os.unlink('doit.py')
     os.unlink('TODO.txt')
     shutil.rmtree('junitxml/')
-
-    for p in glob.glob('*.rockspec'):
-        os.unlink(p) 
 
     makedoc()
     # doc cleanup  and simplification
@@ -118,7 +111,7 @@ def pre_packageit_or_buildrock_step1():
     
     run_tests(False)
     run_example()
-    os.unlink('.luacheckrc')    # keep it to run the tests successfully
+
 
 def packageit():
     '''Generate zip and targz archives for a release to GitHub
