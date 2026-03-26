@@ -30,7 +30,7 @@ Some issues on GitHub are marked with label *enhancement*. Feel also free to pic
 
 Changes should be proposed as *Pull Requests* on GitHub.
 
-Thank to our continuous integration setup with Travis-Ci and AppVeyor, all unit-tests and functional tests are run on Linux, Windows and MacOs, with all versions of Lua. So
+Thank to our continuous integration setup, all unit-tests and functional tests are run on Linux, Windows and MacOs, with all versions of Lua. So
 any *Pull Request* will show immediately if anything is going unexpected.
 
 

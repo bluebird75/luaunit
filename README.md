@@ -15,8 +15,8 @@ several output formats (Text, TAP, JUnit, ...) to be used directly or work with 
 LuaUnit may be installed as a [rock](https://luarocks.org/modules/bluebird75/luaunit) or directly added to your project.
 For simplicity, LuaUnit is contained into a single-file and has no external dependency. 
 
-Tutorial and reference documentation is slightly outdated and available on
-[read-the-docs](http://luaunit.readthedocs.org/en/latest/)
+Tutorial and reference documentation is available on
+[read-the-docs](http://luaunit.readthedocs.org/en/latest/).
 
 LuaUnit may also be used as an assertion library, to validate assertions inside a running program. In addition, it provides
 a pretty stringifier which converts any type into a nicely formatted string (including complex nested or recursive tables).
@@ -130,9 +130,13 @@ The version of the main branch on GitHub is always stable and can be used safely
 
 ### History 
 
-#### Version 3.5 - in development
+#### Version 3.5 - 26 March 2026
 * support for Lua 5.5
 * The name convention used to detect tests and test methods can now be adjusted with options `--test-prefix`, `--test-suffix`, `--method-prefix`
+* add possiblity to pass command-line arguments to `runSuitByInstances()`
+* bugfix: 
+  * LuaUnit correctly escapes invalid XML characters when outputting XML
+  * better error management when errors occurs during `setupSuite()`, `teardownSuite()`, `setupClass()` and `teardownClass()`
 
 
 #### Version 3.4 - 02 March 2021
