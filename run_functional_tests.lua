@@ -748,6 +748,7 @@ local filesSetIndex = {
     TestXml=filesToGenerateTestXml,
     StopOnError=filesToGenerateStopOnError,
     ListsComp=filesToGenerateListsComp,
+    Xml=table_join( filesToGenerateTestXml, filesToGenerateErrFailPassXml, filesToGenerateExampleXml )
 }
 
 local function updateRefFiles( filesToGenerate )

@@ -228,19 +228,18 @@ The steps are the following:
 * update luaunit with the desired functionality, ready for a release
 * update the version number in luaunit.lua
 * update the version number in doit.py
-* check that all tests pass on all supported lua versions: ```doit.py runtests```
-    * run functional test: ```lua54.bat run_functional_tests.lua```
-        * they should fail because of the version update (the XML captures the version of luaunit used for running them)
-        * run WinMerge on the test directory and the ref directory
-        * check only the differences between files ending in .xml
-        * update the ref/\*.xml files by just updating the version number, nothing else
-        * commit the updated files
-        * run the functional tests, they should now pass
-        * review the changes carefully and commit them: only luaunit version in xml file should be recored
-        * check that everything passes with doit.py 
+* check that all tests pass on all supported lua versions: 
+    ```doit.py runtests```
+    * they should fail because of the version update (the XML captures the version of luaunit used for running them)
+    * run WinMerge on the test directory and the ref directory
+    * check only the differences between files ending in .xml
+    * update the ref/\*.xml files by just updating the version number, nothing else
+    * commit the updated files
+    * run the functional tests, they should now pass
+    * review the changes carefully and commit them: only luaunit version in xml file should be recored
+    * check that everything passes with doit.py 
 * update *examples* if needed to reflect new features
-* update index.rst with documentation of new features/behavior
-* update README.md and index.rst with the release information (date and content)
+* update README.rst with the release information (date and content)
 * create a git branch LUAUNIT_VX_X for the packaging process
 * GitHub packages:
     * generate package for github: ```doit.py packageit```
@@ -252,8 +251,8 @@ The steps are the following:
     * merge branch LUAUNIT_VX_X into master
     * push to GitHub to check for CI results and rendering of the README
 * LuaRocks packages:
-    * rename luaunit-\*.rockspec to the current version
-    * generate luarock package:  
+    * rename packaging\luaunit-\*.rockspec to the current version
+    * generate luarock package:  ```doit.py buildrock```
 * GitHub release:
     * create a release page on GitHub
     * Upload the zip, tgz and rock-luaunit.zip and validate the release
