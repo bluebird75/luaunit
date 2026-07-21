@@ -1417,7 +1417,7 @@ This is either:
 
             -- check absolute error: it is not constant
             print( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / lu.EPS ) -- prints: 16
-            print( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / lu.EPS ) -- prints: 3
+            print( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / lu.EPS ) -- prints: 32
 
             -- The difference between expected value and calculated value is bigger than the machine epsilon, so 
             -- it will fail an assertAlmostEquals with default margin. You could supply a bigger margin, but it is not a 
@@ -1431,12 +1431,12 @@ This is either:
             -- the machine epsilon. This is more reliable and assertAlmostEquals() will succeed with the default margin.
 
             -- relative error is constant. Assertion can take the form of:
-            assertAlmostEquals( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / pi_div_6_deg_expected, lu.EPS )
-            assertAlmostEquals( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / pi_div_3_deg_expected, lu.EPS )
+            assertAlmostEquals( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / pi_div_6_deg_expected, 0, lu.EPS )
+            assertAlmostEquals( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / pi_div_3_deg_expected, 0, lu.EPS )
 
             -- or simply (relying on the default margin):
-            assertAlmostEquals( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / pi_div_6_deg_expected)
-            assertAlmostEquals( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / pi_div_3_deg_expected)
+            assertAlmostEquals( (pi_div_6_deg_expected - pi_div_6_deg_calculated) / pi_div_6_deg_expected, 0)
+            assertAlmostEquals( (pi_div_3_deg_expected - pi_div_3_deg_calculated) / pi_div_3_deg_expected, 0)
 
 
 Pretty printing
