@@ -263,6 +263,47 @@ log file name, and delete the log filename after every test::
     setUp() and tearDown() may also be named setup(), SetUp(), Setup() and teardown(), TearDown(), Teardown().*
 
 
+
+Class and suite lifecycle hooks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use *setupClass()* and *teardownClass()* for resources shared by the tests in a
+table. In the normal, sorted run, these methods execute once before the table's
+first selected test and once after its last selected test. Like *setUp()* and
+*tearDown()*, they receive the test table as ``self`` when defined with ``:``.
+The hook names are case-sensitive: use ``setupClass`` and ``teardownClass``,
+not ``setUpClass`` or ``tearDownClass``.
+
+With ``--shuffle``, methods from one table can be separated by methods from
+another table. LuaUnit then enters and leaves that table more than once, so its
+class hooks may run more than once. See :ref:`other-options`.
+
+For resources shared by the entire run, define the global functions
+*setupSuite()* and *teardownSuite()*. These execute before and after the suite,
+respectively, and do not receive ``self``. Their names are also case-sensitive.
+Keep *setUp()* and *tearDown()* for state that must be reset for each test.
+
+The usual order is::
+
+    setupSuite()
+        TestExample:setupClass()
+            TestExample:setUp()
+            TestExample:testFirst()
+            TestExample:tearDown()
+            TestExample:setUp()
+            TestExample:testSecond()
+            TestExample:tearDown()
+        TestExample:teardownClass()
+    teardownSuite()
+
+The following complete example shares suite and class resources while resetting
+per-test state. Run it from the repository root with
+``lua doc/lifecycle_hooks.lua``:
+
+.. literalinclude:: lifecycle_hooks.lua
+    :language: lua
+
+
 .. _Using-the-command-line:
 
 Using the command-line
