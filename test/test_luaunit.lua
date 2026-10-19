@@ -1277,6 +1277,16 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         lu.assertEquals(a, a1)
     end
 
+    --[[ See issue #172 ]]--
+    function TestLuaUnitAssertions:test_self_reference_issue172()
+        local myTable = {}
+        myTable.sub = myTable
+        myTable.sub.key = 1
+        lu.assertEquals(myTable.sub, myTable)
+        lu.assertIs(myTable.sub, myTable)
+    end
+
+
     function TestLuaUnitAssertions:test_assertEqualsTableAsKeys()
         assertFailure( lu.assertEquals, {[{}] = 1}, { [{}] = 1})
         assertFailure( lu.assertEquals, {[{one=1, two=2}] = 1}, { [{two=2, one=1}] = 1})
@@ -4961,6 +4971,5 @@ TestLuaUnitResults = { __class__ = 'TestLuaUnitResults' }
         lu.assertEquals( m.calls[1][1], 'startSuite' )
         lu.assertEquals(#m.calls[1], 2 )
     end
-
 
 -- To execute me , use: lua run_unit_tests.lua
