@@ -63,10 +63,7 @@ jobs:
             luaVersion: 5.5
     steps:
       - name: checkout
-        uses: actions/checkout@v4
-
-      - name: setup msvc dev cmd
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: actions/checkout@v7
 
       - name: setup lua
         uses: leafo/gh-actions-lua@v13
