@@ -1301,6 +1301,29 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         assertFailure( lu.assertEquals, {[{"one"}]=1,[{"one"}]=1}, {[{"one"}]=1} )
     end
 
+
+    function TestLuaUnitAssertions:test_assertEqualsTableWithMetatable__eq_for_LuaJIT()
+        local mt = {
+            __eq = function(t1, t2)
+                -- we force the equality to be always true
+                return true
+            end
+        }
+
+        local t1 = {name="A"}
+        local t2 = {name="B"}
+        local t1_plus = setmetatable({name="A"}, mt)
+
+        lu.assertNotEquals(t1, t2)
+
+        if (lu._LUAVERSION:sub(1,6) ~= "LuaJIT") then
+            lu.assertEquals(t1_plus, t2)
+        else
+            lu.assertNotEquals(t1_plus, t2)
+        end
+    end
+
+
     function TestLuaUnitAssertions:test_assertEqualsTableWithMetatable__eq()
 
         -- metatable with __eq method is only supported in Lua 5.3 and later, so skip this test for earlier versions.
