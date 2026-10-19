@@ -1301,7 +1301,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         end
         local mt = {
             __eq = function(t1, t2)
-                -- Note: We deliberately don't check whether the objects t1 and t2 are of the same type (e.g., cheching it's metatable),
+                -- Note: We deliberately don't check whether the objects t1 and t2 are of the same type (e.g., checking it's metatable),
                 --       in order to test that the __eq method is taken from the first or the second object, if the first object does not have it.
                 if t1._id == nil or t2._id == nil then
                     return false
