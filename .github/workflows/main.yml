@@ -83,11 +83,11 @@ jobs:
         run: lua run_functional_tests.lua 
 
       - name: setup luarocks
-        if: matrix.os == 'ubuntu-latest' && matrix.luaVersion >= '5.5'
+        if: matrix.os == 'ubuntu-latest' && matrix.luaVersion == '5.4'
         uses: leafo/gh-actions-luarocks@v6
 
       - name: install + run luacheck
-        if: matrix.os == 'ubuntu-latest' && matrix.luaVersion >= '5.5'
+        if: matrix.os == 'ubuntu-latest' && matrix.luaVersion == '5.4'
         run: |
           luarocks install argparse
           luarocks install luafilesystem
