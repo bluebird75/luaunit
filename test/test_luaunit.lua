@@ -1292,6 +1292,10 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
     end
 
     function TestLuaUnitAssertions:test_assertEqualsTableWithMetatable__eq()
+
+        -- metatable with __eq method is only supported in Lua 5.3 and later, so skip this test for earlier versions.
+        lu.runOnlyIf(lu._LUAVERSION >= 'Lua 5.3')
+
         local next_fn = function(t, key)
             local k, v = next(t, key)
             while k ~= nil and k:sub(1, 1) == "_" do
@@ -1409,6 +1413,9 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
     end
 
     function TestLuaUnitAssertions:test_assertEqualsTableWithProtectedMetatable()
+        -- metatable with __eq method is only supported in Lua 5.3 and later, so skip this test for earlier versions.
+        lu.runOnlyIf(lu._LUAVERSION >= 'Lua 5.3')
+
         do -- expected BUG in luaunit: the result should be lu.assertEquals(t1, t2).
             local mt ={ __metatable = "protected metatable", __eq = function() return true end }
             local t1 = setmetatable({name="A"}, mt)

@@ -1267,6 +1267,9 @@ local function _is_table_equals(actual, expected, cycleDetectTable, marginForAlm
     end
 
     -- Note: one cannot reliably check here because __eq method can be present but inaccessible in Lua.
+    -- TODO: lua 5.1 and 5.2 need a different handler because the rule for supporting __eq is different
+    --       In 5.1 and 5.2, __eq is only supported if both tables have the same metatable, while in 5.3 
+    --       and above, __eq is supported if either table has a metatable with __eq defined.
     local is_ok, mt_eq_fn = pcall(_get_mt_eq, actual)
     if not (is_ok and mt_eq_fn) then
         is_ok, mt_eq_fn = pcall(_get_mt_eq, expected)
