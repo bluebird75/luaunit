@@ -1231,6 +1231,13 @@ local _recursion_cache_MT = {
     }
 }
 
+local function _get_mt_eq(t)
+    local mt = getmetatable(t)
+    if mt then
+        return mt.__eq
+    end
+end
+
 local function _is_table_equals(actual, expected, cycleDetectTable, marginForAlmostEqual)
     --[[Returns true if both table are equal.
 
@@ -1257,6 +1264,16 @@ local function _is_table_equals(actual, expected, cycleDetectTable, marginForAlm
     elseif type_a ~= 'table' then
         -- other types compare directly
         return actual == expected
+    end
+
+    -- Note: one cannot reliably check here because __eq method can be present but inaccessible in Lua.
+    local is_ok, mt_eq_fn = pcall(_get_mt_eq, actual)
+    if not (is_ok and mt_eq_fn) then
+        is_ok, mt_eq_fn = pcall(_get_mt_eq, expected)
+    end
+    if is_ok and mt_eq_fn then
+        -- The order of aruments is independent from the source of __eq function, the same as in luaV_equalobj.
+        return mt_eq_fn(actual, expected)
     end
 
     cycleDetectTable = cycleDetectTable or { actual={}, expected={} }
