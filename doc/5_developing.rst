@@ -248,14 +248,11 @@ The steps are the following:
         * examples should work
         * unit-tests should pass
         * functional tests should pass
-    * merge branch LUAUNIT_VX_X into master
-    * push to GitHub to check for CI results and rendering of the README
 * LuaRocks packages:
     * rename packaging\luaunit-\*.rockspec to the current version
     * generate luarock package:  ```doit.py buildrock```
 * GitHub release:
-    * create a release page on GitHub
-    * Upload the zip, tgz and rock-luaunit.zip and validate the release
+    * push the tag to GitHub to create a release page: ```git push --tags```
 * LuaRocks packages (continued):
     * Copy the url of the rock package in the rock spec
     * upload the rockspec to luarocks

@@ -141,7 +141,7 @@ def buildrock():
         if p == 'luaunit.lua': 
             continue
         os.unlink(p) 
-    os.unlink('README.md')
+    os.unlink('README.rst')
     os.unlink('LICENSE.txt')
 
     os.chdir('..')
