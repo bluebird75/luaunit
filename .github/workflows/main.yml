@@ -89,7 +89,7 @@ jobs:
       - name: install + run luacheck
         if: matrix.os == 'ubuntu-latest' && matrix.luaVersion >= '5.5'
         run: |
-          luarocks install luacheck
+          luarocks install argparse
           luarocks install luafilesystem
           luarocks install luacheck
           luacheck example_with_luaunit.lua luaunit.lua run_unit_tests.lua run_functional_tests.lua test/
