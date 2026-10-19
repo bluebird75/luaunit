@@ -28,7 +28,8 @@ on:
 #
 # Strategy:
 # - newest version is tested on all platform
-# - Each of lua 5.1, lua 5.2, lua 5.3, luajit 2.0 is tested only on one platform
+# - Each of lua 5.1, lua 5.2, lua 5.3, lua 5.4 luajit 2.0 is tested only on one platform
+# - we luacheck the code and run the examples only on the latest lua
 jobs:
   lua:
     runs-on: ${{ matrix.os }}
@@ -81,11 +82,11 @@ jobs:
         run: lua run_functional_tests.lua 
 
       - name: setup luarocks
-        if: matrix.os == 'ubuntu-latest' && matrix.luaVersion == '5.4'
+        if: matrix.os == 'ubuntu-latest' && matrix.luaVersion >= '5.5'
         uses: leafo/gh-actions-luarocks@v6
 
       - name: install + run luacheck
-        if: matrix.os == 'ubuntu-latest' && matrix.luaVersion == '5.4'
+        if: matrix.os == 'ubuntu-latest' && matrix.luaVersion >= '5.5'
         run: |
           luarocks install luacheck
           luacheck example_with_luaunit.lua luaunit.lua run_unit_tests.lua run_functional_tests.lua test/
