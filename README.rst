@@ -170,6 +170,14 @@ used safely.
 History
 ~~~~~~~
 
+.. _version-36---in-development:
+
+Version 3.6 - in development
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- add documentation for the ``setupSuite()``, ``teardownSuite()``, ``setupClass()`` and ``teardownClass()``
+- supports correctly tables with a specific ``__eq`` comparison operator in the metatable
+
 .. _version-35---26-march-2026:
 
 Version 3.5 - 26 March 2026
