@@ -21,12 +21,14 @@ on:
 # ------------|-----------------------------|
 # Lua 5.3     |         |    X    |         |
 # ------------|-----------------------------|
-# Lua 5.4     |    X    |    X    |    X    |
+# Lua 5.4     |    X    |         |         |
+# ------------|-----------------------------|
+# Lua 5.5     |    X    |    X    |    X    |
 # ------------|-----------------------------|   
 #
 # Strategy:
 # - newest version is tested on all platform
-# - Each of lua 5.1, lua 5.2, lua 5.3, luajit 2.0 is tested only on one platforms
+# - Each of lua 5.1, lua 5.2, lua 5.3, luajit 2.0 is tested only on one platform
 jobs:
   lua:
     runs-on: ${{ matrix.os }}
@@ -45,15 +47,18 @@ jobs:
           - os: windows-latest
             luaVersion: 5.3
 
-          # Run lua 5.4 on all platforms
           - os: ubuntu-latest
             luaVersion: 5.4
 
+          # Run lua 5.5 on all platforms
+          - os: ubuntu-latest
+            luaVersion: 5.5
+
           - os: macos-latest
-            luaVersion: 5.4
+            luaVersion: 5.5
 
           - os: windows-latest
-            luaVersion: 5.4
+            luaVersion: 5.5
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -62,7 +67,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: setup lua
-        uses: leafo/gh-actions-lua@v12
+        uses: leafo/gh-actions-lua@v13
         with:
           luaVersion: ${{ matrix.luaVersion }}
 
