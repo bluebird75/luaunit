@@ -1343,7 +1343,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
     function TestLuaUnitAssertions:test_assertEqualsTableWithMetatable__eq()
 
         -- metatable with __eq method is only supported in Lua 5.3 and later, so skip this test for earlier versions.
-        lu.runOnlyIf(lu._LUAVERSION >= 'Lua 5.1' and lu._LUAVERSION:sub(1,6) ~= "LuaJIT")
+        lu.runOnlyIf(lu._LUAVERSION >= 'Lua 5.2' and lu._LUAVERSION:sub(1,6) ~= "LuaJIT")
 
         local next_fn = function(t, key)
             local k, v = next(t, key)
