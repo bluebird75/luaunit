@@ -1304,7 +1304,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
 
     function TestLuaUnitAssertions:test_assertEqualsTableWithMetatable__eq_for_LuaJIT()
         local mt = {
-            __eq = function(t1, t2)
+            __eq = function(ta, tb)
                 -- we force the equality to be always true
                 return true
             end
@@ -1313,13 +1313,29 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         local t1 = {name="A"}
         local t2 = {name="B"}
         local t1_plus = setmetatable({name="A"}, mt)
+        local t2_plus = setmetatable({name="B"}, mt)
 
         lu.assertNotEquals(t1, t2)
 
-        if (lu._LUAVERSION:sub(1,6) ~= "LuaJIT") then
-            lu.assertEquals(t1_plus, t2)
-        else
+        if (lu._LUAVERSION:sub(1,6) == "LuaJIT") then
             lu.assertNotEquals(t1_plus, t2)
+            lu.assertNotEquals(t1_plus, t2_plus)
+        else
+            lu.assertEquals(t1_plus, t2_plus)
+
+            if (lu._LUAVERSION >= 'Lua 5.3') then
+                -- the eq function is always called
+                lu.assertTrue( t1 == t1_plus)
+                lu.assertTrue( t2 == t2_plus)
+                lu.assertEquals(t1_plus, t2)
+                lu.assertEquals(t1_plus, t2_plus)
+            else
+                -- the eq function is only called if both tables have the same metatable
+                lu.assertTrue( t1 ~= t1_plus)
+                lu.assertTrue( t2 ~= t2_plus)
+                lu.assertNotEquals(t1_plus, t2)
+                lu.assertEquals(t1_plus, t2_plus)
+            end
         end
     end
 
@@ -1327,7 +1343,7 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
     function TestLuaUnitAssertions:test_assertEqualsTableWithMetatable__eq()
 
         -- metatable with __eq method is only supported in Lua 5.3 and later, so skip this test for earlier versions.
-        lu.runOnlyIf(lu._LUAVERSION >= 'Lua 5.3' and lu._LUAVERSION:sub(1,6) ~= "LuaJIT")
+        -- lu.runOnlyIf(lu._LUAVERSION >= 'Lua 5.3' and lu._LUAVERSION:sub(1,6) ~= "LuaJIT")
 
         local next_fn = function(t, key)
             local k, v = next(t, key)
@@ -1356,15 +1372,22 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
             local obj1 = setmetatable({_id=1, name="A"}, mt)
             local obj2 = setmetatable({_id=2, name="A"}, mt)
             lu.assertNotEquals(obj1, obj2)
-            lu.assertNotEquals(obj1, {name="A"})
-            lu.assertNotEquals({name="A"}, obj1)
+            if (lu._LUAVERSION >= 'Lua 5.3') then
+                lu.assertNotEquals(obj1, {name="A"})
+                lu.assertNotEquals({name="A"}, obj1)
+            else
+                lu.assertEquals(obj1, {name="A"})
+                lu.assertEquals({name="A"}, obj1)
+            end
 
             local obj1_second = setmetatable({_id=1, name="Changed"}, mt)
             lu.assertEquals(obj1, obj1_second)
 
             setmetatable(obj1, mt_no_eq)
-            lu.assertNotEquals(obj1, obj2)
-            lu.assertNotEquals(obj2, obj1)
+            if (lu._LUAVERSION >= 'Lua 5.3') then
+                lu.assertNotEquals(obj1, obj2)
+                lu.assertNotEquals(obj2, obj1)
+            end
             lu.assertEquals(obj1, {name="A"})
             lu.assertEquals({name="A"}, obj1)
             setmetatable(obj2, mt_no_eq)
@@ -1374,16 +1397,20 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
         do -- now "empty" objects
             local obj1 = setmetatable({_id=1}, mt)
             local obj2 = setmetatable({_id=2}, mt)
-            lu.assertNotEquals(obj1, obj2)
-            lu.assertNotEquals(obj1, {})
-            lu.assertNotEquals({}, obj1)
+            if (lu._LUAVERSION >= 'Lua 5.3') then
+                lu.assertNotEquals(obj1, obj2)
+                lu.assertNotEquals(obj1, {})
+                lu.assertNotEquals({}, obj1)
+            end
 
             local obj1_second = setmetatable({_id=1}, mt)
             lu.assertEquals(obj1, obj1_second)
 
             setmetatable(obj1, mt_no_eq)
-            lu.assertNotEquals(obj1, obj2)
-            lu.assertNotEquals(obj2, obj1)
+            if (lu._LUAVERSION >= 'Lua 5.3') then
+                lu.assertNotEquals(obj1, obj2)
+                lu.assertNotEquals(obj2, obj1)
+            end
             lu.assertEquals(obj1, {})
             lu.assertEquals({}, obj1)
             setmetatable(obj2, mt_no_eq)
@@ -1394,12 +1421,16 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
             local obj1 = setmetatable({}, mt)
             local obj2 = setmetatable({}, mt)
             lu.assertNotEquals(obj1, obj2)
-            lu.assertNotEquals(obj1, {})
-            lu.assertNotEquals({}, obj1)
+            if (lu._LUAVERSION >= 'Lua 5.3') then
+                lu.assertNotEquals(obj1, {})
+                lu.assertNotEquals({}, obj1)
+            end
 
             setmetatable(obj1, mt_no_eq)
-            lu.assertNotEquals(obj1, obj2)
-            lu.assertNotEquals(obj2, obj1)
+            if (lu._LUAVERSION >= 'Lua 5.3') then
+                lu.assertNotEquals(obj1, obj2)
+                lu.assertNotEquals(obj2, obj1)
+            end
             lu.assertEquals(obj1, {})
             lu.assertEquals({}, obj1)
             setmetatable(obj2, mt_no_eq)
@@ -1413,11 +1444,15 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
             lu.assertNotEquals(objA11, objA10)
 
             -- compare with the table without __eq method.
-            lu.assertEquals   (objA10, {name="A", nested={_id=10, p="a"}})
-            lu.assertNotEquals(objA10, {name="A", nested={        p="a"}})
+            if (lu._LUAVERSION >= 'Lua 5.3') then
+                lu.assertEquals   (objA10, {name="A", nested={_id=10, p="a"}})
+                lu.assertNotEquals(objA10, {name="A", nested={        p="a"}})
+            end
 
             lu.assertEquals({name="A", nested={_id=10, p="a"}}, objA10)
-            lu.assertNotEquals({name="A", nested={        p="a"}}, objA10)
+            if (lu._LUAVERSION >= 'Lua 5.3') then
+                lu.assertNotEquals({name="A", nested={        p="a"}}, objA10)
+            end
 
             local objA10_second = {name="A", nested=setmetatable({_id=10, p="b"}, mt)}
             lu.assertEquals(objA10, objA10_second)
@@ -1430,11 +1465,13 @@ TestLuaUnitAssertions = { __class__ = 'TestLuaUnitAssertions' }
             -- one of the objects does not have __eq method.
             setmetatable(objA10.nested, mt_no_eq)
 
-            lu.assertNotEquals(objA10, objA11)
-            lu.assertNotEquals(objA11, objA10)
+            if (lu._LUAVERSION >= 'Lua 5.3') then
+                lu.assertNotEquals(objA10, objA11)
+                lu.assertNotEquals(objA11, objA10)
 
-            lu.assertEquals(objA10, objA10_second)
-            lu.assertEquals(objA10_second, objA10)
+                lu.assertEquals(objA10, objA10_second)
+                lu.assertEquals(objA10_second, objA10)
+            end
 
             lu.assertNotEquals(objA10, objB10)
             lu.assertNotEquals(objB10, objA10)

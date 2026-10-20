@@ -1274,14 +1274,25 @@ local function _is_table_equals(actual, expected, cycleDetectTable, marginForAlm
         --       In 5.1 and 5.2, __eq is only supported if both tables have the same metatable, while in 5.3 
         --       and above, __eq is supported if either table has a metatable with __eq defined.
         local is_ok, mt_eq_fn = pcall(_get_mt_eq, actual)
-        if not (is_ok and mt_eq_fn) then
-            is_ok, mt_eq_fn = pcall(_get_mt_eq, expected)
-        end
-        if is_ok and mt_eq_fn then
-            -- The order of aruments is independent from the source of __eq function, the same as in luaV_equalobj.
-            return mt_eq_fn(actual, expected)
+        local is_ok2, mt_eq_fn2 = pcall(_get_mt_eq, expected)
+        -- print('is_ok, mt_eq_fn, is_ok2, mt_eq_fn2 = ', is_ok, mt_eq_fn, is_ok2, mt_eq_fn2)
+        if M._LUAVERSION < "Lua 5.3" then
+            -- Lua 5.1 and 5.2: __eq is only supported if both tables have the same metatable
+            if is_ok and is_ok2 and mt_eq_fn and (mt_eq_fn == mt_eq_fn2) then
+                -- print('calling comparison function: ', mt_eq_fn)
+                return mt_eq_fn(actual, expected)
+            end
+        else
+            if not (is_ok and mt_eq_fn) then
+                is_ok, mt_eq_fn = is_ok2, mt_eq_fn2
+            end
+            if is_ok and mt_eq_fn then
+                -- The order of aruments is independent from the source of __eq function, the same as in luaV_equalobj.
+                return mt_eq_fn(actual, expected)
+            end
         end
     end
+    -- print('calling default comparison on '..prettystr(actual)..' and '..prettystr(expected))
 
     cycleDetectTable = cycleDetectTable or { actual={}, expected={} }
     if cycleDetectTable.actual[ actual ] then
