@@ -3461,14 +3461,14 @@ TestLuaUnitTapOutput = {}
         for _, verbosity in ipairs({lu.VERBOSITY_QUIET, lu.VERBOSITY_DEFAULT, lu.VERBOSITY_VERBOSE}) do
             local writes, printCalls = {}, 0
             local originalPrint, originalStdout = print, io.stdout
-            print = function() printCalls = printCalls + 1 end
-            io.stdout = {
+            rawset(_G, 'print', function() printCalls = printCalls + 1 end)
+            rawset(io, 'stdout', {
                 write = function(_, ...)
                     for _, value in ipairs({...}) do
                         table.insert(writes, tostring(value))
                     end
                 end
-            }
+            })
             local ok, result = pcall(function()
                 local runner = lu.LuaUnit.new()
                 runner:setOutputType('TAP')
@@ -3480,7 +3480,8 @@ TestLuaUnitTapOutput = {}
                     test4Skip = function() lu.skip('skip reason') end
                 }}})
             end)
-            print, io.stdout = originalPrint, originalStdout
+            rawset(_G, 'print', originalPrint)
+            rawset(io, 'stdout', originalStdout)
 
             lu.assertTrue(ok, result)
             lu.assertEquals(result, 2)
