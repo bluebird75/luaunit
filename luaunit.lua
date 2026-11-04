@@ -1387,11 +1387,41 @@ M.private.error_fmt = error_fmt
 --
 ----------------------------------------------------------------
 
+local function longStringMismatch(actual, expected)
+    local first, commonLength = 1, math.min(#actual, #expected)
+    while first <= commonLength and actual:byte(first) == expected:byte(first) do
+        first = first + 1
+    end
+
+    local function escapeContext(value)
+        -- Byte escapes keep binary and UTF-8 input safe without cutting display characters.
+        value = value:gsub('\\', '\\\\'):gsub('"', '\\"'):gsub('\t', '\\t')
+        return escapeBinaryBytes(value)
+    end
+
+    local function context(value)
+        local start, finish = math.max(1, first - 20), math.min(#value, first + 20)
+        local differingByte = first <= #value and escapeContext(value:sub(first, first)) or '<end>'
+        return (start > 1 and '... ' or '') .. '"' ..
+            escapeContext(value:sub(start, first - 1)) .. '[' .. differingByte .. ']' ..
+            escapeContext(value:sub(first + 1, finish)) .. '"' ..
+            (finish < #value and ' ...' or '')
+    end
+
+    return string.format('strings differ at byte %d (expected length %d, actual length %d)\nexpected: %s\nactual: %s',
+        first, #expected, #actual, context(expected), context(actual))
+end
+
 local function errorMsgEquality(actual, expected, doDeepAnalysis, margin)
     -- margin is supplied only for almost equal verification
 
     if not M.ORDER_ACTUAL_EXPECTED then
         expected, actual = actual, expected
+    end
+    if type(actual) == 'string' and type(expected) == 'string' and
+        math.max(#actual, #expected) > 160 and
+        not actual:find('[\r\n]') and not expected:find('[\r\n]') then
+        return longStringMismatch(actual, expected)
     end
     if type(expected) == 'string' or type(expected) == 'table' then
         local strExpected, strActual = prettystrPairs(expected, actual)
