@@ -3539,6 +3539,8 @@ TestLuaUnitDataProviders = {}
         lu.assertEquals(values, {2})
         lu.assertEquals(runner.result.selectedCount, 1)
         values = {}
+        runner = lu.LuaUnit.new()
+        runner:setOutputType('NIL')
         runner:runSuiteByInstances({{'TestRows', suite}}, '-p', 'test_gamma$')
         lu.assertEquals(values, {3})
         lu.assertEquals(runner.result.selectedCount, 1)
