@@ -769,7 +769,7 @@ not influence the test itself.
     When comparing floating point numbers, it is better to use :lua:func:`assertAlmostEquals` which supports a margin
     for the equality verification.
 
-    When unequal single-line strings are longer than 160 bytes, the failure message shows the
+    When at least one of two unequal single-line strings exceeds 160 bytes, the failure message shows the
     first differing byte, both byte lengths, and at most 20 bytes of context on each side.
     Square brackets mark that byte (or ``<end>`` when one string has ended); ellipses outside
     the quotes mark omitted context. This is a view of the first difference, not a complete diff.

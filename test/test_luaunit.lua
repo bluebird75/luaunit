@@ -2857,7 +2857,7 @@ TestLuaUnitLongStringErrorMsg = {}
         }) do
             assertFailureContains('[' .. case[2] .. ']', lu.assertEquals, prefix .. string.char(case[1]), prefix .. '!')
         end
-        assertFailureContains('\\\\x00', lu.assertEquals, prefix .. '\\x00', prefix .. '\\x01')
+        assertFailureContains('\\\\x0[0]', lu.assertEquals, prefix .. '\\x00', prefix .. '\\x01')
     end
 
     function TestLuaUnitLongStringErrorMsg:testUtf8UsesBytePositionsAndSafeEscapes()
