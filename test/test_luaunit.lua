@@ -3456,6 +3456,53 @@ MyTestTableWithString = {
 
 
 
+TestLuaUnitTapOutput = {}
+    function TestLuaUnitTapOutput:testAllLinesUseStdoutWhenPrintIsOverridden()
+        for _, verbosity in ipairs({lu.VERBOSITY_QUIET, lu.VERBOSITY_DEFAULT, lu.VERBOSITY_VERBOSE}) do
+            local writes, printCalls = {}, 0
+            local originalPrint, originalStdout = print, io.stdout
+            print = function() printCalls = printCalls + 1 end
+            io.stdout = {
+                write = function(_, ...)
+                    for _, value in ipairs({...}) do
+                        table.insert(writes, tostring(value))
+                    end
+                end
+            }
+            local ok, result = pcall(function()
+                local runner = lu.LuaUnit.new()
+                runner:setOutputType('TAP')
+                runner.verbosity = verbosity
+                return runner:runSuiteByInstancesNoCmdLineParsing({{'TestEmbedded', {
+                    test1Pass = function() end,
+                    test2Fail = function() lu.fail('failure diagnostic') end,
+                    test3Error = function() error('error diagnostic') end,
+                    test4Skip = function() lu.skip('skip reason') end
+                }}})
+            end)
+            print, io.stdout = originalPrint, originalStdout
+
+            lu.assertTrue(ok, result)
+            lu.assertEquals(result, 2)
+            lu.assertEquals(printCalls, 0)
+            local output = table.concat(writes)
+            lu.assertStrContains(output, '1..4\n# Started on ')
+            lu.assertStrContains(output, '# Starting class: TestEmbedded\nok     1\tTestEmbedded.test1Pass\n')
+            lu.assertStrContains(output, 'not ok 2\tTestEmbedded.test2Fail\n')
+            lu.assertStrContains(output, 'not ok 3\tTestEmbedded.test3Error\n')
+            lu.assertStrContains(output, 'ok 4\t# SKIP skip reason\n')
+            lu.assertStrContains(output, '\n# Ran 3 tests')
+            if verbosity >= lu.VERBOSITY_DEFAULT then
+                lu.assertStrContains(output, 'failure diagnostic\n')
+                lu.assertStrContains(output, 'error diagnostic\n')
+            end
+            for line in output:gmatch('([^\n]*)\n') do
+                lu.assertTrue(line:match('^#') ~= nil or line == '1..4' or
+                    line:match('^ok%s+%d') ~= nil or line:match('^not ok %d') ~= nil, line)
+            end
+        end
+    end
+
 TestLuaUnitExecution = { __class__ = 'TestLuaUnitExecution' }
     --[[
         Tests verifying that:
