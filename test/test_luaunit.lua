@@ -2787,6 +2787,108 @@ local function assertFailureContains(msg, ...)
     lu.assertErrorMsgContains(lu.FAILURE_PREFIX .. msg, ...)
 end
 
+TestLuaUnitLongStringErrorMsg = {}
+    function TestLuaUnitLongStringErrorMsg:setUp()
+        self.order = lu.ORDER_ACTUAL_EXPECTED
+    end
+    function TestLuaUnitLongStringErrorMsg:tearDown()
+        lu.ORDER_ACTUAL_EXPECTED = self.order
+    end
+
+    function TestLuaUnitLongStringErrorMsg:testFirstDifference()
+        local tail = string.rep('a', 200)
+        local view = string.rep('a', 20)
+        assertFailureEquals('strings differ at byte 1 (expected length 201, actual length 201)\n' ..
+            'expected: "[Y]' .. view .. '" ...\nactual: "[X]' .. view .. '" ...',
+            lu.assertEquals, 'X' .. tail, 'Y' .. tail)
+    end
+
+    function TestLuaUnitLongStringErrorMsg:testMiddleDifference()
+        local prefix, suffix = string.rep('a', 100), string.rep('z', 100)
+        local left, right = string.rep('a', 20), string.rep('z', 20)
+        assertFailureEquals('strings differ at byte 101 (expected length 201, actual length 201)\n' ..
+            'expected: ... "' .. left .. '[Y]' .. right .. '" ...\n' ..
+            'actual: ... "' .. left .. '[X]' .. right .. '" ...',
+            lu.assertEquals, prefix .. 'X' .. suffix, prefix .. 'Y' .. suffix)
+    end
+
+    function TestLuaUnitLongStringErrorMsg:testLastDifference()
+        local prefix, view = string.rep('a', 200), string.rep('a', 20)
+        assertFailureEquals('strings differ at byte 201 (expected length 201, actual length 201)\n' ..
+            'expected: ... "' .. view .. '[Y]"\nactual: ... "' .. view .. '[X]"',
+            lu.assertEquals, prefix .. 'X', prefix .. 'Y')
+    end
+
+    function TestLuaUnitLongStringErrorMsg:testEndOfStringAndArgumentOrder()
+        local prefix, view = string.rep('a', 200), string.rep('a', 20)
+        local expected = 'strings differ at byte 201 (expected length 201, actual length 200)\n' ..
+            'expected: ... "' .. view .. '[X]"\nactual: ... "' .. view .. '[<end>]"'
+        assertFailureEquals(expected, lu.assertEquals, prefix, prefix .. 'X')
+        lu.ORDER_ACTUAL_EXPECTED = false
+        assertFailureEquals('note\n' .. expected, lu.assertEquals, prefix .. 'X', prefix, 'note')
+    end
+
+    function TestLuaUnitLongStringErrorMsg:testInsertion()
+        local prefix, suffix = string.rep('a', 100), string.rep('z', 100)
+        assertFailureContains('strings differ at byte 101 (expected length 200, actual length 201)',
+            lu.assertEquals, prefix .. 'X' .. suffix, prefix .. suffix)
+        lu.assertErrorMsgContains('[z]', lu.assertEquals, prefix .. 'X' .. suffix, prefix .. suffix)
+        lu.assertErrorMsgContains('[X]', lu.assertEquals, prefix .. 'X' .. suffix, prefix .. suffix)
+    end
+
+    function TestLuaUnitLongStringErrorMsg:testEmptyStringAndThresholdBoundary()
+        local view = string.rep('a', 20)
+        assertFailureEquals('strings differ at byte 1 (expected length 200, actual length 0)\n' ..
+            'expected: "[a]' .. view .. '" ...\nactual: "[<end>]"',
+            lu.assertEquals, '', string.rep('a', 200))
+        assertFailureContains('strings differ at byte 161 (expected length 161, actual length 160)',
+            lu.assertEquals, string.rep('a', 160), string.rep('a', 161))
+    end
+
+    function TestLuaUnitLongStringErrorMsg:testShortMultilineAndTablesAreUnchanged()
+        local short = string.rep('a', 159)
+        assertFailureEquals('expected: "' .. short .. 'Y"\nactual: "' .. short .. 'X"',
+            lu.assertEquals, short .. 'X', short .. 'Y')
+        local long = string.rep('a', 200)
+        for _, separator in ipairs({'\n', '\r'}) do
+            local padding = separator == '\n' and '\n' or ''
+            assertFailureEquals('expected: ' .. padding .. '"' .. long .. separator .. 'Y"\nactual: ' .. padding .. '"' ..
+                long .. separator .. 'X"', lu.assertEquals, long .. separator .. 'X', long .. separator .. 'Y')
+        end
+        lu.assertErrorMsgContains(long, lu.assertEquals, {long .. 'X'}, {long .. 'Y'})
+    end
+
+    function TestLuaUnitLongStringErrorMsg:testBinaryBytesAndEscapes()
+        local prefix = string.rep('a', 200)
+        for _, case in ipairs({
+            {0, '\\x00'}, {8, '\\x08'}, {9, '\\t'}, {11, '\\x0B'}, {12, '\\x0C'},
+            {27, '\\x1B'}, {31, '\\x1F'}, {127, '\\x7F'}, {128, '\\x80'}, {255, '\\xFF'},
+            {34, '\\"'}, {92, '\\\\'}
+        }) do
+            lu.assertErrorMsgContains('[' .. case[2] .. ']', lu.assertEquals, prefix .. string.char(case[1]), prefix .. '!')
+        end
+        lu.assertErrorMsgContains('\\\\x0[0]', lu.assertEquals, prefix .. '\\x00', prefix .. '\\x01')
+    end
+
+    function TestLuaUnitLongStringErrorMsg:testUtf8UsesBytePositionsAndSafeEscapes()
+        local prefix = string.rep('a', 200) .. string.char(195)
+        assertFailureContains('strings differ at byte 202', lu.assertEquals,
+            prefix .. string.char(169), prefix .. string.char(170))
+        lu.assertErrorMsgContains('\\xC3[\\xA9]', lu.assertEquals,
+            prefix .. string.char(169), prefix .. string.char(170))
+        local ok, message = pcall(lu.assertEquals, prefix .. string.char(169), prefix .. string.char(170))
+        lu.assertFalse(ok)
+        lu.assertNil(message:find('[\128-\255]'))
+    end
+
+    function TestLuaUnitLongStringErrorMsg:testOutputIsBoundedForCompletelyDifferentStrings()
+        local ok, message = pcall(lu.assertEquals, string.rep(string.char(0), 10000), string.rep(string.char(255), 10000))
+        lu.assertFalse(ok)
+        lu.assertTrue(#message < 500)
+        lu.assertNil(message:find('%z'))
+        lu.assertStrContains(message, 'expected length 10000, actual length 10000')
+    end
+
 TestLuaUnitAssertionsError = {}
 
     function TestLuaUnitAssertionsError:setUp()
