@@ -2209,12 +2209,13 @@ TapOutput.__class__ = 'TapOutput'
         return setmetatable( t, TapOutput_MT)
     end
     function TapOutput:startSuite()
-        print("1.."..self.result.selectedCount)
-        print('# Started on '..self.result.startDate)
+        -- Embedders may redirect print, so keep all TAP lines on the same stream.
+        io.stdout:write("1..", self.result.selectedCount, "\n")
+        io.stdout:write('# Started on ', self.result.startDate, "\n")
     end
     function TapOutput:startClass(className)
         if className ~= '[TestFunctions]' then
-            print('# Starting class: '..className)
+            io.stdout:write('# Starting class: ', className, "\n")
         end
     end
 
@@ -2226,10 +2227,10 @@ TapOutput.__class__ = 'TapOutput'
 
         io.stdout:write("not ok ", self.result.currentTestNumber, "\t", node.testName, "\n")
         if self.verbosity > M.VERBOSITY_LOW then
-           print( prefixString( '#   ', node.msg ) )
+           io.stdout:write( prefixString( '#   ', node.msg ), "\n" )
         end
         if (node:isFailure() or node:isError()) and self.verbosity > M.VERBOSITY_DEFAULT then
-           print( prefixString( '#   ', node.stackTrace ) )
+           io.stdout:write( prefixString( '#   ', node.stackTrace ), "\n" )
         end
     end
 
@@ -2240,7 +2241,7 @@ TapOutput.__class__ = 'TapOutput'
     end
 
     function TapOutput:endSuite()
-        print( '# '..M.LuaUnit.statusLine( self.result ) )
+        io.stdout:write( '# ', M.LuaUnit.statusLine( self.result ), "\n" )
         return self.result.notSuccessCount
     end
 
