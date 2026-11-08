@@ -65,6 +65,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
+      - name: setup msvc dev cmd
+        uses: step-security/msvc-dev-cmd@v1
+        
       - name: setup lua
         uses: leafo/gh-actions-lua@v13
         with:
