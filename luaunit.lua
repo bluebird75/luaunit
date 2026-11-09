@@ -2137,6 +2137,71 @@ end
 
 ----------------------------------------------------------------
 --
+--                     Data providers
+--
+----------------------------------------------------------------
+
+function M.parameterizedTests(provider, testFunction)
+    if type(testFunction) ~= 'function' then
+        error('parameterizedTests: testFunction must be a function', 2)
+    end
+    if type(provider) == 'function' then
+        provider = provider()
+    end
+    if type(provider) ~= 'table' then
+        error('parameterizedTests: provider must be a table or a function returning a table', 2)
+    end
+
+    local suite, count = {}, 0
+    local unpackArguments = rawget(_G, 'unpack') or table.unpack
+    for name, row in next, provider do
+        if type(name) ~= 'string' or not name:match('^[a-zA-Z0-9_]+$') then
+            error('parameterizedTests: case names must be nonempty strings containing only letters, digits or underscores', 2)
+        end
+        local description = 'parameterizedTests: case "' .. name .. '" '
+        if type(row) ~= 'table' then
+            error(description .. 'must be an argument table', 2)
+        end
+
+        local arity = rawget(row, 'n')
+        if arity ~= nil and (type(arity) ~= 'number' or not
+            (arity >= 0 and arity < math.huge and arity % 1 == 0)) then
+            error(description .. 'n must be a finite nonnegative integer', 2)
+        end
+        local arguments, maximum, argumentCount = {}, 0, 0
+        for key, value in next, row do
+            if key ~= 'n' then
+                if type(key) ~= 'number' or not (key >= 1 and key < math.huge and key % 1 == 0) then
+                    error(description .. 'arguments must use positive integer keys', 2)
+                end
+                maximum = math.max(maximum, key)
+                argumentCount = argumentCount + 1
+                arguments[key] = value
+            end
+        end
+        if arity == nil then
+            if argumentCount ~= maximum then
+                error(description .. 'requires n when arguments contain nil holes', 2)
+            end
+            arity = maximum
+        elseif maximum > arity then
+            error(description .. 'has an argument index greater than n', 2)
+        end
+
+        -- Capture each row separately, including its explicit nil/trailing-nil arity.
+        suite['test_' .. name] = function(self)
+            return testFunction(self, unpackArguments(arguments, 1, arity))
+        end
+        count = count + 1
+    end
+    if count == 0 then
+        error('parameterizedTests: provider must contain at least one named case', 2)
+    end
+    return suite
+end
+
+----------------------------------------------------------------
+--
 --                     Outputters
 --
 ----------------------------------------------------------------

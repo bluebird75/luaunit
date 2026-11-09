@@ -730,6 +730,35 @@ When executing a table containing tests, the following methods are also consider
   in the test suite.
 
 
+Data providers
+=====================
+
+.. lua:function:: parameterizedTests(provider, testFunction)
+
+    Create an ordinary test-suite table with one method per named argument row. The provider is
+    a table, or a function evaluated once to return that table. Case names contain only ASCII
+    letters, digits and underscores; each becomes a method named ``test_<case>``.
+
+    The assertion function receives ``self`` followed by the row's arguments, just like an
+    ordinary test method. Rows normally use consecutive positive integer keys. For nil holes
+    or trailing nil arguments, supply ``n`` with the exact argument count. Empty rows pass no
+    arguments. ``n`` must be a finite nonnegative integer, and no argument index may exceed it.
+    Argument counts remain subject to the Lua runtime's ordinary unpack limits.
+
+    Rows are captured when the helper is called; referenced tables remain shared Lua values.
+    Empty providers, invalid names, non-table rows and other row fields are rejected with an error.
+    The returned table uses the usual discovery, filtering, ordering and reporting paths. Attach
+    ``setUp`` and ``tearDown`` methods normally; each row is separately counted and reported.
+
+    This runnable example is available as :download:`data_provider.lua`:
+
+.. literalinclude:: data_provider.lua
+    :language: lua
+
+Run all cases with ``lua doc/data_provider.lua`` or select one with
+``lua doc/data_provider.lua TestAddition.test_zero``. TAP and JUnit options work as for any suite.
+
+
 Assertions functions
 =====================
 We will now list all assertion functions. For every functions, the failure

@@ -5080,4 +5080,165 @@ TestLuaUnitResults = { __class__ = 'TestLuaUnitResults' }
         lu.assertEquals(#m.calls[1], 2 )
     end
 
+TestLuaUnitDataProviders = {}
+    function TestLuaUnitDataProviders:testNamedCasesAreIndependentAndSorted()
+        local calls, suite = {}, nil
+        suite = lu.parameterizedTests({zeta={3}, alpha={1}, beta={2}}, function(self, value)
+            lu.assertIs(self, suite)
+            table.insert(calls, value)
+        end)
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType('NIL')
+        lu.assertEquals(runner:runSuiteByInstancesNoCmdLineParsing({{'TestRows', suite}}), 0)
+        lu.assertEquals(calls, {1, 2, 3})
+        lu.assertEquals(runner.result.selectedCount, 3)
+        lu.assertEquals(runner.result.allTests[1].testName, 'TestRows.test_alpha')
+        lu.assertEquals(runner.result.allTests[3].testName, 'TestRows.test_zeta')
+    end
+
+    function TestLuaUnitDataProviders:testProviderEvaluatedOnceAndRowsAreCaptured()
+        local calls, values = 0, {}
+        local rows = {one={1}, two={2}}
+        local suite = lu.parameterizedTests(function()
+            calls = calls + 1
+            return rows
+        end, function(_, value) table.insert(values, value) end)
+        rows.one[1], rows.two[1] = 11, 22
+        suite.test_one(suite)
+        suite.test_two(suite)
+        lu.assertEquals(calls, 1)
+        lu.assertEquals(values, {1, 2})
+    end
+
+    function TestLuaUnitDataProviders:testZeroArgumentsNilHolesAndTrailingNils()
+        local values = {}
+        local suite = lu.parameterizedTests({
+            zero={}, holes={n=4, [2]='B', [4]='D'}, trailing={1, n=3}, many={n=200}
+        }, function(_, ...)
+            local count = select('#', ...)
+            values[count] = {n=count, ...}
+        end)
+        suite.test_zero(suite)
+        suite.test_holes(suite)
+        suite.test_trailing(suite)
+        suite.test_many(suite)
+        lu.assertEquals(values[0], {n=0})
+        lu.assertEquals(values[4], {n=4, [2]='B', [4]='D'})
+        lu.assertEquals(values[3], {1, n=3})
+        lu.assertEquals(values[200], {n=200})
+    end
+
+    function TestLuaUnitDataProviders:testHooksAndFailureDoNotHideOtherRows()
+        local events = {}
+        local suite = lu.parameterizedTests({alpha={true}, beta={false}, gamma={true}}, function(self, succeeds)
+            lu.assertTrue(self.ready)
+            table.insert(events, 'case')
+            lu.assertTrue(succeeds)
+        end)
+        function suite:setUp()
+            self.ready = true
+            table.insert(events, 'setup')
+        end
+        function suite:tearDown()
+            self.ready = nil
+            table.insert(events, 'teardown')
+        end
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType('NIL')
+        lu.assertEquals(runner:runSuiteByInstancesNoCmdLineParsing({{'TestRows', suite}}), 1)
+        lu.assertEquals(runner.result.selectedCount, 3)
+        lu.assertEquals(runner.result.failureCount, 1)
+        lu.assertEquals(events, {'setup', 'case', 'teardown', 'setup', 'case', 'teardown', 'setup', 'case', 'teardown'})
+        lu.assertNil(suite.ready)
+    end
+
+    function TestLuaUnitDataProviders:testMethodAndPatternSelection()
+        local values = {}
+        local suite = lu.parameterizedTests({alpha={1}, beta={2}, gamma={3}}, function(_, value)
+            table.insert(values, value)
+        end)
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType('NIL')
+        runner:runSuiteByInstancesNoCmdLineParsing({{'TestRows.test_beta', suite}})
+        lu.assertEquals(values, {2})
+        lu.assertEquals(runner.result.selectedCount, 1)
+        values = {}
+        runner = lu.LuaUnit.new()
+        runner:setOutputType('NIL')
+        runner:runSuiteByInstances({{'TestRows', suite}}, '-p', 'test_gamma$')
+        lu.assertEquals(values, {3})
+        lu.assertEquals(runner.result.selectedCount, 1)
+    end
+
+    function TestLuaUnitDataProviders:testErrorsAndSkipsAreIndependent()
+        local suite = lu.parameterizedTests({alpha={'error'}, beta={'skip'}, gamma={'pass'}}, function(_, kind)
+            if kind == 'error' then error('row error') end
+            if kind == 'skip' then lu.skip('row skipped') end
+        end)
+        local runner = lu.LuaUnit.new()
+        runner:setOutputType('NIL')
+        lu.assertEquals(runner:runSuiteByInstancesNoCmdLineParsing({{'TestRows', suite}}), 1)
+        lu.assertEquals(runner.result.selectedCount, 3)
+        lu.assertEquals(runner.result.errorCount, 1)
+        lu.assertEquals(runner.result.skippedCount, 1)
+        lu.assertTrue(runner.result.allTests[3]:isSuccess())
+    end
+
+    function TestLuaUnitDataProviders:testCaseNamesDoNotReplaceHooks()
+        local suite = lu.parameterizedTests({setUp={}, tearDown={}, ['123']={}}, function() end)
+        lu.assertIsFunction(suite.test_setUp)
+        lu.assertIsFunction(suite.test_tearDown)
+        lu.assertIsFunction(suite.test_123)
+        lu.assertNil(suite.setUp)
+        lu.assertNil(suite.tearDown)
+    end
+
+    function TestLuaUnitDataProviders:testRejectsInvalidProvidersAndCallbacks()
+        local called = false
+        lu.assertErrorMsgContains('testFunction must be a function', lu.parameterizedTests,
+            function() called = true end, false)
+        lu.assertFalse(called)
+        lu.assertErrorMsgContains('provider must be a table', lu.parameterizedTests, nil, function() end)
+        for _, value in ipairs({false, 42, 'rows'}) do
+            lu.assertErrorMsgContains('provider must be a table', lu.parameterizedTests, value, function() end)
+            lu.assertErrorMsgContains('provider must be a table', lu.parameterizedTests,
+                function() return value end, function() end)
+        end
+        lu.assertErrorMsgContains('provider must be a table', lu.parameterizedTests,
+            function() return nil end, function() end)
+    end
+
+    function TestLuaUnitDataProviders:testRejectsInvalidCaseNamesAndRows()
+        for _, name in ipairs({1, '', 'with space', 'with.dot', 'with-dash', string.char(255)}) do
+            lu.assertErrorMsgContains('case names must be nonempty strings', lu.parameterizedTests,
+                {[name]={}}, function() end)
+        end
+        for _, row in ipairs({false, 42, 'arguments'}) do
+            lu.assertErrorMsgContains('case "example" must be an argument table', lu.parameterizedTests,
+                {example=row}, function() end)
+        end
+    end
+
+    function TestLuaUnitDataProviders:testRejectsInvalidArityAndArgumentKeys()
+        for _, count in ipairs({false, '2', -1, 0.5, math.huge, 0/0}) do
+            lu.assertErrorMsgContains('n must be a finite nonnegative integer', lu.parameterizedTests,
+                {example={n=count}}, function() end)
+        end
+        for _, key in ipairs({0, -1, 1.5, math.huge, 'argument'}) do
+            lu.assertErrorMsgContains('arguments must use positive integer keys', lu.parameterizedTests,
+                {example={[key]='value'}}, function() end)
+        end
+        lu.assertErrorMsgContains('argument index greater than n', lu.parameterizedTests,
+            {example={1, n=0}}, function() end)
+    end
+
+    function TestLuaUnitDataProviders:testSparseRowsNeedExplicitArityAndProviderCannotBeEmpty()
+        lu.assertErrorMsgContains('requires n when arguments contain nil holes', lu.parameterizedTests,
+            {example={[2]='second'}}, function() end)
+        lu.assertErrorMsgContains('requires n when arguments contain nil holes', lu.parameterizedTests,
+            {example={1, [3]=3}}, function() end)
+        lu.assertErrorMsgContains('provider must contain at least one named case', lu.parameterizedTests,
+            {}, function() end)
+    end
+
 -- To execute me , use: lua run_unit_tests.lua
