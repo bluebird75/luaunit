@@ -798,6 +798,13 @@ not influence the test itself.
     When comparing floating point numbers, it is better to use :lua:func:`assertAlmostEquals` which supports a margin
     for the equality verification.
 
+    When at least one of two unequal single-line strings exceeds 160 bytes, the failure message shows the
+    first differing byte, both byte lengths, and at most 20 bytes of context on each side.
+    Square brackets mark that byte (or ``<end>`` when one string has ended); ellipses outside
+    the quotes mark omitted context. This is a view of the first difference, not a complete diff.
+    Non-ASCII and control bytes are escaped, so byte positions also apply to UTF-8 input.
+    Short strings, multiline strings and strings inside tables keep their existing formatting.
+
     For tables, the comparison supports nested tables and cyclic structures. To be equal, two tables must
     have the same keys and the value associated with a key must compare equal with assertEquals() (using a recursive
     algorithm).
