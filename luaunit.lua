@@ -8,14 +8,51 @@ Based on initial work of Ryu, Gwang (http://www.gpgstudy.com/gpgiki/LuaUnit)
 License: BSD License, see LICENSE.txt
 ]]--
 
-require("math")
-local M={}
+-- math is a standard Lua library. Prefer the global; only require() when
+-- available (restricted environments may have math but no package loaders).
+if not rawget(_G, "math") and type(require) == "function" then
+    require("math")
+end
+
+local M
+
+do
+    -- Semantic version. NOTE: Two version numbers need to stay in sync:
+    -- 1. _VERSION / M.VERSION below
+    -- 2. _MINOR for LibStub version registration
+    local _VERSION = "3.5"
+
+    -- When MAJOR is changed, treat it as a new library identity for LibStub.
+    local _MAJOR = "LuaUnit"
+
+    -- Update this whenever a new version, for LibStub version registration.
+    -- 35 : v3.5
+    local _MINOR = 35
+
+    -- Register in the library "LibStub" if detected.
+    if LibStub then
+        local lib, minor = LibStub:GetLibrary(_MAJOR, true)
+        if lib and minor and minor >= _MINOR then -- No need to update.
+            return lib
+        else -- Update or first time register
+            M = LibStub:NewLibrary(_MAJOR, _MINOR)
+            -- NOTE: It is important that new version has implemented
+            -- all exported APIs and tables in the old version,
+            -- so the old library is fully garbage collected,
+            -- and we 100% ensure the backward compatibility.
+        end
+    else -- "LibStub" is not detected.
+        M = {}
+    end
+
+    M.VERSION = _VERSION
+    M._VERSION = _VERSION -- For LuaUnit v2 compatibility
+    M._MAJOR = _MAJOR
+    M._MINOR = _MINOR
+end
 
 -- private exported functions (for testing)
 M.private = {}
-
-M.VERSION='3.5'
-M._VERSION=M.VERSION -- For LuaUnit v2 compatibility
 
 -- a version which distinguish between regular Lua and LuaJit
 M._LUAVERSION = rawget(_G, 'jit') and jit.version or _VERSION
@@ -112,7 +149,7 @@ You may also control LuaUnit options with the following environment variables:
 
 local function dbg(...)
     -- print debug information if the environment variable _DEBUG is set
-    if (os.getenv("LUAUNIT_DEBUG")) then
+    if os and os.getenv and os.getenv("LUAUNIT_DEBUG") then
         local n = select("#", ...)
         local unpack = rawget(_G, "unpack") or table.unpack
         local values = { 'DEBUG' }
@@ -132,12 +169,15 @@ successfully.
 
 This is an attempt to mitigate this problem: we override os.exit() to now let a test
 exit the framework while we are running. When we are not running, it behaves normally.
+
+If os.exit does not exist, do nothing.
 ]]
 
-M.oldOsExit = os.exit
-os.exit = function(...) 
-    if M.LuaUnit and #M.LuaUnit.instances ~= 0 then
-        local msg = [[You are trying to exit but there is still a running instance of LuaUnit.
+if os and os.exit then
+    M.oldOsExit = os.exit
+    os.exit = function(...)
+        if M.LuaUnit and #M.LuaUnit.instances ~= 0 then
+            local msg = [[You are trying to exit but there is still a running instance of LuaUnit.
 LuaUnit expects to run until the end before exiting with a complete status of successful/failed tests.
 
 To force exit LuaUnit while running, please call before os.exit (assuming lu is the luaunit module loaded):
@@ -145,9 +185,10 @@ To force exit LuaUnit while running, please call before os.exit (assuming lu is 
     lu.unregisterCurrentSuite() 
 
 ]]
-        M.private.error_fmt(2, msg)
+            M.private.error_fmt(2, msg)
+        end
+        M.oldOsExit(...)
     end
-    M.oldOsExit(...)
 end
 
 local function pcall_or_abort(func, ...)
@@ -258,7 +299,10 @@ end
 M.private.sortedPairs = sortedPairs
 
 -- seed the random with a strongly varying seed
-math.randomseed(math.floor(os.clock()*1E11))
+-- (os.clock may be absent in restricted environments)
+if os and os.clock then
+    math.randomseed(math.floor(os.clock()*1E11))
+end
 
 local function randomizeTable( t )
     -- randomize the item orders of the table t
